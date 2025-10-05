@@ -48,7 +48,19 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-
+  plugins: [
+    [
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      {
+        hashed: true, // better caching
+        indexDocs: true, // search in /docs/**/*.md(x)
+        indexBlog: true, // search in /blog/**/*.md(x)
+        indexPages: true, // search in /src/pages/**/*.mdx
+        docsRouteBasePath: "/", // change if your docs aren’t under /docs
+        searchResultContextMaxLength: 80, // snippet length in results
+      },
+    ],
+  ],
   themeConfig: {
     // Replace with your project's social card
     image: "img/docusaurus-social-card.jpg",
@@ -65,6 +77,7 @@ const config: Config = {
           position: "left",
           label: "Tutorial",
         },
+        { type: "search", position: "right" },
       ],
     },
     footer: {
