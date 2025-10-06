@@ -1,0 +1,1 @@
+Area under density histogram ≈ 1.000000

@@ -2,30 +2,28 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+const math = require("remark-math");
+const katex = require("rehype-katex");
 
 const config: Config = {
+  markdown: {
+    mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
+  themes: ["@docusaurus/theme-mermaid"],
   title: "Learn AI, ML",
-  tagline: "Dinosaurs are cool",
+  tagline: "Learn AI & ML from Zero to Hero",
   favicon: "img/favicon.ico",
 
-  // Set the production url of your site here
   url: "https://your-docusaurus-site.example.com",
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "facebook",
+  projectName: "docusaurus",
 
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
-
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -37,10 +35,8 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+          remarkPlugins: [math],
+          rehypePlugins: [katex],
         },
         theme: {
           customCss: "./src/css/custom.css",
@@ -52,22 +48,40 @@ const config: Config = {
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
       {
-        hashed: true, // better caching
-        indexDocs: true, // search in /docs/**/*.md(x)
-        indexBlog: true, // search in /blog/**/*.md(x)
-        indexPages: true, // search in /src/pages/**/*.mdx
-        docsRouteBasePath: "/", // change if your docs aren’t under /docs
-        searchResultContextMaxLength: 80, // snippet length in results
+        hashed: true,
+        indexDocs: true,
+        indexBlog: true,
+        indexPages: true,
+        docsRouteBasePath: "/",
+        searchResultContextMaxLength: 80,
       },
     ],
   ],
+
+  stylesheets: [
+    {
+      href: "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
+      type: "text/css",
+      integrity:
+        "sha384-nW7hDJ4SmCyFRIE7NRH8fXf2l+dNwM4hxKyn9YOeAWMq8TDzv2h7Q+n9AiUMav+s",
+      crossorigin: "anonymous",
+    },
+  ],
+
   themeConfig: {
-    // Replace with your project's social card
     image: "img/docusaurus-social-card.jpg",
+    /** ✅ Correct Mermaid config (no themeVariables — use CSS override instead) **/
+    mermaid: {
+      theme: {
+        light: "neutral",
+        dark: "dark",
+      },
+    },
+
     navbar: {
-      title: "My Site",
+      title: "AI & ML",
       logo: {
-        alt: "My Site Logo",
+        alt: "AI ML Logo",
         src: "img/logo.svg",
       },
       items: [
@@ -85,25 +99,16 @@ const config: Config = {
       links: [
         {
           title: "Docs",
-          items: [
-            {
-              label: "Tutorial",
-              to: "/docs/intro",
-            },
-          ],
+          items: [{ label: "Tutorial", to: "/docs/intro" }],
         },
         {
           title: "Community",
-          items: [
-            {
-              label: "Chatgpt",
-              href: "https://chatgpt.com/",
-            },
-          ],
+          items: [{ label: "ChatGPT", href: "https://chatgpt.com/" }],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Learn AI, ML. Built with Docusaurus.`,
     },
+
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
