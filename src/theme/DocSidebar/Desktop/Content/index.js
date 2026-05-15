@@ -1,0 +1,105 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import clsx from 'clsx';
+import {ThemeClassNames} from '@docusaurus/theme-common';
+import {
+  useAnnouncementBar,
+  useScrollPosition,
+} from '@docusaurus/theme-common/internal';
+import {translate} from '@docusaurus/Translate';
+import DocSidebarItems from '@theme/DocSidebarItems';
+import styles from './styles.module.css';
+
+const expandedCategorySelector = [
+  'button.menu__caret[aria-expanded="true"]',
+  'a[role="button"][aria-expanded="true"]',
+].join(',');
+
+function useShowAnnouncementBar() {
+  const {isActive} = useAnnouncementBar();
+  const [showAnnouncementBar, setShowAnnouncementBar] = useState(isActive);
+
+  useScrollPosition(
+    ({scrollY}) => {
+      if (isActive) {
+        setShowAnnouncementBar(scrollY === 0);
+      }
+    },
+    [isActive],
+  );
+
+  return isActive && showAnnouncementBar;
+}
+
+export default function DocSidebarDesktopContent({path, sidebar, className}) {
+  const showAnnouncementBar = useShowAnnouncementBar();
+  const navRef = useRef(null);
+  const [expandedCategoryCount, setExpandedCategoryCount] = useState(0);
+
+  const getExpandedCategoryItems = useCallback(
+    () => navRef.current?.querySelectorAll(expandedCategorySelector) ?? [],
+    [],
+  );
+
+  const updateExpandedCategoryCount = useCallback(() => {
+    setExpandedCategoryCount(getExpandedCategoryItems().length);
+  }, [getExpandedCategoryItems]);
+
+  useEffect(() => {
+    updateExpandedCategoryCount();
+
+    const observer = new MutationObserver(updateExpandedCategoryCount);
+    if (navRef.current) {
+      observer.observe(navRef.current, {
+        attributes: true,
+        attributeFilter: ['aria-expanded'],
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    return () => observer.disconnect();
+  }, [path, sidebar, updateExpandedCategoryCount]);
+
+  const collapseAll = () => {
+    const expandedItems = getExpandedCategoryItems();
+
+    expandedItems?.forEach((item) => item.click());
+    setExpandedCategoryCount(0);
+  };
+
+  return (
+    <nav
+      ref={navRef}
+      aria-label={translate({
+        id: 'theme.docs.sidebar.navAriaLabel',
+        message: 'Docs sidebar',
+        description: 'The ARIA label for the sidebar navigation',
+      })}
+      className={clsx(
+        'menu thin-scrollbar',
+        styles.menu,
+        showAnnouncementBar && styles.menuWithAnnouncementBar,
+        className,
+      )}>
+      {expandedCategoryCount > 1 && (
+        <div className={styles.sidebarActions}>
+          <button
+            type="button"
+            className={clsx('clean-btn', styles.collapseAllButton)}
+            onClick={collapseAll}>
+            Collapse all
+          </button>
+        </div>
+      )}
+      <ul className={clsx(ThemeClassNames.docs.docSidebarMenu, 'menu__list')}>
+        <DocSidebarItems items={sidebar} activePath={path} level={1} />
+      </ul>
+    </nav>
+  );
+}

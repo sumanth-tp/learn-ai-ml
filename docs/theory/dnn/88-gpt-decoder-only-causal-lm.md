@@ -583,6 +583,21 @@ There are still niches where encoder-decoder wins: dense long-document summariza
 
 GPT is a causal language model: a stack of decoder blocks trained to predict the next token. It has no encoder, no cross-attention — just causal self-attention and FFN, repeated $N$ times. The CLM objective makes every token position a training signal, enabling efficient scaling to 175B+ parameters. GPT-3 demonstrated that scale alone — without task-specific training — can produce models that solve NLP tasks via in-context learning. Modern LLMs (LLaMA, Mistral, Claude) are all refined versions of this same decoder-only architecture.
 
+## Further reading
+
+- [arXiv: GPT-3 (Brown et al. 2020)](https://arxiv.org/abs/2005.14165) — the "language models are few-shot learners" paper that defined the LLM era
+- [arXiv: LLaMA 2 (Touvron et al. 2023)](https://arxiv.org/abs/2307.09288) — open-weight decoder-only with modern architectural choices
+- [arXiv: LLaMA 3 announcement](https://ai.meta.com/blog/meta-llama-3/) — 15T-token training and the over-training paradigm
+- [arXiv: RoFormer / RoPE (Su et al. 2021)](https://arxiv.org/abs/2104.09864) — rotary position embeddings, now standard in decoder-only LLMs
+- [arXiv: GQA (Ainslie et al. 2023)](https://arxiv.org/abs/2305.13245) — grouped-query attention as used in LLaMA-3 70B
+- [arXiv: SwiGLU (Shazeer 2020)](https://arxiv.org/abs/2002.05202) — the FFN activation now standard in modern LLMs
+- [Jay Alammar — The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/) — visual walkthrough of decoder-only architecture
+- [Karpathy — Let's build GPT (YouTube)](https://www.youtube.com/watch?v=kCc8FmEb1nY) — 2-hour live-coded GPT-style model from scratch
+- [bbycroft LLM Visualization](https://bbycroft.net/llm) — animated 3D walkthrough of a decoder-only transformer
+- [Sebastian Raschka — Understanding LLMs](https://magazine.sebastianraschka.com/p/understanding-large-language-models) — modern overview of GPT-family architecture and training
+- [vLLM serving documentation](https://docs.vllm.ai/) — production-grade decoder-only inference (PagedAttention, continuous batching)
+- [Llama recipes](https://github.com/meta-llama/llama-recipes) — official Meta recipes for fine-tuning and deploying LLaMA-family models
+
 ## References
 
 - Radford, A., et al. (2018). Improving Language Understanding by Generative Pre-Training (GPT).

@@ -506,6 +506,20 @@ Where T5 still wins: smaller, task-specific seq2seq models in production. T5-bas
 
 T5 unified NLP into a single text-to-text framework: every task is a string-in, string-out problem. Span corruption pre-training teaches the encoder-decoder to understand and generate text simultaneously. BART extends this with broader corruption strategies, excelling at abstractive summarization. Together with BERT (understanding) and GPT (generation), T5 completes the three canonical transformer paradigms that underpin modern NLP infrastructure.
 
+## Further reading
+
+- [arXiv: T5 (Raffel et al. 2020)](https://arxiv.org/abs/1910.10683) — the original paper unifying NLP tasks as text-to-text
+- [arXiv: BART (Lewis et al. 2020)](https://arxiv.org/abs/1910.13461) — encoder-decoder with broader denoising; the summarization workhorse
+- [arXiv: FLAN-T5 (Wei et al. 2022)](https://arxiv.org/abs/2210.11416) — instruction-tuning T5 on 1,800 tasks
+- [arXiv: mT5 (Xue et al. 2021)](https://arxiv.org/abs/2010.11934) — multilingual T5 covering 101 languages
+- [arXiv: UL2 (Tay et al. 2022)](https://arxiv.org/abs/2205.05131) — unified pretraining mixing CLM, MLM, and span corruption
+- [arXiv: Fusion-in-Decoder (Izacard & Grave 2021)](https://arxiv.org/abs/2007.01282) — T5-style retrieval-augmented QA
+- [arXiv: PICARD (Scholak et al. 2021)](https://arxiv.org/abs/2109.05093) — constrained decoding for SQL generation from T5
+- [Google Research — Exploring Transfer Learning with T5](https://blog.research.google/2020/02/exploring-transfer-learning-with-t5.html) — the official launch blog with diagrams
+- [Hugging Face T5 docs](https://huggingface.co/docs/transformers/model_doc/t5) — code examples and fine-tuning tutorials
+- [Hugging Face — BART vs T5 comparison](https://huggingface.co/blog/encoder-decoder) — which encoder-decoder model to pick
+- [LMSYS — Why Decoder-Only LLMs](https://lmsys.org/blog/2023-05-25-leaderboard/) — discussion of why decoder-only displaced encoder-decoder for general LLMs
+
 ## References
 
 - Raffel, C., et al. (2020). Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. JMLR.

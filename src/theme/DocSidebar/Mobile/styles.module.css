@@ -1,0 +1,22 @@
+.sidebarActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.25rem;
+  padding: 0 0.75rem;
+}
+
+.collapseAllButton {
+  background: var(--ifm-menu-color-background-active);
+  border-radius: 4px;
+  color: var(--ifm-menu-color);
+  font-size: 0.75rem;
+  font-weight: var(--ifm-font-weight-semibold);
+  line-height: 1.25;
+  padding: 0.25rem 0.375rem;
+}
+
+.collapseAllButton:hover,
+.collapseAllButton:focus-visible {
+  background: var(--ifm-menu-color-background-hover);
+  color: var(--ifm-menu-color-active);
+}

@@ -464,6 +464,19 @@ This is why most Japanese LLMs (Stockmark, Rinna, ELYZA) start from LLaMA *plus*
 
 Tokenization is the first step in every transformer pipeline. Subword tokenization via BPE or WordPiece balances vocabulary size, OOV coverage, and sequence length. The tokenizer is tied to the model — you cannot mix tokenizers across models. Understanding how tokenization works explains model quirks: why "GPU" becomes ["G", "##P", "##U"] in BERT, why code in a language model can use up more context window than expected, and why multilingual models need much larger vocabularies.
 
+## Further reading
+
+- [arXiv: BPE (Sennrich et al. 2016)](https://arxiv.org/abs/1508.07909) — the original byte-pair encoding for neural machine translation
+- [arXiv: WordPiece (Wu et al. 2016)](https://arxiv.org/abs/1609.08144) — Google's likelihood-based subword tokenization for NMT
+- [arXiv: SentencePiece (Kudo & Richardson 2018)](https://arxiv.org/abs/1808.06226) — language-agnostic tokenization framework
+- [arXiv: GPT-2 (Radford et al. 2019)](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) — introduced byte-level BPE, eliminating [UNK] entirely
+- [Karpathy — Let's build the GPT Tokenizer (YouTube)](https://www.youtube.com/watch?v=zduSFxRajkE) — 2-hour live-coded BPE implementation, explaining every quirk
+- [Hugging Face — Tokenizers tutorial](https://huggingface.co/learn/nlp-course/chapter6) — step-by-step BPE / WordPiece / Unigram with runnable code
+- [Simon Willison — Understanding GPT Tokenizers](https://simonwillison.net/2023/Jun/8/gpt-tokenizers/) — interactive exploration of how GPT-3/4 tokenize text
+- [OpenAI tiktoken docs](https://github.com/openai/tiktoken) — production Python library for fast tokenization
+- [SolidGoldMagikarp deep-dive](https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation) — the canonical write-up on glitch tokens
+- [ELYZA Japanese LLaMA tokenizer transplant](https://huggingface.co/elyza/ELYZA-japanese-Llama-2-7b) — case study in extending a tokenizer for a new language
+
 ## References
 
 - Sennrich, R., et al. (2016). Neural Machine Translation of Rare Words with Subword Units (BPE). ACL.

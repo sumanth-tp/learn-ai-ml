@@ -464,6 +464,20 @@ Later models broke these conventions: RoBERTa-large is the same size but better 
 
 BERT established that pre-training a bidirectional transformer encoder with masked language modeling on billions of words produces representations that transfer to nearly any NLP task. The `[CLS]` token gives a sequence-level summary; per-token representations power span extraction and tagging. Fine-tuning requires only a small task-specific head and a few epochs of supervised training. BERT's architecture is unchanged from the transformer encoder — the innovation was in how it was trained.
 
+## Further reading
+
+- [arXiv: BERT (Devlin et al. 2019)](https://arxiv.org/abs/1810.04805) — the original paper that started the pretraining paradigm in NLP
+- [arXiv: RoBERTa (Liu et al. 2019)](https://arxiv.org/abs/1907.11692) — the better-tuned BERT that proved NSP was unnecessary
+- [arXiv: ELECTRA (Clark et al. 2020)](https://arxiv.org/abs/2003.10555) — replaced-token detection, a more sample-efficient alternative to MLM
+- [arXiv: DistilBERT (Sanh et al. 2019)](https://arxiv.org/abs/1910.01108) — distilled BERT at 40% size with 97% performance
+- [arXiv: ALBERT (Lan et al. 2020)](https://arxiv.org/abs/1909.11942) — parameter-sharing for smaller BERT-class models
+- [arXiv: DeBERTa (He et al. 2021)](https://arxiv.org/abs/2006.03654) — disentangled attention, state-of-the-art encoder on many benchmarks
+- [arXiv: Sentence-BERT (Reimers & Gurevych 2019)](https://arxiv.org/abs/1908.10084) — contrastive fine-tuning to produce good sentence embeddings
+- [arXiv: BERT Rediscovers the Classical NLP Pipeline (Tenney et al. 2019)](https://arxiv.org/abs/1905.05950) — what BERT's layers actually represent
+- [Jay Alammar — The Illustrated BERT](https://jalammar.github.io/illustrated-bert/) — visual walkthrough of BERT's architecture and pretraining
+- [Sebastian Raschka — Finetuning BERT for Production](https://magazine.sebastianraschka.com/p/finetuning-large-language-models) — practical guide with code
+- [BertViz GitHub](https://github.com/jessevig/bertviz) — interactive attention visualization for BERT and related models
+
 ## References
 
 - Devlin, J., et al. (2019). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. NAACL.
