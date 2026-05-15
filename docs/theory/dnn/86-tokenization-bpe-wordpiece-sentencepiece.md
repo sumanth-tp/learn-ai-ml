@@ -14,6 +14,12 @@ tags: [tokenization, bpe, wordpiece, sentencepiece, transformers, nlp]
 
 Before a transformer sees any text, the text must be converted to integers. Tokenization — splitting text into subword units and mapping them to vocabulary IDs — is the first and often underappreciated step in every NLP pipeline. The choice of tokenizer affects vocabulary size, out-of-vocabulary handling, multilingual coverage, and even model performance.
 
+## Prerequisites
+
+- [80 — Transformer Encoder Architecture](./80-transformer-encoder-architecture.md) — token embeddings feed the encoder stack
+- [78 — Positional Encoding](./78-positional-encoding-in-transformers.md) — what gets added to token embeddings *after* tokenization
+- [85 — Transformer Training Objectives](./85-transformer-training-objectives.md) — MLM, CLM, and span corruption all operate on tokens, not characters
+
 ## Try it interactively
 
 - **[OpenAI Tokenizer](https://platform.openai.com/tokenizer)** — paste any text and see how GPT-3.5/4 tokenizes it (live, in the browser)
@@ -90,6 +96,9 @@ After all merges, `"newest"` might encode as `["new", "est"]` and `"lower"` as `
 ### Byte-level BPE
 
 GPT-2 introduced byte-level BPE: the initial alphabet is the 256 possible byte values (not Unicode characters). This guarantees that any input can be tokenized — unknown Unicode characters fall back to individual bytes. No `[UNK]` token needed.
+
+![Byte-pair encoding — iteratively merging the most frequent adjacent symbol pair into a new token, building a vocabulary from characters up to common subwords](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/course/en/chapter6/BPE.png)
+*Source: [Hugging Face — Byte-Pair Encoding tutorial](https://huggingface.co/learn/nlp-course/chapter6/5)*
 
 ## Algorithm 2: WordPiece
 
@@ -320,6 +329,129 @@ BPE selects merges greedily by frequency — the pair that occurs most often in 
 
 Special tokens serve structural roles that ordinary vocabulary tokens cannot: `[CLS]` marks the beginning of a sequence and carries the sentence-level representation (used for classification); `[SEP]` separates segments within a sequence (e.g., two sentences in NSP); `[MASK]` marks masked positions during MLM training; `[PAD]` pads shorter sequences to the same length in a batch; `[UNK]` represents unknown characters (in word-level or early subword tokenizers). GPT-style models use `<|endoftext|>` as both EOS and BOS. These tokens are added to the vocabulary and have learned embeddings like ordinary tokens.
 </details>
+
+<details>
+<summary>Scenario: your GPT-style model is great at English but produces garbled output in Hindi. Loss looks normal. What's likely wrong?</summary>
+
+A tokenizer trained predominantly on English allocates almost no vocab to Devanagari. A Hindi word that is one "natural" token in English (5 letters) becomes 8-12 byte-level BPE tokens — each *byte* of the UTF-8 sequence. Three problems compound:
+
+1. **Effective context window shrinks** by 5-10× for Hindi prompts.
+2. **Per-token entropy is higher** — each token carries less semantic content, so attention has to do more work to assemble meaning.
+3. **Training compute was concentrated on English tokens**, so the embeddings for Hindi-byte tokens are undertrained.
+
+The fix is not "train more" — it's to use a tokenizer with sufficient Devanagari coverage (mT5-style SentencePiece, or extend the tokenizer and embedding table, then continue pretraining). This is also why translating from English to a low-resource language often produces worse output than the reverse direction.
+</details>
+
+<details>
+<summary>Scenario: a junior engineer says "we'll just use BERT's tokenizer but with our GPT model since the vocab sizes are similar." What goes wrong?</summary>
+
+Catastrophically wrong, but in a way that doesn't crash immediately. The tokenizer and the model's *embedding table* are tied — token ID 4937 means "cat" only because the model learned an embedding for ID 4937 that represents "cat" in its training. Swap tokenizers: ID 4937 in BERT's vocab might mean something completely different, so feeding BERT-encoded text to a GPT model would feed the GPT model semantic noise.
+
+Even if vocab sizes match exactly, the tokenizer determines the *meaning* of every ID. The tokenizer and model must always come from the same training run. The only correct way to "swap tokenizers" is tokenizer transplant: build a mapping between the two vocabularies, initialize the new embedding table from the old one (averaging when splits don't align), and continue pretraining. Several recent papers (e.g., FOCUS, LRP transplant) do this.
+</details>
+
+<details>
+<summary>Why does the same model give different outputs for `"hello"` vs `" hello"` (leading space)? Isn't this a bug?</summary>
+
+Not a bug — it's a direct consequence of byte-level BPE. The tokenizer treats whitespace as part of the token: `"hello"` and `" hello"` are different token IDs (the space-prefixed version is what's tokenized when "hello" appears after another word). At training time the model almost always saw the space-prefixed version, so a prompt with no leading space (e.g., immediately after newline) sits at an out-of-distribution token.
+
+This is also why prompt engineering "tricks" sometimes matter: trailing space, no trailing space, capitalization of the first letter — these change the token sequence and shift the model into different distributions. The OpenAI tokenizer playground is the easiest way to confirm what your prompt actually looks like to the model.
+</details>
+
+<details>
+<summary>Scenario: you train a domain-specific medical NLP model. Should you retrain the tokenizer, extend it, or keep BERT's tokenizer?</summary>
+
+Three options with distinct trade-offs:
+
+- **Keep BERT's tokenizer**: zero engineering cost. But medical terms like "myocardial" → `["my", "##ocard", "##ial"]` and drug names get split heavily. The model wastes capacity learning these decompositions and uses up context window inefficiently.
+- **Extend BERT's tokenizer** with medical terms: add (say) 5,000 new tokens, re-initialize their embeddings (zero or average of subword pieces), and continue pretraining. Good middle ground — keeps general-language coverage while reducing medical token bloat.
+- **Retrain from scratch**: best tokenization but requires full pretraining from scratch (or transferring weights via tokenizer transplant). Only justified if your domain is *vastly* underrepresented in the original tokenizer.
+
+For most domain-specific work, option 2 (extend) wins. BloombergGPT, BioBERT, and SciBERT all extended rather than retrained from scratch.
+</details>
+
+<details>
+<summary>Why does code take more tokens than prose of equivalent character count?</summary>
+
+Code uses many short tokens that BPE doesn't merge into single units: punctuation (`{`, `}`, `(`, `)`, `;`), single-letter variable names (`x`, `i`), and indentation whitespace. A typical English word is one token; a typical Python expression like `for i in range(10):` might be 8-10 tokens despite being short.
+
+Modern code-specialized tokenizers (StarCoder, Code Llama) add tokens for common code patterns (`    ` four-space indent, `def `, `import `), reducing token count significantly. GPT-4's `cl100k` tokenizer was deliberately retrained with substantial code in the corpus and produces 20-30% fewer tokens on code than GPT-2's tokenizer.
+
+Practical consequence: a 4K context window can fit ~3,000 words of prose but only ~1,000 lines of dense code.
+</details>
+
+<details>
+<summary>What is the "glitch token" phenomenon (e.g., `" SolidGoldMagikarp"`)?</summary>
+
+GPT-2/3's tokenizer was trained on a Reddit-derived corpus that included rare usernames and phrases. These got their own token IDs in the vocab. But the *model* was later trained on a different corpus where those tokens almost never appeared, so the embeddings for those token IDs are essentially untrained.
+
+When you feed one of these untrained-embedding tokens to the model, behavior becomes unpredictable: the model might emit them randomly, refuse to repeat them, hallucinate, or produce garbage. The famous `" SolidGoldMagikarp"` token caused GPT-3 to behave bizarrely when prompted with it.
+
+The deeper lesson: tokenizer training data and model training data should be aligned. Mismatch creates "dead" token IDs in the vocabulary. Modern tokenizers are co-trained or post-filtered to avoid this.
+</details>
+
+<details>
+<summary>Why doesn't byte-level BPE need an `[UNK]` token, but WordPiece does?</summary>
+
+Byte-level BPE's initial alphabet is the 256 possible byte values, not Unicode characters. Any string can be represented as a UTF-8 byte sequence, and any byte sequence can be tokenized using individual bytes as a worst-case fallback. There is no input that cannot be encoded.
+
+WordPiece's initial alphabet is the characters seen in training. Any character outside that set has no token, so the tokenizer emits `[UNK]` and information is lost. BERT was originally trained on text where it was reasonable to assume Latin + some Cyrillic + a few other scripts; for emojis, rare Unicode, or unusual whitespace, `[UNK]` is the result.
+
+This is why byte-level BPE (GPT-2/3/4) is preferred for general-purpose models — robust to *any* input. WordPiece persists in BERT-family models more out of historical inertia than technical preference.
+</details>
+
+<details>
+<summary>Scenario: you tokenize `"GPT-4"` and get `["G", "##PT", "-", "4"]` (4 tokens) but `"BERT"` gives `["BERT"]` (1 token). Why the asymmetry?</summary>
+
+Token frequency in the training corpus dictates merge order. "BERT" appeared frequently as a whole word in BERT's training corpus (mostly Wikipedia + BookCorpus, where "BERT" itself was rarely discussed but is a common surname). "GPT-4" didn't exist when BERT was trained — and even today, "GPT" appears less frequently than "BERT" in many corpora, especially in academic text.
+
+This illustrates a structural truth about tokenizers: **they reflect the era and corpus they were trained on.** A 2018 tokenizer treats 2024 vocabulary inefficiently. This is why tokenizer "freshness" matters — modern tokenizers (`cl100k`, LLaMA 3) explicitly include recent corpora and brand names. It's also why training a model with a 5-year-old tokenizer puts it at a structural disadvantage on contemporary text.
+</details>
+
+<details>
+<summary>Tokens are integers — why does the model's vocabulary size matter to performance, not just to compute?</summary>
+
+Larger vocabulary means shorter sequences (more chars per token on average), which makes attention's $O(T^2)$ cost shrink and effectively expands the usable context window. But the embedding table cost scales linearly: vocab × $d_{\text{model}}$ parameters. For a 50k vs 100k vocab at $d = 4096$: 200M extra embedding parameters. The cost of expanding from 50k → 100k might be a 20% reduction in tokens, but a 25% increase in embedding params.
+
+There's also a *training data* effect: very rare tokens (long tail of the vocab) get few gradient updates and end up undertrained. A vocab that's too large for the corpus produces "dead" tokens. mT5's 250k vocab works only because it's trained on 101 languages with hundreds of GB of text per language.
+
+The optimal vocab size balances three things: sequence length (favors big vocab), embedding-table cost (favors small vocab), and adequate training signal per token (favors small vocab relative to data size).
+</details>
+
+<details>
+<summary>Why is the BERT `[CLS]` token always at position 0, and not, say, position -1?</summary>
+
+It's a convention, but the choice has real consequences. At position 0, `[CLS]` is the first thing the encoder sees; with bidirectional attention, it has equal access to all positions, so it can build a global summary. Placing it at the end would also work *in BERT* because attention is symmetric — every position attends to every other.
+
+The reason position 0 won is mostly compatibility with downstream code: pooling layers expect `[CLS]` at index 0, fine-tuning datasets are pre-tokenized with `[CLS]` first. Changing this would break a huge ecosystem.
+
+In contrast, GPT-style models would not work well with a `[CLS]` at position 0: causal attention means position 0 sees nothing. The natural summary token for a decoder-only model is at the *end* — and it doesn't need to be a special token, just the last hidden state of the input.
+</details>
+
+<details>
+<summary>What is the "Llama tokenizer is bad for Japanese" claim about, and how would you fix it?</summary>
+
+LLaMA's SentencePiece tokenizer has ~32k vocab dominated by English subwords. Japanese characters (Hiragana, Katakana, Kanji) get tokenized at near-character level, often via UTF-8 bytes — so a 20-character Japanese sentence might be 60-80 tokens. This (1) makes Japanese context windows 3-4× smaller in characters, and (2) means each token carries very little Japanese semantic content.
+
+Two production fixes are common:
+- **Tokenizer transplant**: build a Japanese-augmented tokenizer (~64k vocab), expand the embedding table, initialize new embeddings from byte-piece averages, then continue pretraining (e.g., ELYZA-japanese-Llama).
+- **Domain-specific finetune**: finetune the base LLaMA on Japanese text without changing the tokenizer. Cheaper but doesn't fix the structural inefficiency.
+
+This is why most Japanese LLMs (Stockmark, Rinna, ELYZA) start from LLaMA *plus* a transplanted tokenizer rather than vanilla LLaMA.
+</details>
+
+## Points to remember
+
+- A tokenizer and a model are paired forever — you cannot swap one without retraining or transplanting embeddings.
+- Subword tokenization is the universal compromise: small enough vocab to train, complete coverage, short enough sequences.
+- BPE is greedy by frequency, WordPiece is greedy by likelihood, SentencePiece is a language-agnostic framework that wraps either.
+- Byte-level BPE (GPT family) eliminates `[UNK]` — every input can always be encoded as bytes.
+- Token count ≠ word count. Different languages, code, and tokenizer versions all change the ratio dramatically.
+- Leading-space sensitivity is a feature of byte-level BPE, not a bug — `"hello"` and `" hello"` are different tokens.
+- Vocabulary size trades sequence length against embedding-table cost; very rare tokens become "dead" (undertrained) tokens.
+- Domain adaptation is usually done by *extending* the tokenizer + continuing pretraining, not retraining from scratch.
+- Context window is always measured in tokens; English ≈ 1.3 tokens/word for GPT-4, but Chinese, Japanese, Hindi can be 3-10× higher.
+- Glitch tokens (`" SolidGoldMagikarp"`) reveal mismatch between tokenizer training data and model training data — a structural risk in any pipeline that builds them separately.
 
 ## Common mistakes
 

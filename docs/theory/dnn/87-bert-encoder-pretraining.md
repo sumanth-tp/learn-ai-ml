@@ -14,6 +14,14 @@ tags: [bert, encoder, mlm, pre-training, transformers, nlp]
 
 BERT (Bidirectional Encoder Representations from Transformers) demonstrated that pre-training a deep bidirectional transformer on unlabeled text with masked language modeling produces representations that transfer powerfully to nearly every NLP task. Before BERT (2018), NLP models were trained from scratch for each task. After BERT, the dominant paradigm became: pre-train once on a huge corpus, fine-tune cheaply on small labeled datasets.
 
+## Prerequisites
+
+- [80 — Transformer Encoder Architecture](./80-transformer-encoder-architecture.md) — BERT *is* the transformer encoder stack
+- [81 — Masked Self-Attention](./81-masked-self-attention-in-the-transformer-decoder.md) — the contrast: BERT explicitly *does not* mask future tokens
+- [85 — Transformer Training Objectives](./85-transformer-training-objectives.md) — MLM and NSP defined in detail
+- [86 — Tokenization](./86-tokenization-bpe-wordpiece-sentencepiece.md) — BERT uses WordPiece; the `[CLS]` and `[SEP]` tokens come from here
+- [79 — Layer vs. Batch Normalization](./79-layer-normalization-versus-batch-normalization.md) — why encoder blocks use LayerNorm
+
 ## Try it interactively
 
 - **[BERT Fill-Mask demo](https://huggingface.co/bert-base-uncased)** — paste a sentence with `[MASK]` and see top-5 predictions in your browser
@@ -105,6 +113,9 @@ After pre-training, BERT produces:
 ```
 
 The same word "bank" has completely different representations depending on context.
+
+![BERT fine-tuning workflow — the same pretrained encoder is adapted to many downstream tasks by adding a small task-specific head](https://jalammar.github.io/images/bert-tasks.png)
+*Source: [Jay Alammar — The Illustrated BERT](https://jalammar.github.io/illustrated-bert/)*
 
 ## Fine-tuning for downstream tasks
 
@@ -299,6 +310,148 @@ BERT's pre-training task is masked language modeling — predicting randomly mas
 
 A word embedding maps each token to a fixed vector regardless of context — "bank" always has the same embedding. BERT's output is a contextual representation — the vector for "bank" depends on the surrounding sentence. The same token can have very different representations: "bank" in "river bank" vs. "financial bank" produces different BERT output vectors. This is because self-attention mixes information from all surrounding tokens to produce each token's representation.
 </details>
+
+<details>
+<summary>Scenario: you fine-tune BERT for sentiment and accuracy is great on validation, but in production it fails on sentences longer than ~200 tokens. Why?</summary>
+
+BERT's positional embeddings are *learned* (not sinusoidal) and the original BERT was trained with max_position_embeddings = 512. The model has no learned position vectors beyond 512, so longer sequences are truncated. But the deeper issue is that even within 512, the model's *effective* attention range may concentrate on early/late positions — fine-tuning data that's all short produces position-biased attention.
+
+Production-side fixes: (1) truncate intelligently (keep first + last segments, not just first 512), (2) chunk and aggregate per-chunk predictions, (3) switch to a long-context variant like Longformer or BigBird that uses sparse attention up to 4K-8K tokens, or (4) move to a decoder-only LLM with long context.
+
+The lesson: maximum sequence length is a training-time hyperparameter, not just an inference limit. You can't extrapolate beyond it without explicit position interpolation or architecture changes.
+</details>
+
+<details>
+<summary>Why do we use `[CLS]` for classification when mean-pooling sometimes works better empirically?</summary>
+
+`[CLS]` was designed to be a summary token: pretraining (especially NSP) explicitly trained it to capture sequence-level information. But MLM only trains `[CLS]` indirectly — its hidden state is updated via attention but no loss is applied to it. So `[CLS]` is less actively optimized than per-token positions.
+
+In practice:
+- **Without fine-tuning**: mean-pooling per-token vectors often beats `[CLS]` because every token gets MLM gradient signal directly.
+- **With fine-tuning on classification**: `[CLS]` catches up quickly because the classification loss provides direct supervision on it.
+- **For semantic similarity** (sentence-BERT): mean-pooling consistently outperforms `[CLS]`, which is why Sentence-BERT's default pooling is "mean."
+
+The right answer in interviews: "It depends on whether you're zero-shot pooling or fine-tuning, and on the task. Sentence-BERT defaults to mean-pool because it works better for retrieval."
+</details>
+
+<details>
+<summary>Scenario: a teammate fine-tunes BERT with learning rate 1e-3 and accuracy collapses to near-random. What happened?</summary>
+
+BERT fine-tuning is *highly* sensitive to learning rate. The pretrained weights are a delicate optimum found over hundreds of GPU-days; an LR of 1e-3 produces gradient updates large enough to destroy that structure in a few hundred steps — a phenomenon often called "catastrophic forgetting" or "fine-tuning collapse."
+
+Typical recipe (from the BERT paper): LR in [2e-5, 5e-5], with linear warmup over 10% of training and linear decay to 0. Batch sizes 16-32, 3-4 epochs. Any LR ≥ 1e-4 risks destroying the pretrained features.
+
+Diagnostic signal: if loss goes up sharply in early steps or accuracy stays near random throughout training, almost always LR is too high. Run an LR range test (Smith 2017) to find a safe upper bound before committing to a value.
+</details>
+
+<details>
+<summary>Why does RoBERTa beat BERT despite the same architecture, same data sources, same objective?</summary>
+
+RoBERTa identified that BERT was *undertrained* and that several training hyperparameter choices were suboptimal. Changes: (1) removed NSP (it was hurting), (2) trained on 10× more data and for much longer, (3) larger batches (8K) with adjusted LR, (4) dynamic masking (different masks each epoch instead of fixed at preprocessing), (5) longer sequences (full 512 instead of 50/50 short/long mix), (6) byte-level BPE instead of WordPiece.
+
+The deep lesson: many "this objective is better" claims in the original BERT paper were actually "BERT was poorly tuned." RoBERTa's contribution was rigor — careful sweeps revealed that capacity hadn't been saturated. This is a recurring pattern in deep learning research (see also: the "Bag of Tricks" paper in vision).
+
+Implication for practitioners: do not trust paper hyperparameters as optimal. Always do at least a small sweep.
+</details>
+
+<details>
+<summary>Scenario: you need to do zero-shot text classification but only have BERT, no labels. How would you do it?</summary>
+
+Several approaches, increasingly sophisticated:
+
+1. **Embedding similarity**: encode the input and each candidate label with BERT, compare via cosine similarity in `[CLS]` (or mean-pooled) space. Works but BERT's embeddings aren't great for similarity out of the box.
+2. **MLM-as-classifier**: turn classification into fill-in-the-blank. For sentiment: "The movie was great. The reviewer felt [MASK]." Then check `P(happy | ...)` vs `P(sad | ...)` from MLM head. This actually works surprisingly well — it's the "pattern-exploiting training" (PET) approach.
+3. **Use a NLI-finetuned BERT** (e.g., `bart-large-mnli`): frame classification as entailment — "this text" + "this text is about sports" → does it entail? Zero-shot, no further training needed.
+
+The best practical answer is (3) for production. The pure-BERT MLM approach (2) is good when you cannot download additional models.
+</details>
+
+<details>
+<summary>Why does BERT pretrain on Wikipedia + BookCorpus specifically? Would Common Crawl be better?</summary>
+
+The original BERT used Wikipedia + BookCorpus (~3.3B words) deliberately:
+- **Wikipedia**: high-quality, factual, structured, broad-domain — encyclopedic coverage of named entities and concepts.
+- **BookCorpus**: long-form coherent text, narrative structure, dialogue — gives the model exposure to discourse patterns Wikipedia lacks.
+
+Common Crawl would offer more volume (~500B words) but with much lower per-token quality: SEO spam, machine-translated text, low-quality blogs. Later models (RoBERTa, T5) did add CC-derived text, but only after aggressive filtering (CC-100, C4, RefinedWeb). The unfiltered web is not strictly an upgrade.
+
+The trade-off: data *quality* and *diversity* both matter. Modern best practice is a curated mix — Wikipedia + Books + filtered CC + Stack Exchange + code + academic papers. Pretraining data engineering is now considered as important as objective design.
+</details>
+
+<details>
+<summary>Can you use BERT for text generation? Why or why not?</summary>
+
+In principle yes, in practice poorly. BERT was trained with bidirectional attention, so it doesn't know how to predict the *next* token from past tokens only. Two approaches:
+
+1. **Iterative refinement**: start with all `[MASK]` tokens, decode left-to-right by repeatedly running MLM and committing the highest-probability token. Works for short outputs but is slow and produces lower-quality text than autoregressive models.
+2. **Convert BERT to GPT**: add a causal mask and finetune as a CLM model. But you've thrown away BERT's bidirectional advantage and you'd be better off starting from a model trained for generation.
+
+The honest answer: BERT's representations are not optimized for generation, and trying to coerce it into generation gives worse results than just using an appropriate decoder-only or encoder-decoder model. This is also why downloads of BERT-for-generation projects are rare in production — the tooling is awkward and the quality lags GPT-family alternatives.
+</details>
+
+<details>
+<summary>What does BERT learn in early layers vs. late layers?</summary>
+
+Probing studies (Tenney et al. 2019, "BERT Rediscovers the Classical NLP Pipeline") show a remarkable layer-by-layer hierarchy:
+- **Layers 1-4**: surface features (token identity, simple bigram patterns, capitalization).
+- **Layers 5-8**: syntactic features (POS tagging, dependency parsing, constituent boundaries).
+- **Layers 9-12**: semantic features (semantic role labeling, coreference, world knowledge).
+
+This roughly mirrors the traditional NLP pipeline. For task selection: use middle layers for syntax-heavy tasks (parsing), late layers for semantics-heavy tasks (entailment, sentiment). Embedding models often pool over all 12 layers (weighted) rather than just the last — different tasks need different layer mixes.
+
+This also explains why "freeze early layers, finetune later layers" often beats full finetuning on small datasets — the early-layer features generalize well, the late-layer features need task-specific adaptation.
+</details>
+
+<details>
+<summary>Scenario: BERT-base is too slow for your real-time API (need 50 QPS). Without GPU upgrade, what are your options?</summary>
+
+In rough order of effort vs payoff:
+
+1. **DistilBERT or TinyBERT**: drop-in replacements, 40-60% smaller, 2-4× faster, retain 90%+ of BERT's quality. Usually the first lever.
+2. **Quantization** (INT8 or even INT4): 2-4× faster on CPU, minimal quality loss with proper calibration.
+3. **ONNX runtime + graph optimization**: 1.5-2× faster than naive PyTorch, free.
+4. **Cached embeddings**: if the same documents are queried repeatedly, precompute embeddings and store them (great for retrieval-style use cases).
+5. **Smaller variant (BERT-mini, MobileBERT)**: 5-10× smaller models with bigger quality trade-offs.
+6. **Batch requests**: if 50 QPS is the requirement, batching 8 requests into one forward pass amortizes overhead.
+
+Production reality: many teams combine 1-3 (DistilBERT + ONNX + INT8) to get 10× speedups with almost no accuracy loss. Going beyond that usually requires GPU or accepting accuracy degradation.
+</details>
+
+<details>
+<summary>Why is sentence-BERT a separate model and not just "use BERT, mean-pool, done"?</summary>
+
+If you naively take BERT and mean-pool token vectors, the resulting sentence embeddings are surprisingly weak for similarity tasks — sometimes worse than averaging GloVe vectors. The reason: BERT's pretraining objective (MLM) optimizes for *per-token* understanding, not for *sentence-level* similarity. Two sentences with similar meaning don't necessarily produce similar mean-pooled embeddings.
+
+Sentence-BERT fixes this with a *contrastive* fine-tuning step: train on labeled sentence pairs (e.g., NLI: entailment / contradiction / neutral) with a triplet or siamese loss that explicitly pulls similar sentences together in embedding space. The architecture is unchanged; only the fine-tuning objective differs.
+
+This is why every modern embedding model (sentence-transformers, OpenAI's ada-002, Cohere embed) is *fine-tuned with contrastive learning* on top of a base encoder. Naive pretraining alone doesn't produce good embeddings.
+</details>
+
+<details>
+<summary>Why is BERT-base 12 layers / 768 dim while BERT-large is 24 layers / 1024 dim? Why these specific numbers?</summary>
+
+Mostly empirical: the BERT paper swept a few configurations and these were two reasonable Pareto-optimal points. The constraints:
+
+- **Hidden size must be divisible by num_heads** (768 / 12 = 64; 1024 / 16 = 64). Per-head dim = 64 became a de facto standard because attention computation is most efficient at this granularity on GPUs.
+- **Layer count vs. width trade-off**: deeper networks generally win for representation quality but plateau around 24 layers without more aggressive normalization tricks (which arrived later with Pre-LN, RMSNorm, etc.).
+- **110M / 340M parameter budgets** were what fit reasonably on TPU v3 / V100 for a several-day training run.
+
+Later models broke these conventions: RoBERTa-large is the same size but better tuned; ALBERT shares parameters across layers; LLaMA-7B is 32 layers × 4096 dim. The "magic numbers" reflect 2018 hardware. Modern scaling laws (see [93](./93-transformer-scaling-laws.md)) provide more principled guidance on layers vs. width vs. data.
+</details>
+
+## Points to remember
+
+- BERT is the *transformer encoder* — same architecture as the encoder note (80), no decoder, no causal mask.
+- The pretraining objective is the innovation, not the architecture: MLM trains rich bidirectional representations.
+- The 80/10/10 mask strategy closes the pretrain/finetune distribution gap; pure-`[MASK]` masking does not.
+- NSP is deprecated. RoBERTa proved it adds noise rather than signal in most settings.
+- `[CLS]` is a *summary* token, useful for classification after finetuning; mean-pooling often wins without finetuning.
+- Fine-tuning recipe is narrow: LR ∈ [2e-5, 5e-5], 3-4 epochs, warmup + linear decay. Outside this range, things go wrong fast.
+- Max sequence length (512) is baked into learned positional embeddings — you cannot exceed it without architectural changes.
+- The model's hidden-state behavior is *layered*: surface → syntax → semantics, roughly mirroring the classical NLP pipeline.
+- BERT is not for generation. Use GPT-family or T5 if you need to produce text.
+- For sentence embeddings, you need contrastive finetuning (Sentence-BERT) — vanilla BERT mean-pool is weak.
+- For production speed, DistilBERT + ONNX + INT8 is the standard 10× speedup recipe with little quality loss.
 
 ## Common mistakes
 

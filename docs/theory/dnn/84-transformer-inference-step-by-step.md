@@ -105,6 +105,81 @@ Imagine a tiny model with vocabulary $\{$BOS, "cat", "sat", "mat", EOS$\}$ that 
 
 Each row reruns the model on the *full* sequence so far (or a single new token if KV caching is on; see below).
 
+## Seq2seq inference: encoder runs once, decoder loops
+
+For an encoder-decoder transformer (translation, summarization), the two stacks behave very differently at inference. Worked end-to-end on the running translation example: source = `"We are friends"`, target = `"हम दोस्त हैं"`.
+
+### Encoder vs. decoder at inference
+
+| Component | Training | Inference |
+|---|---|---|
+| Encoder | Parallel self-attention over all source tokens | **Identical** — same parallel pass |
+| Decoder | Non-autoregressive (parallel, teacher forcing, with causal mask) | **Autoregressive** — one token per step |
+
+The encoder has *no* mode-switch between training and inference. Only the decoder changes regime.
+
+### The encoder pass — done exactly once
+
+`"We are friends"` is fed through the encoder a single time:
+
+1. Tokenize → `["We", "are", "friends"]`
+2. Embed → 3 vectors of dimension 512
+3. Add positional encoding
+4. Pass through $N$ encoder blocks (self-attention + FFN, with residual + LayerNorm)
+5. Result: three contextual vectors $\text{enc}_\text{We}, \text{enc}_\text{are}, \text{enc}_\text{friends}$
+
+These are **stored** and reused at every decoder step — every cross-attention sublayer in every decoder block in every time step uses the same encoder outputs as its K and V source. The encoder never runs again during this query.
+
+### The decoder loop — one step per output token
+
+The decoder is invoked once per output token. At every step, the **growing list of generated tokens** becomes the decoder input.
+
+| Step | Decoder input | Decoder output used for prediction | Predicted token |
+|---|---|---|---|
+| 1 | `[<SOS>]` | last position → projects to vocab | `हम` |
+| 2 | `[<SOS>, हम]` | last position only | `दोस्त` |
+| 3 | `[<SOS>, हम, दोस्त]` | last position only | `हैं` |
+| 4 | `[<SOS>, हम, दोस्त, हैं]` | last position only | `<EOS>` → stop |
+
+Final translation: `हम दोस्त हैं`.
+
+### What each decoder step actually computes
+
+At step $t$ the decoder runs the same three sublayers per block as during training, but on a $t$-token input:
+
+1. **Embed + positional encoding** all $t$ tokens.
+2. **Masked self-attention** (with causal mask — see below for why this is *still* required).
+3. **Cross-attention** — Q from the current $t$ decoder positions; K, V from the cached encoder outputs (3 source vectors).
+4. **FFN** at each of the $t$ positions.
+5. After $N$ blocks, take **only the last position's vector** $y^f_t$, project to vocabulary, softmax, pick the next token.
+
+The outputs for positions $1, \ldots, t-1$ are computed but **thrown away** — they were already used (or will be reproduced) at their own respective steps. Only position $t$ is consumed.
+
+### Why the causal mask is *still* applied at inference
+
+A natural question: at step $t$ we have already generated tokens $1, \ldots, t$ — there are no future tokens — so why mask?
+
+- **Consistency with training.** The model's parameters were learned under the causal-mask constraint. Removing the mask at inference would let position $i < t$ attend to positions $i+1, \ldots, t$ that came *after* it in generation order, producing a distribution the model never saw during training.
+- **It doesn't change the predicted token anyway.** Only position $t$'s output is consumed, and position $t$ can already attend to all $\leq t$. The mask is essentially free.
+- **It does matter for the intermediate positions** that feed into KV caching — without the mask, cached representations at earlier positions would differ from what those positions produced during their own generation step, breaking the cache's correctness.
+
+### Cost growth across the loop
+
+Without KV caching, decoder input grows: step 1 sees 1 token, step 2 sees 2, ..., step $T$ sees $T$. The decoder runs $T$ times on sequences of length $1, 2, \ldots, T$, giving $O(T^2)$ total work — see the [KV caching](#kv-caching) section below for how this becomes $O(T)$ per step.
+
+```mermaid
+flowchart LR
+    src["Source: 'We are friends'"] --> enc["Encoder (runs ONCE)"]
+    enc --> enc_out["enc_We, enc_are, enc_friends\n(cached, reused every step)"]
+    subgraph "Decoder loop (runs once per output token)"
+        s1["Step 1: [SOS]"] --> dec1["Decoder"] --> hum["हम"]
+        hum --> s2["Step 2: [SOS, हम]"] --> dec2["Decoder"] --> dost["दोस्त"]
+        dost --> s3["Step 3: [SOS, हम, दोस्त]"] --> dec3["Decoder"] --> hai["हैं"]
+        hai --> s4["Step 4: [SOS, हम, दोस्त, हैं]"] --> dec4["Decoder"] --> eos["EOS → stop"]
+    end
+    enc_out -.cross-attn K,V.-> dec1 & dec2 & dec3 & dec4
+```
+
 ## Decoding strategies
 
 ### Greedy decoding

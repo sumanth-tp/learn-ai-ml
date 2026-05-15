@@ -14,6 +14,14 @@ tags: [flashattention, efficient-attention, long-context, transformers, deep-lea
 
 Standard scaled dot-product attention materializes an $n \times n$ attention matrix in GPU memory, where $n$ is the sequence length. For $n=4096$: ~64 MB per head per batch item. For $n=32768$: ~4 GB. This memory cost makes long-context transformers prohibitively expensive. FlashAttention solves this by reordering the attention computation to never materialize the full attention matrix, reducing memory from $O(n^2)$ to $O(n)$ without changing the mathematical output.
 
+## Prerequisites
+
+- [74 — Scaled Dot-Product Attention](./74-scaled-dot-product-attention.md) — the math that FlashAttention reorganizes without changing
+- [77 — Multi-Head Attention](./77-multi-head-attention-in-transformers.md) — the operation FlashAttention replaces in production
+- [81 — Masked Self-Attention](./81-masked-self-attention-in-the-transformer-decoder.md) — the causal-mask case (FlashAttention has `is_causal=True`)
+- [84 — Transformer Inference](./84-transformer-inference-step-by-step.md) — KV caching is the inference-side analogue of FlashAttention's training-side memory work
+- [88 — GPT (Decoder-Only)](./88-gpt-decoder-only-causal-lm.md) — GQA, sliding-window attention, and other variants are introduced here
+
 ## Try it interactively
 
 - **[FlashAttention GitHub](https://github.com/Dao-AILab/flash-attention)** — the official Triton/CUDA implementation; one-liner replacement for nn.functional.scaled_dot_product_attention
@@ -90,6 +98,9 @@ For sequence length $n$ on an A100 GPU:
 | 4096 | 64 MB | 8 MB | 3–4× |
 | 16384 | 1 GB | 32 MB | 6–8× |
 | 65536 | 16 GB | 128 MB | OOM → feasible |
+
+![GPU memory hierarchy — SRAM is ~1000× faster than HBM but ~1000× smaller. FlashAttention's central insight: keep the attention matrix in SRAM, never round-trip it through HBM](https://horace.io/img/perf_intro/gpu-memory-hierarchy.png)
+*Source: [Horace He — Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html)*
 
 ## FlashAttention-2 improvements
 
@@ -256,6 +267,209 @@ Yes — FlashAttention is mathematically exact (not an approximation). It comput
 
 Multi-head attention uses $h$ query heads and $h$ key-value heads. The KV cache stores all $h$ K and V matrices per layer per step — $O(h \times n)$ memory. Grouped-query attention (GQA) reduces to $g < h$ KV heads (each shared by $h/g$ query heads). For LLaMA 3 70B: 64 query heads, 8 KV heads — 8× KV cache reduction. At inference, the KV cache is the main memory bottleneck (not model weights), so this reduction allows 8× more concurrent users or 8× longer context at the same memory cost.
 </details>
+
+<details>
+<summary>Scenario: you enable FlashAttention but observe no speedup on a 256-token sequence. Why?</summary>
+
+FlashAttention's tiling has overhead — block setup, online softmax bookkeeping, and the fact that small sequences fit comfortably in HBM bandwidth anyway. For very short sequences ($n < 256$ or so), the I/O savings don't outweigh the tiling overhead, and standard attention can actually be faster.
+
+FlashAttention shines when the attention matrix is *too large* to fit in SRAM easily, and HBM bandwidth becomes the bottleneck. That's the regime $n \geq 1024$ for most GPUs.
+
+PyTorch's `F.scaled_dot_product_attention` actually picks the fastest backend per call (FlashAttention, memory-efficient attention via xFormers, or vanilla math). For short sequences it often falls back to math.
+
+Practical implication: don't over-engineer FlashAttention for inference of very short prompts (chat bots with 100-token messages). Reserve it for training and for long-context inference.
+</details>
+
+<details>
+<summary>How does the "online softmax" trick actually compute the correct result in one pass?</summary>
+
+Classical softmax requires two passes: pass 1 finds $\max(x)$, pass 2 computes $\sum e^{x_i - \max(x)}$ then divides each $e^{x_j - \max(x)}$ by that sum. The subtraction is for numerical stability.
+
+Online softmax processes one element at a time, maintaining a running max $m_j$ and running sum $s_j$:
+
+- When a new element $x_j$ arrives, the new max is $m_j = \max(m_{j-1}, x_j)$.
+- The old running sum was scaled to $m_{j-1}$. To rescale to $m_j$: multiply by $e^{m_{j-1} - m_j}$ (a correction factor when the max increases).
+- Add the new term: $s_j = s_{j-1} \cdot e^{m_{j-1} - m_j} + e^{x_j - m_j}$.
+
+After processing all elements, $m_n$ is the true max and $s_n$ is the correctly-normalized sum.
+
+For FlashAttention, the attention weights and the weighted output are accumulated *together* with the running statistics — so the final output matches standard attention exactly, modulo floating-point rounding (Tri Dao showed the error is bounded and tiny in practice).
+
+The deeper idea: online softmax decouples streaming computation from a global max. Many "streaming" or "tiled" deep learning algorithms use the same trick.
+</details>
+
+<details>
+<summary>Scenario: a teammate suggests using FlashAttention to train a 100M-parameter model on 256-token sequences. Worth doing?</summary>
+
+Probably not worth the engineering cost. FlashAttention's win is greatest when:
+
+- Sequences are *long* (>1024 tokens, ideally 4096+).
+- Memory is the binding constraint (training large models or long contexts).
+- You're on modern GPUs (A100, H100) that have favorable SRAM/HBM ratios.
+
+For 100M params at 256 tokens:
+
+- Attention matrix is tiny (256² × 4 bytes × 12 heads × batch ≈ a few MB).
+- Memory isn't the bottleneck — model weights and activations dominate.
+- The actual speedup might be 1.1× — barely measurable.
+
+Better focus areas for this configuration: mixed precision (FP16/BF16), gradient checkpointing if memory is tight, larger batch size, optimizer (AdamW vs Lion vs AdaFactor).
+
+Rule of thumb: FlashAttention is essential above 4K context, helpful at 1-4K, marginal below 1K. PyTorch's SDPA gives it to you free anyway — but don't optimize specifically *for* it unless your context is long.
+</details>
+
+<details>
+<summary>Why doesn't FlashAttention work straightforwardly with custom attention biases like ALiBi?</summary>
+
+FlashAttention's tiled computation assumes attention scores are computed as $QK^T / \sqrt{d_k}$ — a simple dot product. Custom biases add a position-dependent term: ALiBi adds $-|i-j| \cdot m$ to the score for query $i$, key $j$, head with slope $m$.
+
+This works in principle (just add the bias during the tile-level score computation), but the original FlashAttention kernel didn't handle it. Later versions (FlashAttention-2, FlexAttention) added support for custom biases at the cost of kernel complexity.
+
+Practical implication: if you're using a model with custom attention biases (Llama with ALiBi-derived RoPE adjustments, Falcon with ALiBi, custom learned biases), you need either a FlashAttention version that explicitly supports them, or fall back to the math backend at some performance cost.
+
+PyTorch 2.5+ introduced FlexAttention which generalizes FlashAttention to arbitrary differentiable score modifications. This is the future-proof solution: writing your custom score function once and getting FlashAttention-speed without writing a CUDA kernel.
+</details>
+
+<details>
+<summary>Sparse attention (Longformer/BigBird) vs FlashAttention: aren't they solving the same problem?</summary>
+
+Different problems, different trade-offs:
+
+- **FlashAttention** computes the *exact* full-attention output more efficiently. Same model, same math, just better memory layout. Output is identical to standard attention.
+- **Sparse attention** (Longformer, BigBird, sliding window) changes the *math*: each token attends to only a subset of positions, not all of them. The model is functionally different and must be trained or fine-tuned with the sparse pattern.
+
+When to use which:
+
+- **Long-context training of a standard transformer**: FlashAttention. Same model, faster.
+- **Inference on a model already trained with sparse attention**: sparse implementation (no choice).
+- **Extreme context lengths (>100K tokens)**: combine both — FlashAttention's tiling for the dense local windows, sparse skipping for the long-range global tokens.
+- **Drop-in extension of an existing model to 32K context**: FlashAttention plus context-window extension techniques (NTK-aware RoPE, YaRN) — preserves model capability while gaining length.
+
+Mistral 7B's sliding-window attention is interesting: it's a *sparse* pattern (local window only), but it's compatible with FlashAttention's tiling because the sparsity is structured. Modern efficient transformer designs increasingly combine both.
+</details>
+
+<details>
+<summary>How does FlashAttention interact with KV caching at inference time?</summary>
+
+At inference, the query is a single new token (Q has shape `(batch, heads, 1, d_head)`) attending to all previously cached K and V. The attention matrix is `(1 × past_len)` — already small in the query dimension. FlashAttention's tiling helps less here.
+
+The key inference optimization is *PagedAttention* (vLLM): manage KV cache as fixed-size pages so multiple users' caches can share GPU memory efficiently, even with very different sequence lengths. PagedAttention isn't "FlashAttention for inference" — it's complementary, addressing a different bottleneck (memory fragmentation across users).
+
+FlashAttention-Decode (a 2024 variant) specifically targets the inference-time case where Q is short and K/V are long. The tiling is reorganized to parallelize over the cached KV dimension rather than the query dimension. This is what makes 128K-context inference fast for chat models.
+
+For training: FlashAttention dominates. For inference: FlashAttention-Decode + PagedAttention together.
+</details>
+
+<details>
+<summary>Scenario: switching from standard PyTorch attention to FlashAttention, you observe slight numerical differences in the output. How concerned should you be?</summary>
+
+Not very. FlashAttention is mathematically exact, but the floating-point operation *order* is different. With FP16/BF16, this produces differences on the order of $10^{-3}$ to $10^{-4}$ — undetectable in practice for trained models.
+
+What to verify:
+
+1. **Loss curves match closely** during training. If they diverge significantly, you have a bug, not a precision issue.
+2. **Downstream metrics match** within run-to-run variance. A model evaluated with FlashAttention vs standard attention should give within 0.1% accuracy.
+3. **Gradient norms are similar** in early training.
+
+When to worry: if you see *systematic* drift (FlashAttention always slightly worse), that suggests a bug — likely incorrect mask handling, incorrect dropout placement, or numerical issues with very small/large attention scores. Most modern FlashAttention implementations have been extensively battle-tested, so the issue is almost always in user-side code (e.g., wrong `is_causal` setting, wrong mask shape).
+
+For inference, you may see slightly different generated tokens due to the floating-point differences — this is expected and harmless.
+</details>
+
+<details>
+<summary>What's the difference between FlashAttention-2 and FlashAttention-3, and when does it matter?</summary>
+
+**FlashAttention** (2022): the original. Tiled computation, online softmax. 2-4× speedup over standard attention on A100.
+
+**FlashAttention-2** (2023): better parallelism (uses sequence dimension, not just batch and head), fewer non-matmul operations, ~2× speedup over FlashAttention-1. Now the default in PyTorch and HuggingFace.
+
+**FlashAttention-3** (2024): targets Hopper architecture (H100, H200). Uses WGMMA (warp-group matrix multiply-accumulate) instructions, achieves 75% of theoretical peak on H100 for some configurations. 1.5-2× faster than FlashAttention-2 on H100.
+
+When does the version matter?
+
+- **A100 or older**: FlashAttention-2 is sufficient. FlashAttention-3 doesn't apply.
+- **H100/H200**: FlashAttention-3 is the right choice for max throughput; ~2× over FA-2.
+- **Consumer GPUs (RTX 4090)**: FlashAttention-2 with appropriate tile sizes works well.
+- **Older GPUs (V100)**: FlashAttention-1 was the only option; FA-2 added V100 support later.
+
+In practice: install the latest `flash-attn` package and trust the auto-selection. The version differences matter for benchmark teams, not for typical users.
+</details>
+
+<details>
+<summary>Scenario: a researcher proposes "linear attention" claims O(n) memory like FlashAttention but no quality loss. Should you switch?</summary>
+
+Healthy skepticism warranted. Linear attention approximates $\text{softmax}(QK^T)V$ with a factorized form $\phi(Q) (\phi(K)^T V)$. The math gives $O(n)$ instead of $O(n^2)$.
+
+The "no quality loss" claim is the load-bearing part:
+
+- For *some* tasks (especially short-range dependencies, long sequences with smooth attention patterns), linear attention matches softmax attention. Performer, Linear Transformer, RWKV, and Mamba are recent examples.
+- For tasks needing *sharp* attention (precise needle-in-haystack retrieval, copy operations), softmax attention is significantly better. Linear attention's smooth feature maps lose the ability to attend strongly to a specific position.
+
+Practical reality:
+
+- 2020-2022 linear attention papers often overstated their parity with softmax. Replication studies usually showed 1-3% drops on complex benchmarks.
+- 2023-2024 RNN-revival models (Mamba, RWKV, RetNet) are linear-time but use *recurrent* state rather than feature-map factorization. They're more competitive than older linear attention.
+- Transformers with FlashAttention have *exact* $O(n^2)$ compute but $O(n)$ memory — for many use cases this is sufficient and avoids the quality risk.
+
+When to consider linear attention: extreme context (1M+ tokens) where even FlashAttention's $O(n^2)$ compute becomes prohibitive. For typical 32K-128K context: FlashAttention dominates.
+</details>
+
+<details>
+<summary>How would you debug a FlashAttention training run that produces NaN losses after 1000 steps?</summary>
+
+Diagnostic checklist in order:
+
+1. **Switch to math backend** and rerun the same data and step. If NaN persists, the issue is in your model/data, not FlashAttention.
+2. **Check for inf scores** — extreme attention scores (e.g., from very large QK products) can produce inf after softmax exponentiation. FlashAttention's online softmax handles this with shifts, but extreme cases can still overflow in BF16.
+3. **Mixed-precision issues**: if you're training in BF16/FP16, NaN can come from accumulating very small values. Try training the relevant computation in FP32 (loss scaling, layer norm parameters).
+4. **Gradient explosion**: check pre-step gradient norms. If they spike before NaN appears, you have a gradient explosion issue. Reduce LR or add gradient clipping.
+5. **Mask shape mismatch**: a common bug is mask shape `(batch, seq)` instead of `(batch, seq, seq)`, or vice versa. FlashAttention can silently produce wrong output, and accumulated wrong values become NaN.
+6. **Causal flag mismatch**: training with `is_causal=False` then evaluating with `is_causal=True` (or vice versa) gives subtle bugs.
+
+Reproducer recipe: save model + data + RNG state at the step before NaN, then bisect. The fix is rarely "FlashAttention has a bug" — it's almost always in the user-side code or hyperparameters.
+</details>
+
+<details>
+<summary>FlashAttention reduces memory but not theoretical compute (FLOPs). Why does it improve wall-clock training time so much?</summary>
+
+Wall-clock training time on GPUs is rarely bottlenecked by raw compute. It's usually bottlenecked by memory bandwidth (data movement) or memory capacity (fitting the model + activations in VRAM).
+
+FlashAttention attacks both:
+
+1. **Bandwidth**: standard attention reads/writes the $n \times n$ matrix to HBM repeatedly. FlashAttention keeps it in SRAM — eliminating ~80% of the HBM traffic for the attention layer.
+2. **Capacity**: with $O(n)$ memory, you can fit larger batches or longer sequences. Larger batches mean better GPU utilization (FLOPs/sec actually used).
+
+For an A100 doing attention on $n = 4096$, standard attention is at ~30% peak FLOPs (memory-bound), FlashAttention reaches ~70% peak FLOPs (compute-bound). The *same compute* takes ~half the time because the GPU isn't waiting for memory.
+
+This is the core insight Horace He's "Making Deep Learning Go Brrrr" article (a recommended read): on modern hardware, deep learning is almost always memory-bound, not compute-bound. Optimizing memory access patterns (kernel fusion, FlashAttention, FSDP) gives bigger wins than optimizing the math.
+</details>
+
+## Points to remember
+
+- FlashAttention is *exact*, not approximate. Same output as standard attention, computed differently.
+- The win comes from never materializing the $n \times n$ attention matrix in HBM — keeps it in fast SRAM via tiling and online softmax.
+- $O(n^2)$ memory → $O(n)$ memory. Wall-clock speedup 2-8× depending on sequence length.
+- Online softmax is the trick: process attention scores incrementally with running max and sum, no two-pass needed.
+- PyTorch 2.0+ uses FlashAttention automatically via `F.scaled_dot_product_attention` when hardware allows.
+- Most useful for sequences ≥ 1024 tokens. For very short sequences ($n < 256$), tiling overhead negates savings.
+- FlashAttention is for *training and prefill*. For autoregressive decoding (single-token Q), FlashDecode + PagedAttention are the relevant tools.
+- GQA / MQA reduce KV cache memory (orthogonal to FlashAttention). Combined, they enable practical long-context serving.
+- Sparse attention (Longformer, sliding window) is a different lever: changes the *math* to skip distant tokens. FlashAttention preserves the math.
+- Custom attention biases (ALiBi, RoPE adjustments) require special handling. Use FlexAttention (PyTorch 2.5+) for arbitrary differentiable score modifications.
+- FlashAttention-3 is H100-specific. FlashAttention-2 is the default for A100 and older.
+- Modern deep learning is usually *memory-bound*, not compute-bound. Memory-access optimization (FlashAttention, kernel fusion) is the highest-leverage performance work.
+
+## Further reading
+
+- [arXiv: FlashAttention (Dao et al. 2022)](https://arxiv.org/abs/2205.14135) — the original paper, with hardware-aware analysis of memory hierarchy
+- [arXiv: FlashAttention-2 (Dao 2023)](https://arxiv.org/abs/2307.08691) — better parallelism and partitioning across sequence dimension
+- [arXiv: FlashAttention-3 (Shah et al. 2024)](https://arxiv.org/abs/2407.08608) — Hopper-specific kernels using WGMMA, achieves 75% peak on H100
+- [Horace He — Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) — the canonical explanation of memory-bound vs compute-bound deep learning
+- [arXiv: PagedAttention (Kwon et al. 2023)](https://arxiv.org/abs/2309.06180) — the vLLM serving paper that complements FlashAttention at inference
+- [arXiv: GQA (Ainslie et al. 2023)](https://arxiv.org/abs/2305.13245) — Grouped-Query Attention as used in LLaMA 3 and Mistral
+- [arXiv: Longformer (Beltagy et al. 2020)](https://arxiv.org/abs/2004.05150) — sliding-window + global tokens approach to long context
+- [PyTorch blog — FlexAttention](https://pytorch.org/blog/flexattention/) — programmable attention masks/biases with FlashAttention speed
+- [Lightning AI — Understanding FlashAttention](https://lightning.ai/pages/community/tutorial/flash-attention/) — visual walkthrough of tiling and the online softmax algorithm
 
 ## Common mistakes
 

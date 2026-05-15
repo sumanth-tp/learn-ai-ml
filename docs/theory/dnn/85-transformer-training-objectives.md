@@ -14,6 +14,16 @@ tags: [pre-training, masked-lm, causal-lm, span-corruption, transformers, deep-l
 
 Transformers learn from unlabeled text by predicting parts of the text that have been hidden. The choice of what to hide and how to predict it defines the **training objective** — and this choice determines the architecture, the type of representations learned, and what downstream tasks the model is suited for.
 
+## Prerequisites
+
+Read these first — the training objective only makes sense once you know what the underlying architecture does:
+
+- [80 — Transformer Encoder Architecture](./80-transformer-encoder-architecture.md) — the bidirectional stack MLM trains
+- [81 — Masked Self-Attention](./81-masked-self-attention-in-the-transformer-decoder.md) — the causal mask CLM requires
+- [83 — Transformer Decoder Architecture](./83-transformer-decoder-architecture.md) — the autoregressive stack CLM and span corruption train
+- [84 — Transformer Inference](./84-transformer-inference-step-by-step.md) — why CLM's training regime maps cleanly onto generation
+- [14 — Loss Functions](./14-loss-functions-in-deep-learning.md) — cross-entropy is the shared loss for all three objectives
+
 ## Try it interactively
 
 - **[Hugging Face Fill-Mask widget](https://huggingface.co/bert-base-uncased)** — feed `"The [MASK] sat on the mat"` to a real BERT and see top-5 predictions
@@ -71,6 +81,9 @@ flowchart LR
     pred["Predict: 'cat' at [MASK] position"]
     inp --> enc --> pred
 ```
+
+![GPT-style causal language modeling — each position predicts the next token from only its left context, generating dense training signal at every step](https://jalammar.github.io/images/gpt2/gpt2-output.gif)
+*Source: [Jay Alammar — The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/)*
 
 ## Objective 2: Causal Language Modeling (CLM) — GPT
 
@@ -357,6 +370,137 @@ In CLM, every token position generates a prediction and contributes to the loss:
 MLM is bidirectional but only predicts individual tokens — it cannot generate multi-token sequences. CLM generates multi-token sequences but is unidirectional. Span corruption combines both: the encoder processes the full input bidirectionally (better understanding), and the decoder generates entire corrupted spans autoregressively (generative capability). T5's claim is that span corruption is a unified objective that works well across both understanding and generation tasks.
 </details>
 
+<details>
+<summary>Scenario: your team trains a BERT on legal documents and the loss plateaus quickly. They suggest raising the mask rate from 15% to 40%. What goes wrong?</summary>
+
+The 15% rate isn't arbitrary — it balances two competing pressures. (1) More masked tokens = more prediction signal per sequence. (2) Fewer unmasked tokens = less *context* available to predict each masked one. At 40%, almost half the tokens are missing, so the surrounding context becomes too sparse to disambiguate words (consider predicting `[MASK] [MASK] [MASK] mat` — almost no constraint). The model fits noise and downstream task performance drops.
+
+A second issue: BERT's pretrain/finetune distribution gap widens. Downstream tasks have 0% `[MASK]` tokens; the bigger the gap, the more the encoder must adapt at finetune time. RoBERTa and ELECTRA experimented in this region and found 15% remains a good operating point; SpanBERT showed that *what* you mask (contiguous spans) matters more than *how much*.
+
+If the loss is plateauing, the right diagnostic is usually: tokenizer mismatch, learning rate too low, dataset deduplication issues, or insufficient compute — not a higher mask rate.
+</details>
+
+<details>
+<summary>Scenario: a team trains a GPT-style model where ~30% of training tokens are padding. They set `ignore_index=pad_id`. Is the loss correct? What's the subtle bug?</summary>
+
+`ignore_index` zeros the loss at pad positions, so the *value* of the reported loss is correct — it averages only over real tokens. The subtle bug is **attention contamination**: padding tokens still participate in self-attention unless you also pass a `key_padding_mask`. The model's hidden states for real tokens will mix in features from pad positions, training a representation that depends on padding patterns that don't exist at inference.
+
+Two fixes are needed together: (1) ignore the *loss* at pad positions (you did this), and (2) ignore the *attention* at pad positions (set their scores to `-inf` via key_padding_mask, exactly like the causal mask). Without both, you get a model that runs but quietly underperforms — and the issue is hard to catch because the loss curve looks fine.
+</details>
+
+<details>
+<summary>Why is MLM considered a harder *per-prediction* task than CLM, even though CLM has more total signal density?</summary>
+
+In CLM the model predicts the next token given a long, *coherent* left context. The distribution $p(x_t \mid x_{<t})$ is heavily constrained by syntax and what came before — predicting "the" after "I went to" is easy. In MLM, the prediction is conditioned on *bidirectional* context, but the masking strategy is adversarial: the target token can be in the middle of a clause with relatively few syntactic clues on either side, and the 10% random-replacement noise means the surrounding context can itself be wrong.
+
+Concretely: CLM gives O(T) easy predictions per sequence; MLM gives O(0.15T) harder predictions. Per parameter update, MLM extracts more information *per masked position*, but CLM extracts more total information *per sequence*. This is also why CLM tends to scale more efficiently — more gradient signal per token processed.
+</details>
+
+<details>
+<summary>What happens if you accidentally apply a causal mask to a BERT-style MLM encoder?</summary>
+
+It's not just "slower training" — it's a different objective entirely. With a causal mask, the model predicting `[MASK]` at position $i$ can only see positions $0, \ldots, i-1$ — the right context is gone. So the task degenerates to "predict the masked token from left context only," which is essentially CLM but with the inefficiency that ~85% of positions don't contribute to loss. You'd get worse performance than vanilla CLM (sparser signal) *and* lose the bidirectional representation that justified using MLM in the first place. The downstream classification scores would collapse on tasks like NER and coreference that need both-sides context.
+</details>
+
+<details>
+<summary>Why does MLM replace 10% of masked tokens with random tokens and 10% with the unchanged original? Why not 100% `[MASK]`?</summary>
+
+If 100% of masked positions used the `[MASK]` token, the model would learn the shortcut: "if I see `[MASK]`, predict; otherwise, copy the input." Downstream tasks never have `[MASK]` tokens, so the model has no incentive to build useful representations for *unmasked* positions during pretraining — the entire encoder output for non-mask positions becomes a wasted slot.
+
+The 80/10/10 strategy forces the model to maintain a useful prediction-capable representation at *every* position: 10% of the time the input looks normal but is still a prediction target, 10% of the time it sees a random token at a prediction target, and 80% of the time it sees `[MASK]`. The model can't tell from the input alone whether a token needs prediction or not, so it learns context-rich representations everywhere — closing the pretrain/finetune distribution gap.
+</details>
+
+<details>
+<summary>You fine-tune a CLM-pretrained model on classification by mean-pooling final hidden states. Performance is much worse than BERT. Why?</summary>
+
+A CLM model's hidden state at position $t$ summarizes the *left* context only — it never "sees" tokens at positions $> t$ during pretraining. Mean-pooling those hidden states gives a representation skewed toward early tokens; the last hidden state has the richest context but the first has almost none. BERT's hidden states are computed bidirectionally, so each one represents that token in full context, and pooling produces a balanced sentence representation.
+
+Standard fixes for CLM models on classification: (1) use the *last* hidden state as the sequence representation (it has seen everything), (2) append a `[CLS]`-like token at the end of the input, or (3) use prefix-tuning / instruction-tuning to recast classification as generation. The "vanilla mean-pool" recipe that works for BERT doesn't transfer to GPT-style models without modification.
+</details>
+
+<details>
+<summary>What happens if T5's mean span length is set to 1? What about 20?</summary>
+
+**Mean = 1**: each "span" is a single token, so span corruption degenerates to token-level MLM — but with the encoder-decoder overhead. You lose T5's main advantage (generating multi-token sequences) and get a worse BERT.
+
+**Mean = 20**: long spans cover huge contiguous chunks of the input. The model now has to *generate* paragraphs from sparse context, which is much harder and slower to learn — essentially CLM applied to span-by-span generation. T5's paper swept span lengths and settled on mean = 3 as the sweet spot: spans large enough to require generation, small enough that the encoder still has dense context.
+
+The lesson: pretraining objectives have hyperparameters that are jointly optimized with the architecture; you can't tune one in isolation.
+</details>
+
+<details>
+<summary>Why does NSP not help (and sometimes hurt)? What does that say about objective design?</summary>
+
+NSP teaches the model to distinguish "B follows A" from "B is a random sentence." RoBERTa and others showed this signal is too easy: even shallow features (topic overlap, basic word co-occurrence) suffice, so NSP wastes capacity on a low-difficulty task while not teaching genuinely useful sentence relations. Worse, when "B is random" sampling occasionally drew from a different domain, the model partly learned topic classification instead of discourse coherence.
+
+The deeper lesson: a good pretraining objective must be (1) hard enough that the model needs to develop generalizable features to solve it, (2) cheap to generate from raw text without supervision, and (3) aligned with downstream tasks. NSP failed criterion (1). ELECTRA's "replaced token detection" objective is an example of going in the opposite direction — making the per-token task harder and more sample-efficient.
+</details>
+
+<details>
+<summary>Is "MLM is just CLM with labels at random positions" a correct mental model?</summary>
+
+Surface-level yes, deep level no. Both use cross-entropy at certain target positions. But the *attention pattern* differs and that changes what's being learned. In MLM the encoder sees the full sequence bidirectionally — the representation at position $i$ depends on tokens at positions both $< i$ and $> i$. In CLM the representation at position $i$ depends only on positions $\leq i$, even at training time, because the causal mask is always on.
+
+This means MLM's hidden states are **token-in-context** features that are great for understanding; CLM's hidden states are **prefix-summary** features that are great for predicting continuations. You cannot turn one into the other by changing where the loss is applied — the *information flow* in the network is different. This is also why you cannot use a pretrained CLM model for masked-token prediction without serious finetuning, and vice versa.
+</details>
+
+<details>
+<summary>Two GPT-style models, same architecture and data, reach loss 2.1 and 2.0. Both open source. How do you choose for a production chat system?</summary>
+
+Loss difference of 0.1 corresponds to perplexity difference of roughly $e^{0.1} \approx 1.1\times$, which can be meaningful but is *not* the deciding factor. For a chat product, evaluate along axes the loss does not capture:
+
+- **Instruction following and refusals** (run them on a held-out instruction set; chat performance is dominated by post-training, not pretraining loss)
+- **Tokenizer quality** (a model with a worse tokenizer can have lower loss on its own tokenization but produce worse outputs in your language)
+- **Safety/alignment behavior** (does each model have an aligned RLHF/DPO variant?)
+- **License terms** (commercial use, attribution requirements)
+- **Latency at your batch size and sequence length**
+- **Memory footprint** and quantization support
+- **Long-context behavior** if your prompts exceed 8K tokens
+- **Community/finetune ecosystem** — many community LoRAs and quantizations available?
+
+In short: pretrain loss is a coarse filter, not a tie-breaker. Run product-relevant evals on both.
+</details>
+
+<details>
+<summary>Why is `[CLS]` used for classification in BERT but not in GPT? How does ChatGPT solve classification then?</summary>
+
+BERT's `[CLS]` is a special token prepended to every input during pretraining; the model is trained (via NSP and finetuning) to summarize the whole sequence into its final hidden state. Because attention is bidirectional, the `[CLS]` representation can aggregate information from every position symmetrically — perfect for a single-vector classification head.
+
+GPT has no `[CLS]` token in its pretraining and uses causal attention, so a prepended token at position 0 sees *nothing* — it has no context. The natural summary token is at the *end*: the last hidden state has seen every prior token. But GPT-style chat models don't use that hidden state directly either. Instead, they cast classification as **generation**: the model is prompted ("Is the following review positive or negative? ...") and produces the answer as text. Logits on the answer tokens encode the classification probability. This is why "prompting" replaced classification heads for decoder-only LLMs.
+</details>
+
+<details>
+<summary>Permutation language modeling (XLNet) claims "best of both worlds." What is the idea and why didn't it win?</summary>
+
+XLNet samples a permutation of the input order, then predicts each token from all previously-permuted positions. With random permutations, predictions sometimes condition on left-and-right context (like MLM) and sometimes only left (like CLM) — the *expected* objective is bidirectional yet maintains an autoregressive factorization. Theoretically: rich bidirectional features without the `[MASK]` artifact.
+
+It didn't displace BERT or GPT for two practical reasons. (1) Implementation complexity: two-stream attention is intricate, slower to train, and harder to scale. (2) The empirical wins over a well-tuned RoBERTa were small once both were trained at scale. The deep learning field tends to favor simpler objectives that scale; XLNet's elegance didn't outweigh its overhead at billion-parameter scales. The "best of both worlds" is now more commonly achieved with separate model families (encoders + decoders) or with span corruption.
+</details>
+
+<details>
+<summary>If you're designing pretraining for a 1B-parameter model intended only for sentence retrieval, which objective and why?</summary>
+
+For pure retrieval (embed sentence → cosine-similar to other sentence embeddings), MLM-based encoders are still the strongest baseline. Reasons:
+
+- Bidirectional context produces token representations rich enough to mean-pool or `[CLS]`-pool into a coherent sentence vector.
+- CLM models have asymmetric representations (last token informed, first token not) that don't pool well without modification.
+- Contrastive finetuning (SimCSE, GTE, BGE) on top of an MLM encoder is the dominant recipe for SOTA retrieval models.
+
+The more sophisticated answer: use MLM **plus** a contrastive objective during pretraining itself — e.g., the unsupervised SimCSE setup, where positives are the same sentence with different dropout masks. This trains the model to produce similarity-friendly embeddings from day one, beating "MLM-then-contrastive-finetune" in many benchmarks. The pure-objective era is over; modern retrieval models stack objectives.
+</details>
+
+## Points to remember
+
+- The pre-training objective **is** the architecture: MLM → bidirectional encoder; CLM → causal decoder; span corruption → encoder-decoder. Don't try to use one model for the wrong objective.
+- MLM signal density is ~15% of tokens; CLM is ~100%. CLM scales more efficiently per token of compute; MLM packs more information per prediction.
+- BERT's 80/10/10 masking strategy is not optional — it closes the pretrain/finetune distribution gap and forces useful representations at every position.
+- A causal mask flips the model from "context-rich understanding" to "left-context-only generation." It controls *what information flows*, not just *what gets predicted*.
+- NSP is deprecated; the lesson is that pretraining objectives must be hard enough to require generalizable features.
+- Span corruption is the middle ground when you need both understanding and generation in one model (T5, BART, UL2).
+- Padding handling is two separate things: ignore in loss *and* ignore in attention. Doing only one is a silent bug.
+- Loss alone is not a model selector — tokenizer quality, alignment, license, and downstream evals dominate production choice.
+- Modern retrieval models pair MLM with contrastive objectives; pretraining is no longer one objective in isolation.
+
 ## Common mistakes
 
 - Using a BERT-style model (encoder-only) for generation — it has no causal mask and no mechanism for next-token prediction
@@ -367,6 +511,18 @@ MLM is bidirectional but only predicts individual tokens — it cannot generate 
 ## Final takeaway
 
 The three dominant pre-training objectives — MLM, CLM, span corruption — each match a specific architecture and use case. MLM gives bidirectional encoders for understanding; CLM gives causal decoders for generation; span corruption gives encoder-decoders for seq2seq. The objective is not a detail — it is the core learning signal that determines everything about what a model knows and what it can do.
+
+## Further reading
+
+- [arXiv: BERT (Devlin et al. 2019)](https://arxiv.org/abs/1810.04805) — the MLM paper that started the pretraining revolution
+- [arXiv: GPT (Radford et al. 2018)](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf) — the CLM paper from OpenAI
+- [arXiv: T5 (Raffel et al. 2020)](https://arxiv.org/abs/1910.10683) — span corruption + text-to-text framework
+- [arXiv: RoBERTa (Liu et al. 2019)](https://arxiv.org/abs/1907.11692) — proved NSP unhelpful, demonstrated BERT was undertrained
+- [arXiv: ELECTRA (Clark et al. 2020)](https://arxiv.org/abs/2003.10555) — replaced-token-detection, a more sample-efficient alternative to MLM
+- [arXiv: UL2 (Tay et al. 2022)](https://arxiv.org/abs/2205.05131) — unifying CLM, MLM, and span corruption as a "mixture of denoisers"
+- [Jay Alammar — The Illustrated BERT, GPT, and friends](https://jalammar.github.io/illustrated-bert/) — visual explanations of all three objectives
+- [Hugging Face — Pretraining tasks tutorial](https://huggingface.co/learn/nlp-course/chapter7) — runnable code for each objective
+- [Sebastian Raschka — Understanding Pretraining](https://magazine.sebastianraschka.com/p/understanding-large-language-models) — overview of pretraining objectives and their evolution
 
 ## References
 

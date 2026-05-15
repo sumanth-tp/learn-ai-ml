@@ -116,6 +116,105 @@ le       [ 0.1  0.0   0.0  0.0   0.6  0.3 ]
 tapis    [ 0.0  0.1   0.0  0.0   0.1  0.8 ]
 ```
 
+## The two dependencies driving each generated word
+
+At each decoder step, the next output token depends on **two distinct information sources**, each handled by a different attention sublayer:
+
+| Dependency | Source | Mechanism that captures it |
+|---|---|---|
+| What has been generated so far | Decoder's own previous outputs | **Masked self-attention** (sublayer 1) |
+| What is in the input sentence | Encoder's representation of source | **Cross-attention** (sublayer 2) |
+
+Concrete example — translating "I like eating ice cream" → "मुझे आइसक्रीम खाना पसंद है":
+
+- After generating "मुझे" and "आइसक्रीम", what determines the next word "खाना"?
+    - Masked self-attention asks: "given I have already said *मुझे आइसक्रीम*, what comes next syntactically?"
+    - Cross-attention asks: "which English word does *खाना* correspond to?" → it should attend strongly to "eating".
+
+Without cross-attention the decoder would only see its own output and could never ground its predictions in the source — it would be a language model, not a translator.
+
+## Three structural differences from self-attention
+
+Cross-attention is mechanically almost identical to self-attention — the only differences sit in three precise places:
+
+### Difference 1 — Input: one sequence vs. two
+
+|  | Self-attention | Cross-attention |
+|---|---|---|
+| Number of sequences | One | Two |
+| What is fed | Embeddings of a single sentence | Embeddings of **both** source (encoder output) and target (decoder state) |
+
+Self-attention takes one sequence and produces contextual embeddings *for that same sequence*. Cross-attention takes two sequences (source + target) and produces contextual embeddings *for the target*, enriched with source information.
+
+### Difference 2 — Processing: where Q, K, V come from
+
+This is the only line of code that changes — but it changes the meaning of the entire operation.
+
+| Vector | Self-attention | Cross-attention |
+|---|---|---|
+| Query (Q) | Current sequence | Output sequence (decoder state) |
+| Key (K) | Current sequence | **Input sequence (encoder output)** |
+| Value (V) | Current sequence | **Input sequence (encoder output)** |
+
+The question being asked is: *"for each target word (Q), which source words (K) are most relevant, and what information (V) should I pull from them?"*
+
+### Difference 3 — Output: shape follows the queries
+
+| | Self-attention | Cross-attention |
+|---|---|---|
+| Number of output vectors | Length of the input sequence | Length of the **target** sequence |
+| What each output represents | Contextual embedding within the same sequence | Contextual embedding of each target word, weighted by source words |
+
+Because $Q$ comes from the decoder ($m$ rows), the output also has $m$ rows. Each row is a mix of source value vectors, weighted by how relevant each source position is to that target position.
+
+## A worked intuition: attention weights as "percentages"
+
+For source "We are friends" → target "हम दोस्त हैं", the learned cross-attention weights might look like:
+
+| Target word | "We" | "are" | "friends" |
+|---|---|---|---|
+| हम | 0.50 | 0.30 | 0.20 |
+| दोस्त | 0.20 | 0.20 | 0.60 |
+| हैं | 0.30 | 0.40 | 0.30 |
+
+Reading row 2: the contextual embedding for "दोस्त" is built as $0.20 \cdot V_{\text{We}} + 0.20 \cdot V_{\text{are}} + 0.60 \cdot V_{\text{friends}}$. The model has learned that "दोस्त" aligns most strongly with "friends" — without any explicit alignment supervision.
+
+This row-wise probability view is what the score matrix $A \in \mathbb{R}^{m \times n}$ encodes: each row is a softmax distribution telling you which source positions contributed to that target position.
+
+## Self-attention vs. cross-attention: intra- vs. inter-sequence
+
+- **Self-attention** captures **intra-sequence** relationships — how words in *one* sentence relate to each other ("the cat sat on the mat" — *cat* and *sat* relate).
+- **Cross-attention** captures **inter-sequence** relationships — how words across *two different* sequences relate ("cat" in English ↔ "chat" in French; "ice cream" ↔ "आइसक्रीम").
+
+Both use exactly the same math (scaled dot-product attention); they differ only in where Q, K, V come from.
+
+## What the original paper says
+
+From Vaswani et al. (2017), *Attention is All You Need*, §3.2.3:
+
+> *"In 'encoder-decoder attention' layers, the queries come from the previous decoder layer, and the memory keys and values come from the output of the encoder. This allows every position in the decoder to attend over all positions in the input sequence. This mimics the typical encoder-decoder attention mechanisms in sequence-to-sequence models such as [Bahdanau 2015]."*
+
+Two things to notice:
+
+1. The paper calls this "encoder-decoder attention" — "cross-attention" is a later, more general name (also used in vision-language and diffusion models).
+2. The authors explicitly frame it as a **parallelized, multi-head version of Bahdanau attention**. The conceptual lineage is direct: a context vector built as a weighted sum of encoder states, where the weights come from a decoder-side query — the same idea, now expressed as a matrix multiplication instead of an RNN loop.
+
+## Broader use cases — beyond translation
+
+Anywhere two sequences (or two modalities) need to be aligned, cross-attention is the standard tool:
+
+| Application | "Source" (K, V) | "Target" (Q) |
+|---|---|---|
+| Machine translation | Source-language tokens | Target-language tokens |
+| Summarization | Long article tokens | Summary tokens |
+| Question answering | Context paragraph | Answer tokens |
+| Image captioning | Image patches (ViT) or CNN features | Caption tokens |
+| Text-to-image (Stable Diffusion) | Text-prompt embeddings | Image-patch latents |
+| Text-to-speech | Text tokens | Audio frames / spectrogram |
+| Multimodal LLMs | Vision encoder output | Language decoder |
+
+The same Q/K/V wiring — Q from the side being generated, K/V from the conditioning side — generalizes far beyond seq2seq translation.
+
 ## Cross-attention in the decoder block structure
 
 Each decoder layer contains three sublayers (all with residual connections and LayerNorm):

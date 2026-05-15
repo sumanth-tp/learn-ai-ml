@@ -14,6 +14,15 @@ tags: [gpt, decoder-only, causal-lm, llm, transformers, deep-learning]
 
 GPT (Generative Pre-trained Transformer) demonstrated that a single pre-trained language model — trained purely to predict the next token — could be fine-tuned for almost any NLP task. GPT-3 (2020) then showed the model could perform tasks without any fine-tuning, just by reading a few examples in the prompt. This was the foundation for the modern LLM era.
 
+## Prerequisites
+
+- [81 — Masked Self-Attention](./81-masked-self-attention-in-the-transformer-decoder.md) — the causal mask GPT depends on at every position
+- [83 — Transformer Decoder Architecture](./83-transformer-decoder-architecture.md) — the 2-sublayer block GPT uses (no cross-attention)
+- [84 — Transformer Inference](./84-transformer-inference-step-by-step.md) — autoregressive generation, decoding strategies, and KV caching
+- [85 — Transformer Training Objectives](./85-transformer-training-objectives.md) — CLM defined in full
+- [86 — Tokenization](./86-tokenization-bpe-wordpiece-sentencepiece.md) — byte-level BPE, the GPT-family standard
+- [87 — BERT](./87-bert-encoder-pretraining.md) — the contrasting encoder-only paradigm
+
 ## Try it interactively
 
 - **[OpenAI Playground](https://platform.openai.com/playground)** — interact with GPT-3.5/4 directly: tweak temperature, top-p, max tokens
@@ -96,6 +105,9 @@ Text: "The room was noisy."   → Sentiment:
 ```
 
 GPT-3 with 175B parameters could perform competitively on many NLP benchmarks with zero-shot or few-shot prompting — no gradient updates needed.
+
+![GPT-2 architecture — token + positional embeddings, N stacked decoder blocks with causal self-attention and FFN, final LayerNorm + LM head](https://jalammar.github.io/images/gpt2/gpt2-sizes.png)
+*Source: [Jay Alammar — The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/)*
 
 ## Key architectural improvements in modern LLMs
 
@@ -405,6 +417,160 @@ The token embedding $W_{\text{emb}} \in \mathbb{R}^{|\text{vocab}| \times d}$ ma
 
 Two differences: (1) mask — GPT uses a causal (lower-triangular) mask so each token can only see past tokens; BERT uses no mask (bidirectional). (2) pre-training objective — GPT is trained to predict the next token (CLM), giving it generation capability; BERT is trained to predict masked tokens (MLM), giving it bidirectional contextual representations. GPT has no cross-attention; BERT has no causal masking. Both are stacks of transformer blocks, but optimized for different capabilities.
 </details>
+
+<details>
+<summary>Scenario: your team trains a GPT-style model from scratch but loss plateaus around 5.5 (perplexity ~245). What are the most likely causes?</summary>
+
+Perplexity 245 means the model is barely better than uniform over a 250-word vocabulary equivalent — well above what even a 100M-parameter GPT should achieve on diverse text. Likely causes, in priority order:
+
+1. **Learning rate misconfigured**. CLM pretraining needs cosine decay from ~3e-4 to ~3e-5 with linear warmup over the first 1-2% of steps. A flat LR or no warmup commonly causes early plateaus.
+2. **Tokenizer issue**. If you accidentally trained on detokenized data while the model expects tokens (or vice versa), loss looks like noise.
+3. **Data shuffling broken**. If batches are highly correlated (same documents in adjacent batches), the model overfits to those then can't generalize — loss plateaus high.
+4. **Position embedding bug**. Misaligned positions between training and inference, or learned position embeddings not updating, produce stuck loss.
+5. **Loss masking wrong**. If you accidentally include padding tokens in the loss (no `ignore_index`), you're optimizing for predicting padding — easy and useless.
+
+Debug recipe: train on a tiny dataset (single document, repeat) — loss should drop to near zero in minutes. If it doesn't, your code is broken before any data/scale issue applies.
+</details>
+
+<details>
+<summary>Why is the "predict the next token" objective enough to learn world knowledge, reasoning, and code?</summary>
+
+The corpus *contains* knowledge, reasoning, and code. To minimize next-token loss on a chemistry textbook, the model must internalize chemistry facts (otherwise it can't predict the next word in an explanation of redox reactions accurately). To minimize loss on math proofs, it must approximate the reasoning steps. To minimize loss on Python code, it must learn syntax and common patterns.
+
+The objective is *bounded* in difficulty by the data: there's a Shannon entropy floor for natural language that no model can beat. To reach that floor, the model has no choice but to learn the structures that produce the data. This is sometimes called the "unreasonable effectiveness" of next-token prediction.
+
+The catch: this also imposes a *ceiling*. Capabilities the corpus doesn't demonstrate (e.g., new mathematical theorems, novel research directions) won't be learned purely from CLM. RLHF, scratchpad reasoning, and tool use are the techniques that push past the corpus ceiling.
+</details>
+
+<details>
+<summary>Scenario: comparing two GPT-style models, one with 4096 hidden dim × 32 layers and one with 2048 hidden dim × 64 layers — both ~7B params. Which is better?</summary>
+
+For a fixed parameter budget, deeper-and-narrower vs shallower-and-wider is a real trade-off:
+
+- **Wider (4096 × 32)**: more representation capacity per layer, better at memorizing facts, faster training (more parallelism per layer).
+- **Deeper (2048 × 64)**: more compositional capacity (chains of transformations), better at multi-step reasoning, slower training, harder to stabilize at scale.
+
+Empirically, *moderately wide* tends to win in practice. The Chinchilla-scaling-laws results (Hoffmann et al. 2022) and various follow-ups suggest sweet spots like 4096 × 32 for ~7B models. LLaMA-7B (4096 × 32), Mistral-7B (4096 × 32), Falcon-7B all converged here independently. Going extreme in either direction usually hurts.
+
+The deeper truth: **shape matters less than data, recipe, and post-training** at the same parameter count. Two 7B models trained with the same recipe but different shapes are typically within 1-2% on benchmarks.
+</details>
+
+<details>
+<summary>Why do modern LLMs use RoPE instead of GPT-2's learned positional embeddings?</summary>
+
+Three reasons stacked on top of each other:
+
+1. **Extrapolation**. Learned absolute positions are *parameters at specific positions* (e.g., position 1023 has its own learned vector). Beyond max_len, no vector exists. RoPE encodes positions as rotation matrices applied to Q and K — the math extends naturally to longer contexts (with some caveats around relative-position accuracy at extreme distances).
+2. **Relative-position locality**. RoPE makes the dot product between Q at position $i$ and K at position $j$ depend on $j - i$, not on $i$ and $j$ separately. This is what attention *should* care about (two tokens 5 apart should behave similarly regardless of where they are in the sequence). Learned absolute positions don't have this property.
+3. **No extra parameters**. RoPE is a deterministic rotation, not learned. The model gets positional information for free.
+
+This is why RoPE (or its variants ALiBi, NoPE) dominate modern LLMs. The cost: RoPE is harder to extend beyond training context without interpolation tricks (NTK-aware scaling, YaRN). But that's an active research area.
+</details>
+
+<details>
+<summary>Scenario: your GPT-4-class model performs worse on a benchmark when given a longer prompt with extra context. Why might "more context" hurt?</summary>
+
+Three established effects:
+
+1. **Lost-in-the-middle**: long-context LLMs disproportionately attend to the start and end of the prompt, missing important details in the middle. Adding context lengthens the middle, so genuinely relevant facts can get drowned out.
+2. **Distractor accumulation**: more text means more chances for irrelevant content to provide a wrong association. The model's attention is finite; extra context dilutes signal.
+3. **Position extrapolation degradation**: even with RoPE, position quality degrades beyond training context — the model has seen 8K tokens but not 32K, so attention patterns become noisier.
+
+Diagnostic: re-run with only the top-3 retrieved chunks vs all 20. If the smaller context wins, you're seeing one of the above. The fix is usually better retrieval (chunk reranking, query expansion) rather than longer context.
+
+This is why a well-tuned 4K-context retrieval pipeline often beats a naïve 128K-context "stuff everything in" pipeline on production QA.
+</details>
+
+<details>
+<summary>Why is GQA (Grouped-Query Attention) used instead of standard MHA in modern 70B+ models?</summary>
+
+The bottleneck during inference for long contexts is *memory* (specifically, the KV cache size), not compute. With standard MHA, every query head has its own K and V heads — so KV cache memory scales with `num_heads`. For LLaMA-3 70B with 64 heads at long context, this is enormous.
+
+GQA shares K and V across groups of query heads: 64 query heads but 8 KV heads means 8 query heads share one KV pair. KV cache shrinks by 8× with minimal quality loss (often less than 0.5 perplexity points). For 70B models, this is the difference between fitting in a single GPU and needing multi-GPU sharding.
+
+The trade-off is small: GQA's effective attention is slightly less expressive than full MHA, but the regularizing effect from sharing actually sometimes helps. At the extreme, MQA (Multi-Query Attention) shares a single K and V across all query heads — even more efficient but with a larger quality drop.
+
+LLaMA-2 used MHA; LLaMA-3 switched to GQA at 70B; Mistral used GQA from the start. This is the standard for modern large models.
+</details>
+
+<details>
+<summary>Why does GPT use pre-norm (`LN(x) → attn`) while the original transformer used post-norm (`attn(x) → LN`)?</summary>
+
+Post-norm (original transformer): `LN(x + Sublayer(x))`. The sublayer's output is normalized after the residual add. This means signal magnitude grows uncontrollably through the stack, requiring careful warmup to avoid early-training divergence. Training is fragile at scale.
+
+Pre-norm (GPT-2 onward): `x + Sublayer(LN(x))`. The sublayer sees normalized input but the residual stream is *not* normalized, so it preserves magnitude through the stack. Training is far more stable, warmup is less critical, and you can train deeper networks without divergence.
+
+The cost: pre-norm tends to produce slightly weaker representations at small scales (Liu et al. 2020 noted this). At LLM scale, the stability gains dominate completely. Every modern LLM uses pre-norm.
+
+A subtler point: pre-norm requires a *final* LayerNorm after the last block (`ln_f` in code), otherwise residual stream magnitudes are uncontrolled at the output. This is often missed by students implementing GPT from scratch.
+</details>
+
+<details>
+<summary>Scenario: you run GPT inference with batch size 32 and observe that generation is barely faster per request than batch size 1. What's happening?</summary>
+
+In decode mode (one token per step), each step is memory-bound, not compute-bound. The bottleneck is loading model weights from VRAM into compute units — and you load the *same* weights regardless of batch size. So increasing batch size from 1 to 32 increases throughput proportionally (32 sequences per step instead of 1) but the *per-sequence* speed doesn't improve.
+
+Compute is underutilized: a GPU that can do 200 TFLOPs is doing maybe 5 TFLOPs of useful work in decode mode at batch size 1. Batching to 32 raises this to ~150 TFLOPs but you'd need much larger batches to saturate.
+
+The fix is *continuous batching* (vLLM, TGI): dynamically batch requests that are at different stages of generation, share weight loads across them, and stream tokens back as they're produced. This raises decode throughput by 10-20× over naïve batching. PagedAttention adds memory efficiency on top.
+
+Lesson: LLM serving is a systems problem, not just a model problem. The same model on naïve PyTorch vs vLLM differs by an order of magnitude in production throughput.
+</details>
+
+<details>
+<summary>Why doesn't GPT need next-sentence prediction (NSP) or any auxiliary objective?</summary>
+
+CLM is dense — every position is a training signal. There's no equivalent of "wasted positions" that BERT had to fill with NSP. Sentence-relationship knowledge emerges naturally: to predict the next token in the second sentence of a paragraph, the model must use information from the first sentence. Cross-sentence dependencies are learned without explicit supervision.
+
+More broadly: the more powerful the primary objective, the less you need auxiliary objectives. BERT's MLM is sparse, so NSP was added; CLM is dense, so nothing was added; T5's span corruption is medium-sparse, so the auxiliary "consecutive sentence" objective is sometimes added but isn't critical.
+
+This is why modern LLMs train on one objective (CLM) and the field stopped trying to "engineer better objectives." The path forward has been data quality, scale, and post-training (RLHF, DPO), not new objectives.
+</details>
+
+<details>
+<summary>Scenario: your base GPT model produces incoherent text after about 50 tokens. The team blames the model. What's likely actually wrong?</summary>
+
+For a base (non-RLHF'd) language model trained from scratch, 50-token coherence is *expected* — base models are trained to continue text in distribution, not to maintain task-relevant focus over hundreds of tokens. Several issues compound:
+
+1. **No instruction-following**: base models don't have an instruction-following prior. If you ask "explain X", they'll continue with text that looks plausible as a continuation of your prompt, not necessarily an answer. Sometimes they'll generate "Question: ..." and start a new prompt.
+2. **Temperature sampling drift**: even small per-token sampling noise compounds; by token 50, the trajectory may be far from the prompt's distribution.
+3. **Topic drift**: without explicit conditioning, the model wanders.
+
+The "fix" isn't usually model quality — it's:
+- Use a model with instruction tuning (Alpaca, Vicuna, Llama-Instruct, GPT-3.5+).
+- Lower the temperature (0.3-0.7 for tasks, not 1.0).
+- Use better prompting (clear task description, output format, stop sequences).
+- For your own model: do supervised finetuning (SFT) on instruction data, then optionally DPO/RLHF.
+
+If you ship a base model to users expecting ChatGPT-like behavior, you've skipped the entire post-training stack — that's typically what's wrong.
+</details>
+
+<details>
+<summary>Why are decoder-only models more popular than encoder-decoder for LLMs, even for tasks that "should" suit encoder-decoder (translation, summarization)?</summary>
+
+Several converging reasons:
+
+1. **Unified architecture and recipe**. One model, one objective, one inference path — easier to engineer, easier to scale, easier to serve.
+2. **CLM provides denser training signal** than span corruption, so more data efficiency.
+3. **Instruction tuning unifies all tasks**: translation becomes "Translate the following to French: ..." — no architectural specialization needed.
+4. **In-context learning** works for decoder-only models naturally; encoder-decoder models need more engineering to support few-shot patterns.
+5. **Scaling laws favor decoder-only**: empirically, decoder-only models at large scale match or beat encoder-decoder on most benchmarks while being simpler.
+
+There are still niches where encoder-decoder wins: dense long-document summarization, code repair (where input is much longer than output), and some retrieval-augmented setups. But for general-purpose chat and reasoning, decoder-only dominates. T5 still has loyal users for specific tasks but the field's center of gravity moved to decoder-only with GPT-3 and never came back.
+</details>
+
+## Points to remember
+
+- GPT is the simplest transformer: causal self-attention + FFN, no cross-attention, no encoder.
+- The CLM objective is dense — every position produces a prediction and contributes to loss, giving $T-1$ gradient signals per sequence.
+- Causal mask is the entire reason the architecture works as a generator; without it, the model would cheat at training and produce nonsense at inference.
+- Weight tying between input embedding and LM head saves vocab × $d_{\text{model}}$ parameters and regularizes both.
+- Modern LLMs (LLaMA, Mistral, Gemma) differ from GPT-2 in five places: RoPE, RMSNorm, SwiGLU FFN, GQA, longer context.
+- Pre-norm is standard at scale; post-norm requires aggressive warmup and rarely beats pre-norm beyond small models.
+- Decode-mode inference is *memory-bound*, not compute-bound. Batching helps throughput but not single-request latency. Continuous batching (vLLM) is the production-grade solution.
+- Base models are not chatbots. ChatGPT-like behavior comes from post-training (SFT, RLHF, DPO), not pretraining.
+- The CLM "ceiling" matches the corpus ceiling — capabilities not demonstrated in training data won't emerge. RLHF and tool use push past this.
+- Decoder-only won the architecture war for general-purpose LLMs because of simplicity, scaling efficiency, and unification of tasks via instructions.
 
 ## Common mistakes
 

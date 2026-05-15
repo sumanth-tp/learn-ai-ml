@@ -36,6 +36,63 @@ Masked self-attention is self-attention with an upper-triangular mask that sets 
 
 The causal mask is non-negotiable for any generative model. Without it, the model learns trivial shortcuts (copy the next token from the input) and fails completely at inference time when future tokens are unavailable. The mask is also the mechanism that makes teacher forcing work — you can train the model on the entire target sequence in one parallel forward pass while still respecting the sequential generation constraint.
 
+## The central thesis: autoregressive at inference, non-autoregressive at training
+
+> **The single most important sentence about the decoder:**
+> The transformer decoder is an **autoregressive model at inference time** and a **non-autoregressive model at training time**.
+
+Everything about masked self-attention exists to make this dual behavior possible. Understanding *why* this split is necessary — and how masking resolves it — is the conceptual core of the decoder.
+
+### What "autoregressive" means
+
+An **autoregressive** model generates a sequence one element at a time, where each new element is conditioned on the elements it has already produced.
+
+- **Stock-price example:** predicting Friday's price uses Wednesday's and Thursday's predictions as inputs. You cannot jump ahead and predict Friday directly without the intermediate days.
+- **Seq2Seq LSTM translation:** to emit the next Hindi word, the model needs the previous Hindi word it just generated. The entire output sentence cannot appear in one shot.
+
+Sequential data has *intrinsic* dependencies — the future depends on the past — so generation must respect that ordering.
+
+### Why inference *must* be autoregressive
+
+At prediction time, the model truly does not know future tokens. Translating "I am fine" → Hindi:
+
+1. Feed `<START>` + encoder output → predict "मैं"
+2. Feed "मैं" + encoder output → predict the next word
+3. Feed that prediction (right or wrong) + encoder output → predict the next word
+4. Continue until `<END>`
+
+Each step depends on the previous step's output. There is no way to parallelize this loop — the input at step $t$ literally does not exist until step $t-1$ finishes.
+
+### Why training *cannot* be autoregressive (a thought experiment)
+
+Suppose we trained the decoder the same way — one token at a time, using **teacher forcing** (feeding the *correct* word from the dataset as the next input, even if the model predicted wrong).
+
+| Sentence length | Sequential decoder runs per example |
+|---|---|
+| 3-word sentence | 4 runs (incl. `<START>`) |
+| 300-word paragraph | 301 runs |
+| 100,000 training rows × 300 tokens | 30,100,000 sequential runs |
+
+Each token forces a full pass through every decoder sublayer in strict order. Training would take impossibly long on any non-trivial corpus. **Autoregressive training is correct but unusable.**
+
+### Why naive parallel training breaks: data leakage
+
+The fix seems obvious: during training we *already have* the entire target sentence ("आप कैसे हैं"), so feed all words to the decoder in parallel and predict every position at once.
+
+But self-attention computes each token's contextual embedding as a **weighted sum of every token in the sequence**, including future tokens. So when computing the embedding for "आप" (position 0), the layer would happily use the embeddings of "कैसे" and "हैं" — words that, at inference, the model has not yet generated.
+
+That is **data leakage / cheating**: the model sees information during training that it cannot see during inference. Training loss looks great; real-world predictions collapse.
+
+### The dilemma — and how masking resolves it
+
+| Training strategy | Speed | Data leakage |
+|---|---|---|
+| Autoregressive (one token at a time) | Catastrophically slow | None |
+| Naive parallel (no mask) | Fast | Yes — model cheats |
+| **Parallel + causal mask** | **Fast** | **None** |
+
+Masked self-attention is the "best of both worlds": all positions are processed in a single parallel matrix operation (fast), and the mask zeroes every weight that would have pulled in a future token (no leakage). The mask makes parallel training *mathematically equivalent* to running the autoregressive constraint at every position simultaneously.
+
 ## The problem: teacher forcing enables future-leakage
 
 During training, the decoder receives the complete target sequence as input (shifted right by one position):

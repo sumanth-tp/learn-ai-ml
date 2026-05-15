@@ -43,6 +43,108 @@ The transformer decoder is a stack of $N$ identical blocks, each containing mask
 
 The decoder is what makes transformers generative. Understanding its architecture explains how GPT generates text, how a translation model produces output, and why the decoder is more complex than the encoder. Every large language model deployed today — GPT, LLaMA, Claude, Gemini — is either a full decoder or a decoder-only transformer.
 
+## Training-time view: a non-autoregressive walkthrough
+
+This note focuses on what the decoder does **during training** — the regime where the full target sequence is available and the entire stack runs in a single parallel forward pass. Inference (sequential, one token at a time) is covered in [84 — Transformer Inference](./84-transformer-inference-step-by-step.md).
+
+The pipeline splits naturally into three stages:
+
+| Stage | Components | Output |
+|---|---|---|
+| **1. Input preparation** | Shift-right → tokenize → embed → positional encoding | Position-aware target vectors $x_1, \ldots, x_m$ |
+| **2. Decoder processing** | $N$ stacked blocks, each with masked SA → cross-attn → FFN | Refined target representations $y^f_1, \ldots, y^f_m$ |
+| **3. Output block** | Linear ($d_{\text{model}} \to V$) → softmax | Per-position probability distribution over the vocabulary |
+
+We trace these through a single training example: source = `"We are friends"`, target = `"हम दोस्त हैं"`.
+
+## Stage 1 — Input preparation (target side)
+
+Before the first decoder block sees anything, the target sentence is transformed in four steps:
+
+1. **Shift right.** Prepend a `<START>` token. The shifted target becomes the *input* to the decoder; the *original* target becomes the labels for next-token prediction.
+   - Original: `[हम, दोस्त, हैं]`
+   - Shifted (decoder input): `[<START>, हम, दोस्त, हैं]`
+   - Why? At every position $t$, the decoder reads token $t$ and is trained to predict token $t+1$. The shift gives every label position a corresponding input position.
+2. **Tokenization.** Split into the model's vocabulary units (4 tokens in this example).
+3. **Embedding.** Look up each token in the embedding table → 4 vectors of dimension $d_{\text{model}} = 512$.
+4. **Positional encoding.** Add a position vector (also $d_{\text{model}} = 512$) so the model knows token order — self-attention is permutation-invariant on its own.
+
+Output of stage 1: $x_1, x_2, x_3, x_4 \in \mathbb{R}^{512}$, processed **in parallel** through the rest of the network.
+
+## Stage 2 — A worked trace through one decoder block
+
+Using the same example, here's what flows through each of the three sublayers in **decoder block 1**.
+
+### Sublayer 1 — Masked self-attention
+
+Inputs $x_1, \ldots, x_4$ enter and produce $z_1, \ldots, z_4$. The causal mask restricts what each position can see:
+
+| Position | Token | Can attend to |
+|---|---|---|
+| 1 | `<START>` | itself only |
+| 2 | हम | `<START>`, हम |
+| 3 | दोस्त | `<START>`, हम, दोस्त |
+| 4 | हैं | all four |
+
+Residual + LayerNorm: $z'_i = \text{LayerNorm}(x_i + z_i)$.
+
+### Sublayer 2 — Cross-attention
+
+Inputs: $z'_1, \ldots, z'_4$ (decoder side) **and** encoder output for `"We are friends"`.
+
+- $Q$ comes from $z'$ (decoder, 4 query vectors).
+- $K, V$ come from encoder output (source, 3 vectors — one per English word).
+
+For each Hindi position, the layer asks: *which English word is most relevant here?* The output $zc_1, \ldots, zc_4$ is one contextual vector per Hindi position, mixed from English value vectors. Residual + LayerNorm again: $zc'_i = \text{LayerNorm}(z'_i + zc_i)$.
+
+### Sublayer 3 — Feed-forward network
+
+Two linear layers applied independently at each position:
+
+- Layer 1: $512 \to 2048$, ReLU (or GELU in modern variants)
+- Layer 2: $2048 \to 512$, linear
+
+Per-block FFN parameters: $512 \times 2048 + 2048$ (layer 1) + $2048 \times 512 + 512$ (layer 2) $\approx 2.1$M parameters — usually the largest single component inside a block.
+
+Output of sublayer 3: $y_1, \ldots, y_4$, each $\in \mathbb{R}^{512}$, then residual + LayerNorm gives $y'_i$.
+
+### Stacking $N$ blocks
+
+The output of block 1 ($y'_1, \ldots, y'_4$) feeds directly into block 2, and so on through block $N$ (typically 6 in the original paper). Every block has the same three-sublayer shape but its own learned weights. After block $N$ we have the final hidden states $y^f_1, \ldots, y^f_4$, still $\in \mathbb{R}^{512}$ per position.
+
+The encoder output is reused unchanged at every block's cross-attention sublayer — it's encoded once and consulted $N$ times.
+
+## Stage 3 — Output block (LM head)
+
+The final hidden states are turned into vocabulary distributions:
+
+1. **Linear projection.** $W^{\text{vocab}} \in \mathbb{R}^{512 \times V}$, where $V$ is the target-language vocabulary size (e.g., $V = 10{,}000$ Hindi tokens). Parameter count: $512 \times 10{,}000 + 10{,}000 \approx 5.1$M (often shared with the input embedding via *weight tying*, halving this cost).
+2. **Softmax over the vocabulary.** Each row becomes a probability distribution summing to 1.
+
+Because the decoder ran in parallel, **all 4 positions are projected simultaneously** — we get 4 probability distributions in one shot, then compute cross-entropy against the labels at each position.
+
+| Input position | Token at this position | Trained to predict |
+|---|---|---|
+| 1 | `<START>` | हम |
+| 2 | हम | दोस्त |
+| 3 | दोस्त | हैं |
+| 4 | हैं | `<END>` |
+
+The loss sums (or averages) cross-entropy across all 4 positions. Backprop then updates *every* weight in the decoder — embeddings, all $N$ blocks, the LM head — in a single optimizer step.
+
+## Training vs. inference: a preview
+
+| Aspect | Training (this note) | Inference (next note) |
+|---|---|---|
+| Processing | Parallel — all target positions at once | Sequential — one token per step |
+| Decoder input | Full shifted target (teacher forcing) | Tokens generated so far |
+| Causal mask | Required — blocks future-token leakage | Naturally enforced (future doesn't exist) |
+| Encoder output | Used by cross-attention | Same — encoded once, reused every step |
+| LM head | Produces $m$ distributions in one pass | Produces 1 distribution per step |
+| Speed | Fast — one forward pass per example | Slow — one forward pass per output token |
+
+The architectural diagram is **identical** in both regimes. The only differences are the input fed to the decoder and how many positions are computed per forward pass.
+
 ## Inside one decoder block
 
 Each decoder block has **three sublayers**, each wrapped with a residual connection and LayerNorm:
