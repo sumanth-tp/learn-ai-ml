@@ -479,6 +479,30 @@ The qualitative finding (balance N and D, don't go extreme) remains rock-solid. 
 For practitioners: trust Chinchilla as a rough guide. Don't trust it to the third decimal. Always run a small sweep if exact optimality matters.
 </details>
 
+<details>
+<summary>Scenario: you train a 7B model and want to predict its loss at 70B before committing the compute. How accurate is the extrapolation, and when does it fail?</summary>
+
+For *pretraining loss* at standard architectures and training recipes: extrapolation over 1 order of magnitude (7B → 70B) is usually accurate to within 5-10%. The Chinchilla / Kaplan power laws were fit across roughly this range and hold up well within it.
+
+How to do it:
+
+1. **Train 3-5 small models** at different sizes (e.g., 100M, 300M, 1B, 3B, 7B) on the same data and recipe.
+2. **Fit the law**: $L(N, D) = E + A/N^\alpha + B/D^\beta$ using least squares.
+3. **Extrapolate** to (70B, your-target-tokens). The predicted loss is your best estimate.
+
+When extrapolation breaks down:
+
+1. **Different recipes**: if 70B uses different LR schedule, batch size, optimizer, or sequence length, the fitted curve may not apply.
+2. **Architectural changes**: switching from MHA to GQA, adding MoE, changing activation function — all break the fit. Re-fit per architecture family.
+3. **Data composition shift**: if 70B sees different data mix (more code, more multilingual) than the small models, the irreducible entropy $E$ changes and predictions are off.
+4. **Long-tail capabilities**: pretraining loss can extrapolate, but specific downstream capabilities (math, reasoning, code) don't follow the same smooth curve. Loss prediction may say "model X will be good" but capability prediction is much harder.
+5. **Training instabilities at scale**: larger models can have training issues (loss spikes, NaN, divergence) that small models don't experience. The extrapolation assumes stable training.
+
+Practical recipe: extrapolate within 1 order of magnitude (10×) to plan compute budget; never extrapolate more than that without intermediate validation runs. Always train a single "validation point" at intermediate scale (e.g., 13B) before committing to the full 70B run.
+
+Real-world example: DeepMind's Chinchilla paper extrapolated optimal allocations from 70M-16B models to 70B. The extrapolation held remarkably well, but the team validated with 16B intermediate runs first. Trust but verify.
+</details>
+
 ## Points to remember
 
 - Scaling laws are *empirical* power laws: loss decreases predictably with $N$ (params), $D$ (tokens), and $C$ (compute).

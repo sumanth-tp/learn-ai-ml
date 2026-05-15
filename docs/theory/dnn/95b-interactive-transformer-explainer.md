@@ -6,6 +6,7 @@ sidebar_position: 95.5
 slug: /theory/dnn/interactive-transformer-explainer
 description: "An embedded, fully interactive transformer explainer running locally — visualize every step of a real GPT-style forward pass: token embeddings, multi-head attention, MLP blocks, and the LM head, with controls to inspect activations at each layer."
 tags: [transformer, interactive, visualization, gpt, attention, deep-learning]
+hide_table_of_contents: true
 ---
 
 # Interactive transformer explainer

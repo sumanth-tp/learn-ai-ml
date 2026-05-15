@@ -496,6 +496,29 @@ That said, LoRA *does* work for ViT — just often requires higher rank (16-32) 
 For multimodal models (CLIP, BLIP, LLaVA): LoRA on the language part + full fine-tuning on the vision adapter is a common recipe. Different modalities have different fine-tuning regimes.
 </details>
 
+<details>
+<summary>Scenario: you have a base model + LoRA adapter saved separately. The base model gets updated 6 months later (continued pretraining checkpoint). Does your LoRA adapter still work on the new base?</summary>
+
+Usually yes, sometimes no — depends on what changed.
+
+**LoRA adapters are tied to specific base weights.** The adapter learned $BA$ such that $W_0 + BA$ does what you want. If $W_0$ changes (call it $W_1$), then $W_1 + BA$ may not behave the same way — the adapter was trained relative to the old basis.
+
+Cases:
+
+1. **Base model continued pretraining on similar data**: weights drift slightly. Adapter typically still works at 80-95% of original quality — degraded but usable. Re-finetuning the adapter for 1-2 epochs usually restores full quality.
+2. **Base model gets a major version bump** (architecture change, different tokenizer): adapter is incompatible. Cannot port; must retrain on new base.
+3. **Base model fine-tuned on different domain**: adapter quality degrades more (~50-80%) because the base now has different specialization that conflicts with the adapter.
+4. **Base model quantization changes** (FP16 → INT8 → INT4): adapter typically still works since LoRA is robust to base quantization (QLoRA exists for this reason).
+
+Production patterns to handle base updates:
+
+- **Version-pin everything**: lock base model version, lock LoRA training data. Re-train both together on schedule.
+- **Continuous adapter retraining**: when base updates, automatically re-train LoRA on cached task data. Takes hours, not days.
+- **Adapter portability testing**: maintain a held-out eval set; before promoting a new base+adapter pair to production, verify quality didn't drop.
+
+This is one reason production LLM teams pin to specific model versions: changing the base means revalidating every downstream adapter. Cloud providers (OpenAI, Anthropic) versioning their models per-month is partly about giving customers stable bases for adapter training.
+</details>
+
 ## Points to remember
 
 - LoRA freezes base model weights and adds rank-$r$ parallel updates $BA$. Only $BA$ is trained; $B$ starts at zero so the model starts as identical to the base.

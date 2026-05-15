@@ -444,6 +444,30 @@ For an A100 doing attention on $n = 4096$, standard attention is at ~30% peak FL
 This is the core insight Horace He's "Making Deep Learning Go Brrrr" article (a recommended read): on modern hardware, deep learning is almost always memory-bound, not compute-bound. Optimizing memory access patterns (kernel fusion, FlashAttention, FSDP) gives bigger wins than optimizing the math.
 </details>
 
+<details>
+<summary>Scenario: a teammate proposes training with FlashAttention AND bfloat16 mixed precision. Are there hidden interactions you should worry about?</summary>
+
+This combination is standard and generally works well — but there are real interactions worth knowing.
+
+**Good news**:
+
+- FlashAttention is designed to work in BF16/FP16. Modern implementations have BF16 as the *primary* path; FP32 is fallback.
+- BF16's wider exponent range (vs FP16) helps with the exp() in softmax, reducing overflow risk.
+- Combined throughput on A100/H100 is dramatically better than FP32 standard attention.
+
+**Hidden interactions**:
+
+1. **Accumulation precision**: FlashAttention internally accumulates the running max, running sum, and output in FP32 *even though* Q/K/V are BF16. This is essential — accumulating in BF16 would lose precision rapidly across long sequences. Most implementations get this right, but custom kernels can mess it up.
+2. **Softmax stability**: the online softmax trick requires careful rescaling. In BF16, the exp(score - max) term can underflow for very negative scores. FlashAttention handles this in FP32 accumulation, but you can still see NaN if scores have extreme outliers.
+3. **Gradient accumulation**: backpropagating through FlashAttention requires recomputing parts of the forward pass. Gradient values in BF16 are coarser than activations, so vanishing gradients are slightly more common with deep transformers + FlashAttention + BF16.
+4. **Loss scaling not needed**: unlike FP16, BF16 doesn't need loss scaling because the exponent range matches FP32. This simplifies the training loop.
+5. **Hardware-specific kernels**: FlashAttention-3 uses Hopper-specific BF16 instructions (WGMMA). On older hardware, the BF16 path may not be as fast as FP16.
+
+For practical work: BF16 + FlashAttention-2 is the default modern training recipe. If you see NaN, check (a) extreme attention scores from unusual data, (b) BF16 gradient underflow in late training, (c) implementation bugs in custom code. The combination is robust enough that most teams don't think about it.
+
+Edge case: if you're training in *FP8* (H100 inference, MX formats for training), FlashAttention support is newer and more error-prone. Stick to BF16 for training; experiment with FP8 for inference.
+</details>
+
 ## Points to remember
 
 - FlashAttention is *exact*, not approximate. Same output as standard attention, computed differently.

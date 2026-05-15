@@ -591,6 +591,23 @@ For most production use cases: LoRA. For research / cutting-edge benchmarks: FFT
 This is a fast-moving area; see [91 — LoRA](./91-parameter-efficient-fine-tuning-lora.md) for the deep dive.
 </details>
 
+<details>
+<summary>Scenario: you fine-tune BERT on Task A (sentiment), then fine-tune the same model on Task B (NER). Task B performance is fine, but Task A performance collapses. What's happening and what are the production fixes?</summary>
+
+This is **sequential / continual fine-tuning catastrophic forgetting**. Each fine-tuning run overwrites weights with task-specific gradients. By the time Task B training finishes, the weight directions that encoded Task A have been destroyed — the model's general language understanding remains, but the specific Task A specialization is gone.
+
+Production fixes, by sophistication:
+
+1. **Keep separate model checkpoints per task**: simplest — store one fine-tuned model per task. Costs N× storage but no forgetting. Standard for small fleets of tasks.
+2. **LoRA per task**: train a separate LoRA adapter for each task, keeping the base model frozen. Both tasks coexist via adapter routing. ~50MB per task instead of full model.
+3. **Multi-task fine-tuning from scratch**: train on a *mixed batch* of Task A and Task B examples simultaneously. Model balances both. Quality typically within 1-2% of per-task fine-tuning.
+4. **Elastic Weight Consolidation (EWC)**: when fine-tuning Task B, add a loss penalty proportional to how much each weight diverges from its Task A value, weighted by Fisher information. Works but requires saving the Fisher matrix.
+5. **Experience replay**: mix old Task A examples (or generated proxies) into Task B training. Cheap and effective for moderate forgetting.
+6. **Modular routing**: use a mixture-of-experts or adapter selection layer that activates per-task circuits. State-of-the-art for many-task continual learning.
+
+For most teams: option 2 (LoRA per task) is the practical winner. Production fleets with 50+ tasks use option 6 (modular). The "fine-tune one model on everything sequentially" recipe is almost always wrong unless tasks are very similar.
+</details>
+
 ## Points to remember
 
 - Fine-tuning is *adaptation*, not training. Treat pretrained weights as fragile and protect them with low LR (2e-5 to 5e-5), warmup, and short training (2-4 epochs).

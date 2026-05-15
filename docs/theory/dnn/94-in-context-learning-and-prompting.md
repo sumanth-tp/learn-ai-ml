@@ -628,6 +628,33 @@ This is a major reason the field is heavily invested in prompt engineering, even
 The ChatGPT era has accelerated this loop dramatically: GPT-4 outputs are now training data for smaller models, which are then training data for even smaller models. ICL is the bootstrap mechanism.
 </details>
 
+<details>
+<summary>Scenario: a customer reports that going from 4-shot to 8-shot made their model's accuracy go *down* on a classification task. How is that possible?</summary>
+
+Counterintuitive but well-documented. Several mechanisms can cause more examples to hurt:
+
+1. **Example quality matters more than quantity**: 4 carefully chosen, diverse, correctly-labeled examples may give better signal than 8 examples where the additional 4 are similar to the first 4 or slightly off-distribution. Adding examples that don't add information dilutes the signal.
+
+2. **Format dilution**: 8 examples take up more context. The model's attention is spread across more tokens. The query at the end gets *relatively less attention* compared to a tighter 4-shot prompt. This is the "lost-in-the-middle" effect applied to few-shot.
+
+3. **Recency / position bias**: with 8 examples, the model is more strongly biased toward the *last few* example patterns. If the last 2 examples happen to be in one class, the model's predictions skew toward that class.
+
+4. **Distribution shift in examples**: if the 4 new examples are slightly different in style, formatting, or label distribution from the original 4, the model gets a confused signal about what task it's doing.
+
+5. **Demonstration ordering interactions**: with 8 examples, there are 40,320 possible orderings (8!). With 4 examples, only 24. The model's output depends on order more sensitively — increasing shots increases the sensitivity surface.
+
+6. **Token budget pressure**: if the 8-shot prompt approaches the context limit, the model may be processing in a region of its training distribution that's less well-tested.
+
+Production diagnosis:
+
+- **Try k=4, 6, 8, 10, 12**: plot accuracy vs k. Often there's an inverted U with peak at 4-8.
+- **Randomize order across runs**: average accuracy over 5+ orderings to remove position bias.
+- **Inspect the 4 new examples**: are they similar to each other? Same style? Same labels? Diversify them.
+- **Use semantic retrieval**: instead of static k-shot, retrieve top-k most similar examples per query.
+
+Bottom line: "more examples is better" is wrong as a rule. The optimal number depends on example quality, task complexity, and model. Always sweep k empirically; don't assume monotonic improvement.
+</details>
+
 ## Points to remember
 
 - ICL = the model performs new tasks from prompt examples *without* weight updates.
