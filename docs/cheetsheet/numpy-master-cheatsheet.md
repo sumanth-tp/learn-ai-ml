@@ -110,7 +110,7 @@ and scikit-learn all interop through NumPy semantics.
 | Use `.astype()` deliberately        | `a.astype(dtype, copy=True)` — Mixed dtypes cause hidden copies and unintended precision loss.                              | `x = x.astype(np.float32) # explicit FP32`                                                       |
 | Prefer `np.einsum` for complex sums | `np.einsum(subscripts, *operands, optimize=False)` — Replaces nested loops of matmul + sum with one declarative expression. | `# batch matmul: (B, N, K) @ (B, K, M)`<br/>`out = np.einsum("bnk,bkm->bnm", A, B)`              |
 | Use `np.may_share_memory()`         | `np.may_share_memory(a, b, max_work=None)` — When you're not sure if two arrays share memory.                               | `print(np.may_share_memory(a, a[1:4])) # True`                                                   |
-| Memory-efficient bool ops           | In-place operators (`&=`, `\|=`, `^=`) avoid allocating large intermediate arrays.                                          | `mask &= (x > 0) # in-place AND`                                                                 |
+| Memory-efficient bool ops           | In-place boolean operators avoid allocating large intermediate arrays.                                          | `mask &= (x > 0) # in-place AND`                                                                 |
 
 ## Common patterns
 

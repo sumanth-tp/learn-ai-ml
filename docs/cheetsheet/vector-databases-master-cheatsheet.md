@@ -12,7 +12,7 @@ Vector databases store embeddings and support fast similarity search — the bac
 | Concept | Description | Code/example |
 |---|---|---|
 | Embedding | A dense float vector representing a piece of content. Produced by an encoder (Sentence-BERT, OpenAI, Cohere). Typical dim: 384, 768, 1024, 1536, 3072. | `vec = embedder.encode("Hello world")  # shape: (768,)` |
-| Cosine similarity | Score: $\frac{a \cdot b}{\|a\|\|b\|}$ — Angle between vectors. Default for embeddings; normalize to unit length and it equals dot product. | `def cosine(a, b):`<br/>`    return (a @ b) / (np.linalg.norm(a) * np.linalg.norm(b))` |
+| Cosine similarity | Score: dot product divided by the product of vector norms. Default for embeddings; normalize to unit length and it equals dot product. | `def cosine(a, b):`<br/>`    return (a @ b) / (np.linalg.norm(a) * np.linalg.norm(b))` |
 | Euclidean (L2) distance | $\sqrt{\sum_i (a_i - b_i)^2}$ — Smaller is more similar. Equivalent to cosine for unit-normalized vectors. | `dist = np.linalg.norm(a - b)` |
 | Inner product (dot) | $a \cdot b$ — Faster than cosine. Use when vectors are normalized OR when magnitude carries meaning. | `score = a @ b` |
 | ANN (Approximate Nearest Neighbor) | Trade a small recall loss for huge speedups. Algorithms: HNSW, IVF, PQ, ScaNN. | Configurable in every vector DB — never search >100K vectors exhaustively in production. |

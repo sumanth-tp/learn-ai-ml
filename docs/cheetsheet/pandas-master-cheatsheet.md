@@ -32,7 +32,7 @@ these cover ~90% of real-world data work.
 | `df[col]`              | Syntax: `df[column_name]` or `df[[col1, col2]]`. Select column(s) by label.                                             | `ages = df["age"]`<br/>`subset = df[["name", "age"]]`                       |
 | `df.loc[]`             | `df.loc[row_labels, col_labels]` — Label-based indexing. Supports booleans, slices (inclusive), lists.                  | `df.loc[df["age"] > 30, ["name", "age"]]`                                   |
 | `df.iloc[]`            | `df.iloc[row_positions, col_positions]` — Integer-position-based indexing. Like NumPy.                                  | `df.iloc[0:5, [0, 2]] # first 5 rows, cols 0 and 2`                         |
-| Boolean masking        | Syntax: `df[mask]` where `mask` is a boolean Series. Combine with `&`, `\|`, `~` and parentheses.                       | `mask = (df["age"] > 25) & (df["country"] == "IN")`<br/>`adults = df[mask]` |
+| Boolean masking        | Syntax: `df[mask]` where `mask` is a boolean Series. Combine with `&`, logical-or, `~` and parentheses.                 | `mask = (df["age"] > 25) & (df["country"] == "IN")`<br/>`adults = df[mask]` |
 | `df.at[]` / `df.iat[]` | `df.at[row_label, col_label]` / `df.iat[row_pos, col_pos]` — Fast scalar access.                                        | `print(df.at[0, "name"])`<br/>`df.at[0, "age"] = 37`                        |
 | `df.query()`           | `df.query(expr, inplace=False, **kwargs)` — SQL-like string filtering. Reference variables with `@`.                    | `df.query("age > 25 and country == 'IN'")`                                  |
 | `df.isin()`            | `df.isin(values)` — Boolean mask of membership in a list, set, dict, or Series.                                         | `df[df["country"].isin(["IN", "US", "DE"])]`                                |
@@ -141,3 +141,28 @@ these cover ~90% of real-world data work.
 | Encode categorical for ML                    | `df_enc = pd.get_dummies(df[["country", "device"]], drop_first=True)`                                                                                                       |
 | Datetime feature engineering                 | `df["hour"] = df["ts"].dt.hour`<br/>`df["is_weekend"] = df["ts"].dt.dayofweek.isin([5, 6])`                                                                                 |
 | Save model-ready frame                       | `df.to_parquet("features.parquet", compression="snappy")`                                                                                                                   |
+
+## Industry-standard Pandas data engineering
+
+| Method | Method description | Code example |
+|---|---|---|
+| Schema contract | Validate columns, dtypes, nullability, and accepted ranges before transformations. | `required = {"user_id", "event_ts", "amount"}`<br/>`missing = required - set(df.columns)`<br/>`if missing:`<br/>`    raise ValueError(f"missing columns: {missing}")` |
+| Explicit dtype map | Prevent silent dtype inference from changing across files or environments. | `dtype = {"user_id": "string", "country": "category", "amount": "float64"}`<br/>`df = pd.read_csv("events.csv", dtype=dtype, parse_dates=["event_ts"])` |
+| Copy boundary | Make copies at transformation boundaries to avoid `SettingWithCopy` bugs. | `features = raw.loc[raw["amount"].notna()].copy()`<br/>`features["log_amount"] = np.log1p(features["amount"])` |
+| Pure transform function | Keep transformations deterministic and testable. | `def add_user_features(df):`<br/>`    out = df.copy()`<br/>`    out["amount_log"] = np.log1p(out["amount"])`<br/>`    return out` |
+| Data quality report | Track row counts, nulls, duplicates, and range violations per run. | `report = {"rows": len(df), "null_amount": int(df["amount"].isna().sum()), "duplicate_ids": int(df["id"].duplicated().sum())}` |
+| Join validation | Use `validate` to catch accidental many-to-many joins. | `orders.merge(users, on="user_id", how="left", validate="many_to_one")` |
+| Join coverage check | Measure unmatched rows after joins. | `joined = orders.merge(users, on="user_id", how="left", indicator=True)`<br/>`coverage = (joined["_merge"] == "both").mean()` |
+| Time-aware split | Avoid future leakage in model evaluation. | `train = df[df["event_ts"] < cutoff]`<br/>`test = df[df["event_ts"] >= cutoff]` |
+| Group-aware split | Avoid user/session leakage across train and test. | `users = df["user_id"].drop_duplicates().sample(frac=0.8, random_state=42)`<br/>`train = df[df["user_id"].isin(users)]` |
+| Feature store grain | Define one row per entity/time grain and assert uniqueness. | `key = ["user_id", "snapshot_date"]`<br/>`if df.duplicated(key).any():`<br/>`    raise ValueError("feature grain violated")` |
+| Incremental processing | Process only new partitions and keep outputs partitioned. | `new = df[df["event_date"] > last_processed_date]`<br/>`new.to_parquet("features/event_date=2026-05-16/part.parquet")` |
+| Chunked ingestion | Read large CSVs in chunks to avoid memory blowups. | `chunks = pd.read_csv("large.csv", chunksize=100_000)`<br/>`for chunk in chunks:`<br/>`    process(chunk)` |
+| Categorical optimization | Convert repeated low-cardinality strings to `category` to save memory. | `for col in ["country", "device"]:`<br/>`    df[col] = df[col].astype("category")` |
+| Vectorized logic | Prefer vectorized operations over row-wise `apply` for performance. | `df["risk"] = np.select([df.score < 0.3, df.score < 0.7], ["low", "medium"], default="high")` |
+| Deterministic sorting | Sort before `groupby().tail()`, deduplication, or ranking. | `latest = df.sort_values(["user_id", "event_ts", "event_id"]).groupby("user_id").tail(1)` |
+| Window feature | Build leakage-safe rolling features using prior events only. | `df = df.sort_values(["user_id", "event_ts"])`<br/>`df["prior_7d_amount"] = df.groupby("user_id")["amount"].transform(lambda s: s.shift().rolling(7, min_periods=1).sum())` |
+| Outlier policy | Encode winsorization/clipping rules explicitly and log counts. | `lo, hi = df["amount"].quantile([0.01, 0.99])`<br/>`df["amount_clipped"] = df["amount"].clip(lo, hi)` |
+| Reproducible artifact | Use Parquet with stable compression and preserve schema. | `df.to_parquet("features.parquet", engine="pyarrow", compression="zstd", index=False)` |
+| Golden dataset test | Keep a tiny fixture that catches transformation regressions. | `actual = add_user_features(input_df)`<br/>`pd.testing.assert_frame_equal(actual, expected_df, check_dtype=True)` |
+| Scale boundary | Know when Pandas is the wrong tool; move to Polars, DuckDB, Spark, or SQL. | `# If data cannot fit comfortably in memory, push filtering/aggregation down to SQL or DuckDB.` |

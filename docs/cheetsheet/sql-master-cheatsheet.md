@@ -13,13 +13,13 @@ production).
 ## SELECT basics
 
 | Method             | Description                                                                                          | Code example                                                         |
-| ------------------ | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| ------------------ | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | `SELECT col`       | Syntax: `SELECT col1, col2, ... FROM table;`. Pick specific columns. Avoid `SELECT *` in production. | `SELECT id, email FROM users;`                                       |
 | `AS`               | Syntax: `SELECT expr AS alias` / `FROM table AS t`. Rename columns or tables.                        | `SELECT email AS user_email, id AS user_id FROM users;`              |
 | `DISTINCT`         | Syntax: `SELECT DISTINCT col, ... FROM table;`. De-duplicate rows across the selected columns.       | `SELECT DISTINCT country FROM users;`                                |
 | `LIMIT` / `OFFSET` | Syntax: `... LIMIT n [OFFSET k]`. Paginate results.                                                  | `SELECT * FROM users ORDER BY id LIMIT 50 OFFSET 100;`               |
-| `ORDER BY`         | Syntax: `ORDER BY col [ASC                                                                           | DESC], col2 [ASC                                                     | DESC], ...`. Sort by one or more columns. | `SELECT * FROM users ORDER BY country ASC, created_at DESC;` |
-| Concatenation      | Operator: `\|\|` (ANSI). Function: `CONCAT(a, b, ...)` (MySQL/Postgres).                             | `SELECT first_name \|\| ' ' \|\| last_name AS full_name FROM users;` |
+| `ORDER BY`         | Syntax: `ORDER BY col [ASC or DESC], col2 [ASC or DESC], ...`. Sort by one or more columns.          | `SELECT * FROM users ORDER BY country ASC, created_at DESC;` |
+| Concatenation      | Operator: ANSI double-pipe. Function: `CONCAT(a, b, ...)` (MySQL/Postgres).                          | `SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM users;` |
 | String formatting  | Functions: `TRIM(str)`, `LOWER(str)`, `UPPER(str)`, `SUBSTRING(str FROM start FOR length)`.          | `SELECT TRIM(LOWER(email)) AS email FROM users;`                     |
 | Literal values     | Syntax: `SELECT 'literal' AS alias`. Useful for constants and flags.                                 | `SELECT id, email, 'active' AS status FROM users;`                   |
 
@@ -104,7 +104,7 @@ production).
 ## DDL: schema operations
 
 | Method                       | Description                                                                                 | Code example                                                                                                                                                                     |
-| ---------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| ---------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `CREATE TABLE`               | Syntax: `CREATE TABLE name (col1 type [constraints], col2 type, ...);`.                     | `CREATE TABLE users (`<br/>` id BIGSERIAL PRIMARY KEY,`<br/>` email TEXT UNIQUE NOT NULL,`<br/>` age INT CHECK (age >= 0),`<br/>` created_at TIMESTAMPTZ DEFAULT NOW()`<br/>`);` |
 | `ALTER TABLE`                | Syntax: `ALTER TABLE name ADD/DROP/ALTER COLUMN ...;`. Modify schema in place.              | `ALTER TABLE users ADD COLUMN country TEXT;`<br/>`ALTER TABLE users DROP COLUMN obsolete_field;`<br/>`ALTER TABLE users ALTER COLUMN age TYPE BIGINT;`                           |
 | `DROP TABLE`                 | Syntax: `DROP TABLE [IF EXISTS] name;`. Delete a table.                                     | `DROP TABLE IF EXISTS old_logs;`                                                                                                                                                 |
@@ -112,7 +112,7 @@ production).
 | Unique index                 | Syntax: `CREATE UNIQUE INDEX name ON table (expr);`. Enforces uniqueness.                   | `CREATE UNIQUE INDEX idx_users_email_unique ON users (LOWER(email));`                                                                                                            |
 | `CREATE VIEW`                | Syntax: `CREATE VIEW name AS SELECT ...;`. A named query that acts like a table.            | `CREATE VIEW active_users AS SELECT * FROM users WHERE deleted_at IS NULL;`                                                                                                      |
 | Materialized view (Postgres) | Syntax: `CREATE MATERIALIZED VIEW name AS SELECT ...;` + `REFRESH MATERIALIZED VIEW name;`. | `CREATE MATERIALIZED VIEW daily_revenue AS SELECT day, SUM(amount) FROM orders GROUP BY day;`<br/>`REFRESH MATERIALIZED VIEW daily_revenue;`                                     |
-| Foreign key                  | Syntax: `col TYPE REFERENCES parent(col) ON DELETE CASCADE                                  | SET NULL                                                                                                                                                                         | RESTRICT`. | `CREATE TABLE orders (`<br/>` id BIGSERIAL PRIMARY KEY,`<br/>` user_id BIGINT REFERENCES users(id) ON DELETE CASCADE`<br/>`);` |
+| Foreign key                  | Syntax: `col TYPE REFERENCES parent(col) ON DELETE CASCADE`, `SET NULL`, or `RESTRICT`.     | `CREATE TABLE orders (`<br/>` id BIGSERIAL PRIMARY KEY,`<br/>` user_id BIGINT REFERENCES users(id) ON DELETE CASCADE`<br/>`);` |
 
 ## DML: insert, update, delete
 
@@ -166,3 +166,28 @@ production).
 | Find duplicates                  | `SELECT email, COUNT(*) FROM users GROUP BY email HAVING COUNT(*) > 1;`                                                                                                                                                                     |
 | Reservoir-like random sample     | `SELECT * FROM big_table ORDER BY RANDOM() LIMIT 1000; -- ok for small samples`                                                                                                                                                             |
 | Median per group (Postgres)      | `SELECT country, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY income) AS median_income FROM users GROUP BY country;`                                                                                                                         |
+
+## Industry-standard SQL engineering
+
+| Method | Method description | Code example |
+|---|---|---|
+| Query contract | Every production query should define grain, filters, null policy, and expected row count range. | `-- Grain: one row per user_id per day`<br/>`SELECT user_id, DATE(event_ts) AS day, COUNT(*) AS events`<br/>`FROM events GROUP BY 1, 2;` |
+| CTE pipeline | Use CTEs to make transformation stages reviewable. | `WITH raw AS (...) , filtered AS (...) , features AS (...)`<br/>`SELECT * FROM features;` |
+| Incremental model | Recompute only changed partitions for large tables. | `DELETE FROM user_features WHERE day >= :start_day;`<br/>`INSERT INTO user_features SELECT ... WHERE day >= :start_day;` |
+| Idempotent load | Make reruns safe by replacing the target partition or using merge/upsert. | `MERGE INTO target t USING staging s ON t.id = s.id`<br/>`WHEN MATCHED THEN UPDATE SET amount = s.amount`<br/>`WHEN NOT MATCHED THEN INSERT (id, amount) VALUES (s.id, s.amount);` |
+| Primary key test | Assert target grain is unique. | `SELECT user_id, day, COUNT(*)`<br/>`FROM user_features`<br/>`GROUP BY 1, 2 HAVING COUNT(*) > 1;` |
+| Freshness test | Detect stale upstream data. | `SELECT MAX(event_ts) AS latest_event_ts FROM events;` |
+| Null policy test | Fail when required fields become null. | `SELECT COUNT(*) FROM user_features WHERE user_id IS NULL OR snapshot_day IS NULL;` |
+| Referential integrity | Check foreign-key-like relationships even in warehouses. | `SELECT o.user_id FROM orders o LEFT JOIN users u USING (user_id) WHERE u.user_id IS NULL;` |
+| Explain plan | Inspect whether query scans, joins, and indexes are acceptable. | `EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 42;` |
+| Index design | Index high-selectivity filters and join keys, not every column. | `CREATE INDEX idx_orders_user_ts ON orders(user_id, created_at DESC);` |
+| Partition pruning | Filter on partition columns directly. | `SELECT * FROM events WHERE event_date BETWEEN DATE '2026-05-01' AND DATE '2026-05-16';` |
+| Avoid `SELECT *` | Explicit columns protect downstream schema contracts and reduce scan cost. | `SELECT user_id, event_ts, amount FROM events WHERE event_date = CURRENT_DATE;` |
+| Late-arriving data | Reprocess a lookback window to absorb delayed events. | `WHERE event_date >= CURRENT_DATE - INTERVAL '3 days'` |
+| Slowly changing dimension | Join facts to dimension version valid at event time. | `JOIN dim_user d ON f.user_id = d.user_id AND f.event_ts >= d.valid_from AND f.event_ts < d.valid_to` |
+| Snapshot table | Store point-in-time state for reproducible ML features. | `CREATE TABLE account_snapshot AS SELECT account_id, balance, CURRENT_DATE AS snapshot_day FROM accounts;` |
+| Feature leakage guard | Feature timestamps must be earlier than label timestamps. | `WHERE feature_ts < label_ts` |
+| Transaction boundary | Group related writes atomically. | `BEGIN;`<br/>`INSERT INTO target SELECT * FROM staging;`<br/>`INSERT INTO audit_log VALUES (...);`<br/>`COMMIT;` |
+| Lock awareness | Know whether DDL/DML blocks readers or writers in your database. | `SELECT * FROM pg_locks WHERE NOT granted;` |
+| Cost-aware sampling | Avoid `ORDER BY RANDOM()` on huge tables. | `SELECT * FROM big_table TABLESAMPLE SYSTEM (1);` |
+| Review checklist | Senior SQL review checks grain, join cardinality, partition filters, null handling, idempotency, and explain plan. | `-- Before merge: run row-count, uniqueness, freshness, and explain-plan checks.` |

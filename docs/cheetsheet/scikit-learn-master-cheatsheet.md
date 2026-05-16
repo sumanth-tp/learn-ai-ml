@@ -159,3 +159,28 @@ metrics — these patterns apply to nearly every ML problem before deep learning
 | Multi-output classification              | `from sklearn.multioutput import MultiOutputClassifier`<br/>`moc = MultiOutputClassifier(RandomForestClassifier())`                                                                                                                                                                                                                           |
 | Pipeline with custom feature engineering | `from sklearn.preprocessing import FunctionTransformer`<br/>`def add_features(X):`<br/>` X = X.copy()`<br/>` X["log_amount"] = np.log1p(X["amount"])`<br/>` return X`<br/>`pipe = Pipeline([("feat", FunctionTransformer(add_features)), ("clf", RF())])`                                                                                     |
 | Save and reload full pipeline            | `joblib.dump(pipe, "model.joblib")`<br/>`loaded = joblib.load("model.joblib")`<br/>`loaded.predict(new_X)`                                                                                                                                                                                                                                    |
+
+## Industry-standard scikit-learn ML systems
+
+| Method | Method description | Code example |
+|---|---|---|
+| End-to-end pipeline artifact | Persist preprocessing and model together; never save only the estimator. | `pipe = Pipeline([("prep", preprocessor), ("model", HistGradientBoostingClassifier())])`<br/>`pipe.fit(X_train, y_train)`<br/>`joblib.dump(pipe, "churn_pipeline.joblib")` |
+| ColumnTransformer contract | Encode numeric/categorical handling explicitly by column list. | `prep = ColumnTransformer([("num", StandardScaler(), num_cols), ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols)], remainder="drop")` |
+| Leakage-safe CV | Put all preprocessing inside the pipeline so each fold fits transformers only on train fold. | `scores = cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=42), scoring="roc_auc")` |
+| Grouped CV | Split by user/customer/account to avoid identity leakage. | `cv = GroupKFold(n_splits=5)`<br/>`scores = cross_val_score(pipe, X, y, groups=user_ids, cv=cv, scoring="f1_macro")` |
+| Time-series CV | Preserve temporal ordering for forecasting or time-dependent labels. | `cv = TimeSeriesSplit(n_splits=5)`<br/>`scores = cross_val_score(pipe, X.sort_values("date"), y_sorted, cv=cv)` |
+| Baseline first | Establish simple baselines before complex models. | `dummy = DummyClassifier(strategy="most_frequent")`<br/>`dummy.fit(X_train, y_train)`<br/>`baseline = balanced_accuracy_score(y_test, dummy.predict(X_test))` |
+| Threshold tuning | Tune decision threshold separately from model fitting. | `proba = pipe.predict_proba(X_valid)[:, 1]`<br/>`best_t = max(np.linspace(0, 1, 101), key=lambda t: f1_score(y_valid, proba >= t))` |
+| Probability calibration | Calibrate when probabilities drive decisions. | `cal = CalibratedClassifierCV(pipe, method="isotonic", cv=5)`<br/>`cal.fit(X_train, y_train)` |
+| Slice evaluation | Measure performance across important segments, not only global metrics. | `for segment, idx in X_test.groupby("country").groups.items():`<br/>`    print(segment, roc_auc_score(y_test.loc[idx], proba[idx]))` |
+| Feature importance caution | Use permutation importance on holdout data; impurity importances can mislead. | `result = permutation_importance(pipe, X_test, y_test, scoring="roc_auc", n_repeats=10, random_state=42)` |
+| Model card | Record intended use, data, metrics, limitations, and owners. | `model_card = {"model": "churn-v3", "auc": auc, "owner": "growth-ml", "limitations": ["not for new markets"]}` |
+| Reproducible training | Pin random states and log library versions. | `params = {"random_state": 42}`<br/>`mlflow.log_params({"sklearn": sklearn.__version__, "seed": 42})` |
+| Schema validation at inference | Reject requests with missing or extra columns before prediction. | `expected = list(pipe.feature_names_in_)`<br/>`if list(input_df.columns) != expected:`<br/>`    raise ValueError("schema mismatch")` |
+| Unknown category policy | `OneHotEncoder(handle_unknown="ignore")` avoids production crashes on new categories. | `OneHotEncoder(handle_unknown="ignore", min_frequency=10)` |
+| Imbalance strategy | Compare class weights, resampling, thresholding, and metric choice. | `clf = LogisticRegression(class_weight="balanced", max_iter=1000)` |
+| Drift reference stats | Save training feature summaries for production drift monitoring. | `reference = X_train.describe(include="all").to_dict()`<br/>`json.dump(reference, open("reference_stats.json", "w"))` |
+| Batch scoring | Score in chunks to control memory and latency. | `for chunk in pd.read_parquet("features.parquet", chunksize=10000):`<br/>`    chunk["score"] = pipe.predict_proba(chunk)[:, 1]` |
+| Shadow validation | Compare candidate model against production before replacing it. | `candidate_score = candidate.predict_proba(X_shadow)[:, 1]`<br/>`champion_score = champion.predict_proba(X_shadow)[:, 1]` |
+| Production rollback | Keep previous model artifact and schema together. | `current = joblib.load("models/churn/v4/model.joblib")`<br/>`rollback = joblib.load("models/churn/v3/model.joblib")` |
+| Review checklist | Senior reviews check leakage, split strategy, pipeline completeness, calibration, slices, drift, and rollback plan. | `# Do not approve a model PR without baseline, CV design, holdout report, and inference schema test.` |
