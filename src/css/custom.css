@@ -1,30 +1,991 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Global design system for "Learn AI, ML".
+ *
+ * Structure:
+ *   1. Design tokens (palette, type scale, radii, shadows)
+ *   2. Infima variable mapping (light + dark)
+ *   3. Base + typography
+ *   4. Chrome: navbar, sidebar, TOC, footer, search
+ *   5. Content: code, tables, admonitions, math, mermaid, media
+ *   6. Utilities + motion preferences
  */
 
-/* You can override the default Infima variables here. */
+/* ------------------------------------------------------------------ *
+ * 1. Design tokens
+ *
+ * Tuned for long reading sessions rather than maximum contrast:
+ *   - light mode is warm paper (#faf9f7), never #fff, so it does not glare
+ *   - dark mode is soft charcoal (#16181d), never #000, with text held around
+ *     11:1 instead of 21:1 to avoid halation on thin type
+ *   - accents are desaturated; saturated hues are reserved for small marks
+ * ------------------------------------------------------------------ */
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* Brand — muted ink indigo, calm enough to sit under body text */
+  --brand-50: #f2f3fb;
+  --brand-100: #e5e7f7;
+  --brand-200: #c9cdee;
+  --brand-300: #a7ade1;
+  --brand-400: #838bd2;
+  --brand-500: #656ec4;
+  --brand-600: #4f57ad;
+  --brand-700: #424a92;
+  --brand-800: #363c76;
+  --brand-900: #2c315f;
+
+  /* Accent — muted teal for confirmations and secondary marks */
+  --accent-300: #7fc9bf;
+  --accent-400: #4fb3a6;
+  --accent-500: #2f9b8d;
+  --accent-600: #257f74;
+
+  /* Warm neutrals (light) */
+  --paper-0: #faf9f7;
+  --paper-1: #f4f2ee;
+  --paper-2: #ebe8e2;
+  --paper-3: #e0dcd4;
+
+  /* Cool neutrals (dark) */
+  --coal-0: #16181d;
+  --coal-1: #1b1e24;
+  --coal-2: #22262e;
+  --coal-3: #2b3038;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* Elevation — low and soft; hard shadows read as glare on paper */
+  --shadow-xs: 0 1px 2px rgba(41, 37, 32, 0.05);
+  --shadow-sm: 0 1px 3px rgba(41, 37, 32, 0.07), 0 1px 2px rgba(41, 37, 32, 0.04);
+  --shadow-md: 0 4px 14px rgba(41, 37, 32, 0.08), 0 2px 4px rgba(41, 37, 32, 0.04);
+  --shadow-lg: 0 14px 34px rgba(41, 37, 32, 0.1), 0 4px 10px rgba(41, 37, 32, 0.05);
+  --shadow-glow: 0 0 0 1px rgba(101, 110, 196, 0.14), 0 12px 40px rgba(79, 87, 173, 0.14);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+
+  /* Semantic surfaces (light) */
+  --surface-0: var(--paper-0);
+  --surface-1: var(--paper-1);
+  --surface-2: var(--paper-2);
+  --surface-raised: #ffffff;
+  --border-subtle: #e7e3dc;
+  --border-strong: #d6d1c8;
+  --text-strong: #23262b;
+  --text-muted: #5b6270;
+  --text-faint: #6c7381;
+  --brand-tint: rgba(79, 87, 173, 0.08);
+
+  /* Reading comfort (overridable per reader via the doc toolbar) */
+  --reading-size: 1.0625rem;
+  --reading-measure: 74ch;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+/* ------------------------------------------------------------------ *
+ * 2. Infima mapping
+ * ------------------------------------------------------------------ */
+
+:root {
+  --ifm-color-primary: var(--brand-600);
+  --ifm-color-primary-dark: var(--brand-700);
+  --ifm-color-primary-darker: #3e458a;
+  --ifm-color-primary-darkest: var(--brand-800);
+  --ifm-color-primary-light: var(--brand-500);
+  --ifm-color-primary-lighter: var(--brand-400);
+  --ifm-color-primary-lightest: var(--brand-300);
+
+  --ifm-font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ifm-heading-font-family: "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", "SFMono-Regular", Menlo,
+    Consolas, "Liberation Mono", monospace;
+
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.75;
+  --ifm-heading-font-weight: 680;
+  --ifm-h1-font-size: 2.35rem;
+  --ifm-h2-font-size: 1.65rem;
+  --ifm-h3-font-size: 1.25rem;
+  --ifm-h4-font-size: 1.05rem;
+  --ifm-heading-margin-top: 2.5rem;
+  --ifm-heading-margin-bottom: 0.85rem;
+  --ifm-paragraph-margin-bottom: 1.25rem;
+
+  --ifm-background-color: var(--surface-0);
+  --ifm-background-surface-color: var(--surface-raised);
+  --ifm-color-content: #33383f;
+  --ifm-color-content-secondary: var(--text-muted);
+  --ifm-heading-color: var(--text-strong);
+
+  --ifm-link-color: var(--brand-700);
+  --ifm-link-hover-color: var(--brand-800);
+  --ifm-link-decoration: none;
+
+  --ifm-global-radius: var(--radius-md);
+  --ifm-global-shadow-lw: var(--shadow-xs);
+  --ifm-global-shadow-md: var(--shadow-md);
+  --ifm-global-shadow-tl: var(--shadow-lg);
+
+  --ifm-navbar-height: 4rem;
+  --ifm-navbar-background-color: rgba(250, 249, 247, 0.82);
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-padding-horizontal: 1.25rem;
+  --ifm-navbar-item-padding-horizontal: 0.8rem;
+  --ifm-navbar-link-color: var(--text-muted);
+  --ifm-navbar-link-hover-color: var(--brand-700);
+
+  --ifm-toc-border-color: var(--border-subtle);
+  --ifm-toc-link-color: var(--text-muted);
+  --ifm-toc-padding-vertical: 0.4rem;
+
+  --ifm-menu-color: var(--text-muted);
+  --ifm-menu-color-active: var(--brand-700);
+  --ifm-menu-color-background-active: var(--brand-tint);
+  --ifm-menu-color-background-hover: rgba(79, 87, 173, 0.06);
+  --ifm-menu-link-padding-vertical: 0.42rem;
+  --ifm-menu-link-padding-horizontal: 0.7rem;
+
+  --ifm-code-font-size: 88%;
+  --ifm-code-background: rgba(79, 87, 173, 0.09);
+  --ifm-code-color: #444c93;
+  --ifm-code-padding-vertical: 0.15rem;
+  --ifm-code-padding-horizontal: 0.34rem;
+  --ifm-pre-background: #f7f5f1;
+  --ifm-pre-border-radius: var(--radius-lg);
+
+  --ifm-table-border-color: var(--border-subtle);
+  --ifm-table-head-background: var(--surface-1);
+  --ifm-table-stripe-background: rgba(120, 113, 100, 0.05);
+  --ifm-table-cell-padding: 0.72rem 0.95rem;
+
+  --ifm-blockquote-color: var(--text-muted);
+  --ifm-blockquote-border-color: var(--brand-300);
+  --ifm-hr-border-color: var(--border-subtle);
+  --ifm-breadcrumb-color-active: var(--brand-700);
+  --ifm-breadcrumb-item-background-active: var(--brand-tint);
+  --ifm-footer-background-color: #2a2d34;
+
+  --docusaurus-highlighted-code-line-bg: rgba(79, 87, 173, 0.1);
+  --doc-sidebar-width: 20rem !important;
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: var(--brand-300);
+  --ifm-color-primary-dark: var(--brand-400);
+  --ifm-color-primary-darker: var(--brand-500);
+  --ifm-color-primary-darkest: var(--brand-600);
+  --ifm-color-primary-light: #b7bce8;
+  --ifm-color-primary-lighter: #c9cdee;
+  --ifm-color-primary-lightest: var(--brand-100);
+
+  --surface-0: var(--coal-0);
+  --surface-1: var(--coal-1);
+  --surface-2: var(--coal-2);
+  --surface-raised: #1a1d23;
+  --border-subtle: #282d35;
+  --border-strong: #363c46;
+  --text-strong: #dfe3e9;
+  --text-muted: #a2aab6;
+  --text-faint: #848c99;
+  --brand-tint: rgba(167, 173, 225, 0.12);
+
+  --ifm-background-color: var(--surface-0);
+  --ifm-background-surface-color: var(--surface-1);
+  /* ~11:1 on the charcoal background: readable without glowing. */
+  --ifm-color-content: #c6ccd5;
+  --ifm-color-content-secondary: var(--text-muted);
+  --ifm-heading-color: var(--text-strong);
+
+  --ifm-link-color: var(--brand-300);
+  --ifm-link-hover-color: var(--brand-200);
+
+  --ifm-navbar-background-color: rgba(22, 24, 29, 0.8);
+  --ifm-navbar-link-color: var(--text-muted);
+  --ifm-navbar-link-hover-color: var(--brand-200);
+
+  --ifm-code-background: rgba(167, 173, 225, 0.14);
+  --ifm-code-color: #c9cdee;
+  --ifm-pre-background: #14161b;
+
+  /* Interactive text must flip with the surface, not stay light-mode indigo. */
+  --ifm-menu-color-active: var(--brand-200);
+  --ifm-breadcrumb-color-active: var(--brand-200);
+  --ifm-breadcrumb-item-background-active: rgba(167, 173, 225, 0.16);
+
+  --ifm-table-head-background: var(--surface-2);
+  --ifm-table-stripe-background: rgba(255, 255, 255, 0.025);
+  --ifm-blockquote-border-color: var(--brand-500);
+  --ifm-footer-background-color: #121418;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 0 1px rgba(167, 173, 225, 0.18), 0 12px 44px rgba(0, 0, 0, 0.45);
+
+  --docusaurus-highlighted-code-line-bg: rgba(167, 173, 225, 0.12);
+}
+
+/* ------------------------------------------------------------------ *
+ * 3. Base + typography
+ * ------------------------------------------------------------------ */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  background-color: var(--ifm-background-color);
+}
+
+::selection {
+  background: rgba(101, 110, 196, 0.2);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.markdown h1:first-child {
+  --ifm-h1-font-size: 2.45rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Section rhythm: a hairline above h2 makes long notes scannable. */
+.markdown > h2 {
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.markdown > h2:first-child,
+.markdown > h1 + h2 {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.markdown > h2,
+.markdown > h3,
+.markdown > h4 {
+  scroll-margin-top: calc(var(--ifm-navbar-height) + 1rem);
+}
+
+.markdown p,
+.markdown li {
+  text-wrap: pretty;
+}
+
+.markdown a:not(.card):not(.button) {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--ifm-link-color) 35%, transparent);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.markdown a:not(.card):not(.button):hover {
+  text-decoration-color: currentColor;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.35rem;
+}
+
+.markdown li + li {
+  margin-top: 0.3rem;
+}
+
+.markdown li::marker {
+  color: var(--brand-400);
+}
+
+.markdown strong {
+  color: var(--text-strong);
+  font-weight: 650;
+}
+
+/* Anchor links reveal on heading hover instead of always shouting. */
+.hash-link {
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+:hover > .hash-link,
+.hash-link:focus-visible {
+  opacity: 1;
+}
+
+blockquote {
+  border-left-width: 3px;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--surface-1);
+  padding: 0.9rem 1.15rem;
+  margin-inline: 0;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-strong) 20%,
+    var(--border-strong) 80%,
+    transparent
+  );
+  margin: 2.5rem 0;
+}
+
+kbd {
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  font-size: 0.78em;
+  padding: 0.12em 0.42em;
+}
+
+/* ------------------------------------------------------------------ *
+ * 4. Chrome
+ * ------------------------------------------------------------------ */
+
+.navbar {
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.navbar__title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.02rem;
+}
+
+.navbar__logo {
+  height: 1.7rem;
+  margin-right: 0.6rem;
+}
+
+.navbar__link {
+  font-size: 0.92rem;
+  font-weight: 550;
+  border-radius: var(--radius-pill);
+  padding-block: 0.32rem;
+  transition: background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.navbar__link:hover {
+  background: var(--brand-tint);
+}
+
+.navbar__link--active {
+  color: var(--ifm-navbar-link-hover-color);
+  background: var(--brand-tint);
+}
+
+.navbar-sidebar {
+  background: var(--ifm-background-color);
+}
+
+/* Nothing horizontally overflows the page, on any breakpoint. */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Search box (local search plugin) */
+.navbar__search-input,
+.DocSearch-Button {
+  border-radius: var(--radius-pill);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.88rem;
+  height: 2.3rem;
+  transition: border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out), width var(--dur-base) var(--ease-out);
+}
+
+.navbar__search-input:focus {
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+  outline: none;
+}
+
+/* Sidebar */
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--border-subtle) !important;
+  background: var(--surface-1);
+}
+
+.menu {
+  font-size: 0.875rem;
+  padding: 0.75rem 0.6rem !important;
+  font-weight: 500;
+}
+
+.menu__list-item-collapsible,
+.menu__link {
+  border-radius: var(--radius-md);
+  transition: background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.menu__link {
+  line-height: 1.45;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 650;
+  position: relative;
+}
+
+.menu__link--active:not(.menu__link--sublist)::before {
+  content: "";
+  position: absolute;
+  left: -0.6rem;
+  top: 50%;
+  translate: 0 -50%;
+  width: 3px;
+  height: 1.1rem;
+  border-radius: var(--radius-pill);
+  background: var(--ifm-color-primary);
+}
+
+/* Nested levels get a guide rail so deep trees stay readable. */
+.menu__list .menu__list {
+  margin-left: 0.55rem;
+  padding-left: 0.45rem;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.menu__list-item-collapsible > .menu__link--sublist {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.menu__caret:before,
+.menu__link--sublist-caret:after {
+  opacity: 0.6;
+}
+
+.theme-doc-sidebar-menu > .theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible > .menu__link {
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+/* Table of contents */
+.table-of-contents {
+  font-size: 0.82rem;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.table-of-contents__link {
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.table-of-contents__link--active {
+  font-weight: 620;
+}
+
+.table-of-contents__left-border {
+  border-left-color: var(--border-subtle);
+}
+
+/* Breadcrumbs */
+.breadcrumbs__item--active .breadcrumbs__link {
+  font-weight: 600;
+}
+
+.breadcrumbs__link {
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+}
+
+/* Prev / next pagination as cards */
+.pagination-nav__link {
+  border-radius: var(--radius-lg);
+  border-color: var(--border-subtle);
+  background: var(--surface-raised);
+  transition: transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--brand-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.pagination-nav__sublabel {
+  color: var(--text-faint);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pagination-nav__label {
+  font-weight: 620;
+}
+
+/* Generated category index cards */
+article .card,
+.card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+article .card:hover,
+a.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand-300);
+  box-shadow: var(--shadow-md);
+}
+
+/* Footer */
+.footer--dark {
+  --ifm-footer-background-color: #2a2d34;
+}
+
+[data-theme="dark"] .footer--dark {
+  --ifm-footer-background-color: #121418;
+}
+
+.footer {
+  --ifm-footer-link-color: #aab6cc;
+  --ifm-footer-title-color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-block: 3rem;
+}
+
+.footer__title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+}
+
+.footer__link-item {
+  font-size: 0.9rem;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.footer__copyright {
+  font-size: 0.82rem;
+  color: #7f8ba1;
+}
+
+/* Announcement bar — outrank the theme's own module class. */
+html body div[class*="announcementBar_"] {
+  background: linear-gradient(90deg, var(--brand-700), var(--brand-600) 48%, var(--accent-600));
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.87rem;
+  border-bottom: 0;
+  --site-announcement-bar-stripe-color1: transparent;
+  --site-announcement-bar-stripe-color2: transparent;
+}
+
+html body div[class*="announcementBar_"] a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+html body div[class*="announcementBar_"] kbd {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+html body div[class*="announcementBarClose_"] {
+  color: #fff;
+  opacity: 0.85;
+}
+
+/* Back-to-top button */
+.theme-back-to-top-button {
+  box-shadow: var(--shadow-md);
+}
+
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-faint);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ------------------------------------------------------------------ *
+ * 5. Content blocks
+ * ------------------------------------------------------------------ */
+
+/* Inline code */
+code {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+a code {
+  color: inherit;
+}
+
+/* Code blocks */
+div[class^="codeBlockContainer_"] {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+div[class^="codeBlockTitle_"] {
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+}
+
+div[class^="codeBlockContent_"] pre {
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+button[class*="copyButton_"] {
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(6px);
+}
+
+/* Tables: wrapped, rounded, scrollable on small screens */
+.markdown table {
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  font-size: 0.92rem;
+}
+
+.markdown table thead {
+  background: var(--ifm-table-head-background);
+}
+
+.markdown table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 650;
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.markdown table td {
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: top;
+}
+
+.markdown table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.markdown table tbody tr:hover {
+  background: var(--brand-tint);
+}
+
+/* Admonitions */
+.theme-admonition {
+  border-radius: var(--radius-lg);
+  border-width: 1px;
+  border-left-width: 3px;
+  box-shadow: var(--shadow-xs);
+}
+
+.theme-admonition div[class*="admonitionHeading_"] {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Details / collapsibles */
+details {
+  border-radius: var(--radius-lg) !important;
+  border-color: var(--border-subtle) !important;
+  background: var(--surface-1) !important;
+}
+
+/* Media */
+.markdown img {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: #fdfdfc;
+  max-width: 100%;
+  height: auto;
+  cursor: zoom-in;
+}
+
+/* Most figures are white-background plots; full white glares against charcoal.
+   Dim them at rest and restore on hover/zoom for inspection. */
+[data-theme="dark"] .markdown img {
+  filter: brightness(0.86) contrast(1.03);
+  transition: filter var(--dur-base) var(--ease-out);
+}
+
+[data-theme="dark"] .markdown img:hover {
+  filter: none;
+}
+
+/* Math: keep long display equations scrollable rather than clipped */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem 0;
+}
+
+.katex {
+  font-size: 1.04em;
+}
+
+/* Mermaid diagrams sit in a framed, centered card */
+.docusaurus-mermaid-container {
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+
+/* Embedded notebooks/iframes */
+.markdown iframe {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  max-width: 100%;
+}
+
+/* ------------------------------------------------------------------ *
+ * 6. Utilities + motion
+ * ------------------------------------------------------------------ */
+
+.theme-doc-markdown {
+  max-width: 100%;
+}
+
+/* Slightly wider reading column on large screens */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+
+@media (max-width: 996px) {
+  :root {
+    --ifm-h1-font-size: 2rem;
+    --ifm-h2-font-size: 1.5rem;
+    --ifm-navbar-height: 3.6rem;
+  }
+
+  .markdown table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * 7. Reading comfort
+ *
+ * Measure and type size are reader-controlled from the doc toolbar and
+ * persisted per browser; these are the surfaces those choices drive.
+ * ------------------------------------------------------------------ */
+
+/* The capped measure is centred in its column, so the leftover space is split
+   evenly instead of piling up on the right of the text. */
+.theme-doc-markdown.markdown {
+  font-size: var(--reading-size);
+  max-width: var(--reading-measure);
+  margin-inline: auto;
+}
+
+/* Matching breathing room either side of the article on wide screens. */
+@media (min-width: 997px) {
+  .docItemCol_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Layout-styles-module,
+  main > .row > div[class*="docItemCol"] {
+    padding-inline: 2rem;
+  }
+}
+
+html[data-reading-size="cozy"] {
+  --reading-size: 1rem;
+}
+
+html[data-reading-size="large"] {
+  --reading-size: 1.1875rem;
+  --ifm-line-height-base: 1.8;
+}
+
+html[data-reading-width="wide"] {
+  --reading-measure: none;
+}
+
+/* The doc column keeps its own rhythm even when the measure is capped. */
+.theme-doc-markdown.markdown > * {
+  max-width: 100%;
+}
+
+/* ------------------------------------------------------------------ *
+ * 8. Image lightbox
+ * ------------------------------------------------------------------ */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--ifm-z-index-fixed) + 30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(12, 13, 16, 0.86);
+  backdrop-filter: blur(3px);
+  cursor: zoom-out;
+  animation: lightbox-in 160ms var(--ease-out);
+}
+
+.lightbox img {
+  max-width: min(96vw, 1400px);
+  max-height: 92vh;
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  filter: none !important;
+}
+
+.lightbox__hint {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  translate: -50% 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * 9. Print
+ * ------------------------------------------------------------------ */
+
+@media print {
+  .navbar,
+  .theme-doc-sidebar-container,
+  .table-of-contents,
+  .theme-doc-toc-mobile,
+  .pagination-nav,
+  .theme-back-to-top-button,
+  .footer,
+  div[class^="announcementBar_"],
+  .theme-doc-breadcrumbs {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .theme-doc-markdown.markdown {
+    max-width: none;
+    font-size: 11pt;
+  }
+
+  .markdown a {
+    text-decoration: underline;
+  }
+
+  div[class^="codeBlockContainer_"],
+  .markdown table,
+  .markdown img {
+    break-inside: avoid;
+  }
 }

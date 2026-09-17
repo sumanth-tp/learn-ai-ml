@@ -1,71 +1,64 @@
-import type {ReactNode} from 'react';
-import clsx from 'clsx';
 import Heading from '@theme/Heading';
+import type {ComponentType, ReactNode} from 'react';
+
+import {BoltIcon, BrainIcon, ChartIcon} from '@site/src/components/Icons';
+
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  Icon: ComponentType<{className?: string}>;
   description: ReactNode;
 };
 
-const FeatureList: FeatureItem[] = [
+const FEATURES: FeatureItem[] = [
   {
-    title: 'Structured Learning Path',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Derived, not memorised',
+    Icon: BrainIcon,
     description: (
       <>
-        Step-by-step notes covering Python, Data Structures, Machine Learning,
-        Deep Learning, PyTorch, FastAPI, and MLOps — from fundamentals to
-        industry-ready practices.
+        Every result is built up from the maths behind it — gradients, losses and
+        distributions are worked through before any library is imported.
       </>
     ),
   },
   {
-    title: 'Code-First Notes',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Code you can run',
+    Icon: BoltIcon,
     description: (
       <>
-        Every concept is backed by working code examples, visual explanations,
-        and common interview questions so you understand not just <em>how</em>,
-        but <em>why</em>.
+        NumPy, pandas, scikit-learn, PyTorch and FastAPI examples are complete and
+        copy-pasteable, with the failure modes called out beside them.
       </>
     ),
   },
   {
-    title: 'Real-World Projects',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Visual by default',
+    Icon: ChartIcon,
     description: (
       <>
-        Build CNNs, RNNs, LSTMs, transfer learning pipelines, REST APIs with
-        FastAPI, and end-to-end MLOps systems — the same stack used in
-        production AI teams.
+        Hundreds of generated plots and diagrams explain distributions,
+        convergence and architectures far faster than prose can.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
-  return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
       <div className="container">
-        <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
+        <div className={styles.grid}>
+          {FEATURES.map(({title, Icon, description}) => (
+            <div key={title} className={styles.feature}>
+              <span className={styles.iconWrap}>
+                <Icon className={styles.icon} />
+              </span>
+              <Heading as="h3" className={styles.title}>
+                {title}
+              </Heading>
+              <p className={styles.description}>{description}</p>
+            </div>
           ))}
         </div>
       </div>

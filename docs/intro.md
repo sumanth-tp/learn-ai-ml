@@ -1,12 +1,46 @@
 ---
 title: AI/ML learning roadmap
 sidebar_position: 1
-hide_table_of_contents: true
 ---
 
 # AI/ML learning roadmap
 
-# 1) Foundations (Weeks 1–6)
+The whole path at a glance — one year, eight stages, a shippable milestone at
+every step:
+
+```mermaid
+flowchart TD
+    START(["Start here"]) --> F["1 · Foundations<br/>Weeks 1–6<br/>math · Python · git"]
+    F --> M1{{"Milestone<br/>Tabular pipeline, end to end"}}
+    M1 --> C["2 · Core ML<br/>Weeks 7–12<br/>supervised · unsupervised · validation"]
+    C --> M2{{"Milestone<br/>Fraud or churn model behind an API"}}
+    M2 --> D["3 · Deep Learning<br/>Weeks 13–20<br/>CNNs · sequences · transformers"]
+    D --> M3{{"Milestone<br/>Vision model + sequence model"}}
+    M3 --> O["4 · MLOps<br/>Weeks 21–28<br/>Docker · CI · tracking · serving"]
+    O --> M4{{"Milestone<br/>Containerised, monitored service"}}
+    M4 --> G["5 · Generative AI & LLMs<br/>Weeks 29–36<br/>prompting · RAG · fine-tuning"]
+    G --> M5{{"Milestone<br/>Domain RAG application"}}
+    M5 --> SP["6 · Specialisation<br/>Weeks 37–44<br/>pick one lane and go deep"]
+    SP --> P["8 · Portfolio & hiring<br/>Weeks 45–52<br/>projects · system design · interviews"]
+    P --> HIRE(["Interview ready"])
+
+    ETHICS["7 · Ethics, privacy &<br/>responsible AI — ongoing"]
+    ETHICS -.-> C
+    ETHICS -.-> G
+    ETHICS -.-> P
+
+    classDef stage fill:#eef0fa,stroke:#656ec4,stroke-width:1.5px,color:#2c315f,rx:8,ry:8;
+    classDef milestone fill:#e8f4f1,stroke:#2f9b8d,stroke-width:1.2px,color:#1d5f57;
+    classDef terminal fill:#656ec4,stroke:#4f57ad,color:#ffffff;
+    classDef ongoing fill:#f6f1e8,stroke:#c08a45,stroke-dasharray:4 3,color:#6b4c1e;
+
+    class F,C,D,O,G,SP,P stage;
+    class M1,M2,M3,M4,M5 milestone;
+    class START,HIRE terminal;
+    class ETHICS ongoing;
+```
+
+## 1) Foundations (Weeks 1–6)
 
 **Math you actually use**
 
@@ -34,7 +68,7 @@ report). **Reference post collections (LinkedIn):** curated
 
 ---
 
-# 2) Core Machine Learning (Weeks 7–12)
+## 2) Core Machine Learning (Weeks 7–12)
 
 **Supervised learning**
 
@@ -52,7 +86,7 @@ reproducible repo and a proper evaluation write-up.
 
 ---
 
-# 3) Deep Learning (Weeks 13–20)
+## 3) Deep Learning (Weeks 13–20)
 
 **Essentials**
 
@@ -76,7 +110,7 @@ reproducible repo and a proper evaluation write-up.
 
 ---
 
-# 4) MLOps & “Full-Stack ML” (Weeks 21–28)
+## 4) MLOps & “Full-Stack ML” (Weeks 21–28)
 
 **From notebooks to production**
 
@@ -93,7 +127,7 @@ API** with offline evaluation, basic monitoring hooks, and a CI pipeline.
 
 ---
 
-# 5) Generative AI & LLMs (Weeks 29–36)
+## 5) Generative AI & LLMs (Weeks 29–36)
 
 **Foundations → applied**
 
@@ -114,7 +148,7 @@ dashboards.
 
 ---
 
-# 6) Specializations (Weeks 37–44)
+## 6) Specializations (Weeks 37–44)
 
 Choose one track and go deep:
 
@@ -130,7 +164,7 @@ Choose one track and go deep:
 
 ---
 
-# 7) Ethics, Privacy, and Responsible AI (ongoing)
+## 7) Ethics, Privacy, and Responsible AI (ongoing)
 
 - Data consent, bias/fairness testing, transparency docs, red-team evaluations
   for LLMs.
@@ -139,7 +173,7 @@ Choose one track and go deep:
 
 ---
 
-# 8) Portfolio & Hiring Readiness (Weeks 45–52)
+## 8) Portfolio & Hiring Readiness (Weeks 45–52)
 
 **Public proofs of work**
 

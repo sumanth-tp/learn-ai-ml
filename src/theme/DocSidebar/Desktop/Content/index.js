@@ -89,10 +89,23 @@ export default function DocSidebarDesktopContent({path, sidebar, className}) {
       )}>
       {expandedCategoryCount > 1 && (
         <div className={styles.sidebarActions}>
+          <span className={styles.sidebarActionsLabel}>
+            {expandedCategoryCount} sections open
+          </span>
           <button
             type="button"
             className={clsx('clean-btn', styles.collapseAllButton)}
             onClick={collapseAll}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="m7 14 5-5 5 5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
             Collapse all
           </button>
         </div>
