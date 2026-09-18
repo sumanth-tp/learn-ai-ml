@@ -136,6 +136,7 @@ const config: Config = {
           label: "All notes",
         },
         { to: "/docs/intro", label: "Roadmap", position: "left" },
+        { to: "/llm-roadmap", label: "LLM track", position: "left" },
         {
           label: "Theory",
           position: "left",
@@ -159,6 +160,7 @@ const config: Config = {
           title: "Learn",
           items: [
             { label: "Roadmap", to: "/docs/intro" },
+            { label: "Production LLM track", to: "/llm-roadmap" },
             { label: "Deep learning", to: "/docs/category/dnn" },
             { label: "Statistics", to: "/docs/category/statistics" },
             { label: "Code tracks", to: "/docs/category/coding" },

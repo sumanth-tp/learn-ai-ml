@@ -415,6 +415,36 @@ kbd {
   background: var(--ifm-background-color);
 }
 
+/**
+ * Infima nests the mobile menu (.navbar-sidebar) *inside* .navbar, and it is
+ * position: fixed. A backdrop-filter on an ancestor makes that ancestor the
+ * containing block for fixed descendants, so the blur above pinned the mobile
+ * menu to the 57px navbar box: it opened as a thin strip with no links, and
+ * the colour-mode toggle — which Infima hides from the mobile navbar because
+ * it belongs in that menu — became unreachable.
+ *
+ * Below the mobile breakpoint the navbar therefore drops the blur and takes a
+ * solid background instead; the same goes for the hide-on-scroll transform,
+ * which would establish a containing block for exactly the same reason.
+ */
+@media (max-width: 996px) {
+  .navbar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--surface-0);
+  }
+
+  .navbar.navbar-sidebar--show {
+    transform: none;
+  }
+
+  /* Full-height menu, and its own scroll rather than the page's. */
+  .navbar-sidebar {
+    height: 100%;
+    max-height: 100dvh;
+  }
+}
+
 /* Nothing horizontally overflows the page, on any breakpoint. */
 html,
 body {

@@ -1092,7 +1092,7 @@ export const UNITS: Unit[] = [
       {
         id: 'm17-r7',
         label: 'LangGraph tutorials — adaptive and corrective RAG',
-        href: 'https://langchain-ai.github.io/langgraph/tutorials/',
+        href: 'https://langchain-ai.github.io/langgraph/examples/',
         kind: 'docs',
       },
     ],
@@ -2018,3 +2018,468 @@ export const TOTAL_RESOURCES = UNITS.reduce(
 );
 
 export const TOTAL_HOURS = UNITS.reduce((sum, unit) => sum + unit.hours, 0);
+
+/* ------------------------------------------------------------------ *
+ * Build-along projects
+ *
+ * One or more hands-on walkthroughs per unit — a video you code along with,
+ * or an article/notebook you work through — kept separate from the reference
+ * shelf above so the "read about it" and "build it" halves stay distinct.
+ * A handful are YouTube search links rather than a fixed video, because the
+ * good walkthrough for that topic changes every few months; those are noted.
+ * ------------------------------------------------------------------ */
+
+export const BUILD_PROJECTS: Record<string, Resource[]> = {
+  f01: [
+    {
+      id: 'f01-b1',
+      label: 'Build micrograd — a tiny autograd engine, from scratch',
+      href: 'https://www.youtube.com/watch?v=VMj-3S1tku0',
+      kind: 'youtube',
+      note: 'Backprop stops being magic after this one. ~2.5 hrs, code along.',
+    },
+    {
+      id: 'f01-b2',
+      label: 'Train an image classifier in PyTorch (CIFAR-10)',
+      href: 'https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html',
+      kind: 'article',
+      note: 'Your first complete train/eval loop.',
+    },
+  ],
+  m01: [
+    {
+      id: 'm01-b1',
+      label: 'Build a GPT from scratch, line by line (Karpathy)',
+      href: 'https://www.youtube.com/watch?v=kCc8FmEb1nY',
+      kind: 'youtube',
+      note: 'The canonical build. Do not just watch it — type it.',
+    },
+    {
+      id: 'm01-b2',
+      label: 'Build a tokenizer, block by block (HF course)',
+      href: 'https://huggingface.co/learn/llm-course/chapter6/8',
+      kind: 'article',
+      note: 'Normalizer → pre-tokenizer → model → decoder, assembled by hand.',
+    },
+  ],
+  m02: [
+    {
+      id: 'm02-b1',
+      label: 'Fine-tune a model with the Trainer API (HF course)',
+      href: 'https://huggingface.co/learn/llm-course/chapter3/3',
+      kind: 'article',
+      note: 'The smallest complete fine-tune you can run today.',
+    },
+    {
+      id: 'm02-b2',
+      label: 'Fine-tune Llama with QLoRA using the TRL SFT Trainer',
+      href: 'https://www.youtube.com/watch?v=XOlyOWE4YaM',
+      kind: 'youtube',
+    },
+  ],
+  m03: [
+    {
+      id: 'm03-b1',
+      label: 'vLLM quickstart — serve a model and benchmark it',
+      href: 'https://docs.vllm.ai/en/latest/getting_started/quickstart.html',
+      kind: 'article',
+      note: 'Then re-run with and without prefix caching and compare.',
+    },
+    {
+      id: 'm03-b2',
+      label: 'Optimizing LLMs for speed and memory (HF guide)',
+      href: 'https://huggingface.co/docs/transformers/llm_tutorial_optimization',
+      kind: 'article',
+      note: 'Quantization, Flash Attention and KV-cache variants, measured.',
+    },
+  ],
+  m04: [
+    {
+      id: 'm04-b1',
+      label: 'End-to-end LLM fine-tuning: LoRA, QLoRA and full fine-tune',
+      href: 'https://www.youtube.com/watch?v=jrf5vyOEMr8',
+      kind: 'youtube',
+      note: 'Good map of where CPT, SFT and alignment sit relative to each other.',
+    },
+  ],
+  m05: [
+    {
+      id: 'm05-b1',
+      label: 'Open-Source AI Cookbook — synthetic data recipes',
+      href: 'https://huggingface.co/learn/cookbook/index',
+      kind: 'article',
+      note: 'Runnable notebooks for generation, judging and filtering.',
+    },
+    {
+      id: 'm05-b2',
+      label: 'Build a domain SFT dataset with distilabel pipelines',
+      href: 'https://distilabel.argilla.io/latest/sections/pipeline_samples/',
+      kind: 'article',
+    },
+  ],
+  m06: [
+    {
+      id: 'm06-b1',
+      label: 'Fine-tune Llama 3.2 with QLoRA — step by step',
+      href: 'https://www.youtube.com/watch?v=xBgSivyCwi8',
+      kind: 'youtube',
+    },
+    {
+      id: 'm06-b2',
+      label: 'A fistful of dollars: fine-tune LLaMA 2 7B with QLoRA',
+      href: 'https://www.youtube.com/watch?v=5L4s9mi9eUc',
+      kind: 'youtube',
+      note: 'Strong on the cost/VRAM arithmetic, not just the code.',
+    },
+    {
+      id: 'm06-b3',
+      label: 'TRL — run your first DPO training',
+      href: 'https://huggingface.co/docs/trl/dpo_trainer',
+      kind: 'article',
+    },
+  ],
+  m07: [
+    {
+      id: 'm07-b1',
+      label: 'Fine-tune any LLM with LLaMA-Factory (WebUI + CLI, LoRA + QLoRA)',
+      href: 'https://www.youtube.com/watch?v=RL38OsL5ycY',
+      kind: 'youtube',
+    },
+    {
+      id: 'm07-b2',
+      label: 'Quantize a model and push GGUF to the Hub',
+      href: 'https://huggingface.co/docs/hub/gguf',
+      kind: 'article',
+    },
+  ],
+  m08: [
+    {
+      id: 'm08-b1',
+      label: 'Implement a Mixture-of-Experts layer from scratch',
+      href: 'https://www.youtube.com/results?search_query=mixture+of+experts+from+scratch+pytorch+implementation',
+      kind: 'youtube',
+      note: 'Search link — this topic dates fast; pick the most recent walkthrough.',
+    },
+  ],
+  m09: [
+    {
+      id: 'm09-b1',
+      label: 'Train a reasoning model with GRPO',
+      href: 'https://www.youtube.com/results?search_query=train+reasoning+model+GRPO+tutorial+unsloth',
+      kind: 'youtube',
+      note: 'Search link — GRPO tooling changed twice in 2025; take the newest.',
+    },
+    {
+      id: 'm09-b2',
+      label: 'Reasoning recipes in the Open-Source AI Cookbook',
+      href: 'https://huggingface.co/learn/cookbook/index',
+      kind: 'article',
+    },
+  ],
+  m10: [
+    {
+      id: 'm10-b1',
+      label: 'Crash course: knowledge distillation, built end to end',
+      href: 'https://www.youtube.com/watch?v=p-Q2lAx3YAk',
+      kind: 'youtube',
+      note: 'Vision models, but the loss plumbing is identical for LLMs.',
+    },
+    {
+      id: 'm10-b2',
+      label: 'Distil-Whisper: distillation via large-scale pseudo labelling',
+      href: 'https://arxiv.org/abs/2311.00430',
+      kind: 'paper',
+      note: 'A real distillation recipe you can copy the structure of.',
+    },
+  ],
+  m15: [
+    {
+      id: 'm15-b1',
+      label: 'Complete RAG crash course with LangChain (2 hrs)',
+      href: 'https://www.youtube.com/watch?v=o126p1QN_RI',
+      kind: 'youtube',
+    },
+    {
+      id: 'm15-b2',
+      label: 'LangChain — build a RAG application (official tutorial)',
+      href: 'https://python.langchain.com/docs/tutorials/rag/',
+      kind: 'article',
+    },
+  ],
+  m16: [
+    {
+      id: 'm16-b1',
+      label: 'RAG From Scratch — LangChain video series',
+      href: 'https://www.youtube.com/playlist?list=PLfaIDFEXuae2LXbO1_PKyVJiQ23ZztA0x',
+      kind: 'youtube',
+      note: 'Indexing → retrieval → generation → query translation → routing.',
+    },
+    {
+      id: 'm16-b2',
+      label: 'Learn RAG from scratch — full tutorial by a LangChain engineer',
+      href: 'https://www.youtube.com/watch?v=sVcwVQRHIc8',
+      kind: 'youtube',
+    },
+  ],
+  m17: [
+    {
+      id: 'm17-b1',
+      label: 'Build Self-RAG / Corrective RAG graphs (LangGraph tutorials)',
+      href: 'https://langchain-ai.github.io/langgraph/examples/',
+      kind: 'article',
+      note: 'The adaptive-RAG notebooks are the module in runnable form.',
+    },
+    {
+      id: 'm17-b2',
+      label: 'RAG with LangChain — a complete build tutorial',
+      href: 'https://www.youtube.com/watch?v=YLPNA1j7kmQ',
+      kind: 'youtube',
+    },
+  ],
+  m18: [
+    {
+      id: 'm18-b1',
+      label: 'Build multimodal RAG with ColPali',
+      href: 'https://www.youtube.com/results?search_query=ColPali+multimodal+RAG+tutorial+qdrant',
+      kind: 'youtube',
+      note: 'Search link — ColPali tooling is young; take the newest walkthrough.',
+    },
+    {
+      id: 'm18-b2',
+      label: 'Neo4j — build a GraphRAG pipeline in Python',
+      href: 'https://neo4j.com/docs/neo4j-graphrag-python/current/',
+      kind: 'article',
+      note: 'Entity extraction → graph build → retriever, with working code.',
+    },
+  ],
+  m19: [
+    {
+      id: 'm19-b1',
+      label: 'MCP quickstart — build your first MCP server',
+      href: 'https://modelcontextprotocol.io/quickstart/server',
+      kind: 'article',
+      note: 'Then point a real client at it and watch the handshake.',
+    },
+    {
+      id: 'm19-b2',
+      label: 'Build an MCP client and server wired into a LangGraph workflow',
+      href: 'https://www.youtube.com/watch?v=pHTYLcWFp6w',
+      kind: 'youtube',
+    },
+  ],
+  m20: [
+    {
+      id: 'm20-b1',
+      label: 'End-to-end multi-agent system: LangGraph + MCP + supervisor + HITL',
+      href: 'https://www.youtube.com/watch?v=BM39OouLNsM',
+      kind: 'youtube',
+      note: 'The closest single video to capstone Project 04.',
+    },
+    {
+      id: 'm20-b2',
+      label: 'Full multi-agent app with MCP, LangGraph, a database and FastAPI',
+      href: 'https://www.youtube.com/watch?v=LZAGlCqmhZQ',
+      kind: 'youtube',
+    },
+  ],
+  m21: [
+    {
+      id: 'm21-b1',
+      label: 'Multi-agent system with MCP on LangGraph (supervisor architecture)',
+      href: 'https://www.youtube.com/watch?v=OnG5E9WHbbs',
+      kind: 'youtube',
+    },
+    {
+      id: 'm21-b2',
+      label: 'Deploy an agent to Bedrock AgentCore Runtime',
+      href: 'https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-getting-started.html',
+      kind: 'article',
+    },
+  ],
+  m22: [
+    {
+      id: 'm22-b1',
+      label: 'PromptFoo — getting started with prompt testing',
+      href: 'https://www.promptfoo.dev/docs/getting-started/',
+      kind: 'article',
+      note: 'Turn "the prompt feels better" into a number in about 20 minutes.',
+    },
+    {
+      id: 'm22-b2',
+      label: 'Claude prompt library — patterns to reverse-engineer',
+      href: 'https://docs.claude.com/en/resources/prompt-library/library',
+      kind: 'article',
+    },
+  ],
+  m23: [
+    {
+      id: 'm23-b1',
+      label: 'LangGraph — persistence and checkpointing, built up step by step',
+      href: 'https://langchain-ai.github.io/langgraph/concepts/persistence/',
+      kind: 'article',
+    },
+    {
+      id: 'm23-b2',
+      label: 'Add long-term memory to an agent (LangGraph memory guide)',
+      href: 'https://langchain-ai.github.io/langgraph/concepts/memory/',
+      kind: 'article',
+    },
+  ],
+  m24: [
+    {
+      id: 'm24-b1',
+      label: 'Inspect AI tutorial — write your first Task, Solver and Scorer',
+      href: 'https://inspect.aisi.org.uk/tutorial.html',
+      kind: 'article',
+    },
+    {
+      id: 'm24-b2',
+      label: 'PromptFoo in CI — gate a pull request on eval scores',
+      href: 'https://www.promptfoo.dev/docs/integrations/ci-cd/',
+      kind: 'article',
+      note: 'This is Project 05 in miniature — do it early.',
+    },
+  ],
+  m11: [
+    {
+      id: 'm11-b1',
+      label: 'Vision Transformers and knowledge distillation (lecture + build)',
+      href: 'https://www.youtube.com/watch?v=J_q-PEYikEo',
+      kind: 'youtube',
+    },
+    {
+      id: 'm11-b2',
+      label: 'HF Computer Vision Course — ViT hands-on chapters',
+      href: 'https://huggingface.co/learn/computer-vision-course',
+      kind: 'article',
+    },
+  ],
+  m12: [
+    {
+      id: 'm12-b1',
+      label: 'Fine-tune a vision-language model (Cookbook notebooks)',
+      href: 'https://huggingface.co/learn/cookbook/index',
+      kind: 'article',
+      note: 'Filter the index for "VLM" and "multimodal".',
+    },
+    {
+      id: 'm12-b2',
+      label: 'Build a document-QA app on an open VLM',
+      href: 'https://www.youtube.com/results?search_query=fine+tune+vision+language+model+tutorial+qwen+vl',
+      kind: 'youtube',
+      note: 'Search link — open VLMs turn over fast; take the newest.',
+    },
+  ],
+  m13: [
+    {
+      id: 'm13-b1',
+      label: 'Fine-tune Whisper for speech transcription',
+      href: 'https://www.youtube.com/watch?v=anplUNnkM68',
+      kind: 'youtube',
+    },
+    {
+      id: 'm13-b2',
+      label: 'Whisper data preparation and fine-tuning with Unsloth',
+      href: 'https://www.youtube.com/watch?v=OfQNgPfv97s',
+      kind: 'youtube',
+    },
+  ],
+  m14: [
+    {
+      id: 'm14-b1',
+      label: 'Train and fine-tune sentence transformers (HF blog)',
+      href: 'https://huggingface.co/blog/how-to-train-sentence-transformers',
+      kind: 'article',
+    },
+    {
+      id: 'm14-b2',
+      label: 'Sentence Transformers — training overview with runnable configs',
+      href: 'https://sbert.net/docs/sentence_transformer/training_overview.html',
+      kind: 'article',
+    },
+  ],
+  p01: [
+    {
+      id: 'p01-b1',
+      label: 'Fine-tune a medical LLM: dataset → SFT → DPO',
+      href: 'https://www.youtube.com/results?search_query=fine+tune+medical+LLM+QLoRA+DPO+project',
+      kind: 'youtube',
+      note: 'Search link — use it for shape, then follow your own dataset.',
+    },
+    {
+      id: 'p01-b2',
+      label: 'Serve many LoRA adapters from one base model (vLLM)',
+      href: 'https://docs.vllm.ai/en/latest/features/lora.html',
+      kind: 'article',
+    },
+  ],
+  p02: [
+    {
+      id: 'p02-b1',
+      label: 'Knowledge distillation, implemented from scratch',
+      href: 'https://www.youtube.com/watch?v=p-Q2lAx3YAk',
+      kind: 'youtube',
+    },
+    {
+      id: 'p02-b2',
+      label: 'Convert to GGUF and serve on CPU',
+      href: 'https://huggingface.co/docs/hub/gguf',
+      kind: 'article',
+    },
+  ],
+  p03: [
+    {
+      id: 'p03-b1',
+      label: 'Build a hybrid retriever with RRF and a cross-encoder',
+      href: 'https://qdrant.tech/documentation/concepts/hybrid-queries/',
+      kind: 'article',
+    },
+    {
+      id: 'p03-b2',
+      label: 'Evaluate the pipeline with RAGAS end to end',
+      href: 'https://docs.ragas.io/en/stable/getstarted/rag_eval/',
+      kind: 'article',
+    },
+  ],
+  p04: [
+    {
+      id: 'p04-b1',
+      label: 'End-to-end multi-agent system with supervisor, guardrails and HITL',
+      href: 'https://www.youtube.com/watch?v=BM39OouLNsM',
+      kind: 'youtube',
+      note: 'Follow it, then swap the tools for your own MCP servers.',
+    },
+    {
+      id: 'p04-b2',
+      label: 'LangGraph — human-in-the-loop interrupts, built step by step',
+      href: 'https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/',
+      kind: 'article',
+    },
+  ],
+  p05: [
+    {
+      id: 'p05-b1',
+      label: 'Gate a pull request on eval scores with PromptFoo in CI',
+      href: 'https://www.promptfoo.dev/docs/integrations/ci-cd/',
+      kind: 'article',
+    },
+    {
+      id: 'p05-b2',
+      label: 'Multi-stage container builds for every service',
+      href: 'https://docs.docker.com/build/building/multi-stage/',
+      kind: 'article',
+    },
+  ],
+};
+
+export function buildsFor(unitId: string): Resource[] {
+  return BUILD_PROJECTS[unitId] ?? [];
+}
+
+export const TOTAL_BUILDS = Object.values(BUILD_PROJECTS).reduce(
+  (sum, list) => sum + list.length,
+  0,
+);
+
+/** Everything with a tick box: reference resources + build-along projects. */
+export const TOTAL_LINKS = TOTAL_RESOURCES + TOTAL_BUILDS;
