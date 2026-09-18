@@ -1,0 +1,8 @@
+{
+  "label": "Capstone project",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "A production-grade Python service that uses every concept in the module."
+  }
+}

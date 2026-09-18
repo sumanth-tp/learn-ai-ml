@@ -1,0 +1,8 @@
+{
+  "label": "Deep Reinforcement Learning",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Reinforcement learning from the agent-environment loop through DQN, PPO and GRPO to production deployment \u2014 each topic with runnable Python, design guidance and a 2026 industry view. Interactive panels are embedded from the original Bansal AI lecture library; each demo links back to its source lecture."
+  }
+}

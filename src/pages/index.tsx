@@ -4,6 +4,7 @@ import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
 import type {ComponentType, ReactNode} from 'react';
 
+import {useDocsIndex, useSectionCounts} from '@site/src/lib/docsIndex';
 import {
   ArrowIcon,
   BoltIcon,
@@ -87,12 +88,17 @@ const TRACKS: Track[] = [
   },
 ];
 
-const STATS: {value: string; label: string}[] = [
-  {value: '345+', label: 'written notes'},
-  {value: '99', label: 'deep-learning lessons'},
-  {value: '26', label: 'master cheatsheets'},
-  {value: '11', label: 'interview question banks'},
-];
+function useStats(): {value: string; label: string}[] {
+  const docs = useDocsIndex();
+  const counts = useSectionCounts();
+  const n = (key: string) => counts.get(key) ?? 0;
+  return [
+    {value: `${docs.length}`, label: 'written notes'},
+    {value: `${n('dnn') + n('drl') + n('nlp')}`, label: 'deep learning, RL & NLP'},
+    {value: `${n('cheatsheets')}`, label: 'master cheatsheets'},
+    {value: `${n('interviews')}`, label: 'interview question banks'},
+  ];
+}
 
 const PATH: {step: string; title: string; body: string; to: string}[] = [
   {
@@ -139,6 +145,7 @@ opt.step(); opt.zero_grad()`;
 
 function Hero() {
   const {siteConfig} = useDocusaurusContext();
+  const stats = useStats();
 
   return (
     <header className={styles.hero}>
@@ -174,7 +181,7 @@ function Hero() {
           </div>
 
           <dl className={styles.stats}>
-            {STATS.map((stat) => (
+            {stats.map((stat) => (
               <div key={stat.label} className={styles.stat}>
                 <dt className={styles.statValue}>{stat.value}</dt>
                 <dd className={styles.statLabel}>{stat.label}</dd>
@@ -216,6 +223,14 @@ function Hero() {
 }
 
 function Tracks() {
+  const counts = useSectionCounts();
+  const liveMeta: Record<string, string> = {
+    'Deep Learning': `${counts.get('dnn') ?? 0} notes`,
+    'Statistics & Probability': `${counts.get('stats') ?? 0} notes`,
+    Cheatsheets: `${counts.get('cheatsheets') ?? 0} sheets`,
+    'Interview Prep': `${counts.get('interviews') ?? 0} sets`,
+    'Engineering & Systems': `${counts.get('scaler') ?? 0} notes`,
+  };
   return (
     <section className={styles.section}>
       <div className="container">
@@ -240,7 +255,7 @@ function Tracks() {
                 <p className={styles.trackBlurb}>{blurb}</p>
               </div>
               <div className={styles.trackFoot}>
-                <span className={styles.trackMeta}>{meta}</span>
+                <span className={styles.trackMeta}>{liveMeta[title] ?? meta}</span>
                 <ArrowIcon className={styles.trackArrow} />
               </div>
             </Link>

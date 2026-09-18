@@ -1,0 +1,8 @@
+{
+  "label": "Standard library",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "The batteries: text, dates, formats, logging, CLIs and subprocesses."
+  }
+}

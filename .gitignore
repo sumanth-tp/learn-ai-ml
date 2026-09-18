@@ -19,3 +19,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+
+# Lecture import working files (crawl cache, converters, specs)
+/.lecture-import

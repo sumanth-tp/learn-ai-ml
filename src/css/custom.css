@@ -439,10 +439,16 @@ body {
   outline: none;
 }
 
-/* Sidebar */
+/* Sidebar. Docusaurus already makes the inner viewport sticky; overriding the
+   container's height makes its box spill into the footer, so only paint here. */
 .theme-doc-sidebar-container {
   border-right: 1px solid var(--border-subtle) !important;
   background: var(--surface-1);
+}
+
+/* The footer sits below the content, clear of the sidebar column. */
+html.plugin-docs .footer {
+  border-top: 1px solid var(--border-subtle);
 }
 
 .menu {

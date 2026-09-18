@@ -34,7 +34,6 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           remarkPlugins: [math],
           rehypePlugins: [[katex, { output: "html" }]],
-          showLastUpdateTime: true,
         },
         theme: {
           customCss: "./src/css/custom.css",
@@ -92,7 +91,7 @@ const config: Config = {
     announcementBar: {
       id: "explore-2026",
       content:
-        '<strong>New:</strong> browse all 345 notes in one place — <a href="/explore">open Explore</a>, or press <kbd>?</kbd> for shortcuts.',
+        '<strong>New:</strong> browse every note in one place — <a href="/explore">open Explore</a>, or press <kbd>?</kbd> for shortcuts.',
       isCloseable: true,
     },
 

@@ -1,0 +1,8 @@
+{
+  "label": "Building programs",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Modules, exceptions, files and objects."
+  }
+}

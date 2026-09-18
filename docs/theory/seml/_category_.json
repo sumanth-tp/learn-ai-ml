@@ -1,0 +1,8 @@
+{
+  "label": "Software Engineering for ML",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Building the system around the model: requirements, architecture, engineering practice, delivery, operations and responsibility \u2014 each topic with runnable code, design guidance and a 2026 industry view."
+  }
+}

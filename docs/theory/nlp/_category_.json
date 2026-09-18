@@ -1,0 +1,8 @@
+{
+  "label": "Natural Language Processing",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "NLP from vector semantics and language models through transformers to RAG and agentic systems \u2014 each topic with runnable Python, design guidance and a 2026 industry view. Interactive panels are embedded from the original Bansal AI lecture library; each demo links back to its source lecture."
+  }
+}

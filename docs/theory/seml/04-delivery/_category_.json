@@ -1,0 +1,8 @@
+{
+  "label": "Delivery",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "From notebook to production: CI/CD, containers and release strategies."
+  }
+}

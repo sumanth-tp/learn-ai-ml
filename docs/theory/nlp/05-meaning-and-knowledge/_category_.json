@@ -1,0 +1,8 @@
+{
+  "label": "Meaning and knowledge",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Senses, entity linking and knowledge graphs."
+  }
+}
