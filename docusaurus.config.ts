@@ -148,6 +148,7 @@ const config: Config = {
         { to: "/docs/category/coding", label: "Code", position: "left" },
         { to: "/docs/category/cheetsheet", label: "Cheatsheets", position: "left" },
         { to: "/docs/category/interview", label: "Interviews", position: "left" },
+        { to: "/ai-news", label: "AI updates", position: "left" },
         { to: "/explore", label: "Explore", position: "left" },
         { type: "search", position: "right" },
       ],
@@ -174,6 +175,7 @@ const config: Config = {
             { label: "Engineering & systems", to: "/docs/category/scaler" },
             { label: "Miscellaneous", to: "/docs/category/miscellaneous-collection" },
             { label: "Explore all notes", to: "/explore" },
+            { label: "AI Innovation Hub", to: "/ai-news" },
           ],
         },
         {

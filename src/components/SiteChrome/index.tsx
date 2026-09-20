@@ -3,6 +3,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import {useCallback, useEffect, useRef, useState} from 'react';
 
 import {recordVisit} from '@site/src/lib/progress';
+import AIChatbot from '@site/src/components/AIChatbot';
 
 import styles from './styles.module.css';
 
@@ -343,6 +344,7 @@ export default function SiteChrome() {
       <ReadingProgress active={isDoc} />
       <Lightbox />
       <ShortcutsDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <AIChatbot pageKey={location.pathname} />
       <button
         type="button"
         className={styles.helpButton}
