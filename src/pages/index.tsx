@@ -33,6 +33,14 @@ type Track = {
 
 const TRACKS: Track[] = [
   {
+    title: 'Research Papers',
+    blurb: 'Read the original papers, work through the ideas and equations, and run the complete teaching implementations.',
+    to: '/docs/research-papers',
+    meta: '14 papers',
+    Icon: LayersIcon,
+    tone: 'indigo',
+  },
+  {
     title: 'Deep Learning',
     blurb:
       'Perceptrons through backprop, optimizers, CNNs, RNNs, attention and transformers — derived, then coded.',

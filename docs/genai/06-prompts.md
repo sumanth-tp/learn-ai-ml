@@ -510,6 +510,21 @@ Print the final prompt and you see: the system message, then the chat history, t
 
 **Generally you use `MessagesPlaceholder` to retrieve and insert stored chat history.**
 
+### How chat history becomes a model prompt
+
+The placeholder inserts the saved messages between the system instruction and the current question. It does not store conversation history by itself.
+
+```mermaid
+flowchart TB
+    T["ChatPromptTemplate"] --> S["SystemMessage: behaviour and context"]
+    H["Conversation history"] --> P["MessagesPlaceholder"]
+    P --> M["Earlier HumanMessage and AIMessage objects"]
+    Q["Current question"] --> U["New HumanMessage"]
+    S --> L["Ordered message list"]
+    M --> L
+    U --> L --> C["Chat model"]
+```
+
 ## What comes next
 
 Prompting techniques are a large topic, and a dedicated **prompt engineering playlist** is planned, covering techniques like chain-of-thought prompting in more depth. Everything required within LangChain is covered in this video.

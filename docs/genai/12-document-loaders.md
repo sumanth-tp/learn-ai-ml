@@ -83,6 +83,17 @@ So document loaders are utilities whose job is to fetch data from different data
 
 All document loaders are found in the **`langchain_community`** package.
 
+### From source files to document chunks
+
+The loader produces Document objects containing text and metadata. The splitter then changes their size while retaining source information for later retrieval.
+
+```mermaid
+flowchart LR
+    A["Text / PDF / CSV / web page"] --> L["Source-specific loader"]
+    L --> D["Document objects<br/>page_content + metadata"]
+    D --> S["Text splitter"] --> C["Smaller Document objects<br/>text + source metadata"]
+```
+
 ## 1. TextLoader
 
 The simplest document loader in LangChain. Its work is very simple: it picks up text files and brings them into LangChain as Document objects.

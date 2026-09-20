@@ -21,6 +21,8 @@ export type DocSection = {
 
 /** Ordered longest-prefix-first so `theory/dnn` beats `theory`. */
 export const SECTIONS: DocSection[] = [
+  {key: 'research-papers', label: 'Research Papers', match: 'research-papers', tone: 'indigo'},
+  {key: 'genai', label: 'Generative AI', match: 'genai', tone: 'violet'},
   {key: 'dnn', label: 'Deep Learning', match: 'theory/dnn', tone: 'indigo'},
   {key: 'drl', label: 'Reinforcement Learning', match: 'theory/drl', tone: 'violet'},
   {key: 'nlp', label: 'NLP', match: 'theory/nlp', tone: 'sky'},

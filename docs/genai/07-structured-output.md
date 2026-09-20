@@ -287,6 +287,19 @@ Walking through what Pydantic adds over TypedDict:
 
 **Conversion.** When the object is created it is a Pydantic object, but you can convert it to a Python dictionary with `dict(student)` or to JSON with `model_dump_json()`. It is up to you whether you want JSON, a dictionary, or to work with Pydantic objects.
 
+### From an output schema to a validated result
+
+The schema describes the desired output. Pydantic then checks whether the returned values satisfy that schema; a validation failure needs to be handled by the application.
+
+```mermaid
+flowchart LR
+    S["Output schema"] --> M["Model configured for structured output"]
+    Q["Review text"] --> M --> O["Candidate result"]
+    O --> V{"Pydantic validation"}
+    V -->|valid| A["Typed Review object"]
+    V -->|invalid| E["Validation error to handle"]
+```
+
 ### Using it for structured output
 
 Take the same code from the TypedDict example and replace the schema.

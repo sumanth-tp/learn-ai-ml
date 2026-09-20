@@ -157,6 +157,22 @@ It **first tries to create chunks based on paragraphs.** If a chunk cannot be cr
 
 **So this algorithm keeps trying all the time to ensure your text does not get split abruptly midway.**
 
+### How recursive splitting chooses a boundary
+
+The splitter tries progressively smaller separators for oversized pieces, then merges pieces within the size limit. Chunk overlap is a target, not a guarantee that every pair shares an identical number of characters.
+
+```mermaid
+flowchart TB
+    T["Text segment"] --> P["Try paragraph separator"]
+    P --> C{"Piece exceeds chunk size?"}
+    C -->|no| M["Merge pieces within size limit"]
+    C -->|yes| L["Try line separator"]
+    L --> W{"Still too large?"}
+    W -->|no| M
+    W -->|yes| S["Try spaces, then characters"]
+    S --> M --> O["Emit chunks with overlap where possible"]
+```
+
 ### A worked trace
 
 Take this text, with character counts written beside each line:

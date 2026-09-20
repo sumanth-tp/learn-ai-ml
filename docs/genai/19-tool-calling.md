@@ -162,6 +162,23 @@ Messages were taught earlier — `SystemMessage`, `HumanMessage`, `AIMessage`. T
 
 So rather than sending just the arguments, send the entire tool call and get back a tool message.
 
+### The complete tool-call round trip
+
+The model selects a tool and its arguments. Your application executes it, attaches a ToolMessage with the matching call ID, and sends the updated conversation back to the model.
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant LLM as Model
+    participant Tool as Python tool
+    App->>LLM: Messages and bound tool schemas
+    LLM-->>App: AIMessage with name, args and call ID
+    App->>Tool: Invoke the requested tool
+    Tool-->>App: Tool result
+    App->>LLM: History + AIMessage + ToolMessage with matching ID
+    LLM-->>App: Answer or another tool request
+```
+
 ## Putting the loop together
 
 We organise the whole thing by maintaining a **messages list**.

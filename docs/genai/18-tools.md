@@ -175,6 +175,21 @@ You create a custom tool when no built-in tool exists for your use case. The mos
 
 **In a nutshell:** if you already have an application and want to create an agent for it, whatever tools that agent needs to interact with your existing infrastructure, **you have to create those tools yourself** — LangChain cannot provide them.
 
+### Three ways to turn Python behaviour into a tool
+
+Each route produces a tool description and argument schema around executable Python behaviour. The next sections implement these routes individually.
+
+```mermaid
+flowchart TB
+    F["Python behaviour"] --> D["Function with @tool"]
+    F --> S["StructuredTool.from_function<br/>explicit argument schema"]
+    F --> B["BaseTool subclass<br/>custom implementation"]
+    D --> T["Tool: name + description + argument schema"]
+    S --> T
+    B --> T
+    T --> I["invoke with validated arguments"]
+```
+
 ## Way 1 — the `@tool` decorator
 
 The simplest and most straightforward method. **Making a tool is a three-step process.**
