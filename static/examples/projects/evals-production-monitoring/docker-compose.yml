@@ -1,0 +1,48 @@
+# api + separate eval worker sharing one SQLite volume, plus optional Jaeger for traces.
+#   docker compose up --build                     api on :8000, worker draining eval jobs
+#   docker compose --profile demo run --rm demo   simulate a week, write out/dashboard.html
+#   docker compose --profile tracing up           also start Jaeger UI on :16686
+x-app: &app
+  build: .
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    AGENTMON_DB_PATH: /app/var/agentmon.db
+    AGENTMON_OUT_DIR: /app/out
+  volumes:
+    - agentmon-data:/app/var
+    - ./out:/app/out
+
+services:
+  api:
+    <<: *app
+    ports: ["8000:8000"]
+    environment:
+      AGENTMON_DB_PATH: /app/var/agentmon.db
+      AGENTMON_INPROCESS_WORKERS: "false"
+      AGENTMON_OTLP_ENDPOINT: ${AGENTMON_OTLP_ENDPOINT:-}
+
+  worker:
+    <<: *app
+    command: ["agentmon", "workers"]
+    healthcheck:
+      disable: true
+    depends_on:
+      api:
+        condition: service_healthy
+
+  demo:
+    <<: *app
+    profiles: ["demo"]
+    command: ["agentmon", "demo"]
+    healthcheck:
+      disable: true
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    profiles: ["tracing"]
+    ports: ["16686:16686", "4318:4318"]
+
+volumes:
+  agentmon-data:

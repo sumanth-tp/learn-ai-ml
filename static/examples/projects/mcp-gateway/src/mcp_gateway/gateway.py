@@ -4,6 +4,7 @@ middleware, and the operational HTTP routes."""
 from __future__ import annotations
 
 import asyncio
+import hmac
 import time
 from typing import Any
 
@@ -38,10 +39,15 @@ INSTRUCTIONS = (
 
 
 class Readiness:
-    """Pings each required upstream at most every ``ttl`` seconds."""
+    """Probes each upstream (tools/list) at most every ``ttl`` seconds."""
 
-    def __init__(self, factories: dict[str, ClientFactory], specs: dict[str, UpstreamSpec],
-                 breakers: dict[str, CircuitBreaker], ttl: float = 5.0) -> None:
+    def __init__(
+        self,
+        factories: dict[str, ClientFactory],
+        specs: dict[str, UpstreamSpec],
+        breakers: dict[str, CircuitBreaker],
+        ttl: float = 5.0,
+    ) -> None:
         self.factories, self.specs, self.breakers, self.ttl = factories, specs, breakers, ttl
         self._cached: tuple[float, dict[str, str]] | None = None
 
@@ -50,7 +56,7 @@ class Readiness:
             return "circuit_open"
         try:
             async with asyncio.timeout(3.0), self.factories[name]() as client:
-                await client.ping()
+                await client.list_tools()  # proves it can serve tools, not just answer
             return "ok"
         except Exception as exc:
             return f"unreachable: {type(exc).__name__}"
@@ -82,8 +88,9 @@ def build_gateway(
 
     db = StateDB(settings.state_db)
     breakers = {
-        s.name: CircuitBreaker(s.name, settings.breaker_failure_threshold,
-                               settings.breaker_reset_seconds)
+        s.name: CircuitBreaker(
+            s.name, settings.breaker_failure_threshold, settings.breaker_reset_seconds
+        )
         for s in specs
     }
     components = Components(
@@ -108,8 +115,18 @@ def build_gateway(
     )
     factories: dict[str, ClientFactory] = {}
     for spec in specs:
+        if spec.credential is not None:
+            # Fail fast on a missing secret for a required upstream, and
+            # remember the value so the output filter can scrub it.
+            try:
+                components.secret_values.add(broker.get(spec.credential.secret).get_secret_value())
+            except LookupError:
+                if spec.required:
+                    raise
         factory = build_client_factory(
-            spec, broker, default_timeout=settings.upstream_timeout_seconds,
+            spec,
+            broker,
+            default_timeout=settings.upstream_timeout_seconds,
             server_override=overrides.get(spec.name),
         )
         factories[spec.name] = factory
@@ -128,9 +145,7 @@ def build_gateway(
     @gateway.custom_route("/readyz", methods=["GET"])
     async def readyz(_: Request) -> Response:
         upstreams = await readiness.check()
-        required_ok = all(
-            upstreams[n] == "ok" for n, s in components.specs.items() if s.required
-        )
+        required_ok = all(upstreams[n] == "ok" for n, s in components.specs.items() if s.required)
         policy_error = components.policy.last_error
         ready = required_ok and policy_error is None
         return JSONResponse(
@@ -142,9 +157,11 @@ def build_gateway(
     async def metrics(request: Request) -> Response:
         token = settings.metrics_token
         if token is not None:
-            if request.headers.get("authorization") != f"Bearer {token.get_secret_value()}":
+            given = request.headers.get("authorization", "").encode()
+            if not hmac.compare_digest(given, f"Bearer {token.get_secret_value()}".encode()):
                 return PlainTextResponse("unauthorized", status_code=401)
-        return Response(generate_latest(components.metrics.registry),
-                        media_type=CONTENT_TYPE_LATEST)
+        return Response(
+            generate_latest(components.metrics.registry), media_type=CONTENT_TYPE_LATEST
+        )
 
     return gateway, components

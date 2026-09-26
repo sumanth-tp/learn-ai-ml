@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "helpdesk-local": {
+      "command": "uv",
+      "args": [
+        "run", "--directory", "/ABSOLUTE/PATH/TO/mcp-helpdesk-server",
+        "helpdesk-mcp", "serve", "--transport", "stdio"
+      ],
+      "env": {
+        "HELPDESK_DATABASE_URL": "sqlite+aiosqlite:////ABSOLUTE/PATH/TO/mcp-helpdesk-server/helpdesk.db",
+        "HELPDESK_LOCAL_USER": "sam",
+        "HELPDESK_LOCAL_TENANT": "acme",
+        "HELPDESK_LOCAL_ROLES": "[\"agent\"]"
+      }
+    },
+    "helpdesk-remote": {
+      "command": "npx",
+      "args": [
+        "-y", "mcp-remote", "https://helpdesk-mcp.example.com/mcp",
+        "--header", "Authorization: Bearer ${HELPDESK_TOKEN}"
+      ],
+      "env": {
+        "HELPDESK_TOKEN": "paste a token from your IdP, or `make token` for local"
+      }
+    }
+  }
+}

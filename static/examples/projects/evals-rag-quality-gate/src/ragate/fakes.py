@@ -212,9 +212,12 @@ class FakeSynthChatModel(BaseChatModel):
             }
         if qtype == "multi_hop" and len(passages) >= 2:
             (d1, s1), (d2, s2) = fact(*passages[0]), fact(*passages[1])
-            question = ask_about(s1).rstrip("?") + ", and how does that relate to " + " ".join(
-                content_tokens(s2)[:3]
-            ) + "?"
+            question = (
+                ask_about(s1).rstrip("?")
+                + ", and how does that relate to "
+                + " ".join(content_tokens(s2)[:3])
+                + "?"
+            )
             return {
                 "question": question,
                 "answer": f"{s1} {s2}",

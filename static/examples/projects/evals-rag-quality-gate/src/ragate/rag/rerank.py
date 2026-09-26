@@ -17,8 +17,9 @@ log = get_logger(__name__)
 
 
 class Reranker(Protocol):
-    def rerank(self, query: str, chunks: list[RetrievedChunk], top_n: int) -> list[RetrievedChunk]:
-        ...
+    def rerank(
+        self, query: str, chunks: list[RetrievedChunk], top_n: int
+    ) -> list[RetrievedChunk]: ...
 
 
 def _reranked(chunks: list[RetrievedChunk], scores: list[float], top_n: int, src: str):
@@ -49,8 +50,9 @@ class LexicalReranker:
             bigrams = set(pairwise(toks))
             phrase = len(q_bigrams & bigrams) / len(q_bigrams) if q_bigrams else 0.0
             prior = 1.0 / (1 + rc.rank)  # keep a little of the first-stage ordering
-            scores.append(coverage(query, rc.chunk.title + " " + rc.chunk.text)
-                          + 0.5 * phrase + 0.1 * prior)
+            scores.append(
+                coverage(query, rc.chunk.title + " " + rc.chunk.text) + 0.5 * phrase + 0.1 * prior
+            )
         return _reranked(chunks, scores, top_n, "lexical-rerank")
 
 

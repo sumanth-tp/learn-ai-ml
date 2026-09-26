@@ -19,8 +19,7 @@ REF = "Hotels in London are capped at 180 GBP per night."
 
 def test_geval_with_rubric_scores_correct_above_wrong() -> None:
     geval = CorrectnessGEval(StubGEvalModel())
-    right = geval.score("hotel cap?", "Hotel rates are capped at 180 GBP per night in London.",
-                        REF)
+    right = geval.score("hotel cap?", "Hotel rates are capped at 180 GBP per night in London.", REF)
     wrong = geval.score("hotel cap?", "Laptops are refreshed every 3 years.", REF)
     assert 0.0 <= wrong < 0.5 < right <= 1.0
 
@@ -42,8 +41,9 @@ class _Stub(DeepEvalBaseLLM):
         values = {}
         for name, field in schema.model_fields.items():
             origin = typing.get_origin(field.annotation)
-            values[name] = [] if origin in (list, typing.List) else (  # noqa: UP006
-                "stub" if field.annotation is str else 1)
+            values[name] = (
+                [] if origin in (list, list) else ("stub" if field.annotation is str else 1)
+            )
         return schema.model_construct(**values)
 
     async def a_generate(self, prompt: str, schema=None, **kw):  # type: ignore[no-untyped-def]
@@ -52,10 +52,17 @@ class _Stub(DeepEvalBaseLLM):
 
 def test_deepeval_rag_metrics_run_against_installed_version() -> None:
     metrics = DeepEvalRagMetrics(_Stub())
-    ans = RagAnswer(question="hotel cap?", answer="180 GBP [travel]",
-                    contexts=[make_chunk("travel", "Hotels are capped at 180 GBP.", 1)])
-    for score in (metrics.faithfulness(ans), metrics.answer_relevancy(ans),
-                  metrics.context_relevance(ans), metrics.contextual_recall(ans, REF)):
+    ans = RagAnswer(
+        question="hotel cap?",
+        answer="180 GBP [travel]",
+        contexts=[make_chunk("travel", "Hotels are capped at 180 GBP.", 1)],
+    )
+    for score in (
+        metrics.faithfulness(ans),
+        metrics.answer_relevancy(ans),
+        metrics.context_relevance(ans),
+        metrics.contextual_recall(ans, REF),
+    ):
         assert 0.0 <= score <= 1.0
 
 

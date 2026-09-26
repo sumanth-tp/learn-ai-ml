@@ -80,12 +80,21 @@ def make_settings(tmp_path: Path, **overrides: Any) -> Settings:
 
 def inprocess_specs() -> list[UpstreamSpec]:
     return [
-        UpstreamSpec(name="docs", transport="inprocess", target="x:y",
-                     cacheable_tools=["list_docs", "read_doc", "search_docs"]),
-        UpstreamSpec(name="payments", transport="inprocess", target="x:y",
-                     cacheable_tools=["get_balance"]),
-        UpstreamSpec(name="tickets", transport="inprocess", target="x:y",
-                     cacheable_tools=["search_tickets", "get_ticket"]),
+        UpstreamSpec(
+            name="docs",
+            transport="inprocess",
+            target="x:y",
+            cacheable_tools=["list_docs", "read_doc", "search_docs"],
+        ),
+        UpstreamSpec(
+            name="payments", transport="inprocess", target="x:y", cacheable_tools=["get_balance"]
+        ),
+        UpstreamSpec(
+            name="tickets",
+            transport="inprocess",
+            target="x:y",
+            cacheable_tools=["search_tickets", "get_ticket"],
+        ),
     ]
 
 
@@ -100,8 +109,9 @@ class Harness:
         return mint_dev_token(self.settings, sub, groups, email=email)
 
     @asynccontextmanager
-    async def client(self, sub: str = "alice", groups: list[str] | None = None,
-                     token: str | None = None) -> Any:
+    async def client(
+        self, sub: str = "alice", groups: list[str] | None = None, token: str | None = None
+    ) -> Any:
         tok = token or self.token(sub, groups or ["employees"])
         async with Client(StreamableHttpTransport(self.url, auth=tok)) as c:
             yield c
@@ -116,11 +126,17 @@ def upstream_servers() -> dict[str, FastMCP[Any]]:
     }
 
 
-def start_harness(tmp_path: Path, servers: dict[str, FastMCP[Any]],
-                  specs: list[UpstreamSpec] | None = None, **overrides: Any) -> tuple[Harness, ServerThread]:
+def start_harness(
+    tmp_path: Path,
+    servers: dict[str, FastMCP[Any]],
+    specs: list[UpstreamSpec] | None = None,
+    **overrides: Any,
+) -> tuple[Harness, ServerThread]:
     settings = make_settings(tmp_path, **overrides)
     gateway, components = build_gateway(
-        settings, specs=specs or inprocess_specs(), broker=EnvSecretBroker({}),
+        settings,
+        specs=specs or inprocess_specs(),
+        broker=EnvSecretBroker({}),
         server_overrides=servers,
     )
     thread = ServerThread(gateway.http_app(path="/mcp")).__enter__()

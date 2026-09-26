@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     judge_budget_usd_per_day: float = 2.0
     inprocess_workers: bool = True
 
+    trace_retention_days: int = 30
+    eval_retention_days: int = 90
+
     # --- monitoring -------------------------------------------------------------
     slo_latency_p95_ms: float = 4000.0
 

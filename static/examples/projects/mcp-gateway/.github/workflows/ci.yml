@@ -1,0 +1,35 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Validate policy
+        env:
+          GATEWAY_JWT_SECRET: ci-only-secret-with-at-least-32-characters
+        run: uv run mcp-gateway-admin validate-policy
+      - name: Evaluation gate (scanner recall/FPR, policy golden cases)
+        run: uv run python -m mcp_gateway.evals
+      - name: Tests
+        run: uv run pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t mcp-gateway:ci .

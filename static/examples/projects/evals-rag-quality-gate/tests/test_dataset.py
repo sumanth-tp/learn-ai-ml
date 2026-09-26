@@ -18,15 +18,22 @@ GOLDEN = ROOT / "data" / "golden"
 
 
 def _item(item_id: str, question: str, **kw) -> GoldenItem:  # type: ignore[no-untyped-def]
-    base = dict(question_type=QuestionType.FACTOID, reference_answer="Laptops: every 3 years.",
-                evidence=[Evidence(doc_id="equipment-it", quote="Laptops are refreshed every 3 years.")])
+    base = dict(
+        question_type=QuestionType.FACTOID,
+        reference_answer="Laptops: every 3 years.",
+        evidence=[Evidence(doc_id="equipment-it", quote="Laptops are refreshed every 3 years.")],
+    )
     return GoldenItem(item_id=item_id, question=question, **{**base, **kw})
 
 
 def test_v1_is_frozen_stratified_and_clean() -> None:
     manifest, items = store.load(GOLDEN, "v1")
     assert len(items) == 40 and manifest.counts_by_type == {
-        "factoid": 16, "multi_hop": 8, "unanswerable": 8, "adversarial": 8}
+        "factoid": 16,
+        "multi_hop": 8,
+        "unanswerable": 8,
+        "adversarial": 8,
+    }
     assert checks.run_checks(items, DOCS) == []
 
 
@@ -53,8 +60,11 @@ def _checks_for(items: list[GoldenItem]) -> set[str]:
 
 
 def test_stale_evidence_is_an_error() -> None:
-    stale = _item("a", "How often do laptops get replaced?",
-                  evidence=[Evidence(doc_id="equipment-it", quote="Laptops are refreshed yearly.")])
+    stale = _item(
+        "a",
+        "How often do laptops get replaced?",
+        evidence=[Evidence(doc_id="equipment-it", quote="Laptops are refreshed yearly.")],
+    )
     assert "evidence" in _checks_for([stale])
 
 
@@ -71,25 +81,36 @@ def test_answer_leakage_and_near_duplicates() -> None:
 
 
 def test_verbatim_copy_of_corpus_is_a_warning() -> None:
-    copied = _item("a", "If a laptop is lost or stolen, report it to the IT service desk within 24 hours?")
+    copied = _item(
+        "a", "If a laptop is lost or stolen, report it to the IT service desk within 24 hours?"
+    )
     findings = checks.run_checks([copied], DOCS, min_per_type=0)
     assert any(f.check == "verbatim_leakage" and f.level == "warning" for f in findings)
 
 
 def test_stratification_minimum() -> None:
-    assert "stratification" in {f.check for f in checks.run_checks([_item("a", "q laptops?")], DOCS)}
+    assert "stratification" in {
+        f.check for f in checks.run_checks([_item("a", "q laptops?")], DOCS)
+    }
 
 
 def test_restricted_evidence_is_rejected() -> None:
-    item = _item("a", "Who is head of people?", reference_answer="Priya Raman.",
-                 evidence=[Evidence(doc_id="hr-contacts",
-                                    quote="The Head of People Operations is Priya Raman.")])
+    item = _item(
+        "a",
+        "Who is head of people?",
+        reference_answer="Priya Raman.",
+        evidence=[
+            Evidence(doc_id="hr-contacts", quote="The Head of People Operations is Priya Raman.")
+        ],
+    )
     assert "evidence" in _checks_for([item])
 
 
 def test_review_csv_roundtrip_and_reviewer_required(tmp_path: Path) -> None:
-    items = [_item("a", "How often are laptops refreshed?"),
-             _item("b", "Laptop swap cadence?", review_status=ReviewStatus.PENDING)]
+    items = [
+        _item("a", "How often are laptops refreshed?"),
+        _item("b", "Laptop swap cadence?", review_status=ReviewStatus.PENDING),
+    ]
     path = tmp_path / "r.csv"
     review.export_csv(items, path)
     back = review.import_csv(path)
@@ -119,7 +140,9 @@ def test_synthesis_drops_unparseable_proposals() -> None:
 
 def test_synthesis_drops_quotes_not_in_the_passage() -> None:
     chunks = chunk_corpus(DOCS, 400, 80)
-    bogus = '{"question": "Invented question?", "answer": "x", ' \
-            '"evidence": [{"doc_id": "travel", "quote": "made up text"}]}'
+    bogus = (
+        '{"question": "Invented question?", "answer": "x", '
+        '"evidence": [{"doc_id": "travel", "quote": "made up text"}]}'
+    )
     model = FakeListChatModel(responses=[bogus] * 10)
     assert synthesise(model, chunks, {QuestionType.FACTOID: 1}) == []

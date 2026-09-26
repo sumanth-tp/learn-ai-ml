@@ -60,7 +60,10 @@ def test_index_build_or_load_is_idempotent(tmp_path: Path) -> None:
     second = HandbookIndex.build_or_load(DOCS, cfg, emb, "fake", tmp_path)
     assert first.key == second.key and len(list(tmp_path.iterdir())) == 1
     other = HandbookIndex.build_or_load(
-        DOCS, cfg.with_overrides("x", {"chunk_size": 200, "chunk_overlap": 40}), emb, "fake",
+        DOCS,
+        cfg.with_overrides("x", {"chunk_size": 200, "chunk_overlap": 40}),
+        emb,
+        "fake",
         tmp_path,
     )
     assert other.key != first.key and len(list(tmp_path.iterdir())) == 2
@@ -76,8 +79,10 @@ def test_hybrid_retrieval_finds_the_hotel_cap(tmp_path: Path) -> None:
 
 
 def test_lexical_reranker_promotes_the_matching_chunk() -> None:
-    chunks = [make_chunk("benefits", "Life assurance pays four times salary.", 1),
-              make_chunk("travel", "Hotel rates are capped at 180 GBP per night in London.", 2)]
+    chunks = [
+        make_chunk("benefits", "Life assurance pays four times salary.", 1),
+        make_chunk("travel", "Hotel rates are capped at 180 GBP per night in London.", 2),
+    ]
     out = LexicalReranker().rerank("hotel rate in London", chunks, 2)
     assert out[0].chunk.doc_id == "travel" and out[0].rank == 1
 
@@ -146,6 +151,5 @@ def test_non_retryable_errors_propagate_immediately() -> None:
         raise KeyError("bug")
 
     with pytest.raises(KeyError):
-        call_with_retries(bad, what="t", attempts=3, retry_on=(TimeoutError,),
-                          sleep=lambda _: None)
+        call_with_retries(bad, what="t", attempts=3, retry_on=(TimeoutError,), sleep=lambda _: None)
     assert len(calls) == 1

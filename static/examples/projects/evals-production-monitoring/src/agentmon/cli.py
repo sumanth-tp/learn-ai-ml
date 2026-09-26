@@ -51,7 +51,7 @@ def cmd_chat(args: argparse.Namespace) -> int:
 
     rt = build_runtime(_settings(args))
     resp = rt.service.handle(args.user, args.message)
-    print(json.dumps(resp.model_dump(), indent=2))
+    print(json.dumps(resp.model_dump(), indent=2, ensure_ascii=False))
     asyncio.run(rt.workers.run_once())
     print(json.dumps([e.model_dump() for e in rt.store.evals_for(resp.trace_id)], indent=2))
     return 0
@@ -142,6 +142,20 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_purge(args: argparse.Namespace) -> int:
+    import time
+
+    from agentmon.store import Store
+
+    s = _settings(args)
+    now = time.time()
+    counts = Store(s.db_path).purge_before(
+        now - s.trace_retention_days * 86_400, now - s.eval_retention_days * 86_400
+    )
+    print(json.dumps(counts))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="agentmon")
     p.add_argument("--prompt-version", choices=["v1", "v2"])
@@ -164,6 +178,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("regress", help="offline regression gate").set_defaults(fn=cmd_regress)
     sub.add_parser("alerts", help="replay alert rules over the store").set_defaults(fn=cmd_alerts)
     sub.add_parser("dashboard", help="write out/dashboard.html").set_defaults(fn=cmd_dashboard)
+    sub.add_parser("purge", help="apply the retention policy").set_defaults(fn=cmd_purge)
     args = p.parse_args(argv)
     return int(args.fn(args))
 

@@ -57,8 +57,9 @@ class LangChainDeepEvalModel(DeepEvalBaseLLM):
             self._cache.put_raw(key, stored)
         return result
 
-    async def a_generate(self, prompt: str, schema: type[BaseModel] | None = None,
-                         **kw: Any) -> Any:
+    async def a_generate(
+        self, prompt: str, schema: type[BaseModel] | None = None, **kw: Any
+    ) -> Any:
         return self.generate(prompt, schema, **kw)
 
 
@@ -96,10 +97,13 @@ class StubGEvalModel(DeepEvalBaseLLM):
             recall = coverage(expected, actual)
             precision = coverage(actual, expected)
             value = 0.8 * recall + 0.2 * precision
-            return ReasonScore(score=round(value * 10),
-                               reason=f"fact recall {recall:.2f}, precision {precision:.2f}")
+            return ReasonScore(
+                score=round(value * 10),
+                reason=f"fact recall {recall:.2f}, precision {precision:.2f}",
+            )
         raise RuntimeError(f"stub G-Eval model cannot answer schema {schema}")
 
-    async def a_generate(self, prompt: str, schema: type[BaseModel] | None = None,
-                         **kw: Any) -> Any:
+    async def a_generate(
+        self, prompt: str, schema: type[BaseModel] | None = None, **kw: Any
+    ) -> Any:
         return self.generate(prompt, schema, **kw)

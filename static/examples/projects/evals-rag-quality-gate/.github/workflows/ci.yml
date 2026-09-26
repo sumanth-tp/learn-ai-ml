@@ -1,0 +1,58 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with: {python-version: "3.12", enable-cache: true}
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run ragate judge-lock --check
+      - run: uv run pytest -q
+
+  eval-gate:
+    # The release gate: fails the PR when the candidate config/code regresses the baseline.
+    needs: lint-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with: {python-version: "3.12", enable-cache: true}
+      - run: uv sync --frozen
+      - name: Offline gate (fakes + deterministic judge)
+        id: gate
+        env: {RAGATE_LOG_JSON: "true"}
+        run: uv run ragate e2e --report reports/gate.md
+      - name: Publish the report on the run summary
+        if: always()
+        run: cat reports/gate.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: eval-gate, path: reports/}
+
+  real-model-gate:
+    # Optional: the same gate with real models, only when a PR is labelled `eval:real`.
+    if: contains(github.event.pull_request.labels.*.name, 'eval:real')
+    needs: eval-gate
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      RAGATE_PROVIDER: openai
+      RAGATE_JUDGE_PROVIDER: openai
+      RAGATE_EMBEDDING_PROVIDER: openai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with: {python-version: "3.12", enable-cache: true}
+      - run: uv sync --frozen
+      - run: uv run ragate e2e --baseline baselines/baseline.real.json --report reports/gate-real.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: eval-gate-real, path: reports/}

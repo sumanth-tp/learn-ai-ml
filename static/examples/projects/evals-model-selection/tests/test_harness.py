@@ -8,14 +8,15 @@ from typing import Any
 import pytest
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from pydantic import Field
 
 from modelsel.config import Settings
+from modelsel.dataset import load_split
 from modelsel.harness.client import LLMCallError, LLMClient, is_transient
 from modelsel.harness.ratelimit import AsyncTokenBucket
 from modelsel.harness.runner import run_candidates
 from modelsel.llm.fakes import FakeRateLimitError, FakeTicketModel
 from modelsel.llm.registry import Catalogue, FakeProfile
-from modelsel.dataset import load_split
 
 MSGS = [SystemMessage(content="TASK: classify"), HumanMessage(content="TICKET:\nFrom: Tom\n\nPlease refund me.")]
 
@@ -29,7 +30,7 @@ class _Status(Exception):
 class Flaky(GenericFakeChatModel):
     """Raises the queued exceptions first, then answers."""
 
-    errors: list[Any] = []
+    errors: list[Any] = Field(default_factory=list)
     calls: int = 0
 
     async def _agenerate(self, *args: Any, **kwargs: Any) -> Any:
@@ -46,12 +47,14 @@ class Slow(GenericFakeChatModel):
 
 
 def _reply(text: str = "refund") -> Any:
-    return iter([AIMessage(content=text, usage_metadata={"input_tokens": 1000, "output_tokens": 500, "total_tokens": 1500})] * 5)
+    return iter(
+        [AIMessage(content=text, usage_metadata={"input_tokens": 1000, "output_tokens": 500, "total_tokens": 1500})] * 5
+    )
 
 
 def test_is_transient_classification() -> None:
     assert is_transient(TimeoutError())
-    assert is_transient(asyncio.TimeoutError())
+    assert is_transient(TimeoutError())
     assert is_transient(_Status(429)) and is_transient(_Status(503))
     assert not is_transient(_Status(400)) and not is_transient(_Status(401))
     assert not is_transient(ValueError("bad"))
@@ -131,3 +134,21 @@ async def test_failed_calls_become_error_predictions(client: LLMClient, settings
     preds = await run_candidates(client, "r1", ["fake:scripted"], items)
     assert len(preds) == 6
     assert all(p.error and p.output == "" for p in preds), "a failing model is scored, not crashed"
+
+
+def test_real_provider_factory_without_network(
+    settings: Settings, catalogue: Catalogue, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Constructing real clients needs keys but no network; nothing is called here."""
+    from modelsel.llm.registry import build_chat_model
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test-not-real")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-not-real")
+    mini = build_chat_model(catalogue.spec("openai:gpt-4o-mini"), settings)
+    assert type(mini).__name__ == "ChatOpenAI" and mini.max_retries == 0, "the harness owns retries"
+    judge = build_chat_model(catalogue.spec("openai:gpt-4o"), settings)
+    assert judge.logprobs is True and judge.top_logprobs == 5
+    sonnet = build_chat_model(catalogue.spec("anthropic:claude-sonnet-5"), settings)
+    assert sonnet.temperature is None, "sonnet-5 rejects sampling parameters"
+    local = build_chat_model(catalogue.spec("ollama:llama3.1:8b"), settings)
+    assert type(local).__name__ == "ChatOllama"

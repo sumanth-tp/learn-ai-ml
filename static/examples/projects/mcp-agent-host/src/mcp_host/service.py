@@ -165,6 +165,12 @@ class ChatService:
             out.append(item)
         return out
 
+    async def delete(self, thread_id: str) -> None:
+        """Erase a conversation (right to erasure, retention jobs)."""
+        if self.is_busy(thread_id):
+            raise ThreadBusy(thread_id)
+        await self.checkpointer.adelete_thread(thread_id)
+
     async def threads(self, limit: int = 50) -> list[str]:
         seen: list[str] = []
         async for tup in self.checkpointer.alist(None, limit=500):

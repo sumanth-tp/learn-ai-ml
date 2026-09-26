@@ -51,9 +51,14 @@ def cmd_upstreams(s: Settings, a: argparse.Namespace) -> int:
     specs = load_upstreams(s.upstreams_file)
     probe = asyncio.run(_probe(s)) if a.probe else {}
     rows = [
-        (u.name, u.transport, u.url or " ".join([u.command or "", *u.args]) or u.target,
-         f"{u.credential.secret} ({u.credential.inject_as})" if u.credential else "-",
-         ",".join(u.cacheable_tools) or "-", probe.get(u.name, "-"))
+        (
+            u.name,
+            u.transport,
+            u.url or " ".join([u.command or "", *u.args]) or u.target,
+            f"{u.credential.secret} ({u.credential.inject_as})" if u.credential else "-",
+            ",".join(u.cacheable_tools) or "-",
+            probe.get(u.name, "-"),
+        )
         for u in specs
     ]
     print(_table(rows, ["name", "transport", "endpoint", "credential ref", "cacheable", "probe"]))
@@ -63,10 +68,17 @@ def cmd_upstreams(s: Settings, a: argparse.Namespace) -> int:
 def cmd_policies(s: Settings, a: argparse.Namespace) -> int:
     engine = PolicyEngine.from_yaml(Path(a.file or s.policy_file).read_text(encoding="utf-8"))
     rows = [
-        (r.id, r.effect, ",".join(r.subjects.groups + r.subjects.users),
-         ",".join(r.tools + r.resources),
-         "; ".join(f"{k}:{c.model_dump(exclude_none=True, exclude_defaults=True)}"
-                   for k, c in r.constraints.items()) or "-")
+        (
+            r.id,
+            r.effect,
+            ",".join(r.subjects.groups + r.subjects.users),
+            ",".join(r.tools + r.resources),
+            "; ".join(
+                f"{k}:{c.model_dump(exclude_none=True, exclude_defaults=True)}"
+                for k, c in r.constraints.items()
+            )
+            or "-",
+        )
         for r in engine.doc.rules
     ]
     print(_table(rows, ["rule", "effect", "subjects", "targets", "constraints"]))
@@ -97,9 +109,15 @@ def cmd_denials(s: Settings, a: argparse.Namespace) -> int:
     if a.user:
         recs = [r for r in recs if r["user"] == a.user]
     rows = [
-        (time.strftime("%H:%M:%S", time.localtime(r["ts"])), r["user"], r["target"],
-         r["decision"], (r.get("rule_id") or "-"), r["reason"][:70])
-        for r in recs[-a.limit:]
+        (
+            time.strftime("%H:%M:%S", time.localtime(r["ts"])),
+            r["user"],
+            r["target"],
+            r["decision"],
+            (r.get("rule_id") or "-"),
+            r["reason"][:70],
+        )
+        for r in recs[-a.limit :]
     ]
     print(_table(rows, ["time", "user", "target", "decision", "rule", "reason"]))
     return 0
@@ -117,15 +135,20 @@ def cmd_pins(s: Settings, a: argparse.Namespace) -> int:
         ok = pins.approve(a.approve)
         print(f"approved {a.approve}" if ok else f"no pin for {a.approve}")
         return 0 if ok else 1
-    rows = [(p.tool, p.status, p.sha256[:12], (p.seen_sha256 or "")[:12], p.findings[:60])
-            for p in pins.all()]
+    rows = [
+        (p.tool, p.status, p.sha256[:12], (p.seen_sha256 or "")[:12], p.findings[:60])
+        for p in pins.all()
+    ]
     print(_table(rows, ["tool", "status", "pinned", "now serving", "findings"]))
     return 0
 
 
 def cmd_token(s: Settings, a: argparse.Namespace) -> int:
-    print(mint_dev_token(s, a.sub, [g for g in a.groups.split(",") if g], email=a.email,
-                         ttl_seconds=a.ttl))
+    print(
+        mint_dev_token(
+            s, a.sub, [g for g in a.groups.split(",") if g], email=a.email, ttl_seconds=a.ttl
+        )
+    )
     return 0
 
 
@@ -159,9 +182,14 @@ def main(argv: list[str] | None = None) -> int:
     a = parser.parse_args(argv)
     settings = Settings()
     handlers = {
-        "upstreams": cmd_upstreams, "policies": cmd_policies, "validate-policy": cmd_validate,
-        "check": cmd_check, "denials": cmd_denials, "verify-audit": cmd_audit_verify,
-        "pins": cmd_pins, "mint-token": cmd_token,
+        "upstreams": cmd_upstreams,
+        "policies": cmd_policies,
+        "validate-policy": cmd_validate,
+        "check": cmd_check,
+        "denials": cmd_denials,
+        "verify-audit": cmd_audit_verify,
+        "pins": cmd_pins,
+        "mint-token": cmd_token,
     }
     return handlers[a.cmd](settings, a)
 

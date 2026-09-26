@@ -45,8 +45,9 @@ def config() -> PipelineConfig:
 
 
 def make_chunk(doc_id: str, text: str, rank: int) -> RetrievedChunk:
-    chunk = Chunk(chunk_id=f"{doc_id}#{rank:02d}", doc_id=doc_id, title=doc_id, text=text,
-                  position=rank)
+    chunk = Chunk(
+        chunk_id=f"{doc_id}#{rank:02d}", doc_id=doc_id, title=doc_id, text=text, position=rank
+    )
     return RetrievedChunk(chunk=chunk, score=1.0 / rank, rank=rank)
 
 

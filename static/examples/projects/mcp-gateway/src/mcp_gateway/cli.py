@@ -21,8 +21,14 @@ def serve() -> None:
         path=settings.mcp_path,
         allowed_hosts=settings.public_hostnames or None,
     )
-    uvicorn.run(app, host=settings.host, port=settings.port, log_level="warning",
-                proxy_headers=True, timeout_graceful_shutdown=10)
+    uvicorn.run(
+        app,
+        host=settings.host,
+        port=settings.port,
+        log_level="warning",
+        proxy_headers=True,
+        timeout_graceful_shutdown=10,
+    )
 
 
 def main(argv: list[str] | None = None) -> None:

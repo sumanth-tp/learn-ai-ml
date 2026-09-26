@@ -1,0 +1,61 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --frozen
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Tests (offline, no keys)
+        run: uv run pytest -q
+      - name: Triage eval gate
+        run: uv run helpdesk-mcp eval
+      - name: Schema snapshot is up to date
+        run: |
+          uv run helpdesk-mcp schema-snapshot
+          git diff --exit-code tests/snapshots/tool_schemas.json
+
+  postgres:
+    # The same suite of migrations against real Postgres, plus the demo.
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: {POSTGRES_USER: helpdesk, POSTGRES_PASSWORD: helpdesk, POSTGRES_DB: helpdesk}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U helpdesk" --health-interval 3s --health-retries 20
+    env:
+      HELPDESK_DATABASE_URL: postgresql+asyncpg://helpdesk:helpdesk@localhost:5432/helpdesk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - run: uv run helpdesk-mcp migrate
+      - run: uv run helpdesk-mcp seed
+      - run: uv run helpdesk-mcp seed   # idempotent
+
+  image:
+    needs: [test, postgres]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build (push is done by the release pipeline, not here)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: helpdesk-mcp:${{ github.sha }}

@@ -119,7 +119,17 @@ class ChartSandbox:
             )
             (work / "chart.py").write_text(code)
             out = work / "chart.png"
-            env = {"MPLCONFIGDIR": tmp, "HOME": tmp, "TMPDIR": tmp, "PATH": "/usr/bin:/bin"}
+            # Single-threaded BLAS: no thread pools to create. (RLIMIT_NPROC is not used:
+            # on Linux it counts every process of the uid, including the server itself.)
+            env = {
+                "MPLCONFIGDIR": tmp,
+                "HOME": tmp,
+                "TMPDIR": tmp,
+                "PATH": "/usr/bin:/bin",
+                "OPENBLAS_NUM_THREADS": "1",
+                "OMP_NUM_THREADS": "1",
+                "MKL_NUM_THREADS": "1",
+            }
             try:
                 proc = subprocess.run(
                     [

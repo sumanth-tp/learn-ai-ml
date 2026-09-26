@@ -49,17 +49,24 @@ def gate_report(result: GateResult, base: RunResult, cand: RunResult) -> str:
             "| --- | --- | --- | --- | --- | --- | --- | --- |",
         ]
         for v in result.verdicts:
-            ci = (f"[{_signed(v.ci_low, v.metric)}, {_signed(v.ci_high, v.metric)}]"
-                  if v.ci_low is not None else "")
+            ci = (
+                f"[{_signed(v.ci_low, v.metric)}, {_signed(v.ci_high, v.metric)}]"
+                if v.ci_low is not None
+                else ""
+            )
             status = v.status + (" (warn)" if v.enforce == "warn" and v.status != "pass" else "")
             lines.append(
                 f"| {v.metric} | {v.direction} | {fmt(v.baseline, v.metric)} | "
                 f"{fmt(v.candidate, v.metric)} | {_signed(v.delta, v.metric)} | {ci} | "
                 f"{fmt(v.tolerance, v.metric)} | {status} |"
             )
-        lines += ["", "## By question type (candidate vs baseline)", "",
-                  "| Type | " + " | ".join(BREAKDOWN_METRICS) + " |",
-                  "| --- |" + " --- |" * len(BREAKDOWN_METRICS)]
+        lines += [
+            "",
+            "## By question type (candidate vs baseline)",
+            "",
+            "| Type | " + " | ".join(BREAKDOWN_METRICS) + " |",
+            "| --- |" + " --- |" * len(BREAKDOWN_METRICS),
+        ]
         types = sorted({i.question_type for i in cand.items})
         for qt in types:
             b_items = [i for i in base.items if i.question_type == qt]

@@ -6,8 +6,10 @@ from ragate.metrics import retrieval as r
 from ragate.models import Evidence
 from tests.conftest import make_chunk
 
-EV = [Evidence(doc_id="leave", quote="carry over a maximum of 5 unused days"),
-      Evidence(doc_id="leave", quote="allowance increases to 28 days after 5 years")]
+EV = [
+    Evidence(doc_id="leave", quote="carry over a maximum of 5 unused days"),
+    Evidence(doc_id="leave", quote="allowance increases to 28 days after 5 years"),
+]
 IRRELEVANT = make_chunk("travel", "Hotels are capped at 180 GBP.", 1)
 HIT_1 = make_chunk("leave", "You may carry over a maximum of 5 unused days.", 2)
 HIT_2 = make_chunk("leave", "Your allowance increases to 28 days after 5 years.", 3)

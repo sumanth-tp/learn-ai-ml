@@ -11,8 +11,17 @@ from modelsel.llm.registry import DecisionConfig, FakeProfile
 
 def _m(mid: str, q: float, cost: float, p95: float, json_ok: float = 1.0) -> ModelSummary:
     return ModelSummary(
-        model_id=mid, quality=q, quality_low=q - 0.02, quality_high=q + 0.02, accuracy=q, macro_f1=q,
-        json_validity=json_ok, field_accuracy=q, reply_score=4.0, p50_latency_ms=p95 / 2, p95_latency_ms=p95,
+        model_id=mid,
+        quality=q,
+        quality_low=q - 0.02,
+        quality_high=q + 0.02,
+        accuracy=q,
+        macro_f1=q,
+        json_validity=json_ok,
+        field_accuracy=q,
+        reply_score=4.0,
+        p50_latency_ms=p95 / 2,
+        p95_latency_ms=p95,
         cost_per_1k_usd=cost,
     )
 
@@ -44,7 +53,9 @@ def test_recommend_prefers_cheaper_model_when_quality_tie_is_not_significant() -
     big, small = _m("big", 0.90, 3.0, 2000), _m("small", 0.89, 0.2, 1000)
     rec = recommend([big, small], cfg, p_values_vs={("big", "small"): 0.4})
     assert rec.model_id == "small" and rec.significant is False and rec.caveats
-    rec2 = recommend([_m("big", 0.95, 3.0, 2000), _m("small", 0.85, 0.2, 1000)], cfg, p_values_vs={("big", "small"): 0.001})
+    rec2 = recommend(
+        [_m("big", 0.95, 3.0, 2000), _m("small", 0.85, 0.2, 1000)], cfg, p_values_vs={("big", "small"): 0.001}
+    )
     assert rec2.model_id == "big" and rec2.significant is True
 
 
@@ -63,7 +74,9 @@ def test_overlap() -> None:
 async def test_probe_flags_memorised_items_only(client: LLMClient, settings: Settings) -> None:
     test = load_split(settings.data_dir, "test")[:10]
     private = load_split(settings.data_dir, "private", allow_private=True)[:10]
-    leaky = FakeTicketModel(model_id="fake:leaky-tuned", profile=FakeProfile(), memorised={it.ticket: it for it in test})
+    leaky = FakeTicketModel(
+        model_id="fake:leaky-tuned", profile=FakeProfile(), memorised={it.ticket: it for it in test}
+    )
     client.register_model("fake:leaky-tuned", leaky)
     on_test = await completion_probe(client, "fake:leaky-tuned", test)
     on_private = await completion_probe(client, "fake:leaky-tuned", private)

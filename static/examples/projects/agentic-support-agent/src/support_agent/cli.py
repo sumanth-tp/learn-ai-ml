@@ -164,6 +164,16 @@ def cmd_demo(args: argparse.Namespace) -> None:
     asyncio.run(_with_runner(settings, run))
 
 
+def cmd_purge(args: argparse.Namespace) -> None:
+    async def run(runner: SupportRunner) -> None:
+        if args.user:
+            print(json.dumps(await runner.forget_user(args.user)))
+        else:
+            print(json.dumps({"threads": await runner.purge_threads(args.days)}))
+
+    asyncio.run(_with_runner(_settings(args), run))
+
+
 def cmd_eval(args: argparse.Namespace) -> None:
     from support_agent.evaluation import run_eval
 
@@ -186,25 +196,33 @@ def cmd_eval(args: argparse.Namespace) -> None:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="support-agent")
     sub = parser.add_subparsers(dest="cmd", required=True)
-    for name in ("seed", "serve", "chat", "demo", "eval"):
+    for name in ("seed", "serve", "chat", "demo", "eval", "purge"):
         p = sub.add_parser(name)
         p.add_argument("--offline", action="store_true", help="use deterministic fakes")
     sub.choices["serve"].add_argument("--host", default="0.0.0.0")
     sub.choices["serve"].add_argument("--port", type=int, default=8000)
     sub.choices["chat"].add_argument("--user", default="cust_001")
     sub.choices["chat"].add_argument("--thread")
+    sub.choices["purge"].add_argument("--days", type=int, default=30)
+    sub.choices["purge"].add_argument("--user", help="erase one customer instead")
     sub.choices["eval"].add_argument("--dataset", default="evals/dataset.jsonl")
     sub.choices["eval"].add_argument("--thresholds", default="evals/thresholds.json")
     args = parser.parse_args(argv)
     if args.cmd != "serve":
         settings = _settings(args)
         configure_logging(
-            "ERROR" if args.cmd in {"demo", "chat", "eval"} else settings.log_level,
+            "ERROR" if args.cmd in {"demo", "chat", "eval", "purge"} else settings.log_level,
             settings.log_json,
         )
-    {"seed": cmd_seed, "serve": cmd_serve, "chat": cmd_chat, "demo": cmd_demo, "eval": cmd_eval}[
-        args.cmd
-    ](args)
+    commands = {
+        "seed": cmd_seed,
+        "serve": cmd_serve,
+        "chat": cmd_chat,
+        "demo": cmd_demo,
+        "eval": cmd_eval,
+        "purge": cmd_purge,
+    }
+    commands[args.cmd](args)
 
 
 if __name__ == "__main__":

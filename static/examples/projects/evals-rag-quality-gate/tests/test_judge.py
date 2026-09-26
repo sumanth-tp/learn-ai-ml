@@ -33,10 +33,14 @@ class ScriptedModel:
 
 def test_heuristic_faithfulness_separates_supported_from_invented() -> None:
     judge = HeuristicJudge()
-    good = judge.evaluate(REGISTRY["faithfulness"], {
-        "context": CTX, "answer": "Hotel rates are capped at 180 GBP per night in London."})
-    bad = judge.evaluate(REGISTRY["faithfulness"], {
-        "context": CTX, "answer": "Hotels are free for directors on weekends."})
+    good = judge.evaluate(
+        REGISTRY["faithfulness"],
+        {"context": CTX, "answer": "Hotel rates are capped at 180 GBP per night in London."},
+    )
+    bad = judge.evaluate(
+        REGISTRY["faithfulness"],
+        {"context": CTX, "answer": "Hotels are free for directors on weekends."},
+    )
     assert good.score == 1.0 and bad.score == 0.0
 
 
@@ -74,8 +78,9 @@ def test_llm_judge_retries_invalid_output_then_succeeds(monkeypatch: pytest.Monk
     monkeypatch.setattr("ragate.retry.time.sleep", lambda _: None)
     model = ScriptedModel([ValueError("not json"), {"reason": "fine", "score": 10}])
     judge = LLMJudge(model, "m", 0.0, attempts=2)  # type: ignore[arg-type]
-    assert judge.evaluate(REGISTRY["answer_relevancy"], {"question": "q", "answer": "a"}) == \
-        Verdict(score=1.0, reason="fine")
+    assert judge.evaluate(
+        REGISTRY["answer_relevancy"], {"question": "q", "answer": "a"}
+    ) == Verdict(score=1.0, reason="fine")
 
 
 def test_llm_judge_raises_judge_error_when_exhausted(monkeypatch: pytest.MonkeyPatch) -> None:

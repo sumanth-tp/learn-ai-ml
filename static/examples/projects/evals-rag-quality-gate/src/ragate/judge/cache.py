@@ -55,6 +55,16 @@ class JudgeCache:
             )
             self._conn.commit()
 
+    def prune(self, days: int) -> int:
+        """Retention: drop verdicts older than `days` (they are cheap to recompute)."""
+        with self._lock:
+            cur = self._conn.execute(
+                "DELETE FROM verdicts WHERE datetime(created_at) < datetime('now', ?)",
+                (f"-{int(days)} days",),
+            )
+            self._conn.commit()
+        return cur.rowcount
+
     def get_raw(self, key: str) -> str | None:
         with self._lock:
             row = self._conn.execute("SELECT value FROM verdicts WHERE key=?", (key,)).fetchone()

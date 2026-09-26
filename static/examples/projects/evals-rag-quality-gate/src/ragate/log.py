@@ -4,12 +4,25 @@ from __future__ import annotations
 
 import logging
 import sys
+from typing import Any
 
 import structlog
 
 
+class _StderrLogger:
+    """Resolves sys.stderr on every call, so redirected or captured streams keep working."""
+
+    def msg(self, message: str) -> None:
+        print(message, file=sys.stderr, flush=True)
+
+    log = debug = info = warning = warn = error = critical = exception = fatal = msg
+
+
+def _factory(*_: Any) -> _StderrLogger:
+    return _StderrLogger()
+
+
 def configure_logging(level: str = "INFO", json: bool = False) -> None:
-    logging.basicConfig(format="%(message)s", stream=sys.stderr, level=level.upper())
     renderer: structlog.types.Processor = (
         structlog.processors.JSONRenderer() if json else structlog.dev.ConsoleRenderer()
     )
@@ -25,10 +38,10 @@ def configure_logging(level: str = "INFO", json: bool = False) -> None:
         wrapper_class=structlog.make_filtering_bound_logger(
             logging.getLevelNamesMapping().get(level.upper(), logging.INFO)
         ),
-        logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
+        logger_factory=_factory,
         cache_logger_on_first_use=False,
     )
 
 
-def get_logger(name: str) -> structlog.stdlib.BoundLogger:
+def get_logger(name: str) -> Any:
     return structlog.get_logger(name)

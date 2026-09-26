@@ -11,12 +11,25 @@ from agentmon.store import Store
 
 
 def make_trace(**kw) -> TraceRecord:
-    base = dict(trace_id="t1", request_id="r1", ts=1_790_000_000.0, user_id="CUST-1",
-                session_id="s", input="What's the balance on ACC-1001?",
-                output="The available balance on ACC-1001 (current) is £4,210.55.",
-                intent="balance", prompt_version="v1", model="m", status="ok", latency_ms=900,
-                tool_calls=[ToolCallRecord(name="get_balance", args={"account_id": "ACC-1001"},
-                                           output='{"balance": 4210.55}')])
+    base = dict(
+        trace_id="t1",
+        request_id="r1",
+        ts=1_790_000_000.0,
+        user_id="CUST-1",
+        session_id="s",
+        input="What's the balance on ACC-1001?",
+        output="The available balance on ACC-1001 (current) is £4,210.55.",
+        intent="balance",
+        prompt_version="v1",
+        model="m",
+        status="ok",
+        latency_ms=900,
+        tool_calls=[
+            ToolCallRecord(
+                name="get_balance", args={"account_id": "ACC-1001"}, output='{"balance": 4210.55}'
+            )
+        ],
+    )
     base.update(kw)
     return TraceRecord(**base)
 
@@ -82,9 +95,23 @@ async def test_cascade_runs_all_judges_and_respects_budget() -> None:
     outcome = await cascade.evaluate(t)
     assert outcome.status == "done"
     assert {r.evaluator for r in outcome.results} == {
-        "judge_groundedness", "judge_helpfulness", "judge_policy"}
-    store.upsert_evals([EvalResult(trace_id="other", evaluator="judge_policy", score=1,
-                                   passed=True, tier="judge", cost_usd=0.02, ts=t.ts)])
+        "judge_groundedness",
+        "judge_helpfulness",
+        "judge_policy",
+    }
+    store.upsert_evals(
+        [
+            EvalResult(
+                trace_id="other",
+                evaluator="judge_policy",
+                score=1,
+                passed=True,
+                tier="judge",
+                cost_usd=0.02,
+                ts=t.ts,
+            )
+        ]
+    )
     assert (await cascade.evaluate(t)).status == "skipped_budget"
 
 

@@ -33,7 +33,9 @@ def create_server(token: str | None = None) -> FastMCP:
         return {"account": account, "balance": balances[account], "currency": "EUR"}
 
     @mcp.tool(annotations={"destructiveHint": True, "idempotentHint": True})
-    def refund(order_id: str, amount: float, currency: str, idempotency_key: str) -> dict[str, object]:
+    def refund(
+        order_id: str, amount: float, currency: str, idempotency_key: str
+    ) -> dict[str, object]:
         """Refund part or all of an order. Repeating the same idempotency_key is safe."""
         if amount <= 0:
             raise ToolError("amount must be positive")

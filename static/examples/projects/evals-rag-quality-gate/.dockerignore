@@ -1,0 +1,9 @@
+.venv
+.ragate
+.ragate-demo
+reports
+**/__pycache__
+.pytest_cache
+.ruff_cache
+.env
+tests

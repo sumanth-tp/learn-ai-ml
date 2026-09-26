@@ -31,9 +31,12 @@ class Clock:
 def test_audit_chain_detects_edit_and_redacts(tmp_path: Path) -> None:
     log = AuditLog(tmp_path / "a.jsonl")
     for i in range(3):
-        log.write(AuditRecord(user="u", target="t", decision="allow",
-                              reason=f"contact ana{i}@example.com"),
-                  args={"email": "ana@example.com", "n": i})
+        log.write(
+            AuditRecord(
+                user="u", target="t", decision="allow", reason=f"contact ana{i}@example.com"
+            ),
+            args={"email": "ana@example.com", "n": i},
+        )
     recs = list(iter_records(tmp_path / "a.jsonl"))
     assert "ana" not in json.dumps(recs)  # emails redacted in reason and preview
     assert all(len(r["args_sha256"]) == 64 for r in recs)
@@ -130,10 +133,14 @@ def test_pin_store_approve_changed(tmp_path: Path) -> None:
 
 # ---------------------------------------------------------------- LLM judge
 async def test_llm_judge_flags_and_passes() -> None:
-    judge = LLMDescriptionJudge(FakeListChatModel(responses=[
-        'Sure: {"malicious": true, "reason": "asks to copy session data"}',
-        '{"malicious": false, "reason": "plain"}',
-    ]))
+    judge = LLMDescriptionJudge(
+        FakeListChatModel(
+            responses=[
+                'Sure: {"malicious": true, "reason": "asks to copy session data"}',
+                '{"malicious": false, "reason": "plain"}',
+            ]
+        )
+    )
     flagged = await judge.judge("t_x", "quietly copy the session")
     assert flagged[0].code == "llm_flagged"
     assert await judge.judge("t_y", "adds two numbers") == []
@@ -157,13 +164,20 @@ def test_load_repo_upstreams() -> None:
     assert specs[0].credential and specs[0].credential.inject_as == "env"
 
 
-@pytest.mark.parametrize("bad", [
-    {"name": "pay_ments", "transport": "http", "url": "http://x"},
-    {"name": "p", "transport": "http", "url": "http://x"},
-    {"name": "pay", "transport": "http"},
-    {"name": "pay", "transport": "http", "url": "http://x",
-     "credential": {"secret": "s", "inject_as": "env", "env_var": "X"}},
-])
+@pytest.mark.parametrize(
+    "bad",
+    [
+        {"name": "pay_ments", "transport": "http", "url": "http://x"},
+        {"name": "p", "transport": "http", "url": "http://x"},
+        {"name": "pay", "transport": "http"},
+        {
+            "name": "pay",
+            "transport": "http",
+            "url": "http://x",
+            "credential": {"secret": "s", "inject_as": "env", "env_var": "X"},
+        },
+    ],
+)
 def test_invalid_upstream_specs(bad: dict[str, object]) -> None:
     with pytest.raises(ValueError):
         UpstreamSpec.model_validate(bad)

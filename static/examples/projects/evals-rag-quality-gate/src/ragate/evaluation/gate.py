@@ -95,7 +95,8 @@ def load_noise(path: Path | None, judge_model_id: str | None = None) -> dict[str
 def compatibility_errors(base: RunResult, cand: RunResult, cfg: GateConfig) -> list[str]:
     errors = []
     if cfg.require_same_dataset and (base.dataset_version, base.dataset_sha) != (
-        cand.dataset_version, cand.dataset_sha
+        cand.dataset_version,
+        cand.dataset_sha,
     ):
         errors.append(
             f"dataset differs: baseline {base.dataset_version} vs candidate "
@@ -110,13 +111,23 @@ def compatibility_errors(base: RunResult, cand: RunResult, cfg: GateConfig) -> l
 
 
 def _verdict(
-    name: str, rule: MetricRule, base: RunResult, cand: RunResult, cfg: GateConfig,
+    name: str,
+    rule: MetricRule,
+    base: RunResult,
+    cand: RunResult,
+    cfg: GateConfig,
     noise: dict[str, float],
 ) -> MetricVerdict:
     agg = AGGREGATES[name]
     b, c = agg(base.items), agg(cand.items)
-    v = MetricVerdict(metric=name, direction=rule.direction, baseline=b, candidate=c,
-                      status="pass", enforce=rule.enforce)
+    v = MetricVerdict(
+        metric=name,
+        direction=rule.direction,
+        baseline=b,
+        candidate=c,
+        status="pass",
+        enforce=rule.enforce,
+    )
     if c is None:
         v.status = "n/a" if b is None else "missing"
         v.note = "no items produced this metric"
@@ -135,8 +146,14 @@ def _verdict(
 
     v.delta = c - b
     v.tolerance = max(rule.min_delta, rule.rel_delta * abs(b), rule.noise_k * noise.get(name, 0.0))
-    ci = paired_bootstrap(base.items, cand.items, agg, resamples=cfg.bootstrap.resamples,
-                          confidence=cfg.bootstrap.confidence, seed=cfg.bootstrap.seed)
+    ci = paired_bootstrap(
+        base.items,
+        cand.items,
+        agg,
+        resamples=cfg.bootstrap.resamples,
+        confidence=cfg.bootstrap.confidence,
+        seed=cfg.bootstrap.seed,
+    )
     if ci is not None:
         v.ci_low, v.ci_high = ci.low, ci.high
     sign = 1.0 if rule.direction == "higher" else -1.0
@@ -164,13 +181,24 @@ def compare(
     noise = noise or {}
     compat = compatibility_errors(base, cand, cfg)
     if compat:
-        return GateResult(decision="error", exit_code=ExitCode.ERROR, reasons=compat,
-                          verdicts=[], baseline_run=base.run_id, candidate_run=cand.run_id)
+        return GateResult(
+            decision="error",
+            exit_code=ExitCode.ERROR,
+            reasons=compat,
+            verdicts=[],
+            baseline_run=base.run_id,
+            candidate_run=cand.run_id,
+        )
     unknown = sorted(set(cfg.metrics) - set(AGGREGATES))
     if unknown:
-        return GateResult(decision="error", exit_code=ExitCode.ERROR,
-                          reasons=[f"gate config names unknown metrics: {unknown}"],
-                          verdicts=[], baseline_run=base.run_id, candidate_run=cand.run_id)
+        return GateResult(
+            decision="error",
+            exit_code=ExitCode.ERROR,
+            reasons=[f"gate config names unknown metrics: {unknown}"],
+            verdicts=[],
+            baseline_run=base.run_id,
+            candidate_run=cand.run_id,
+        )
     verdicts = [_verdict(n, r, base, cand, cfg, noise) for n, r in cfg.metrics.items()]
     blocking = [v for v in verdicts if v.blocking]
     reasons = [f"{v.metric}: {v.status} ({v.note})" for v in blocking]

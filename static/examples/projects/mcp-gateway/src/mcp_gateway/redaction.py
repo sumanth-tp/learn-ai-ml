@@ -37,10 +37,15 @@ def _luhn_ok(digits: str) -> bool:
 def redact_text(text: str) -> str:
     for label, pattern in _PATTERNS:
         if label == "CARD":
+
             def _card(m: re.Match[str]) -> str:
                 digits = re.sub(r"\D", "", m.group(0))
                 # only real card numbers (Luhn-valid) are redacted, so order ids survive
-                return "[REDACTED:CARD]" if 13 <= len(digits) <= 19 and _luhn_ok(digits) else m.group(0)
+                return (
+                    "[REDACTED:CARD]"
+                    if 13 <= len(digits) <= 19 and _luhn_ok(digits)
+                    else m.group(0)
+                )
 
             text = pattern.sub(_card, text)
         else:

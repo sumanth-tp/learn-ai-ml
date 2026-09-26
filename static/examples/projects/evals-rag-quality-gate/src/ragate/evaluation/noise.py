@@ -32,8 +32,13 @@ def measure_noise(
         for name, value in aggs.items():
             if value is not None:
                 per_metric.setdefault(name, []).append(value)
-    judge_metrics = {"faithfulness", "answer_relevancy", "context_relevance",
-                     "contextual_recall", "correctness"}
+    judge_metrics = {
+        "faithfulness",
+        "answer_relevancy",
+        "context_relevance",
+        "contextual_recall",
+        "correctness",
+    }
     metrics = {
         name: {
             "mean": float(np.mean(vals)),
@@ -41,11 +46,16 @@ def measure_noise(
             "min": float(np.min(vals)),
             "max": float(np.max(vals)),
         }
-        for name, vals in per_metric.items() if name in judge_metrics
+        for name, vals in per_metric.items()
+        if name in judge_metrics
     }
-    return {"dataset": manifest.version, "repeats": repeats, "jitter": jitter,
-            "judge": judge_id,
-            "metrics": metrics}
+    return {
+        "dataset": manifest.version,
+        "repeats": repeats,
+        "jitter": jitter,
+        "judge": judge_id,
+        "metrics": metrics,
+    }
 
 
 def write_noise(report: dict, path: Path) -> None:

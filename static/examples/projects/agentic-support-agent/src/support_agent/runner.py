@@ -15,19 +15,21 @@ import uuid
 from collections import defaultdict
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
+from datetime import timedelta
 from typing import Any
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from support_agent import metrics
 from support_agent.container import Container
-from support_agent.db import PendingApproval, Thread, session_scope
+from support_agent.db import PendingApproval, Thread, session_scope, utcnow
 from support_agent.errors import PermissionDeniedError, SupportError
 from support_agent.graph import STREAMED_NODES, ApprovalDecision
 from support_agent.logging_setup import request_id_var, thread_id_var
+from support_agent.memory import issues_ns, prefs_ns
 from support_agent.prompts import APPROVAL_PENDING_MESSAGE
 from support_agent.state import Context
 from support_agent.tracing import build_callbacks, run_config
@@ -346,3 +348,36 @@ class SupportRunner:
                 if ev.type == "done":
                     done = ev.data
         return done
+
+    # ---- retention and erasure ----------------------------------------------
+
+    async def _delete_threads(self, thread_ids: list[str]) -> None:
+        checkpointer = self.graph.checkpointer
+        for tid in thread_ids:
+            if checkpointer is not None and not isinstance(checkpointer, bool):
+                await checkpointer.adelete_thread(tid)
+        with session_scope(self.c.sessions) as s:
+            s.execute(delete(PendingApproval).where(PendingApproval.thread_id.in_(thread_ids)))
+            s.execute(delete(Thread).where(Thread.id.in_(thread_ids)))
+
+    async def purge_threads(self, older_than_days: int) -> int:
+        """Retention: delete conversations (checkpoints included) older than N days."""
+        cutoff = utcnow() - timedelta(days=older_than_days)
+        with session_scope(self.c.sessions) as s:
+            ids = list(s.scalars(select(Thread.id).where(Thread.created_at < cutoff)))
+        await self._delete_threads(ids)
+        return len(ids)
+
+    async def forget_user(self, user_id: str) -> dict[str, int]:
+        """Right to erasure: conversations plus long-term memory for one customer."""
+        with session_scope(self.c.sessions) as s:
+            ids = list(s.scalars(select(Thread.id).where(Thread.user_id == user_id)))
+        await self._delete_threads(ids)
+        removed = 0
+        store = self.graph.store
+        if store is not None:
+            for ns in (prefs_ns(user_id), issues_ns(user_id)):
+                for item in await store.asearch(ns, limit=1000):
+                    await store.adelete(item.namespace, item.key)
+                    removed += 1
+        return {"threads": len(ids), "memories": removed}

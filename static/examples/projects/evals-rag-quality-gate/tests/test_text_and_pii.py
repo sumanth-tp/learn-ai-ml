@@ -31,4 +31,6 @@ def test_find_and_redact_pii() -> None:
 
 def test_leak_ignores_pii_the_user_supplied() -> None:
     assert leaked_pii("We will email a@b.example", "my email is a@b.example") == []
-    assert leaked_pii("Her email is c@d.example", "what is her email?") == [("EMAIL", "c@d.example")]
+    assert leaked_pii("Her email is c@d.example", "what is her email?") == [
+        ("EMAIL", "c@d.example")
+    ]

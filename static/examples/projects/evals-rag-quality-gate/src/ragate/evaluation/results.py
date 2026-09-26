@@ -36,9 +36,9 @@ class JudgeInfo(BaseModel):
     deepeval_version: str
 
     def fingerprint(self) -> str:
-        return hashlib.sha256(
-            json.dumps(self.model_dump(), sort_keys=True).encode()
-        ).hexdigest()[:12]
+        return hashlib.sha256(json.dumps(self.model_dump(), sort_keys=True).encode()).hexdigest()[
+            :12
+        ]
 
 
 class RunResult(BaseModel):

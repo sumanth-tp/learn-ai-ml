@@ -56,8 +56,9 @@ def build_runner(
         "embeddings": f"{settings.embedding_provider}:{settings.embedding_model}",
         "judge": judge.model_id,
     }
-    return EvalRunner(pipeline, rag_metrics, geval, judge_model_id=judge.model_id,
-                      provider=provider)
+    return EvalRunner(
+        pipeline, rag_metrics, geval, judge_model_id=judge.model_id, provider=provider
+    )
 
 
 def load_checked_dataset(settings: Settings, version: str | None):  # type: ignore[no-untyped-def]

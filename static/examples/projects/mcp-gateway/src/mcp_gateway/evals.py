@@ -44,13 +44,17 @@ def eval_scanner(path: Path = ROOT / "evals" / "injection_cases.jsonl") -> Scann
     misses = [c["text"] for c in pos if not scan_text(c["text"])]
     false_alarms = [c["text"] for c in neg if scan_text(c["text"])]
     return ScannerReport(
-        recall=1 - len(misses) / len(pos), fpr=len(false_alarms) / len(neg),
-        misses=misses, false_alarms=false_alarms,
+        recall=1 - len(misses) / len(pos),
+        fpr=len(false_alarms) / len(neg),
+        misses=misses,
+        false_alarms=false_alarms,
     )
 
 
-def eval_policy(policy: Path = ROOT / "config" / "policy.yaml",
-                cases: Path = ROOT / "evals" / "policy_cases.yaml") -> list[str]:
+def eval_policy(
+    policy: Path = ROOT / "config" / "policy.yaml",
+    cases: Path = ROOT / "evals" / "policy_cases.yaml",
+) -> list[str]:
     engine = PolicyEngine.from_yaml(policy.read_text(encoding="utf-8"))
     failures = []
     for c in yaml.safe_load(cases.read_text(encoding="utf-8"))["cases"]:
@@ -63,8 +67,9 @@ def eval_policy(policy: Path = ROOT / "config" / "policy.yaml",
 
 def main() -> int:
     s = eval_scanner()
-    print(f"scanner recall={s.recall:.2%} (min {MIN_RECALL:.0%}) "
-          f"fpr={s.fpr:.2%} (max {MAX_FPR:.0%})")
+    print(
+        f"scanner recall={s.recall:.2%} (min {MIN_RECALL:.0%}) fpr={s.fpr:.2%} (max {MAX_FPR:.0%})"
+    )
     for m in s.misses:
         print(f"  MISS  {m[:90]}")
     for f in s.false_alarms:

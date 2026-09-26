@@ -88,7 +88,8 @@ def synthesise(
             prompt = _prompt(qtype, passages)
             try:
                 reply = call_with_retries(
-                    lambda p=prompt: model.invoke([HumanMessage(p)]), what="synth",
+                    lambda p=prompt: model.invoke([HumanMessage(p)]),
+                    what="synth",
                     attempts=attempts,
                 )
                 proposal = _parse(str(reply.content))
@@ -101,19 +102,24 @@ def synthesise(
                 continue
             refuse = not proposal.evidence
             digest = hashlib.sha1(proposal.question.encode()).hexdigest()[:8]
-            out.append(GoldenItem(
-                item_id=f"syn-{qtype.value[:2]}-{digest}",
-                question=proposal.question,
-                question_type=qtype,
-                expected_behaviour=ExpectedBehaviour.REFUSE if refuse else (
-                    ExpectedBehaviour.CORRECT_PREMISE
-                    if qtype == QuestionType.ADVERSARIAL else ExpectedBehaviour.ANSWER
-                ),
-                reference_answer=proposal.answer,
-                evidence=proposal.evidence,
-                source="synthetic",
-                review_status=ReviewStatus.PENDING,
-            ))
+            out.append(
+                GoldenItem(
+                    item_id=f"syn-{qtype.value[:2]}-{digest}",
+                    question=proposal.question,
+                    question_type=qtype,
+                    expected_behaviour=ExpectedBehaviour.REFUSE
+                    if refuse
+                    else (
+                        ExpectedBehaviour.CORRECT_PREMISE
+                        if qtype == QuestionType.ADVERSARIAL
+                        else ExpectedBehaviour.ANSWER
+                    ),
+                    reference_answer=proposal.answer,
+                    evidence=proposal.evidence,
+                    source="synthetic",
+                    review_status=ReviewStatus.PENDING,
+                )
+            )
             made += 1
     # de-duplicate identical questions the model repeated
     unique = {i.item_id: i for i in out}

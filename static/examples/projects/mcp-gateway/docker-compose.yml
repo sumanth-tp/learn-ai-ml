@@ -1,0 +1,56 @@
+# docker compose up --build
+# Gateway on http://localhost:8080/mcp, with two HTTP upstreams on an
+# internal network that clients cannot reach directly.
+x-common: &common
+  build: .
+  image: mcp-gateway:local
+  restart: unless-stopped
+  env_file: .env
+
+services:
+  payments:
+    <<: *common
+    command: ["python", "-m", "mcp_gateway.demo_upstreams.payments_server", "--host", "0.0.0.0", "--port", "9101"]
+    environment:
+      # in production the payments service owns this value; here it mirrors the broker's
+      PAYMENTS_UPSTREAM_TOKEN: ${GATEWAY_SECRET_PAYMENTS_TOKEN}
+    networks: [upstreams]
+    healthcheck: &tcpcheck
+      test: ["CMD", "python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(s.connect_ex(('127.0.0.1', 9101)))"]
+      interval: 10s
+      retries: 5
+
+  tickets:
+    <<: *common
+    command: ["python", "-m", "mcp_gateway.demo_upstreams.tickets_server", "--host", "0.0.0.0", "--port", "9102"]
+    environment:
+      TICKETS_API_KEY: ${GATEWAY_SECRET_TICKETS_KEY}
+      TICKETS_POISON: ${TICKETS_POISON:-}
+    networks: [upstreams]
+    healthcheck:
+      <<: *tcpcheck
+      test: ["CMD", "python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(s.connect_ex(('127.0.0.1', 9102)))"]
+
+  gateway:
+    <<: *common
+    command: ["mcp-gateway", "serve"]
+    environment:
+      GATEWAY_HOST: 0.0.0.0
+      GATEWAY_PORT: "8080"
+      GATEWAY_STATE_DIR: /var/lib/mcp-gateway
+      GATEWAY_LOG_JSON: "true"
+      PAYMENTS_URL: http://payments:9101/mcp
+      TICKETS_URL: http://tickets:9102/mcp
+    ports: ["8080:8080"]
+    volumes: ["gateway-state:/var/lib/mcp-gateway"]
+    networks: [upstreams, edge]
+    depends_on:
+      payments: {condition: service_healthy}
+      tickets: {condition: service_healthy}
+
+networks:
+  edge: {}
+  upstreams: {internal: true}
+
+volumes:
+  gateway-state: {}

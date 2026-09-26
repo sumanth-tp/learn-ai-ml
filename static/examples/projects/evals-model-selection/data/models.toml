@@ -48,6 +48,7 @@ family = "anthropic"
 input_per_mtok = 2.00
 output_per_mtok = 10.00
 rpm = 50
+supports_temperature = false  # sampling parameters return HTTP 400 on this model
 
 [models."ollama:llama3.1:8b"]
 family = "meta-llama"

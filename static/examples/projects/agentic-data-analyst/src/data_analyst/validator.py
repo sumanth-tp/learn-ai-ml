@@ -72,6 +72,10 @@ class ValidationResult(BaseModel):
     tables: list[str] = []
     error: str | None = None
     warnings: list[str] = []
+    # True when the SQL tried something the policy forbids outright (DDL, file access,
+    # other schemas). These are never retried: a model that emits DROP TABLE after a
+    # prompt injection will happily emit it again.
+    security_violation: bool = False
 
 
 class SQLValidator:
@@ -86,27 +90,27 @@ class SQLValidator:
         except ParseError as e:
             return _fail(f"SQL does not parse: {_first_line(str(e))}")
         if len(statements) != 1:
-            return _fail(f"exactly one statement is allowed, got {len(statements)}")
+            return _block(f"exactly one statement is allowed, got {len(statements)}")
         stmt = statements[0]
         if not isinstance(stmt, exp.Query):
-            return _fail(f"only SELECT queries are allowed, got {stmt.key.upper()}")
+            return _block(f"only SELECT queries are allowed, got {stmt.key.upper()}")
 
         for node in stmt.walk():
             if isinstance(node, FORBIDDEN_NODES):
-                return _fail(f"forbidden operation: {node.key.upper()}")
+                return _block(f"forbidden operation: {node.key.upper()}")
             if isinstance(node, exp.Func):
                 name = (node.name if isinstance(node, exp.Anonymous) else node.sql_name()).lower()
                 if name.startswith(FORBIDDEN_FUNCTION_PREFIXES):
-                    return _fail(f"function {name}() is not allowed")
+                    return _block(f"function {name}() is not allowed")
 
         cte_names = {cte.alias_or_name.lower() for cte in stmt.find_all(exp.CTE)}
         tables: set[str] = set()
         for table in stmt.find_all(exp.Table):
             if not isinstance(table.this, exp.Identifier):
-                return _fail("table functions are not allowed in FROM")
+                return _block("table functions are not allowed in FROM")
             name = table.name.lower()
             if table.catalog or (table.db and table.db.lower() != "main"):
-                return _fail(f"schema-qualified table {table.sql(DIALECT)} is not allowed")
+                return _block(f"schema-qualified table {table.sql(DIALECT)} is not allowed")
             if name in cte_names and not table.db:
                 continue
             if name not in self.allowed:
@@ -137,6 +141,10 @@ class SQLValidator:
             stmt.set("limit", exp.Limit(expression=exp.Literal.number(self.max_limit)))
             return stmt, [f"LIMIT clamped to {self.max_limit}"]
         return stmt, []
+
+
+def _block(message: str) -> ValidationResult:
+    return ValidationResult(ok=False, error=message, security_violation=True)
 
 
 def _fail(message: str) -> ValidationResult:

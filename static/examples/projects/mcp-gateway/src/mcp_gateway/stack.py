@@ -35,13 +35,15 @@ def spawn(args: list[str], env: dict[str, str]) -> subprocess.Popen[bytes]:
 
 
 def spawn_payments(env: dict[str, str]) -> subprocess.Popen[bytes]:
-    return spawn(["-m", "mcp_gateway.demo_upstreams.payments_server",
-                  "--port", str(PAYMENTS_PORT)], env)
+    return spawn(
+        ["-m", "mcp_gateway.demo_upstreams.payments_server", "--port", str(PAYMENTS_PORT)], env
+    )
 
 
 def spawn_tickets(env: dict[str, str]) -> subprocess.Popen[bytes]:
-    return spawn(["-m", "mcp_gateway.demo_upstreams.tickets_server",
-                  "--port", str(TICKETS_PORT)], env)
+    return spawn(
+        ["-m", "mcp_gateway.demo_upstreams.tickets_server", "--port", str(TICKETS_PORT)], env
+    )
 
 
 def spawn_gateway(env: dict[str, str]) -> subprocess.Popen[bytes]:

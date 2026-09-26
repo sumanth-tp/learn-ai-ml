@@ -37,8 +37,15 @@ ASK_TOTAL = Counter("ragate_ask_total", "Questions answered", ["outcome"])
 ASK_TOKENS = Counter("ragate_ask_tokens_total", "LLM tokens used by /ask", ["kind"])
 ASK_COST = Counter("ragate_ask_cost_usd_total", "Estimated LLM spend by /ask")
 
-DASH_METRICS = ["recall_at_k", "faithfulness", "correctness", "refusal_rate", "pii_leak_rate",
-                "latency_p95_ms", "cost_per_query_usd"]
+DASH_METRICS = [
+    "recall_at_k",
+    "faithfulness",
+    "correctness",
+    "refusal_rate",
+    "pii_leak_rate",
+    "latency_p95_ms",
+    "cost_per_query_usd",
+]
 
 
 class AskRequest(BaseModel):
@@ -78,8 +85,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/health")
     def health() -> dict:
-        return {"status": "ok", "version": __version__, "provider": settings.provider,
-                "judge_provider": settings.judge_provider, "tracing": tracing_status()}
+        return {
+            "status": "ok",
+            "version": __version__,
+            "provider": settings.provider,
+            "judge_provider": settings.judge_provider,
+            "tracing": tracing_status(),
+        }
 
     @app.post("/ask", response_model=AskResponse)
     def ask(req: AskRequest) -> AskResponse:
@@ -97,9 +109,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         ASK_TOKENS.labels("input").inc(ans.usage.input_tokens)
         ASK_TOKENS.labels("output").inc(ans.usage.output_tokens)
         ASK_COST.inc(ans.cost_usd)
-        return AskResponse(answer=ans.answer, citations=ans.citations, refused=ans.refused,
-                           sources=[c.chunk.chunk_id for c in ans.contexts],
-                           latency_ms=round(elapsed * 1000, 2), cost_usd=ans.cost_usd)
+        return AskResponse(
+            answer=ans.answer,
+            citations=ans.citations,
+            refused=ans.refused,
+            sources=[c.chunk.chunk_id for c in ans.contexts],
+            latency_ms=round(elapsed * 1000, 2),
+            cost_usd=ans.cost_usd,
+        )
 
     @app.get("/runs")
     def list_runs(limit: int = 50) -> list[dict]:
@@ -118,8 +135,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if base is None or cand is None:
             raise HTTPException(status_code=404, detail="run not found")
         cfg = load_gate_config(settings.config_dir / "gate.yaml")
-        result = compare(base, cand, cfg, load_noise(settings.baselines_dir / "noise.json",
-                                                      cand.judge.model_id))
+        result = compare(
+            base, cand, cfg, load_noise(settings.baselines_dir / "noise.json", cand.judge.model_id)
+        )
         report = gate_report(result, base, cand)
         runs().record_decision(base.run_id, cand.run_id, result.decision, report)
         return report
@@ -133,9 +151,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         rows = []
         for r in runs().list(50):
             cells = "".join(f"<td>{fmt(r['aggregates'].get(m), m)}</td>" for m in DASH_METRICS)
-            rows.append(f"<tr><td><a href='/runs/{html.escape(r['run_id'])}'>"
-                        f"{html.escape(r['run_id'])}</a></td><td>{html.escape(r['created_at'])}"
-                        f"</td><td>{html.escape(r['dataset_version'])}</td>{cells}</tr>")
+            rows.append(
+                f"<tr><td><a href='/runs/{html.escape(r['run_id'])}'>"
+                f"{html.escape(r['run_id'])}</a></td><td>{html.escape(r['created_at'])}"
+                f"</td><td>{html.escape(r['dataset_version'])}</td>{cells}</tr>"
+            )
         decisions = "".join(
             f"<tr><td>{html.escape(d['created_at'])}</td><td>{html.escape(d['baseline'])}</td>"
             f"<td>{html.escape(d['candidate'])}</td><td>{html.escape(d['decision'])}</td></tr>"
@@ -147,7 +167,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 table{{border-collapse:collapse;margin-bottom:2rem}}td,th{{border:1px solid #ccc;
 padding:.3rem .6rem;font-size:.9rem}}th{{background:#eee}}</style></head><body>
 <h1>ragate: eval runs</h1><table><tr><th>run</th><th>created</th><th>dataset</th>{head}</tr>
-{''.join(rows)}</table><h2>Gate decisions</h2><table><tr><th>when</th><th>baseline</th>
+{"".join(rows)}</table><h2>Gate decisions</h2><table><tr><th>when</th><th>baseline</th>
 <th>candidate</th><th>decision</th></tr>{decisions}</table></body></html>"""
 
     return app

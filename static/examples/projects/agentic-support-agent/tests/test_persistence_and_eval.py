@@ -43,3 +43,14 @@ def test_gate_reports_regressions() -> None:
 
     bad = EvalReport([CaseResult("x", False, True, False, "faq", [], "")])
     assert bad.gate({"routing_accuracy": 0.9}) == ["routing_accuracy=0.0 < 0.9"]
+
+
+async def test_retention_purge_and_user_erasure(runner: SupportRunner) -> None:
+    await runner.run_turn("t1", "cust_001", "Please call me Asha. Where is ORD-1003?")
+    await runner.run_turn("t2", "cust_002", "Where is ORD-2001?")
+    assert await runner.purge_threads(older_than_days=30) == 0  # nothing old yet
+    result = await runner.forget_user("cust_001")
+    assert result["threads"] == 1 and result["memories"] >= 1
+    assert (await runner.history("t1"))["messages"] == []
+    assert (await runner.history("t2"))["messages"]  # other customers untouched
+    assert await runner.purge_threads(older_than_days=-1) == 1  # everything is "old"

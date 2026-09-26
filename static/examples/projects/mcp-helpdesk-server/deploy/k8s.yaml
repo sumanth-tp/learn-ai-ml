@@ -1,0 +1,89 @@
+# Reference deployment for any Kubernetes platform (EKS, GKE, AKS).
+# TLS terminates at the ingress; the pod speaks plain HTTP on 8000.
+# Secrets come from the platform secret store via the helpdesk-mcp secret.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpdesk-mcp
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate: {maxUnavailable: 0, maxSurge: 1}
+  selector:
+    matchLabels: {app: helpdesk-mcp}
+  template:
+    metadata:
+      labels: {app: helpdesk-mcp}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: /metrics
+    spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 10001}
+      initContainers:
+        - name: migrate
+          image: registry.example.com/helpdesk-mcp:1.0.0
+          command: ["helpdesk-mcp", "migrate"]
+          envFrom: [{secretRef: {name: helpdesk-mcp}}, {configMapRef: {name: helpdesk-mcp}}]
+      containers:
+        - name: server
+          image: registry.example.com/helpdesk-mcp:1.0.0
+          ports: [{containerPort: 8000}]
+          envFrom: [{secretRef: {name: helpdesk-mcp}}, {configMapRef: {name: helpdesk-mcp}}]
+          readinessProbe:
+            httpGet: {path: /readyz, port: 8000}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8000}
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {memory: 512Mi}
+          securityContext: {readOnlyRootFilesystem: true, allowPrivilegeEscalation: false}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpdesk-mcp
+data:
+  HELPDESK_ENVIRONMENT: prod
+  HELPDESK_AUTH_MODE: jwt
+  HELPDESK_JWT_ALGORITHM: RS256
+  HELPDESK_JWT_JWKS_URI: https://login.example.com/.well-known/jwks.json
+  HELPDESK_JWT_ISSUER: https://login.example.com/
+  HELPDESK_JWT_AUDIENCE: helpdesk-mcp
+  HELPDESK_PUBLIC_BASE_URL: https://helpdesk-mcp.example.com
+  HELPDESK_LLM_PROVIDER: openai
+  HELPDESK_LLM_MODEL: gpt-4o-mini
+---
+# Created by your secret manager integration (External Secrets, CSI driver), not by hand:
+#   HELPDESK_DATABASE_URL, HELPDESK_CURSOR_SECRET, OPENAI_API_KEY
+apiVersion: v1
+kind: Service
+metadata:
+  name: helpdesk-mcp
+spec:
+  selector: {app: helpdesk-mcp}
+  ports: [{port: 80, targetPort: 8000}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helpdesk-mcp
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    # Streamable HTTP holds SSE responses open; do not buffer or cut them short.
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    # Sessions are kept in the pod that created them.
+    nginx.ingress.kubernetes.io/affinity: cookie
+spec:
+  tls: [{hosts: [helpdesk-mcp.example.com], secretName: helpdesk-mcp-tls}]
+  rules:
+    - host: helpdesk-mcp.example.com
+      http:
+        paths:
+          - path: /mcp
+            pathType: Prefix
+            backend: {service: {name: helpdesk-mcp, port: {number: 80}}}
+          # /metrics, /healthz and /readyz are deliberately NOT exposed publicly.

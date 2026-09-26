@@ -48,15 +48,24 @@ def test_human_labels_never_use_private_items(settings: Settings) -> None:
 
 @pytest.mark.parametrize(
     ("text", "expected"),
-    [("refund", "refund"), ("Refund.", "refund"), ("  BILLING\n", "billing"), ("label: shipping", "shipping"),
-     ("money back", "invalid"), ("", "invalid")],
+    [
+        ("refund", "refund"),
+        ("Refund.", "refund"),
+        ("  BILLING\n", "billing"),
+        ("label: shipping", "shipping"),
+        ("money back", "invalid"),
+        ("", "invalid"),
+    ],
 )
 def test_parse_label(text: str, expected: str) -> None:
     assert parse_label(text) == expected
 
 
 def test_parse_fields_accepts_valid_and_fenced_json() -> None:
-    raw = '{"order_id": "ORD-12345", "product": "Cobalt Blender", "amount": 12.5, "priority": "high", "sentiment": "negative"}'
+    raw = (
+        '{"order_id": "ORD-12345", "product": "Cobalt Blender", "amount": 12.5,'
+        ' "priority": "high", "sentiment": "negative"}'
+    )
     fields, err = parse_fields(raw)
     assert err is None and fields is not None and fields.order_id == "ORD-12345"
     fenced, err2 = parse_fields(f"```json\n{raw}\n```")

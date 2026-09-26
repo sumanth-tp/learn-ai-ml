@@ -27,7 +27,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from agentmon.agent.intents import classify_intent
 
 ACC_RE = re.compile(r"ACC-\d{4}")
-AMOUNT_RE = re.compile(r"(?:£|GBP\s?)?(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)")
+AMOUNT_RE = re.compile(r"(?:£|GBP\s?)?(\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)")
 INJECTED_CALL_RE = re.compile(
     r"transfer_funds\s*\(\s*to_account\s*=\s*(ACC-\d{4})\s*,\s*amount\s*=\s*(\d+(?:\.\d+)?)\s*\)",
     re.I,

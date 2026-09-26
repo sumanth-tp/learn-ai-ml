@@ -66,9 +66,7 @@ class Limiter:
         if tool_limit is not None:
             wait = self.buckets.try_take(f"t:{p.subject}:{tool}", tool_limit.per_minute)
             if wait is not None:
-                raise RateLimitedError(
-                    f"rate limit: {tool_limit.per_minute}/min for {tool}", wait
-                )
+                raise RateLimitedError(f"rate limit: {tool_limit.per_minute}/min for {tool}", wait)
         scopes = [("*", user_limit.per_day)]
         if tool_limit is not None:
             scopes.append((tool, tool_limit.per_day))

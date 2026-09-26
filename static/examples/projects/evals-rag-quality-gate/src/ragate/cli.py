@@ -18,6 +18,7 @@ from ragate.evaluation.gate import ExitCode, compare, load_gate_config, load_noi
 from ragate.evaluation.noise import measure_noise, write_noise
 from ragate.evaluation.report import fmt, gate_report
 from ragate.evaluation.store import RunStore, load_run_file, write_run_file
+from ragate.judge.cache import JudgeCache
 from ragate.judge.prompts import lock_violations, write_lock
 from ragate.log import configure_logging
 from ragate.models import QuestionType
@@ -32,9 +33,18 @@ dataset_app = typer.Typer(help="Golden dataset: synth, review, freeze, check.")
 app.add_typer(dataset_app, name="dataset")
 
 CONFIG = typer.Option(Path("config/pipeline.yaml"), help="Pipeline config YAML")
-HEADLINE = ["recall_at_k", "mrr", "faithfulness", "answer_relevancy", "correctness",
-            "citation_precision", "refusal_rate", "pii_leak_rate", "latency_p95_ms",
-            "cost_per_query_usd"]
+HEADLINE = [
+    "recall_at_k",
+    "mrr",
+    "faithfulness",
+    "answer_relevancy",
+    "correctness",
+    "citation_precision",
+    "refusal_rate",
+    "pii_leak_rate",
+    "latency_p95_ms",
+    "cost_per_query_usd",
+]
 
 
 @app.callback()
@@ -65,8 +75,10 @@ def ask(question: str, config: Path = CONFIG) -> None:
     """Ask the assistant one question."""
     ans = build_pipeline(load_pipeline_config(config), get_settings()).ask(question)
     typer.echo(ans.answer)
-    typer.echo(f"\nsources: {[c.chunk.chunk_id for c in ans.contexts]}  refused={ans.refused}"
-               f"  tokens={ans.usage.total_tokens}  cost=${ans.cost_usd:.6f}")
+    typer.echo(
+        f"\nsources: {[c.chunk.chunk_id for c in ans.contexts]}  refused={ans.refused}"
+        f"  tokens={ans.usage.total_tokens}  cost=${ans.cost_usd:.6f}"
+    )
 
 
 @dataset_app.command("check")
@@ -83,8 +95,10 @@ def dataset_check(version: str | None = None) -> None:
         typer.secho("warning: corpus changed since this dataset was frozen", fg="yellow")
     for f in findings:
         typer.echo(f"{f.level:7} {f.check:20} {f.item_id:10} {f.message}")
-    typer.echo(f"{manifest.version}: {len(items)} approved items, {manifest.counts_by_type}, "
-               f"{sum(f.level == 'error' for f in findings)} errors")
+    typer.echo(
+        f"{manifest.version}: {len(items)} approved items, {manifest.counts_by_type}, "
+        f"{sum(f.level == 'error' for f in findings)} errors"
+    )
     if checks.has_errors(findings):
         raise typer.Exit(ExitCode.ERROR)
 
@@ -105,8 +119,9 @@ def dataset_synth(
         _fail(str(exc))
     items = synthesise(model, chunks, {qt: per_type for qt in QuestionType}, seed=seed)
     review.export_csv(items, out)
-    typer.echo(f"wrote {len(items)} pending items to {out}; review them, then run "
-               "`ragate dataset freeze`")
+    typer.echo(
+        f"wrote {len(items)} pending items to {out}; review them, then run `ragate dataset freeze`"
+    )
 
 
 @dataset_app.command("freeze")
@@ -132,9 +147,14 @@ def dataset_freeze(
         for f in findings:
             typer.echo(f"{f.level:7} {f.check:20} {f.item_id:10} {f.message}")
         _fail("refusing to freeze a dataset with check errors")
-    manifest = store.freeze(s.golden_dir, version, items, corpus_sha=corpus_hash(docs),
-                            parent=base, generator={"synth_prompt": SYNTH_PROMPT_VERSION,
-                                                    "model": s.chat_model})
+    manifest = store.freeze(
+        s.golden_dir,
+        version,
+        items,
+        corpus_sha=corpus_hash(docs),
+        parent=base,
+        generator={"synth_prompt": SYNTH_PROMPT_VERSION, "model": s.chat_model},
+    )
     typer.echo(f"froze {version}: {manifest.counts_by_type} sha={manifest.sha256[:12]}")
 
 
@@ -150,8 +170,14 @@ def eval_cmd(
     s = get_settings()
     backend: JudgeBackend = "deepeval" if judge_backend == "deepeval" else "native"
     try:
-        run = run_eval(s, load_pipeline_config(config), runs=_runs(), dataset_version=dataset,
-                       judge_backend=backend, force=force)
+        run = run_eval(
+            s,
+            load_pipeline_config(config),
+            runs=_runs(),
+            dataset_version=dataset,
+            judge_backend=backend,
+            force=force,
+        )
     except (DatasetError, ProviderConfigError) as exc:
         _fail(str(exc))
     if out:
@@ -164,8 +190,12 @@ def eval_cmd(
 def _gate(baseline: Path, candidate_run, report: Path | None, noise: Path | None) -> int:  # type: ignore[no-untyped-def]
     s = get_settings()
     base = load_run_file(baseline)
-    result = compare(base, candidate_run, load_gate_config(s.config_dir / "gate.yaml"),
-                     load_noise(noise, candidate_run.judge.model_id))
+    result = compare(
+        base,
+        candidate_run,
+        load_gate_config(s.config_dir / "gate.yaml"),
+        load_noise(noise, candidate_run.judge.model_id),
+    )
     text = gate_report(result, base, candidate_run)
     if report:
         report.parent.mkdir(parents=True, exist_ok=True)
@@ -190,8 +220,11 @@ def gate(
 
 
 @app.command()
-def baseline(config: Path = CONFIG, out: Path = typer.Option(Path("baselines/baseline.json")),
-             force: bool = False) -> None:
+def baseline(
+    config: Path = CONFIG,
+    out: Path = typer.Option(Path("baselines/baseline.json")),
+    force: bool = False,
+) -> None:
     """Evaluate a config and write it as the new baseline (run on main after a promote)."""
     cfg = load_pipeline_config(config).with_overrides("baseline", {})
     run = run_eval(get_settings(), cfg, runs=_runs(), force=force)
@@ -200,8 +233,9 @@ def baseline(config: Path = CONFIG, out: Path = typer.Option(Path("baselines/bas
 
 
 @app.command()
-def experiments(path: Path = typer.Option(Path("config/experiments.yaml")),
-                force: bool = False) -> None:
+def experiments(
+    path: Path = typer.Option(Path("config/experiments.yaml")), force: bool = False
+) -> None:
     """Run the experiment grid and write reports/experiments.md."""
     s = get_settings()
     _, best = run_experiments(s, path, _runs(), s.reports_dir, force=force)
@@ -210,9 +244,12 @@ def experiments(path: Path = typer.Option(Path("config/experiments.yaml")),
 
 
 @app.command()
-def noise(config: Path = CONFIG, repeats: int = 5,
-          jitter: float = typer.Option(0.0, help="Simulated judge noise for the stub judge"),
-          out: Path = typer.Option(Path("baselines/noise.json"))) -> None:
+def noise(
+    config: Path = CONFIG,
+    repeats: int = 5,
+    jitter: float = typer.Option(0.0, help="Simulated judge noise for the stub judge"),
+    out: Path = typer.Option(Path("baselines/noise.json")),
+) -> None:
     """Measure judge noise by re-judging identical answers, uncached."""
     report = measure_noise(get_settings(), load_pipeline_config(config), repeats, jitter=jitter)
     write_noise(report, out)
@@ -232,6 +269,18 @@ def judge_lock(check: bool = typer.Option(False, help="Only verify; exit 2 on vi
 
 
 @app.command()
+def prune(
+    run_days: int = typer.Option(180, help="Keep eval runs and gate decisions this long"),
+    cache_days: int = typer.Option(90, help="Keep cached judge verdicts this long"),
+) -> None:
+    """Apply the retention policy to the run store and the judge cache."""
+    s = get_settings()
+    runs_deleted = _runs().prune(run_days)
+    verdicts_deleted = JudgeCache(s.judge_cache_db).prune(cache_days)
+    typer.echo(f"deleted {runs_deleted} runs and {verdicts_deleted} cached verdicts")
+
+
+@app.command()
 def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
     """Serve the API and dashboard."""
     import uvicorn
@@ -242,9 +291,11 @@ def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
 
 
 @app.command()
-def e2e(config: Path = CONFIG,
-        baseline_path: Path = typer.Option(Path("baselines/baseline.json"), "--baseline"),
-        report: Path = typer.Option(Path("reports/gate.md"))) -> None:
+def e2e(
+    config: Path = CONFIG,
+    baseline_path: Path = typer.Option(Path("baselines/baseline.json"), "--baseline"),
+    report: Path = typer.Option(Path("reports/gate.md")),
+) -> None:
     """The whole gate in one command: index, dataset checks, eval, compare, report."""
     s = get_settings()
     if lock_violations():

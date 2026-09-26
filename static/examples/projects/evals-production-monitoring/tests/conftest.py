@@ -33,6 +33,7 @@ def settings(tmp_path: Path) -> Settings:
         eval_backoff_base_s=0.0,
         tool_backoff_base_s=0.0,
         log_json=False,
+        log_level="WARNING",
     )
 
 

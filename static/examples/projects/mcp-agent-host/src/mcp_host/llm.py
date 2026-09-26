@@ -56,7 +56,8 @@ class FakeToolModel(BaseChatModel):
     def _reply(self, messages: list[BaseMessage]) -> AIMessage:
         reply = self.responder(messages, self.tools)
         for call in reply.tool_calls:
-            call.setdefault("id", f"call_{uuid.uuid4().hex[:8]}")
+            if not call.get("id"):
+                call["id"] = f"call_{uuid.uuid4().hex[:8]}"
         return reply
 
     def _generate(

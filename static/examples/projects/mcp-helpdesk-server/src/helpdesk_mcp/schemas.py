@@ -83,7 +83,7 @@ class Page[T](BaseModel):
 
 
 class TicketPage(Page[TicketOut]):
-    pass
+    """A concrete page type, so the output schema has a stable, readable name."""
 
 
 class DeleteResult(BaseModel):

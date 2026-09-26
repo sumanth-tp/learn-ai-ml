@@ -160,9 +160,12 @@ The complete replacement files in sections 2–3 use teaching commit `52b771cbde
 
 ### 2.1 Define the intent and dialogue rules
 
+**`NOT from session`** Lines beginning `# Reader note:` inside the code are explanatory comments added for this chapter. They do not change the executable statements.
+
 #### Complete file: `app/guardrails/colang_rules.py`
 
 ```python
+# Reader note: These examples define dialogue intents; the rail model can generalise beyond literal phrases.
 # Colang intent definitions + flows for the production guardrail system.
 # Structure mirrors notebooks/01_guardrails.ipynb Experiment 5:
 # off-topic + jailbreak rails stacked with dialog rails (greeting/farewell/capabilities).
@@ -308,6 +311,7 @@ The greeting rule handles “hi”, “hello” and similar inputs. The off-topi
 #### Complete file: `app/guardrails/rails.py`
 
 ```python
+# Reader note: A handled rail response returns before the main RAG graph is invoked.
 import logfire
 from langchain_groq import ChatGroq
 from nemoguardrails import RailsConfig, LLMRails
@@ -344,6 +348,7 @@ def initialize_rails() -> None:
     
 
 
+# Reader note: A handled greeting or refusal is returned without a retrieval call.
 def guard(message: str) -> tuple[bool, str | None]:
     """
     Run a user message through the NeMo rails gate.
@@ -377,6 +382,7 @@ def guard(message: str) -> tuple[bool, str | None]:
 #### Complete file: `app/guardrails/__init__.py`
 
 ```python
+# Reader note: Expose the guard function to the API without importing its implementation everywhere.
 from app.guardrails.rails import initialize_rails, guard
 ```
 
@@ -384,6 +390,7 @@ from app.guardrails.rails import initialize_rails, guard
 The teaching implementation uses a smaller Groq model for the gate and reserves the larger model for the RAG application:
 
 ```python
+# Reader note: Importing the guard package creates the rail configuration used by the API.
 from langchain_groq import ChatGroq
 from nemoguardrails import RailsConfig, LLMRails
 from app.config import settings
@@ -432,6 +439,7 @@ The uninitialised path is fail-open: it lets the request continue. The applicati
 #### Complete file: `app/main.py`
 
 ```python
+# Reader note: Run the NeMo input gate before invoking the existing RAG graph.
 # ============================================================
 # CRITICAL: logfire MUST be configured before ALL other imports
 # so that spans from all modules are captured from the start.
@@ -483,6 +491,7 @@ def get_graph_image():
     
     
 @app.post("/query")
+# Reader note: A thread ID selects conversation history; callers must not share one across users.
 def query(request: QueryRequest):
     """
     Executes the LangGraph RAG flow with memory using a POST request.
@@ -580,6 +589,7 @@ This snippet exposes the gate branch; the repository's endpoint supplies the gra
 #### Complete file: `requirements.txt`
 
 ```text
+# Reader note: These dependencies reproduce this checkpoint; keep this environment separate from the later deployment fork.
 # ==============================================================================
 # ENTERPRISE AGENTIC RAG - REQUIREMENTS (Local, No GCP)
 # ==============================================================================
@@ -647,6 +657,7 @@ langchain-google-vertexai
 #### Complete file: `app/config.py`
 
 ```python
+# Reader note: Load service names and credentials once so every client uses the same configured endpoints.
 import os
 from dotenv import load_dotenv
 
@@ -692,6 +703,7 @@ settings = Settings()
 #### Complete file: `app/gateway/client.py`
 
 ```python
+# Reader note: Send planner and responder calls through the Portkey gateway instead of direct provider clients.
 import logfire
 from portkey_ai import Portkey, createHeaders, PORTKEY_GATEWAY_URL
 from langchain_openai import ChatOpenAI
@@ -722,6 +734,7 @@ portkey_client = Portkey(
 )
 
 
+# Reader note: Routing and cache behaviour are set at the gateway request boundary.
 def get_langchain_llm(feature: str = "rag") -> ChatOpenAI:
     """
     Returns a Portkey-backed ChatOpenAI — a drop-in for ChatGroq in LangChain nodes.
@@ -767,6 +780,7 @@ def extract_cache_status(response) -> str:
 #### Complete file: `app/gateway/__init__.py`
 
 ```python
+# Reader note: Expose the gateway client factory used by planner and responder.
 from app.gateway.client import portkey_client, get_langchain_llm, extract_cache_status
 ```
 
@@ -774,6 +788,7 @@ from app.gateway.client import portkey_client, get_langchain_llm, extract_cache_
 The teaching `GATEWAY_CONFIG` specifies fallback, simple caching, retries for selected status codes, and two model targets:
 
 ```python
+# Reader note: The fallback strategy tries the next configured route after a failed primary call.
 GATEWAY_CONFIG = {
     "strategy": {"mode": "fallback"},
     "cache": {"mode": "simple"},
@@ -794,6 +809,7 @@ The integration slugs must exist in your Portkey workspace. The first target is 
 #### Complete file: `app/agents/nodes/planner.py`
 
 ```python
+# Reader note: The planner chooses a conversational answer or produces a retrieval query.
 from app.agents.state import AgentState
 from app.gateway import get_langchain_llm
 import logfire
@@ -801,6 +817,7 @@ import logfire
 # Portkey-backed LLM: fallback + cache + retry — same .invoke() interface as ChatGroq
 llm = get_langchain_llm(feature="planner")
 
+# Reader note: The route depends on the model output, so repeated questions can still trigger retrieval.
 def planner_node(state: AgentState):
     """
     The Planner determines if a search is needed based on the ENTIRE conversation.
@@ -852,11 +869,13 @@ def planner_node(state: AgentState):
 #### Complete file: `app/agents/nodes/responder.py`
 
 ```python
+# Reader note: Build the final answer from conversation history plus the selected evidence.
 import logfire
 from app.agents.state import AgentState
 from app.gateway import portkey_client, extract_cache_status
 
 
+# Reader note: The context is bounded before generation; inspect what was actually included.
 def generate_node(state: AgentState):
     """
     Synthesizes a response using both Documentation Context AND Conversation History.
@@ -990,6 +1009,7 @@ Public comments on both sessions report a Portkey 400 error with `inline_config_
 **`NOT from session`** If your workspace disallows inline configurations, create the fallback/cache policy in Portkey and use its saved ID. The following uses the configuration-ID form documented by Portkey; apply the same policy consistently to planner and responder. [Portkey configurations](https://portkey.ai/docs/product/ai-gateway/configs).
 
 ```python
+# Reader note: A saved configuration ID selects the gateway policy without embedding its JSON here.
 import os
 from dotenv import load_dotenv
 from portkey_ai import Portkey
@@ -1344,6 +1364,8 @@ Save the complete JSON below as `evals/golden_dataset.json`. It contains 15 retr
 
 #### Complete file: `evals/golden_dataset.json`
 
+**`NOT from session` · Reading the JSON.** JSON does not allow comments, so keep the copyable file valid. In `rag_samples`, `question`, `reference`, `relevant_contexts` and `expected_tools` are the reviewed expectations; `actual_response`, `actual_contexts` and `actual_tools_called` are populated from an application run. In `guardrails_samples`, compare `expected_blocked` with the recorded `actual_blocked` and `result`.
+
 ```json
 {
   "rag_samples": [
@@ -1617,6 +1639,7 @@ Before running all 15 questions, run one technical case and one greeting/off-top
 #### Complete file: `evals/pipeline.py`
 
 ```python
+# Reader note: Collect observed answers and retrieved context for each reference question.
 """
 Phase 1 — Live Pipeline.
 Calls the running FastAPI /query endpoint for each golden sample.
@@ -1640,6 +1663,7 @@ REQUEST_TIMEOUT = 120      # seconds — guardrails + LangGraph + Groq can take 
 
 
 
+# Reader note: This label is inferred from trace text, not a verified tool event.
 def detect_tool(thought_process: list) -> str:
     """
     Maps the thought_process list from /query response to a tool name.
@@ -1657,6 +1681,7 @@ def detect_tool(thought_process: list) -> str:
     return "unknown"
 
 
+# Reader note: Save the answer and actual retrieved context even when they disagree with the reference.
 def run_pipeline(golden_dataset: dict, progress_callback=None) -> dict:
     """
     Enriches each rag_sample in golden_dataset with live API results.
@@ -1772,6 +1797,7 @@ The supplied judge is an 8B Groq model, with a local sentence-transformer used w
 #### Complete file: `evals/metrics.py`
 
 ```python
+# Reader note: Construct judge inputs from observed samples and keep each metric result inspectable.
 """
 Phase 2 — RAGAS + Tool Correctness metrics.
 Uses JUDGE_GROQ key so production GROQ_API_KEY is never exhausted by eval runs.
@@ -1829,6 +1855,7 @@ async def _cooldown(seconds: int, label: str, status_cb=None):
         status_cb(f"✅ Ready — starting next experiment.")
         
         
+# Reader note: This filter drops incomplete rows; report their count beside each average.
 def _prep_samples(golden_dataset: dict) -> list:
     """
     Returns only samples with actual_response populated.
@@ -1855,6 +1882,7 @@ def _score_df(metric_key: str, samples: list, scores) -> pd.DataFrame:
     ])
 
 
+# Reader note: Batching and cooldowns reduce provider pressure during long judge runs.
 async def _batched_score(metric, inputs: list, samples: list, status_cb=None, label: str = "") -> list:
     """
     Runs abatch_score in chunks of GENERAL_BATCH_SIZE with cooldowns between chunks.
@@ -1869,6 +1897,7 @@ async def _batched_score(metric, inputs: list, samples: list, status_cb=None, la
         all_scores.extend(scores)
     return all_scores
 
+# Reader note: Each metric uses a different subset of question, answer, reference, and context fields.
 async def run_all_metrics(golden_dataset: dict, status_cb=None) -> dict:
     """
     Runs all 6 experiments. Returns dict keyed by metric name → DataFrame.
@@ -2015,6 +2044,7 @@ The implementation further limits judging to two contexts of 300 characters each
 #### Complete file: `evals/guardrails_eval.py`
 
 ```python
+# Reader note: Turn labelled allow/block examples into observed outcomes and a confusion matrix.
 """
 Guardrails binary evaluation.
 Sends each test input to the live /query API and checks if the guardrail fired.
@@ -2030,6 +2060,7 @@ import logfire
 API_URL = "http://localhost:8000/query"
 
 
+# Reader note: Route text is only a proxy for a guard decision.
 def _is_blocked(response_json: dict) -> bool:
     tp = response_json.get("thought_process") or []
     return any("guardrails fired" in step.lower() for step in tp)
@@ -2095,6 +2126,7 @@ def run_guardrails_eval(guardrails_samples: list, progress_callback=None) -> lis
     return samples
 
 
+# Reader note: The source includes request errors in these counts; inspect errors separately.
 def compute_guardrails_metrics(results: list) -> dict:
     tp = sum(1 for r in results if r["result"] == "TP")
     tn = sum(1 for r in results if r["result"] == "TN")
@@ -2131,6 +2163,7 @@ Precision is `TP / (TP + FP)`: when the gate blocks, how often was that decision
 #### Complete file: `evals/data_parser.py`
 
 ```python
+# Reader note: Load source text for evaluation; this helper does not parse PDFs.
 """
 Parses true_data (all files) and noisy_data (pptx/docx/txt only) into tagged chunks.
 Uses python-docx and python-pptx directly — bypasses unstructured to avoid segfaults.
@@ -2169,6 +2202,7 @@ def _parse_pptx(file_path: str) -> str:
     return "\n".join(texts)
 
 
+# Reader note: Unsupported formats return empty text rather than being silently treated as parsed.
 def parse_file(file_path: str) -> str:
     ext = os.path.splitext(file_path)[1].lower()
     try:
@@ -2185,6 +2219,7 @@ def parse_file(file_path: str) -> str:
     return ""
 
 
+# Reader note: This helper reads the local corpus for evaluation, not the Qdrant payloads.
 def load_all_chunks() -> list[dict]:
     """
     Returns all chunks tagged with source filename and whether they are noise.
@@ -2229,6 +2264,7 @@ Read the file with that state transition in mind: `st.session_state` keeps the e
 #### Complete file: `evals/app.py`
 
 ```python
+# Reader note: Drive dataset collection and metric runs from the teaching Streamlit interface.
 # ─────────────────────────────────────────────────────────────────────────────
 # CRITICAL: logfire must be configured before all other imports
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2724,6 +2760,7 @@ The source files follow in full. Their paths are relative to `enterprise-rag-dep
 #### Complete file: `pyproject.toml`
 
 ```toml
+# Reader note: Install this repository in its own environment; these dependencies differ across the three demos.
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
@@ -2841,6 +2878,7 @@ convention = "google"
 #### Complete file: `.env.example`
 
 ```text
+# Reader note: Copy these variable names to .env and supply your own values; never commit real keys.
 # OpenAI LLM (Guardrails + RAG generation via Portkey)
 OPENAI_API_KEY=
 
@@ -2885,6 +2923,7 @@ JUDGE_OPENAI_API_KEY=
 #### Complete file: `app/config.py`
 
 ```python
+# Reader note: Deployment settings include managed database, gateway, tracing, and API-authentication values.
 """Centralized, Pydantic-validated application settings."""
 
 import os
@@ -3041,42 +3080,33 @@ This changes the vector space and the ranking boundary at the same time. The ing
 
 Trace a failed query at these boundaries. A Jina authentication error during ingestion means there are no new points to search. A collection-size error means the point or query vector does not match the collection. An empty Qdrant result means reranking has no candidates, so changing the reranker cannot recover the missing passage. A reranker response containing only indexes must be mapped back to the original strings before the responder builds its prompt.
 
-The complete source files follow, then the inline corrections explain where a copied deployment revision needs attention.
+The complete files below apply three small corrections to the reviewed source: stop when Jina is unavailable, use a standard logger for retry messages, and map reranker indexes back to candidate strings. These changes are **`NOT from session`**; the source code and teaching flow otherwise remain the same.
 
 #### Complete file: `app/services/retrieval/embedding.py`
 
 ```python
+# Reader note: Use the same embedding family for stored passages and incoming queries.
+import logging
+
 import logfire
 import requests
-from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
-
 from app.config import settings
+from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
 
 BATCH_SIZE = 64
 _EMBEDDING_DIM = 1024
 _JINA_EMBEDDING_URL = "https://api.jina.ai/v1/embeddings"
 _JINA_MODEL = "jina-embeddings-v3"
-_FALLBACK_MODEL = "mixedbread-ai/mxbai-embed-large-v1"
-
-_active_model = None
-_model_type: str | None = None  # "jina" or "fallback"
+_model_type: str | None = None  # One collection, one embedding model
 
 
 # ── Model initialisation ───────────────────────────────────────────────────────
 
 
-def _load_fallback():
-    """Load the local mxbai fallback model."""
-    from sentence_transformers import SentenceTransformer
-
-    logfire.info(f"Loading fallback embedding model ({_FALLBACK_MODEL}, {_EMBEDDING_DIM}-dim).")
-    return SentenceTransformer(_FALLBACK_MODEL)
-
-
 def _probe_jina_api() -> bool:
     """Verify the Jina Embeddings API is reachable with the configured key."""
     if not settings.JINA_API_KEY:
-        logfire.info("JINA_API_KEY not set — will use local fallback embeddings.")
+        logfire.warning("JINA_API_KEY not set; Jina embeddings are unavailable.")
         return False
 
     try:
@@ -3101,22 +3131,19 @@ def _probe_jina_api() -> bool:
         logfire.info("Jina Embeddings API ready (jina-embeddings-v3, 1024-dim).")
         return True
     except Exception as e:
-        logfire.warning(f"Jina Embeddings API probe failed: {e}. Will use local fallback embeddings.")
+        logfire.warning(f"Jina Embeddings API probe failed: {e}.")
         return False
 
 
+# Reader note: The provider decision happens lazily on first use, before query or passage embedding.
 def _init():
-    """Initialise embedding provider once per process. Called lazily on first use."""
-    global _active_model, _model_type
-    if _active_model is not None or _model_type is not None:
+    """Keep query and document vectors in the same Jina vector space."""
+    global _model_type
+    if _model_type == "jina":
         return
-
-    if _probe_jina_api():
-        _active_model = None  # Jina API is stateless; no local model to keep
-        _model_type = "jina"
-    else:
-        _active_model = _load_fallback()
-        _model_type = "fallback"
+    if not _probe_jina_api():
+        raise RuntimeError("Jina is unavailable; refusing to change this collection's embedding space")
+    _model_type = "jina"
 
 
 # ── Public helpers ─────────────────────────────────────────────────────────────
@@ -3135,7 +3162,7 @@ def get_embedding_dim() -> int:
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=1, max=5),
     reraise=True,
-    before_sleep=before_sleep_log(logfire, "warning"),
+    before_sleep=before_sleep_log(logging.getLogger(__name__), logging.WARNING),
 )
 def _embed_jina_batch(texts: list[str], task: str) -> list[list[float]]:
     """Call the Jina Embeddings API for a single batch."""
@@ -3173,49 +3200,18 @@ def _embed_jina(texts: list[str], task: str) -> list[list[float]]:
     return all_embeddings
 
 
-# ── Fallback embedding ─────────────────────────────────────────────────────────
-
-
-def _embed_fallback_batch(texts: list[str]) -> list[list[float]]:
-    """Embed texts using the local mxbai model."""
-    embeddings = _active_model.encode(texts, show_progress_bar=False)
-    return embeddings.tolist()
-
-
-def _embed_fallback(texts: list[str]) -> list[list[float]]:
-    """Embed texts via the local fallback model in batches."""
-    all_embeddings: list[list[float]] = []
-    for i in range(0, len(texts), BATCH_SIZE):
-        batch = texts[i : i + BATCH_SIZE]
-        with logfire.span("Embed batch via fallback model", start=i, size=len(batch)):
-            all_embeddings.extend(_embed_fallback_batch(batch))
-    return all_embeddings
-
-
-# ── Unified embedding with runtime fallback ────────────────────────────────────
-
-
-def _ensure_fallback():
-    """Switch to the local fallback model if not already active."""
-    global _active_model, _model_type
-    if _model_type != "fallback":
-        logfire.warning("Switching to local fallback embeddings.")
-        _active_model = _load_fallback()
-        _model_type = "fallback"
+# ── Unified embedding ──────────────────────────────────────────────────────────
 
 
 def _embed(texts: list[str], task: str) -> list[list[float]]:
-    """Embed texts using the active provider, falling back to local on failure."""
+    """Fail if Jina cannot embed the full input in the indexed vector space."""
     _init()
-
-    if _model_type == "jina":
-        try:
-            return _embed_jina(texts, task)
-        except Exception as e:
-            logfire.error(f"Jina Embeddings API failed: {e}. Falling back to local model.")
-            _ensure_fallback()
-
-    return _embed_fallback(texts)
+    vectors = _embed_jina(texts, task)
+    if len(vectors) != len(texts):
+        raise RuntimeError("Embedding response count does not match the input count")
+    if any(len(vector) != _EMBEDDING_DIM for vector in vectors):
+        raise RuntimeError("Embedding response dimension does not match the collection")
+    return vectors
 
 
 # ── Public API (same signatures as before) ─────────────────────────────────────
@@ -3226,6 +3222,7 @@ def embed_query(query: str) -> list[float]:
     return _embed([query], task="retrieval.query")[0]
 
 
+# Reader note: Keep document batches together and preserve their input order.
 def embed_texts(texts: list[str]) -> list[list[float]]:
     """Embed a list of document texts."""
     return _embed(texts, task="retrieval.passage")
@@ -3233,13 +3230,14 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
 #### Complete file: `app/services/retrieval/ranking_service.py`
 
 ```python
+# Reader note: Rerank only the short candidate list returned by Qdrant, then pass ordered text onward.
+import logging
 import time
 
 import logfire
 import requests
-from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
-
 from app.config import settings
+from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
 
 _JINA_RERANK_URL = "https://api.jina.ai/v1/rerank"
 _JINA_RERANK_MODEL = "jina-reranker-v3"
@@ -3248,42 +3246,30 @@ _ranker = None
 
 
 class _JinaReranker:
-    """Thin wrapper around the Jina Reranker API."""
+    """Return the original candidate strings in Jina's ranked order."""
 
     def rerank(self, query: str, documents: list[str], top_n: int) -> list[str]:
-        """Score and reorder documents against the query via the Jina API."""
         response = requests.post(
             _JINA_RERANK_URL,
-            headers={
-                "Authorization": f"Bearer {settings.JINA_API_KEY}",
-                "Content-Type": "application/json",
-            },
+            headers={"Authorization": f"Bearer {settings.JINA_API_KEY}"},
             json={
                 "model": _JINA_RERANK_MODEL,
                 "query": query,
                 "documents": documents,
                 "top_n": top_n,
-                "return_documents": True,
+                "return_documents": False,
             },
             timeout=60,
         )
         response.raise_for_status()
-        payload = response.json()
-
-        results = payload.get("results", [])
-        # Results are already sorted by relevance_score descending
-        reranked_docs = []
-        for res in results[:top_n]:
-            doc_text = res.get("document")
-            if doc_text is None:
-                # Fallback to original index if document text is missing
-                index = res.get("index")
-                if index is not None and 0 <= index < len(documents):
-                    doc_text = documents[index]
-            if doc_text is not None:
-                reranked_docs.append(doc_text)
-
-        return reranked_docs
+        results = response.json()["results"]
+        ranked = []
+        for result in results[:top_n]:
+            index = result["index"]
+            if not isinstance(index, int) or not 0 <= index < len(documents):
+                raise ValueError("Reranker returned an invalid document index")
+            ranked.append(documents[index])
+        return ranked
 
 
 def _get_ranker() -> _JinaReranker:
@@ -3299,7 +3285,7 @@ def _get_ranker() -> _JinaReranker:
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=1, max=5),
     reraise=True,
-    before_sleep=before_sleep_log(logfire, "warning"),
+    before_sleep=before_sleep_log(logging.getLogger(__name__), logging.WARNING),
 )
 def _rerank(query: str, documents: list[str], top_n: int) -> list[str]:
     """Core Jina API reranking with retry on transient failures."""
@@ -3307,6 +3293,7 @@ def _rerank(query: str, documents: list[str], top_n: int) -> list[str]:
     return ranker.rerank(query, documents, top_n)
 
 
+# Reader note: A reranker changes ordering; it cannot recover a passage that retrieval omitted.
 def rerank_documents(query: str, documents: list[str], top_n: int = 5) -> list[str]:
     """
     Refines retrieval results by re-scoring documents against the query semantically.
@@ -3346,69 +3333,14 @@ Document batches use `retrieval.passage`; queries use `retrieval.query`. The emb
 
 **Host explanation:** Download count is not evidence of suitability for your documents. Compare candidates on representative queries, accuracy, latency and available resources.
 
-**`NOT from session`** The source can switch from Jina to `mixedbread-ai/mxbai-embed-large-v1` during an outage. Both produce 1024 dimensions, but they do not share a vector space. A mixedbread query against Jina document vectors can return meaningless neighbours without a dimension error. For this build, keep the collection on Jina and stop the operation if Jina is unavailable. Replace `_init()` and `_embed()` in the file above with these complete function definitions:
-
-```python
-# NOT from session: prevent an implicit embedding-space change.
-def _init():
-    global _active_model, _model_type
-    if _model_type == "jina":
-        return
-    if not _probe_jina_api():
-        raise RuntimeError("Jina is unavailable; refusing to change this collection's embedding space")
-    _active_model = None
-    _model_type = "jina"
-
-
-def _embed(texts: list[str], task: str) -> list[list[float]]:
-    _init()
-    vectors = _embed_jina(texts, task)
-    if len(vectors) != len(texts):
-        raise RuntimeError("Embedding response count does not match the input count")
-    if any(len(vector) != _EMBEDDING_DIM for vector in vectors):
-        raise RuntimeError("Embedding response dimension does not match the collection")
-    return vectors
-```
-
-**`NOT from session`** Both Jina modules pass `logfire` and the string `"warning"` to Tenacity's `before_sleep_log`, which expects a standard logging logger and numeric level. In both files add `import logging`, then replace the decorator argument with:
-
-```python
-before_sleep=before_sleep_log(logging.getLogger(__name__), logging.WARNING),
-```
-
-**`NOT from session`** Normalise the reranker response through its returned index. This avoids passing a `document` object into a responder that expects strings. Replace the `_JinaReranker` class in the file above with this complete class:
-
-```python
-class _JinaReranker:
-    def rerank(self, query: str, documents: list[str], top_n: int) -> list[str]:
-        response = requests.post(
-            _JINA_RERANK_URL,
-            headers={"Authorization": f"Bearer {settings.JINA_API_KEY}"},
-            json={
-                "model": _JINA_RERANK_MODEL,
-                "query": query,
-                "documents": documents,
-                "top_n": top_n,
-                "return_documents": False,
-            },
-            timeout=60,
-        )
-        response.raise_for_status()
-        results = response.json()["results"]
-        ranked = []
-        for result in results[:top_n]:
-            index = result["index"]
-            if not isinstance(index, int) or not 0 <= index < len(documents):
-                raise ValueError("Reranker returned an invalid document index")
-            ranked.append(documents[index])
-        return ranked
-```
+**`NOT from session`** The source revision can switch to `mixedbread-ai/mxbai-embed-large-v1` during a Jina outage. That model also produces 1,024 dimensions, but its coordinates have a different meaning. The complete `embedding.py` above therefore fails instead of mixing vector spaces. The corrected Tenacity logger uses a standard `logging.Logger` and numeric level. The complete reranker maps returned indexes to strings, which is what the responder expects.
 
 ### 9.3 Gateway, agent nodes and durable checkpoints
 
 #### Complete file: `app/gateway/client.py`
 
 ```python
+# Reader note: Configure Portkey for the deployed model providers and expose sync/async clients.
 from langchain_openai import ChatOpenAI
 from openai import AsyncOpenAI, OpenAI
 from portkey_ai import PORTKEY_GATEWAY_URL, createHeaders
@@ -3453,6 +3385,7 @@ portkey_client = OpenAI(
 )
 
 
+# Reader note: Routing and cache behaviour are set at the gateway request boundary.
 def get_langchain_llm(feature: str = "rag") -> ChatOpenAI:
     """
     Returns a Portkey-backed ChatOpenAI - a drop-in for LangChain nodes.
@@ -3504,6 +3437,7 @@ def extract_cache_status(response) -> str:
 #### Complete file: `app/gateway/__init__.py`
 
 ```python
+# Reader note: Expose the gateway client factory used by planner and responder.
 from app.gateway.client import (
     extract_cache_status,
     get_async_openai_client,
@@ -3514,6 +3448,7 @@ from app.gateway.client import (
 #### Complete file: `app/agents/state.py`
 
 ```python
+# Reader note: Messages accumulate across graph nodes; ordinary state fields are replaced on update.
 import operator
 from typing import Annotated, List, TypedDict
 
@@ -3531,6 +3466,7 @@ class AgentState(TypedDict):
 #### Complete file: `app/agents/nodes/planner.py`
 
 ```python
+# Reader note: The planner chooses a conversational answer or produces a retrieval query.
 import logfire
 
 from app.agents.state import AgentState
@@ -3540,6 +3476,7 @@ from app.gateway import get_langchain_llm
 llm = get_langchain_llm(feature="planner")
 
 
+# Reader note: The route depends on the model output, so repeated questions can still trigger retrieval.
 def planner_node(state: AgentState):
     """
     The Planner determines if a search is needed based on the ENTIRE conversation.
@@ -3589,6 +3526,7 @@ def planner_node(state: AgentState):
 #### Complete file: `app/agents/nodes/retriever.py`
 
 ```python
+# Reader note: Retrieve candidates first, rerank them second, and write the selected context to state.
 import logfire
 
 from app.agents.state import AgentState
@@ -3596,6 +3534,7 @@ from app.services.retrieval.qdrant_service import search_enterprise_knowledge
 from app.services.retrieval.ranking_service import rerank_documents
 
 
+# Reader note: The first-stage search can return more candidates than the final answer receives.
 def retrieve_node(state: AgentState):
     """
     Performs vector search and semantic reranking for technical queries.
@@ -3625,6 +3564,7 @@ def retrieve_node(state: AgentState):
 #### Complete file: `app/agents/nodes/responder.py`
 
 ```python
+# Reader note: Build the final answer from conversation history plus the selected evidence.
 import logfire
 from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
 
@@ -3633,6 +3573,7 @@ from app.config import settings
 from app.gateway import extract_cache_status, portkey_client
 
 
+# Reader note: The context is bounded before generation; inspect what was actually included.
 def generate_node(state: AgentState):
     """
     Synthesizes a response using both Documentation Context AND Conversation History.
@@ -3730,6 +3671,7 @@ def _generate_response(prompt: str):
 #### Complete file: `app/agents/graph.py`
 
 ```python
+# Reader note: Prefer Postgres checkpoints; this source falls back to process memory if it fails.
 import logfire
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import MemorySaver
@@ -3742,6 +3684,7 @@ from app.agents.state import AgentState
 from app.config import settings
 
 
+# Reader note: Checkpoint storage determines whether history survives a restart.
 def create_checkpointer() -> BaseCheckpointSaver:
     """
     Create a durable Postgres checkpointer for production.
@@ -3853,10 +3796,12 @@ The source still has the earlier parser limitations: scanned pages require OCR, 
 #### Complete file: `app/ingestion/loaders/pdf.py`
 
 ```python
+# Reader note: Extract selectable PDF text page by page; a blank page triggers a second text parser, not OCR.
 import logfire
 from pypdf import PdfReader
 
 
+# Reader note: Text extraction cannot read pixels in a scanned page; inspect blank outputs before indexing.
 def parse_pdf(file_path: str) -> str:
     """
     Extract text from a PDF locally using pypdf.
@@ -3909,6 +3854,7 @@ def parse_pdf(file_path: str) -> str:
 #### Complete file: `app/ingestion/loaders/html.py`
 
 ```python
+# Reader note: Remove executable and metadata tags before text becomes retrievable evidence.
 import logfire
 from bs4 import BeautifulSoup
 
@@ -3945,6 +3891,7 @@ def parse_html(file_path: str):
 #### Complete file: `app/ingestion/loaders/text.py`
 
 ```python
+# Reader note: Keep the original text content; decoding errors are ignored by this teaching parser.
 import logfire
 
 
@@ -3963,6 +3910,7 @@ def parse_text(file_path: str):
 #### Complete file: `app/ingestion/loaders/office.py`
 
 ```python
+# Reader note: Dispatch Office files through Unstructured and join the elements it returns.
 import logfire
 from unstructured.partition.auto import partition
 
@@ -3991,11 +3939,13 @@ def parse_office(file_path: str):
 #### Complete file: `app/ingestion/chunking/splitter.py`
 
 ```python
+# Reader note: Pack blank-line paragraphs by character count; one long paragraph can exceed the target.
 from typing import List
 
 import logfire
 
 
+# Reader note: The threshold is a packing target, not a guaranteed maximum for oversized paragraphs.
 def chunk_text(text: str, chunk_size: int = 1500) -> List[str]:
     """
     Simple semantic-ish chunker that splits by paragraphs.
@@ -4027,6 +3977,7 @@ def chunk_text(text: str, chunk_size: int = 1500) -> List[str]:
 #### Complete file: `app/ingestion/processor.py`
 
 ```python
+# Reader note: Route each extension to a parser, save inspectable chunks, then embed and upsert points.
 import json
 import os
 import sys
@@ -4078,6 +4029,7 @@ def save_processed_locally(data: dict, source_type: str, filename: str) -> str:
     return dest
 
 
+# Reader note: Parsing and chunking happen before vectors are written to Qdrant.
 def process_file(file_path: str, filename: str, source_type: str):
     """Parse → chunk → save locally → embed → index in Qdrant."""
     with logfire.span("Processing File", file=filename, source=source_type):
@@ -4151,6 +4103,7 @@ def process_directory(dir_path: str, source_type: str):
             process_file(os.path.join(dir_path, filename), filename, source_type)
 
 
+# Reader note: Wiping the collection deletes existing vectors; the ordinary true/noisy labels do not.
 def run_universal_ingestion(base_dir: str, explicit_source_type: str = None, wipe: bool = False):
     """
     Scan base_dir, map sub-folders to source types, and ingest all documents.
@@ -4213,6 +4166,7 @@ if __name__ == "__main__":
 #### Complete file: `app/services/retrieval/qdrant_service.py`
 
 ```python
+# Reader note: The query vector must match the collection model and dimension before Qdrant can search.
 import logfire
 from qdrant_client import QdrantClient
 from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
@@ -4251,6 +4205,7 @@ def _search_enterprise_knowledge(query: str, limit: int = 8):
     return results
 
 
+# Reader note: Include payload so the responder can read the matched text, not only scores.
 def search_enterprise_knowledge(query: str, limit: int = 8):
     """
     Performs a high-precision search in the enterprise knowledge base.
@@ -4284,6 +4239,7 @@ The health endpoints answer different questions. `/health` reports whether the s
 #### Complete file: `app/guardrails/colang_rules.py`
 
 ```python
+# Reader note: These examples define dialogue intents; the rail model can generalise beyond literal phrases.
 # Colang intent definitions + flows for the production guardrail system.
 # Structure mirrors notebooks/01_guardrails.ipynb Experiment 5:
 # off-topic + jailbreak rails stacked with dialog rails (greeting/farewell/capabilities).
@@ -4413,6 +4369,7 @@ RAIL_INDICATORS = [
 #### Complete file: `app/guardrails/rails.py`
 
 ```python
+# Reader note: A handled rail response returns before the main RAG graph is invoked.
 import logfire
 from langchain_openai import ChatOpenAI
 from nemoguardrails import LLMRails, RailsConfig
@@ -4438,6 +4395,7 @@ def initialize_rails() -> None:
     logfire.info("🛡️ NeMo Guardrails initialised (gpt-5-mini).")
 
 
+# Reader note: A handled greeting or refusal is returned without a retrieval call.
 def guard(message: str) -> tuple[bool, str | None]:
     """
     Run a user message through the NeMo rails gate.
@@ -4469,11 +4427,13 @@ def guard(message: str) -> tuple[bool, str | None]:
 #### Complete file: `app/guardrails/__init__.py`
 
 ```python
+# Reader note: Expose the guard function to the API without importing its implementation everywhere.
 from app.guardrails.rails import guard, initialize_rails
 ```
 #### Complete file: `app/logging.py`
 
 ```python
+# Reader note: A request-scoped ID joins logs and traces without being shared across concurrent requests.
 """Request-context logging helpers."""
 
 from contextvars import ContextVar
@@ -4493,6 +4453,7 @@ def get_request_id() -> str | None:
 #### Complete file: `app/services/health/connection_checker.py`
 
 ```python
+# Reader note: These checks make real dependency calls, so use them for diagnostics rather than frequent ALB polling.
 """Standalone and startup-time connection health checks for all external services.
 
 Run from the command line:
@@ -4611,6 +4572,7 @@ def _check_portkey_gateway() -> ConnectionResult:
         return ConnectionResult("llm_gateway", False, str(e))
 
 
+# Reader note: This makes a real provider request and can consume quota.
 def _check_jina_embeddings() -> ConnectionResult:
     """Verify Jina Embeddings API accepts a probe request."""
     if not settings.JINA_API_KEY:
@@ -4711,6 +4673,7 @@ _CHECKERS: list[Callable[[], ConnectionResult]] = [
 ]
 
 
+# Reader note: The result map preserves which dependency failed instead of returning one boolean.
 def check_all_connections() -> dict[str, ConnectionResult]:
     """Run all connection checks and return a map of service name to result."""
     results: dict[str, ConnectionResult] = {}
@@ -4757,6 +4720,7 @@ if __name__ == "__main__":
 #### Complete file: `app/health.py`
 
 ```python
+# Reader note: The shallow health route reports process liveness; readiness checks dependencies.
 """Health and readiness checks for the Enterprise RAG API."""
 
 import logfire
@@ -4775,6 +4739,7 @@ def health():
 
 
 @router.get("/ready")
+# Reader note: Return failure status when a required downstream service is unavailable.
 def ready(request: Request):
     """
     Readiness probe — verifies that critical external dependencies are reachable.
@@ -4797,6 +4762,7 @@ def ready(request: Request):
 #### Complete file: `app/main.py`
 
 ```python
+# Reader note: Authenticate, rate-limit, trace, and route a request before returning the answer.
 # ============================================================
 # CRITICAL: logfire MUST be configured before ALL other imports
 # so that spans from all modules are captured from the start.
@@ -5006,6 +4972,7 @@ def get_graph_image(_api_key: str = Depends(verify_api_key)):
 
 @app.post("/query")
 @rate_limit()
+# Reader note: A thread ID selects conversation history; callers must not share one across users.
 def query(
     request: Request,
     body: QueryRequest,
@@ -5085,6 +5052,7 @@ def query(
 #### Complete file: `ui/app.py`
 
 ```python
+# Reader note: Keep Streamlit display state separate from the graph checkpoint stored by the API.
 import os
 import time
 import uuid
@@ -5289,6 +5257,7 @@ The request sequence is now: bearer-key verification, rate limiting, guardrail h
 #### Complete file: `Dockerfile`
 
 ```docker
+# Reader note: Install dependencies in a cached layer, then copy code and run as a non-root user.
 FROM python:3.11-slim-bookworm
 
 # Pull uv binary from the official image — no pip install needed.
@@ -5324,6 +5293,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--timeou
 #### Complete file: `.dockerignore`
 
 ```text
+# Reader note: Keep local credentials, caches, and development files out of the image build context.
 # Python artifacts
 __pycache__/
 *.py[cod]
@@ -5378,6 +5348,7 @@ Thumbs.db
 #### Complete file: `docker-compose.yml`
 
 ```yaml
+# Reader note: The API uses port 8080 inside Docker; the UI reaches it through the api service name.
 services:
   qdrant:
     image: qdrant/qdrant:latest
@@ -5401,7 +5372,6 @@ services:
       # (e.g. to point at the local qdrant service above).
       QDRANT_COLLECTION: enterprise_rag
       RATE_LIMIT_PER_MINUTE: "60"
-      RAG_API_KEY: ""
       LOGFIRE_IGNORE_NO_CONFIG: "1"
     env_file:
       - .env
@@ -5442,7 +5412,7 @@ The Compose file starts a local Qdrant container but leaves the API endpoint to 
 
 For cloud Qdrant, keep the cloud URL/key. For the local service, set the API's Compose environment to `QDRANT_URL: http://qdrant:6333` and `QDRANT_API_KEY: ""`. A host-side ingestion process must use `http://localhost:6333`; the hostname `qdrant` exists inside the Compose network.
 
-**`NOT from session`** The supplied Compose environment explicitly sets `RAG_API_KEY: ""`, overriding `.env` and disabling API authentication. Remove that line from `api.environment` to exercise the authenticated path. The UI already reads the same key from `.env`.
+**`NOT from session`** The supplied Compose file explicitly set `RAG_API_KEY: ""`, overriding `.env` and disabling API authentication. The complete file above omits that override, so the API and UI both read the configured key from `.env`.
 
 ```bash
 docker compose build
@@ -5457,6 +5427,7 @@ The health response should contain `"status":"ok"`. Open `http://localhost:8501`
 Run an authenticated request without putting the literal key into the command:
 
 ```bash
+# Reader note: Create a disposable Qdrant point to prove which collection this Compose setup reaches.
 uv run python - <<'PY'
 import os
 from uuid import uuid4
@@ -5574,6 +5545,7 @@ aws ec2 modify-vpc-attribute \
 ```
 
 ```bash
+# Reader note: Attach the internet gateway before the public route points to it.
 export IGW_ID=$(aws ec2 create-internet-gateway \
   --tag-specifications "ResourceType=internet-gateway,Tags=[{Key=Name,Value=$PROJECT-igw}]" \
   --query 'InternetGateway.InternetGatewayId' \
@@ -5596,6 +5568,7 @@ echo "AZ1=$AZ1, AZ2=$AZ2"
 ```
 
 ```bash
+# Reader note: Place public and private subnets in the selected availability zones.
 export PUBLIC_SUBNET_1=$(aws ec2 create-subnet \
   --vpc-id $VPC_ID \
   --cidr-block $PUBLIC_SUBNET_1_CIDR \
@@ -5654,6 +5627,7 @@ aws ec2 wait nat-gateway-available --nat-gateway-ids $NAT_GW_1
 ```
 
 ```bash
+# Reader note: The public route table sends outbound traffic through the internet gateway.
 export PUBLIC_RT=$(aws ec2 create-route-table \
   --vpc-id $VPC_ID \
   --tag-specifications "ResourceType=route-table,Tags=[{Key=Name,Value=$PROJECT-public-rt}]" \
@@ -5675,6 +5649,7 @@ aws ec2 associate-route-table \
 ```
 
 ```bash
+# Reader note: Private task subnets use the NAT gateway for outbound provider calls.
 export PRIVATE_RT=$(aws ec2 create-route-table \
   --vpc-id $VPC_ID \
   --tag-specifications "ResourceType=route-table,Tags=[{Key=Name,Value=$PROJECT-private-rt}]" \
@@ -5829,6 +5804,7 @@ The session creates one secret per environment variable and supplies the secret 
 **`NOT from session`** This complete helper implements the same one-secret-per-setting layout using the already prepared `.env`, avoiding placeholder credentials and printing only ARNs. Save it as `scripts/create_aws_secrets.py`, run it from the deployment root, then source its generated exports. It uses the AWS CLI's configured identity and Python's installed dotenv package.
 
 ```python
+# Reader note: Create one Secrets Manager value per runtime setting and export only its ARN.
 import json
 import os
 from pathlib import Path
@@ -5875,6 +5851,7 @@ The helper expects new secret names. If a previous attempt created some secrets,
 The **execution role** lets ECS pull images, deliver logs and inject secrets before your application starts. The **task role** is available to application code making AWS API calls. Confusing them produces a secret retrieval failure even when the application role appears to have sufficient access.
 
 ```bash
+# Reader note: The ECS execution role pulls images and reads injected secrets for the task.
 aws iam get-role --role-name ecsTaskExecutionRole >/dev/null 2>&1 || \
 aws iam create-role \
   --role-name ecsTaskExecutionRole \
@@ -5893,6 +5870,7 @@ aws iam attach-role-policy \
 ```
 
 ```bash
+# Reader note: Only ECS tasks should be allowed to assume these task-role credentials.
 cat > /tmp/ecs-trust-policy.json <<'EOF'
 {
   "Version": "2012-10-17",
@@ -5916,6 +5894,7 @@ aws iam create-role \
 ```
 
 ```bash
+# Reader note: Limit secret reads to the ARNs created for this application.
 cat > /tmp/rag-secrets-policy.json <<EOF
 {
   "Version": "2012-10-17",
@@ -5973,6 +5952,8 @@ The API starts with one vCPU and 2 GiB; the UI starts with half a vCPU and 1 GiB
 **`NOT from session`** The following complete definitions preserve the source layout with two corrections: the API collection is the Jina collection, and Streamlit serves under `/ui`. The ALB's path routing does not strip `/ui` from requests. Registration happens after creating the ALB so `BACKEND_URL` is known.
 
 #### Complete file: `.aws/task-definitions/rag-api.json`
+
+**`NOT from session` · Reading the JSON.** `family` names the task revision, `executionRoleArn` lets ECS pull the image and inject Secrets Manager values, and `taskRoleArn` is the application's runtime identity. `environment` contains non-secret settings; `secrets` maps secret ARNs to container variables. JSON comments would make the AWS CLI reject this file, so these explanations sit beside it.
 
 ```json
 {
@@ -6101,6 +6082,8 @@ The API starts with one vCPU and 2 GiB; the UI starts with half a vCPU and 1 GiB
 
 #### Complete file: `.aws/task-definitions/rag-ui.json`
 
+**`NOT from session` · Reading the JSON.** The UI task has its own CPU/memory and port 8501. `BACKEND_URL` points it at the ALB, while the API key arrives through `secrets`. Keep `/ui` consistent between Streamlit's base path and the ALB health/routing rules.
+
 ```json
 {
   "family": "rag-ui",
@@ -6176,6 +6159,7 @@ The API starts with one vCPU and 2 GiB; the UI starts with half a vCPU and 1 GiB
 Use IP target groups because Fargate tasks have their own network interfaces. API health checks call `/health`, which reports liveness without performing the full paid-provider readiness probe.
 
 ```bash
+# Reader note: The public ALB receives requests; private ECS tasks do not get public IPs.
 export ALB_ARN=$(aws elbv2 create-load-balancer \
   --name $ALB_NAME \
   --type application \
@@ -6194,6 +6178,7 @@ echo "ALB_DNS=$ALB_DNS"
 ```
 
 ```bash
+# Reader note: Target groups route API and UI traffic to different container ports.
 export API_TG_ARN=$(aws elbv2 create-target-group \
   --name "${PROJECT}-api-tg" \
   --protocol HTTP \
@@ -6237,6 +6222,7 @@ aws elbv2 create-rule \
 Save this renderer at `scripts/render_aws_tasks.py`. It resolves all placeholders, converts role names to ARNs and fails before registration if a required value is missing.
 
 ```python
+# Reader note: Replace placeholders and role names before registering task definitions.
 import json
 import os
 from pathlib import Path
@@ -6286,6 +6272,7 @@ export RAG_UI_TASK_DEF_ARN=$(aws ecs register-task-definition   --cli-input-json
 Two API tasks demonstrate horizontal service deployment. Checkpoint state belongs in Neon so a later request routed to another task can continue the same thread. Upstash similarly provides a shared rate-limit counter; a process-local counter would multiply the effective allowance across replicas.
 
 ```bash
+# Reader note: Associate the API service with its target group and private subnets.
 aws ecs create-service \
   --cluster $ECS_CLUSTER \
   --service-name rag-api \
@@ -6300,6 +6287,7 @@ aws ecs create-service \
 ```
 
 ```bash
+# Reader note: The UI service gets its own target group and desired task count.
 aws ecs create-service \
   --cluster $ECS_CLUSTER \
   --service-name rag-ui \
@@ -6334,6 +6322,7 @@ The source scales API capacity from ALB request count per target and optionally 
 **`NOT from session`** These commands remove the invalid `--role-name` argument and construct the complete ALB/target-group resource label, including the target-group name. ECS uses its service-linked Application Auto Scaling role. [AWS CLI reference](https://docs.aws.amazon.com/cli/latest/reference/application-autoscaling/register-scalable-target.html).
 
 ```bash
+# Reader note: Scale on measured service load; these values are demonstration defaults.
 aws application-autoscaling register-scalable-target   --service-namespace ecs --resource-id "service/${ECS_CLUSTER}/rag-api"   --scalable-dimension ecs:service:DesiredCount --min-capacity 2 --max-capacity 10
 export RESOURCE_LABEL="${ALB_ARN#*loadbalancer/}/${API_TG_ARN##*:}"
 jq -n --arg label "$RESOURCE_LABEL" '{
@@ -6379,6 +6368,7 @@ CI runs lint and mocked tests; it does not run the paid Ragas evaluation suite. 
 #### Complete file: `.github/workflows/ci.yml`
 
 ```yaml
+# Reader note: CI installs the repository dependencies, checks formatting, and runs mocked tests.
 name: CI
 
 on:
@@ -6433,6 +6423,7 @@ jobs:
 #### Complete file: `.github/workflows/cd.yml`
 
 ```yaml
+# Reader note: CD deploys the exact successful CI commit and waits for both ECS services.
 name: CD
 
 on:
@@ -6595,6 +6586,7 @@ gh secret list
 GitHub only triggers a `workflow_run` CD workflow when its workflow file exists on the fork's default branch. Add the corrected CD file there, then make a new deployment-branch commit to trigger CI after that setup:
 
 ```bash
+# Reader note: Place CD on the fork default branch before triggering a deployment-branch CI run.
 git fetch upstream main
 git switch -c workshop-main upstream/main
 git restore --source workshop-deployment -- .github/workflows/cd.yml
@@ -6841,6 +6833,7 @@ The inspection step matters more than a pleasing demo screenshot. On the shared 
 Use the exact companion repository at revision [`c8d91fe`](https://github.com/sourangshupal/nemotron-parse-mistral-ocr/tree/c8d91fe0f5d474aa331dcdcde03da930ce212a9b). It targets Python 3.12 and keeps this work separate from the Python 3.11 application environment. The source repository's `pyproject.toml` is included below so package requirements stay next to the commands.
 
 ```bash
+# Reader note: Pin the reviewed OCR repository revision before installing its dependencies.
 git clone https://github.com/sourangshupal/nemotron-parse-mistral-ocr.git
 cd nemotron-parse-mistral-ocr
 git checkout c8d91fe0f5d474aa331dcdcde03da930ce212a9b
@@ -6857,6 +6850,7 @@ Fill `NVIDIA_API_KEY` from [NVIDIA Build](https://build.nvidia.com/) and `MISTRA
 #### Complete file: `pyproject.toml`
 
 ```toml
+# Reader note: This OCR comparison environment is separate from the deployed RAG API environment.
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -6926,6 +6920,7 @@ Look for `docling_report_page_0000_raw.json`, `docling_report_page_0000_parsed.m
 #### Complete file: `nemotron_parse_pipeline.py`
 
 ```python
+# Reader note: Render PDF pages, call Nemotron-Parse, and retain page-level text and boxes for inspection.
 """
 Nemotron-Parse PDF Processing Pipeline
 =======================================
@@ -7306,6 +7301,7 @@ def save_combined_markdown(results: list[PageResult], output_dir: Path, pdf_stem
 # ---------------------------------------------------------------------------
 # Core pipeline
 # ---------------------------------------------------------------------------
+# Reader note: Keep each page and its parsed elements together for later visual review.
 def process_pdf(
     pdf_path: Path,
     output_dir: Path,
@@ -7541,6 +7537,7 @@ streamlit run scripts/visualize_parse.py
 #### Complete file: `scripts/visualize_parse.py`
 
 ```python
+# Reader note: Draw predicted regions over the source page so missed elements are visible.
 """
 Nemotron-Parse Visual Inspector
 ================================
@@ -7993,6 +7990,7 @@ streamlit run scripts/visualize_mistral_ocr.py
 #### Complete file: `scripts/visualize_mistral_ocr.py`
 
 ```python
+# Reader note: Render Mistral OCR output beside the original page and its detected regions.
 """
 Mistral OCR Visual Inspector
 =============================
@@ -8466,6 +8464,7 @@ In the UI, upload the same PDF, wait for all pages, then inspect **Raw**, **Clea
 #### Complete file: `unlimited_ocr/app.py`
 
 ```python
+# Reader note: Send each rendered page to the private OCR endpoint and inspect raw and cleaned output.
 """
 Unlimited-OCR Visual Inspector
 ==============================
@@ -8545,6 +8544,7 @@ def encode_png_b64(png_bytes: bytes) -> str:
 # ---------------------------------------------------------------------------
 # Unlimited-OCR API call
 # ---------------------------------------------------------------------------
+# Reader note: The model-specific image token and window setting affect grounded output.
 def call_unlimited_ocr(client: OpenAI, model: str, image_b64: str, is_multi_page: bool) -> str:
     """
     Call the Unlimited-OCR API with a single image.
@@ -9027,6 +9027,7 @@ The first parse downloads the layout model weights too. `ollama list` should inc
 #### Complete file: `pyproject.toml` from the dual-stage repository
 
 ```toml
+# Reader note: Install the local layout-plus-OCR project separately from the hosted OCR comparison.
 [project]
 name = "doc-parser"
 version = "0.1.0"
@@ -9100,6 +9101,7 @@ asyncio_mode = "auto"
 #### Complete file: `ollama/config.yaml`
 
 ```yaml
+# Reader note: Choose the layout detector, OCR backend, and region labels for the local pipeline.
 pipeline:
   maas:
     enabled: false          # Disable Z.AI cloud API
@@ -9182,6 +9184,7 @@ A successful terminal run prints the time, page count, element count and the fir
 #### Complete file: `ollama/test_parse.py`
 
 ```python
+# Reader note: Run the layout-plus-OCR parser and save its Markdown and element JSON.
 #!/usr/bin/env python3
 """
 Test GLM-OCR parsing via local Ollama.
@@ -9236,6 +9239,7 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+# Reader note: Persist both human-readable Markdown and machine-readable regions.
 def main() -> int:
     args = parse_args()
 
@@ -9333,6 +9337,7 @@ if __name__ == "__main__":
 #### Complete file: `ollama/visualize.py`
 
 ```python
+# Reader note: Read saved parser output or run a fresh parse, then overlay regions on the PDF page.
 """Streamlit app: visualize Ollama/PP-DocLayoutV3 parsed results.
 
 Supports two workflows:
@@ -9495,6 +9500,7 @@ def find_pdf(stem: str) -> Path | None:
     return candidate if candidate.exists() else None
 
 
+# Reader note: Live parsing is slower than opening an already saved result.
 def run_parser(pdf_path: Path) -> tuple[list[list[dict]], str]:
     """Parse a PDF with the local Ollama pipeline and return (pages, markdown)."""
     try:

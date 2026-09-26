@@ -1,0 +1,142 @@
+.docItemContainer header + *,
+.docItemContainer article > *:first-child {
+  margin-top: 0;
+}
+
+/* Give the article the reclaimed space when the right contents pane closes. */
+.docItemContainerExpanded :global(.theme-doc-markdown.markdown) {
+  max-width: 100%;
+}
+
+@media (min-width: 997px) {
+  .docItemCol {
+    max-width: 75% !important;
+  }
+
+  .docItemColExpanded {
+    flex: 0 0 calc(100% - 3.25rem);
+    max-width: calc(100% - 3.25rem) !important;
+  }
+
+  .tocColumnCollapsed {
+    flex: 0 0 3.25rem;
+    max-width: 3.25rem;
+  }
+}
+
+.tocColumn {
+  min-width: 0;
+}
+
+.tocShell {
+  position: sticky;
+  top: calc(var(--ifm-navbar-height) + 1rem);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - var(--ifm-navbar-height) - 2rem);
+}
+
+.tocHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin: 0 0 0.75rem 1rem;
+}
+
+.tocHeading {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tocToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--brand-400);
+  border-radius: var(--radius-pill);
+  background: var(--brand-tint);
+  color: var(--ifm-color-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.tocToggle:hover,
+.tocToggle:focus-visible {
+  background: var(--surface-1);
+  border-color: var(--ifm-color-primary);
+}
+
+.tocToggle svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.tocToggleCollapsed {
+  flex-direction: column;
+  width: 2.8rem;
+  min-height: 9rem;
+  padding: 0.75rem 0.35rem;
+}
+
+.tocHeaderCollapsed {
+  margin: 0;
+}
+
+.tocToggleCollapsed span {
+  writing-mode: vertical-rl;
+}
+
+.tocBody {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.tocBody[hidden] {
+  display: none;
+}
+
+.tocBody :global(.theme-doc-toc-desktop) {
+  position: static;
+  max-height: none;
+  overflow: visible;
+}
+
+@media (min-width: 997px) and (max-width: 1100px) {
+  .tocHeading {
+    display: none;
+  }
+}
+
+@media (max-width: 996px) {
+  .tocColumn {
+    display: none;
+  }
+}
+
+@media print {
+  .tocColumn {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tocToggle {
+    transition: none;
+  }
+}

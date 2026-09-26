@@ -17,6 +17,7 @@ from fastmcp.client.transports import StreamableHttpTransport
 from fastmcp.server import create_proxy
 from fastmcp.server.dependencies import get_http_headers
 
+from mcp_gateway.audit import iter_records
 from mcp_gateway.demo_upstreams import payments_server
 from mcp_gateway.demo_upstreams._auth import SharedSecretVerifier
 from mcp_gateway.gateway import build_gateway
@@ -25,8 +26,9 @@ from mcp_gateway.secret_broker import EnvSecretBroker
 from mcp_gateway.upstreams import Credential, UpstreamSpec
 
 UPSTREAM_TOKEN = "upstream-token-held-only-by-the-broker"
-POLICY = ("version: 1\nrules:\n  - {id: all, effect: allow, subjects: {groups: ['*']}, "
-          "tools: ['*']}\n")
+POLICY = (
+    "version: 1\nrules:\n  - {id: all, effect: allow, subjects: {groups: ['*']}, tools: ['*']}\n"
+)
 
 
 def echo_server() -> FastMCP[Any]:
@@ -53,22 +55,31 @@ async def test_gateway_injects_upstream_token_and_never_passes_caller_token(
     (tmp_path / "policy.yaml").write_text(POLICY)
     settings = make_settings(tmp_path)
     settings.policy_file.write_text(POLICY)
-    spec = UpstreamSpec(name="echo", transport="http", url=echo_upstream,
-                        credential=Credential(secret="echo_token"))
-    gateway, _ = build_gateway(settings, specs=[spec], broker=EnvSecretBroker(
-        {"GATEWAY_SECRET_ECHO_TOKEN": UPSTREAM_TOKEN}))
+    spec = UpstreamSpec(
+        name="echo", transport="http", url=echo_upstream, credential=Credential(secret="echo_token")
+    )
+    gateway, _ = build_gateway(
+        settings,
+        specs=[spec],
+        broker=EnvSecretBroker({"GATEWAY_SECRET_ECHO_TOKEN": UPSTREAM_TOKEN}),
+    )
     user_token = mint_dev_token(settings, "ana", ["employees"])
     with ServerThread(gateway.http_app(path="/mcp")) as g:
         transport = StreamableHttpTransport(
-            f"http://127.0.0.1:{g.port}/mcp", auth=user_token,
-            headers={"X-User-Secret": "should-not-travel"})
+            f"http://127.0.0.1:{g.port}/mcp",
+            auth=user_token,
+            headers={"X-User-Secret": "should-not-travel"},
+        )
         async with Client(transport) as c:
             r = await c.call_tool("echo_headers_seen", {})
     seen = r.structured_content
-    assert seen["authorization"] == f"Bearer {UPSTREAM_TOKEN}"
-    assert user_token not in str(seen) and seen["x-user-secret"] is None
-    # and the client never saw the upstream credential
+    # The upstream received the broker's credential (it echoes it), but the
+    # gateway's output filter scrubbed the value before it reached the client.
+    assert seen["authorization"] == "Bearer [REDACTED:UPSTREAM_SECRET]"
     assert UPSTREAM_TOKEN not in str(r.content)
+    # The caller's own token and custom headers never travelled upstream.
+    assert user_token not in str(seen) and seen["x-user-secret"] is None
+    assert [a for a in iter_records(settings.audit_path) if a["reason"] == "secret_in_output"]
 
 
 async def test_fastmcp_default_proxy_forwards_the_caller_token(echo_upstream: str) -> None:
@@ -83,8 +94,9 @@ async def test_fastmcp_default_proxy_forwards_the_caller_token(echo_upstream: st
 
     token = jwt.encode({"sub": "ana", "exp": 4102444800}, SECRET, algorithm="HS256")
     with ServerThread(front.http_app(path="/mcp")) as f:
-        async with Client(StreamableHttpTransport(f"http://127.0.0.1:{f.port}/mcp",
-                                                  auth=token)) as c:
+        async with Client(
+            StreamableHttpTransport(f"http://127.0.0.1:{f.port}/mcp", auth=token)
+        ) as c:
             r = await c.call_tool("echo_headers_seen", {}, raise_on_error=False)
     # The echo upstream rejects the caller's token, and the message proves
     # the caller's token was what arrived.
@@ -97,21 +109,32 @@ async def test_stdio_child_gets_only_its_credential(tmp_path: Path) -> None:
     os.environ["GATEWAY_SUPER_SECRET_FOR_TEST"] = "must-not-leak"
     try:
         specs = [
-            UpstreamSpec(name="envecho", transport="stdio", command=sys.executable,
-                         args=[str(Path(__file__).parent / "env_echo_server.py")],
-                         credential=Credential(secret="docs_token", inject_as="env",
-                                               env_var="DOCS_API_TOKEN")),
-            UpstreamSpec(name="docs", transport="stdio", command="python",
-                         args=["-m", "mcp_gateway.demo_upstreams.docs_server"],
-                         credential=Credential(secret="docs_token", inject_as="env",
-                                               env_var="DOCS_API_TOKEN")),
+            UpstreamSpec(
+                name="envecho",
+                transport="stdio",
+                command=sys.executable,
+                args=[str(Path(__file__).parent / "env_echo_server.py")],
+                credential=Credential(
+                    secret="docs_token", inject_as="env", env_var="DOCS_API_TOKEN"
+                ),
+            ),
+            UpstreamSpec(
+                name="docs",
+                transport="stdio",
+                command="python",
+                args=["-m", "mcp_gateway.demo_upstreams.docs_server"],
+                credential=Credential(
+                    secret="docs_token", inject_as="env", env_var="DOCS_API_TOKEN"
+                ),
+            ),
         ]
         broker = EnvSecretBroker({"GATEWAY_SECRET_DOCS_TOKEN": "docs-backend-credential"})
         gateway, _ = build_gateway(settings, specs=specs, broker=broker)
         token = mint_dev_token(settings, "eli", ["engineering"])
         with ServerThread(gateway.http_app(path="/mcp")) as g:
-            async with Client(StreamableHttpTransport(f"http://127.0.0.1:{g.port}/mcp",
-                                                      auth=token)) as c:
+            async with Client(
+                StreamableHttpTransport(f"http://127.0.0.1:{g.port}/mcp", auth=token)
+            ) as c:
                 keys = (await c.call_tool("envecho_env_keys", {})).data
                 status = (await c.call_tool("docs_backend_status", {})).structured_content
     finally:
@@ -125,7 +148,7 @@ async def test_stdio_child_gets_only_its_credential(tmp_path: Path) -> None:
 async def test_http_upstream_rejects_missing_credential(tmp_path: Path) -> None:
     with ServerThread(payments_server.create_server(UPSTREAM_TOKEN).http_app(path="/mcp")) as t:
         url = f"http://127.0.0.1:{t.port}/mcp"
-        with pytest.raises(Exception):  # noqa: B017
+        with pytest.raises(Exception):
             async with Client(url) as c:
                 await c.list_tools()
         async with Client(StreamableHttpTransport(url, auth=UPSTREAM_TOKEN)) as c:

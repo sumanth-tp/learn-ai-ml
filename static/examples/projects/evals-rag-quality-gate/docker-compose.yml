@@ -1,0 +1,18 @@
+# `docker compose up` runs the offline gate once (the job CI runs), then serves the API and
+# dashboard over the same run store. Set real keys in .env to use real providers.
+services:
+  gate:
+    build: .
+    command: ["uv", "run", "--no-dev", "ragate", "e2e"]
+    env_file: [{path: .env, required: false}]
+    volumes: [ragate-state:/app/.ragate, ./reports:/app/reports]
+  api:
+    build: .
+    depends_on:
+      gate: {condition: service_completed_successfully}
+    env_file: [{path: .env, required: false}]
+    ports: ["8000:8000"]
+    volumes: [ragate-state:/app/.ragate]
+    restart: unless-stopped
+volumes:
+  ragate-state: {}

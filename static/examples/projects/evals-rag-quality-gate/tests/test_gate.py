@@ -13,31 +13,53 @@ from ragate.evaluation.stats import paired_bootstrap
 from ragate.metrics.aggregate import AGGREGATES, aggregate_all
 from tests.conftest import ROOT
 
-JUDGE = JudgeInfo(model_id="heuristic-v1", backend="native", geval_model="stub",
-                  prompts={}, deepeval_version="x")
+JUDGE = JudgeInfo(
+    model_id="heuristic-v1", backend="native", geval_model="stub", prompts={}, deepeval_version="x"
+)
 
 
 def items(recall: list[float], leak_at: int | None = None) -> list[ItemResult]:
     out = []
     for n, r in enumerate(recall):
-        out.append(ItemResult(item_id=f"i{n}", question_type="factoid", expected_behaviour="answer",
-                              question="q", scores={"recall_at_k": r, "faithfulness": 1.0},
-                              latency_ms=100 + n, pii_leaks=["EMAIL"] if n == leak_at else []))
+        out.append(
+            ItemResult(
+                item_id=f"i{n}",
+                question_type="factoid",
+                expected_behaviour="answer",
+                question="q",
+                scores={"recall_at_k": r, "faithfulness": 1.0},
+                latency_ms=100 + n,
+                pii_leaks=["EMAIL"] if n == leak_at else [],
+            )
+        )
     return out
 
 
 def run(run_id: str, its: list[ItemResult], dataset: str = "v1", judge: JudgeInfo = JUDGE):
-    return RunResult(run_id=run_id, name=run_id, created_at="t", git_sha="g", config={"k": 4},
-                     config_hash="h", dataset_version=dataset, dataset_sha="s" + dataset,
-                     judge=judge, provider={}, duration_s=0.0, items=its,
-                     aggregates=aggregate_all(its))
+    return RunResult(
+        run_id=run_id,
+        name=run_id,
+        created_at="t",
+        git_sha="g",
+        config={"k": 4},
+        config_hash="h",
+        dataset_version=dataset,
+        dataset_sha="s" + dataset,
+        judge=judge,
+        provider={},
+        duration_s=0.0,
+        items=its,
+        aggregates=aggregate_all(its),
+    )
 
 
-CFG = GateConfig(metrics={
-    "recall_at_k": MetricRule(direction="higher", min_delta=0.03, floor=0.5),
-    "pii_leak_rate": MetricRule(direction="lower", ceiling=0.0),
-    "latency_p95_ms": MetricRule(direction="lower", rel_delta=0.1, enforce="warn"),
-})
+CFG = GateConfig(
+    metrics={
+        "recall_at_k": MetricRule(direction="higher", min_delta=0.03, floor=0.5),
+        "pii_leak_rate": MetricRule(direction="lower", ceiling=0.0),
+        "latency_p95_ms": MetricRule(direction="lower", rel_delta=0.1, enforce="warn"),
+    }
+)
 BASE = run("base", items([1.0] * 30))
 
 

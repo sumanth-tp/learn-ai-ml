@@ -13,8 +13,17 @@ from pathlib import Path
 from ragate.models import Evidence, GoldenItem, ReviewStatus
 
 COLUMNS = [
-    "item_id", "question_type", "expected_behaviour", "question", "reference_answer",
-    "evidence_json", "tags", "source", "review_status", "reviewer", "notes",
+    "item_id",
+    "question_type",
+    "expected_behaviour",
+    "question",
+    "reference_answer",
+    "evidence_json",
+    "tags",
+    "source",
+    "review_status",
+    "reviewer",
+    "notes",
 ]
 
 
@@ -24,38 +33,42 @@ def export_csv(items: list[GoldenItem], path: Path) -> None:
         writer = csv.DictWriter(fh, fieldnames=COLUMNS)
         writer.writeheader()
         for i in items:
-            writer.writerow({
-                "item_id": i.item_id,
-                "question_type": i.question_type.value,
-                "expected_behaviour": i.expected_behaviour.value,
-                "question": i.question,
-                "reference_answer": i.reference_answer,
-                "evidence_json": json.dumps([e.model_dump() for e in i.evidence]),
-                "tags": ";".join(i.tags),
-                "source": i.source,
-                "review_status": i.review_status.value,
-                "reviewer": i.reviewer,
-                "notes": i.notes,
-            })
+            writer.writerow(
+                {
+                    "item_id": i.item_id,
+                    "question_type": i.question_type.value,
+                    "expected_behaviour": i.expected_behaviour.value,
+                    "question": i.question,
+                    "reference_answer": i.reference_answer,
+                    "evidence_json": json.dumps([e.model_dump() for e in i.evidence]),
+                    "tags": ";".join(i.tags),
+                    "source": i.source,
+                    "review_status": i.review_status.value,
+                    "reviewer": i.reviewer,
+                    "notes": i.notes,
+                }
+            )
 
 
 def import_csv(path: Path) -> list[GoldenItem]:
     items = []
     with path.open(newline="", encoding="utf-8") as fh:
         for row in csv.DictReader(fh):
-            items.append(GoldenItem(
-                item_id=row["item_id"],
-                question=row["question"].strip(),
-                question_type=row["question_type"],
-                expected_behaviour=row["expected_behaviour"],
-                reference_answer=row["reference_answer"].strip(),
-                evidence=[Evidence(**e) for e in json.loads(row["evidence_json"] or "[]")],
-                tags=[t for t in row["tags"].split(";") if t],
-                source=row["source"] or "synthetic",
-                review_status=row["review_status"] or ReviewStatus.PENDING,
-                reviewer=row["reviewer"],
-                notes=row["notes"],
-            ))
+            items.append(
+                GoldenItem(
+                    item_id=row["item_id"],
+                    question=row["question"].strip(),
+                    question_type=row["question_type"],
+                    expected_behaviour=row["expected_behaviour"],
+                    reference_answer=row["reference_answer"].strip(),
+                    evidence=[Evidence(**e) for e in json.loads(row["evidence_json"] or "[]")],
+                    tags=[t for t in row["tags"].split(";") if t],
+                    source=row["source"] or "synthetic",
+                    review_status=row["review_status"] or ReviewStatus.PENDING,
+                    reviewer=row["reviewer"],
+                    notes=row["notes"],
+                )
+            )
     return items
 
 

@@ -32,7 +32,7 @@ services:
   server:
     build: .
     env_file: [.env.compose]
-    ports: ["8000:8000"]
+    ports: ["${HELPDESK_HOST_PORT:-8000}:8000"]  # override if 8000 is taken
     depends_on:
       seed: {condition: service_completed_successfully}
     restart: unless-stopped

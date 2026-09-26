@@ -137,7 +137,10 @@ class Store:
             )
 
     def spans_for(self, trace_id: str) -> list[dict[str, Any]]:
-        rows = self._rows("SELECT * FROM spans WHERE trace_id=? ORDER BY start_ns, parent_id IS NOT NULL, end_ns", (trace_id,))
+        rows = self._rows(
+            "SELECT * FROM spans WHERE trace_id=? ORDER BY start_ns, parent_id IS NOT NULL, end_ns",
+            (trace_id,),
+        )
         out = []
         for r in rows:
             d = dict(r)
@@ -317,6 +320,25 @@ class Store:
             d["evidence"] = json.loads(d["evidence"] or "{}")
             out.append(d)
         return out
+
+    def purge_before(self, traces_before: float, evals_before: float) -> dict[str, int]:
+        """Retention: drop traces and spans older than `traces_before`, eval rows older
+        than `evals_before`. Feedback and review rows go with their trace."""
+        counts = {}
+        with self._lock:
+            old = "SELECT trace_id FROM traces WHERE ts<?"
+            for table in ("spans", "feedback", "eval_jobs", "review_queue"):
+                cur = self._conn.execute(
+                    f"DELETE FROM {table} WHERE trace_id IN ({old})", (traces_before,)
+                )
+                counts[table] = cur.rowcount
+            counts["evals"] = self._conn.execute(
+                "DELETE FROM evals WHERE ts<?", (evals_before,)
+            ).rowcount
+            counts["traces"] = self._conn.execute(
+                "DELETE FROM traces WHERE ts<?", (traces_before,)
+            ).rowcount
+        return counts
 
     def clear_alerts(self) -> None:
         self._exec("DELETE FROM alerts")

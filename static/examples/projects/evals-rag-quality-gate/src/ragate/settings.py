@@ -45,9 +45,7 @@ class Settings(BaseSettings):
 
     # Read without the RAGATE_ prefix: these are the providers' own conventions.
     openai_api_key: SecretStr | None = Field(default=None, validation_alias="OPENAI_API_KEY")
-    anthropic_api_key: SecretStr | None = Field(
-        default=None, validation_alias="ANTHROPIC_API_KEY"
-    )
+    anthropic_api_key: SecretStr | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
     ollama_base_url: str = Field(
         default="http://localhost:11434", validation_alias="OLLAMA_BASE_URL"
     )

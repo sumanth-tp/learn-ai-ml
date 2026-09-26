@@ -32,8 +32,15 @@ class RunStore:
         with self._lock:
             self._conn.execute(
                 "INSERT OR REPLACE INTO runs VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (run.run_id, run.name, run.created_at, run.config_hash, run.dataset_version,
-                 json.dumps(run.aggregates), run.model_dump_json()),
+                (
+                    run.run_id,
+                    run.name,
+                    run.created_at,
+                    run.config_hash,
+                    run.dataset_version,
+                    json.dumps(run.aggregates),
+                    run.model_dump_json(),
+                ),
             )
             self._conn.commit()
 
@@ -48,19 +55,41 @@ class RunStore:
         with self._lock:
             rows = self._conn.execute(
                 "SELECT run_id, name, created_at, config_hash, dataset_version, aggregates"
-                " FROM runs ORDER BY created_at DESC LIMIT ?", (limit,)
+                " FROM runs ORDER BY created_at DESC LIMIT ?",
+                (limit,),
             ).fetchall()
         return [
-            {"run_id": r[0], "name": r[1], "created_at": r[2], "config_hash": r[3],
-             "dataset_version": r[4], "aggregates": json.loads(r[5])}
+            {
+                "run_id": r[0],
+                "name": r[1],
+                "created_at": r[2],
+                "config_hash": r[3],
+                "dataset_version": r[4],
+                "aggregates": json.loads(r[5]),
+            }
             for r in rows
         ]
+
+    def prune(self, days: int) -> int:
+        """Retention: delete runs and decisions older than `days`. Returns runs deleted."""
+        cutoff = f"-{int(days)} days"
+        with self._lock:
+            cur = self._conn.execute(
+                "DELETE FROM runs WHERE datetime(created_at) < datetime('now', ?)", (cutoff,)
+            )
+            self._conn.execute(
+                "DELETE FROM gate_decisions WHERE datetime(created_at) < datetime('now', ?)",
+                (cutoff,),
+            )
+            self._conn.commit()
+        return cur.rowcount
 
     def record_decision(self, baseline: str, candidate: str, decision: str, report: str) -> None:
         with self._lock:
             self._conn.execute(
                 "INSERT INTO gate_decisions (baseline, candidate, decision, report)"
-                " VALUES (?, ?, ?, ?)", (baseline, candidate, decision, report)
+                " VALUES (?, ?, ?, ?)",
+                (baseline, candidate, decision, report),
             )
             self._conn.commit()
 
@@ -68,10 +97,13 @@ class RunStore:
         with self._lock:
             rows = self._conn.execute(
                 "SELECT created_at, baseline, candidate, decision FROM gate_decisions"
-                " ORDER BY id DESC LIMIT ?", (limit,)
+                " ORDER BY id DESC LIMIT ?",
+                (limit,),
             ).fetchall()
-        return [{"created_at": r[0], "baseline": r[1], "candidate": r[2], "decision": r[3]}
-                for r in rows]
+        return [
+            {"created_at": r[0], "baseline": r[1], "candidate": r[2], "decision": r[3]}
+            for r in rows
+        ]
 
 
 def load_run_file(path: Path) -> RunResult:

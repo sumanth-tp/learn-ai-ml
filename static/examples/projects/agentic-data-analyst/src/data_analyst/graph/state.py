@@ -5,7 +5,7 @@ from __future__ import annotations
 import operator
 from typing import Annotated, Any, Literal, TypedDict
 
-Status = Literal["running", "answered", "rejected", "failed"]
+Status = Literal["running", "answered", "rejected", "blocked", "failed"]
 
 
 class Turn(TypedDict):
@@ -33,6 +33,7 @@ class AnalystState(TypedDict, total=False):
     attempts: int
     errors: list[str]
     last_error: str | None
+    blocked: bool
     warnings: list[str]
     estimate: dict[str, int] | None
     approval: dict[str, Any] | None

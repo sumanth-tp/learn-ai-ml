@@ -64,9 +64,16 @@ def test_allow_with_constraint(engine: PolicyEngine) -> None:
     assert d.allowed and d.rule_id == "eng-docs"
 
 
-@pytest.mark.parametrize("path", [
-    "/srv/docs/../secrets/key", "/srv/docsx/a", "/etc/passwd", "srv/docs/../../etc", "/srv/docs\x00/a",
-])
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/srv/docs/../secrets/key",
+        "/srv/docsx/a",
+        "/etc/passwd",
+        "srv/docs/../../etc",
+        "/srv/docs\x00/a",
+    ],
+)
 def test_prefix_blocks_traversal_and_lookalikes(engine: PolicyEngine, path: str) -> None:
     assert not engine.check_tool(P("a", "eng"), "docs_read", {"path": path}).allowed
 
@@ -76,11 +83,23 @@ def test_missing_constrained_argument_fails_closed(engine: PolicyEngine) -> None
     assert not d.allowed and "required by policy" in d.reason
 
 
-@pytest.mark.parametrize("amount,ok", [(50, True), (100, True), (100.01, False), (0, False),
-                                       ("50", False), (True, False), (float("nan"), False),
-                                       (float("inf"), False)])
+@pytest.mark.parametrize(
+    "amount,ok",
+    [
+        (50, True),
+        (100, True),
+        (100.01, False),
+        (0, False),
+        ("50", False),
+        (True, False),
+        (float("nan"), False),
+        (float("inf"), False),
+    ],
+)
 def test_numeric_constraints(engine: PolicyEngine, amount: object, ok: bool) -> None:
-    d = engine.check_tool(P("f", "finance"), "payments_refund", {"amount": amount, "currency": "EUR"})
+    d = engine.check_tool(
+        P("f", "finance"), "payments_refund", {"amount": amount, "currency": "EUR"}
+    )
     assert d.allowed is ok
 
 
@@ -93,7 +112,9 @@ def test_user_rule_by_email_extends_group(engine: PolicyEngine) -> None:
     bob = P("u-1", "finance", email="bob@example.com")
     assert engine.check_tool(bob, "payments_refund", {"amount": 900, "currency": "EUR"}).allowed
     alice = P("u-2", "finance", email="alice@example.com")
-    assert not engine.check_tool(alice, "payments_refund", {"amount": 900, "currency": "EUR"}).allowed
+    assert not engine.check_tool(
+        alice, "payments_refund", {"amount": 900, "currency": "EUR"}
+    ).allowed
 
 
 def test_deny_overrides_allow(engine: PolicyEngine) -> None:
@@ -114,12 +135,19 @@ def test_limits_resolution(engine: PolicyEngine) -> None:
     assert user.per_minute == 100 and tool is None
 
 
-@pytest.mark.parametrize("bad", [
-    "version: 1\nrules:\n  - {id: a, effect: deny, subjects: {groups: [x]}, tools: [t], constraints: {a: {max: 1}}}",
-    "version: 1\nrules:\n  - {id: a, effect: allow, subjects: {groups: [x]}}",
-    "version: 1\nrules:\n  - {id: a, effect: allow, subjects: {groups: [x]}, tools: [t], typo_field: 1}",
-    "version: 1\nrules:\n  - {id: a, effect: allow, subjects: {groups: [x]}, tools: [t], constraints: {p: {prefix: relative/}}}",
-])
+HEAD = "version: 1\nrules:\n  - {id: a, "
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        HEAD + "effect: deny, subjects: {groups: [x]}, tools: [t], constraints: {a: {max: 1}}}",
+        HEAD + "effect: allow, subjects: {groups: [x]}}",
+        HEAD + "effect: allow, subjects: {groups: [x]}, tools: [t], typo_field: 1}",
+        HEAD + "effect: allow, subjects: {groups: [x]}, tools: [t], "
+        "constraints: {p: {prefix: relative/}}}",
+    ],
+)
 def test_invalid_policies_rejected(bad: str) -> None:
     with pytest.raises(ValidationError):
         PolicyEngine.from_yaml(bad)

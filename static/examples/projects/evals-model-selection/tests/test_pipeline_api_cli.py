@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -11,7 +10,7 @@ from fastapi.testclient import TestClient
 from modelsel.api import create_app
 from modelsel.cli import main
 from modelsel.config import Settings
-from modelsel.llm.registry import load_catalogue
+from modelsel.harness.cache import ResponseCache
 from modelsel.pipeline import run_selection
 from modelsel.store import RunStore
 
@@ -44,16 +43,20 @@ async def test_full_run_end_to_end(settings: Settings) -> None:
     store.close()
 
 
-async def test_adding_a_model_only_pays_for_the_new_model(settings: Settings, tmp_path: Path) -> None:
+async def test_adding_a_model_only_pays_for_the_new_model(settings: Settings) -> None:
     store = RunStore(settings.db_path)
     first = ["fake:balanced-mini", "fake:local-8b"]
     await run_selection(settings, store, candidates=first, run_id="r1")
+    cache = ResponseCache(settings.cache_path)
+    before = {m: cache.count(m) for m in first}
+    cache.close()
+
     second = await run_selection(settings, store, candidates=[*first, "fake:frontier-large"], run_id="r2")
-    cat = load_catalogue(settings.models_file)
+    cache = ResponseCache(settings.cache_path)
+    assert {m: cache.count(m) for m in first} == before, "old candidates must be served from the cache"
+    assert cache.count("fake:frontier-large") == 80 * 3 + 20  # three tasks per test item, plus the probe
+    cache.close()
     assert second["billed_usd"] > 0
-    costs = {m["model_id"]: m["cost_per_1k_usd"] for m in second["models"]}
-    # billed spend is the new model's candidate calls plus judge calls on its replies, nothing for the old ones
-    assert costs["fake:frontier-large"] > 0 and cat.spec("fake:local-8b").input_per_mtok == 0
     store.close()
 
 
@@ -72,7 +75,9 @@ def test_api_lifecycle(settings: Settings) -> None:
     app = create_app(settings)
     with TestClient(app) as http:
         assert http.get("/healthz").json() == {"status": "ok"}
-        r = http.post("/runs", json={"models": ["fake:balanced-mini", "fake:frontier-large"]}, headers={"Idempotency-Key": "k1"})
+        r = http.post(
+            "/runs", json={"models": ["fake:balanced-mini", "fake:frontier-large"]}, headers={"Idempotency-Key": "k1"}
+        )
         assert r.status_code == 202
         run_id = r.json()["run_id"]
         # TestClient runs background tasks before returning, so the run is finished here

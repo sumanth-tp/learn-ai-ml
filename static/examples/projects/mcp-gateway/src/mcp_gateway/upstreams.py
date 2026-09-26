@@ -72,9 +72,9 @@ class UpstreamSpec(BaseModel):
             raise ValueError(f"{self.name}: stdio upstream needs command")
         if self.transport == "inprocess" and not self.target:
             raise ValueError(f"{self.name}: inprocess upstream needs target")
-        if self.credential and self.credential.inject_as == "env":
-            if self.transport != "stdio" or not self.credential.env_var:
-                raise ValueError(f"{self.name}: env credentials need stdio and env_var")
+        cred = self.credential
+        if cred and cred.inject_as == "env" and (self.transport != "stdio" or not cred.env_var):
+            raise ValueError(f"{self.name}: env credentials need stdio and env_var")
         return self
 
 

@@ -62,10 +62,26 @@ def run_experiments(
     best = max(eligible, key=lambda r: r.aggregates.get(cfg.select_by) or 0.0, default=None)
     out_dir.mkdir(parents=True, exist_ok=True)
     table = experiments_table(results, cfg.metrics)
-    rec = (f"Recommended: **{best.name}** (highest {cfg.select_by} among variants meeting "
-           f"the constraints)." if best else "No variant met the constraints.")
+    rec = (
+        f"Recommended: **{best.name}** (highest {cfg.select_by} among variants meeting "
+        f"the constraints)."
+        if best
+        else "No variant met the constraints."
+    )
     (out_dir / "experiments.md").write_text(f"# Experiments\n\n{table}\n{rec}\n")
-    (out_dir / "experiments.json").write_text(json.dumps(
-        [{"name": r.name, "run_id": r.run_id, "config": r.config, "aggregates": r.aggregates,
-          "eligible": r in eligible} for r in results], indent=1))
+    (out_dir / "experiments.json").write_text(
+        json.dumps(
+            [
+                {
+                    "name": r.name,
+                    "run_id": r.run_id,
+                    "config": r.config,
+                    "aggregates": r.aggregates,
+                    "eligible": r in eligible,
+                }
+                for r in results
+            ],
+            indent=1,
+        )
+    )
     return results, best.name if best else None

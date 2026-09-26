@@ -56,8 +56,14 @@ def is_refusal(answer: str) -> bool:
 
 
 class Generator:
-    def __init__(self, model: BaseChatModel, model_name: str, *, attempts: int = 3,
-                 pii_redaction: bool = True) -> None:
+    def __init__(
+        self,
+        model: BaseChatModel,
+        model_name: str,
+        *,
+        attempts: int = 3,
+        pii_redaction: bool = True,
+    ) -> None:
         self.model = model
         self.model_name = model_name
         self.attempts = attempts

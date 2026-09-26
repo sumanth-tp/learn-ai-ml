@@ -109,6 +109,10 @@ def create_app(settings: Settings | None = None, runtime: Runtime | None = None)
             "pending_approval": await service.pending_approval(thread_id),
         }
 
+    @app.delete("/threads/{thread_id}", dependencies=[Depends(auth)], status_code=204)
+    async def delete_thread(thread_id: str) -> None:
+        await rt().service.delete(check_thread(thread_id))
+
     @app.post("/threads/{thread_id}/messages", dependencies=[Depends(auth)])
     async def send(thread_id: str, body: MessageIn) -> StreamingResponse:
         return sse(rt().service.send(check_thread(thread_id), body.text))

@@ -63,26 +63,52 @@ class Finding:
 
 
 _RULES: list[tuple[str, re.Pattern[str]]] = [
-    ("override", re.compile(
-        r"(?i)\b(ignore|disregard|forget)\b.{0,40}\b(previous|prior|above|all|earlier)\b.{0,20}"
-        r"\b(instructions?|rules?|prompts?|guidelines)\b")),
+    (
+        "override",
+        re.compile(
+            r"(?i)\b(ignore|disregard|forget)\b.{0,40}\b(previous|prior|above|all|earlier)\b.{0,20}"
+            r"\b(instructions?|rules?|prompts?|guidelines)\b"
+        ),
+    ),
     ("hidden_directive", re.compile(r"(?i)<\s*(important|system|secret|instructions?)\s*>")),
-    ("concealment", re.compile(
-        r"(?i)\b(do not|don't|never)\b.{0,30}\b(tell|mention|reveal|inform|show)\b.{0,30}"
-        r"\b(user|human|anyone)\b")),
-    ("role_hijack", re.compile(
-        r"(?i)\b(you are now|act as|new instructions|system prompt|developer mode)\b")),
-    ("sensitive_path", re.compile(
-        r"(?i)(~/\.ssh|id_rsa|\.aws/credentials|/etc/passwd|\.env\b|mcp\.json|"
-        r"claude_desktop_config)")),
-    ("exfiltration", re.compile(
-        r"(?i)\b(send|post|upload|forward|include|append)\b.{0,60}"
-        r"(https?://|webhook|\bcurl\b|\bto the (url|endpoint|address)\b)")),
-    ("tool_chaining", re.compile(
-        r"(?i)\b(before|after|instead of)\b.{0,20}\b(using|calling)\b.{0,40}\b(tool|function)\b")),
-    ("secret_request", re.compile(
-        r"(?i)\b(pass|provide|include|read)\b.{0,30}\b(api[_ ]?key|password|token|credentials?|"
-        r"private key)\b")),
+    (
+        "concealment",
+        re.compile(
+            r"(?i)\b(do not|don't|never)\b.{0,30}\b(tell|mention|reveal|inform|show)\b.{0,30}"
+            r"\b(user|human|anyone)\b"
+        ),
+    ),
+    (
+        "role_hijack",
+        re.compile(r"(?i)\b(you are now|act as|new instructions|system prompt|developer mode)\b"),
+    ),
+    (
+        "sensitive_path",
+        re.compile(
+            r"(?i)(~/\.ssh|id_rsa|\.aws/credentials|/etc/passwd|\.env\b|mcp\.json|"
+            r"claude_desktop_config)"
+        ),
+    ),
+    (
+        "exfiltration",
+        re.compile(
+            r"(?i)\b(send|post|upload|forward|include|append)\b.{0,60}"
+            r"(https?://|webhook|\bcurl\b|\bto the (url|endpoint|address)\b)"
+        ),
+    ),
+    (
+        "tool_chaining",
+        re.compile(
+            r"(?i)\b(before|after|instead of)\b.{0,20}\b(using|calling)\b.{0,40}\b(tool|function)\b"
+        ),
+    ),
+    (
+        "secret_request",
+        re.compile(
+            r"(?i)\b(pass|provide|include|read)\b.{0,30}\b(api[_ ]?key|password|token|credentials?|"
+            r"private key)\b"
+        ),
+    ),
 ]
 
 _INVISIBLE = {"Cf", "Co"}  # format chars (zero-width, bidi) and private use

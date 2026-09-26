@@ -29,7 +29,7 @@ def utcnow() -> datetime:
 
 
 class Base(DeclarativeBase):
-    pass
+    """Declarative base; Alembic reads ``Base.metadata`` for autogenerate."""
 
 
 class Ticket(Base):

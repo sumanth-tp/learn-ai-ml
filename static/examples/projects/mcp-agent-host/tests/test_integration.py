@@ -127,6 +127,8 @@ async def test_api_streams_and_handles_approval(make_runtime, data_dirs):
             r = await client.post("/threads/api-1/approval", json={"approve": ["d1"]})
             assert any(e.get("text") == "gone" for e in parse_sse(r.text))
             assert not (data_dirs["notes"] / "reading-list.md").exists()
+            assert (await client.delete("/threads/api-1")).status_code == 204
+            assert (await client.get("/threads/api-1")).json()["messages"] == []
             assert (
                 await client.post("/threads/bad id!/messages", json={"text": "x"})
             ).status_code in {

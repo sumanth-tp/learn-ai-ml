@@ -44,6 +44,8 @@ class ModelSpec(BaseModel):
     output_per_mtok: float = Field(ge=0)
     rpm: int = Field(default=60, ge=1)
     supports_logprobs: bool = False
+    supports_temperature: bool = True
+    """Some newer models reject sampling parameters with a 400; set false for them."""
     fake: FakeProfile | None = None
     judge: JudgeProfile | None = None
 
@@ -116,7 +118,7 @@ def build_chat_model(spec: ModelSpec, settings: Settings, *, memorised: dict[str
             memorised=memorised or {},
             sleep_scale=settings.fake_sleep_scale,
         )
-    kwargs: dict[str, Any] = {"temperature": 0}
+    kwargs: dict[str, Any] = {"temperature": 0} if spec.supports_temperature else {}
     if spec.provider in {"openai", "anthropic"}:
         kwargs |= {"max_retries": 0, "timeout": settings.request_timeout_s}
     if spec.provider == "openai" and spec.supports_logprobs:

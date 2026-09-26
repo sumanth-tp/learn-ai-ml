@@ -14,6 +14,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Literal
 
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -147,4 +148,8 @@ def load_servers(path: Path) -> ServersFile:
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    # pydantic-settings reads HOST_* from .env but does not export anything. Provider
+    # SDKs (OPENAI_API_KEY) and LangSmith (LANGSMITH_*) read os.environ, so load .env
+    # into the process first. Real environment variables still win.
+    load_dotenv(".env", override=False)
     return Settings()

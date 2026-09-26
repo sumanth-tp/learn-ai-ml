@@ -45,8 +45,13 @@ def git_sha() -> str:
     if sha := os.environ.get("GITHUB_SHA"):
         return sha[:12]
     try:
-        out = subprocess.run(["git", "rev-parse", "--short=12", "HEAD"], capture_output=True,
-                             text=True, timeout=5, check=False)
+        out = subprocess.run(
+            ["git", "rev-parse", "--short=12", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
         return out.stdout.strip() or "unknown"
     except (OSError, subprocess.SubprocessError):
         return "unknown"
@@ -90,8 +95,16 @@ class EvalRunner:
         return self.pipeline.config
 
     def run_id(self, manifest: Manifest) -> str:
-        raw = json.dumps([self.config.config_hash(), manifest.sha256, self.judge_info.fingerprint(),
-                          self.provider, code_fingerprint()], sort_keys=True)
+        raw = json.dumps(
+            [
+                self.config.config_hash(),
+                manifest.sha256,
+                self.judge_info.fingerprint(),
+                self.provider,
+                code_fingerprint(),
+            ],
+            sort_keys=True,
+        )
         return f"{self.config.name}-{hashlib.sha256(raw.encode()).hexdigest()[:10]}"
 
     # ---------------------------------------------------------------- phase 1
@@ -104,8 +117,9 @@ class EvalRunner:
                 out[item.item_id] = Answered(ans, (time.perf_counter() - start) * 1000)
             except Exception as exc:  # one broken item must not abort a 500-item run
                 log.error("pipeline_failed", item=item.item_id, error=repr(exc))
-                out[item.item_id] = Answered(None, (time.perf_counter() - start) * 1000,
-                                             f"pipeline: {exc!r}")
+                out[item.item_id] = Answered(
+                    None, (time.perf_counter() - start) * 1000, f"pipeline: {exc!r}"
+                )
         return out
 
     # ---------------------------------------------------------------- phase 2
@@ -143,14 +157,16 @@ class EvalRunner:
             return res  # safety metrics only; they are computed from `refused` and `pii_leaks`
 
         k, ev, ctx = self.config.k, item.evidence, ans.contexts
-        res.scores.update({
-            "recall_at_k": retrieval.recall_at_k(ctx, ev, k),
-            "precision_at_k": retrieval.precision_at_k(ctx, ev, k),
-            "hit_at_k": retrieval.hit_at_k(ctx, ev, k),
-            "mrr": retrieval.reciprocal_rank(ctx, ev),
-            "ndcg_at_k": retrieval.ndcg_at_k(ctx, ev, k),
-            "contextual_precision": retrieval.contextual_precision(ctx, ev, k),
-        })
+        res.scores.update(
+            {
+                "recall_at_k": retrieval.recall_at_k(ctx, ev, k),
+                "precision_at_k": retrieval.precision_at_k(ctx, ev, k),
+                "hit_at_k": retrieval.hit_at_k(ctx, ev, k),
+                "mrr": retrieval.reciprocal_rank(ctx, ev),
+                "ndcg_at_k": retrieval.ndcg_at_k(ctx, ev, k),
+                "contextual_precision": retrieval.contextual_precision(ctx, ev, k),
+            }
+        )
         if not ans.refused:
             res.scores.update(citation_scores(ans, ev))
         m = self.rag_metrics
@@ -165,8 +181,9 @@ class EvalRunner:
         else:
             self._judge(res, "faithfulness", lambda: m.faithfulness(ans))
             self._judge(res, "answer_relevancy", lambda: m.answer_relevancy(ans))
-        self._judge(res, "correctness",
-                    lambda: self.correctness.score(item.question, ans.answer, ref))
+        self._judge(
+            res, "correctness", lambda: self.correctness.score(item.question, ans.answer, ref)
+        )
         return res
 
     def score_all(self, items: list[GoldenItem], answers: dict[str, Answered]) -> list[ItemResult]:
@@ -175,8 +192,9 @@ class EvalRunner:
     # ---------------------------------------------------------------- both
     def run(self, manifest: Manifest, items: list[GoldenItem]) -> RunResult:
         start = time.perf_counter()
-        log.info("eval_started", config=self.config.name, items=len(items),
-                 dataset=manifest.version)
+        log.info(
+            "eval_started", config=self.config.name, items=len(items), dataset=manifest.version
+        )
         results = self.score_all(items, self.answer_all(items))
         run = RunResult(
             run_id=self.run_id(manifest),
@@ -194,6 +212,10 @@ class EvalRunner:
             items=results,
             aggregates=aggregate_all(results),
         )
-        log.info("eval_finished", run_id=run.run_id, duration_s=run.duration_s,
-                 errors=sum(bool(i.errors) for i in results))
+        log.info(
+            "eval_finished",
+            run_id=run.run_id,
+            duration_s=run.duration_s,
+            errors=sum(bool(i.errors) for i in results),
+        )
         return run

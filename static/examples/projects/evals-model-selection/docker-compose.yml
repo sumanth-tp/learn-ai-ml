@@ -1,0 +1,30 @@
+# `docker compose up api` serves the API; `docker compose run --rm run` does one offline selection run.
+# Add `--profile local` to start Ollama for the real profile's local candidate.
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    env_file: [.env]
+    volumes:
+      - modelsel-var:/app/var
+      - ./reports:/app/reports
+    restart: unless-stopped
+
+  run:
+    build: .
+    env_file: [.env]
+    command: ["modelsel", "run"]
+    volumes:
+      - modelsel-var:/app/var
+      - ./reports:/app/reports
+    profiles: ["batch"]
+
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    volumes: [ollama:/root/.ollama]
+    profiles: ["local"]
+
+volumes:
+  modelsel-var:
+  ollama:

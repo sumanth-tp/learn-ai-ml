@@ -2,6 +2,7 @@ import asyncio
 
 from test_judges_cascade import make_trace
 
+from agentmon.clock import SimClock
 from agentmon.evals.heuristics import run_heuristics
 from agentmon.evals.judges import JudgeError, build_judges
 from agentmon.evals.pipeline import CascadeOutcome, CascadingEvaluator, OnlineEvalPipeline
@@ -16,7 +17,6 @@ from agentmon.evals.workers import EvalWorkerPool
 from agentmon.llm.fake_judge import RuleJudgeModel
 from agentmon.models import Feedback
 from agentmon.store import Store
-from agentmon.clock import SimClock
 
 
 def test_unit_hash_is_deterministic_and_uniform() -> None:
@@ -32,8 +32,9 @@ def test_random_sampler_rate() -> None:
 
 
 def test_always_rules_and_composite_order() -> None:
-    sampler = CompositeSampler([AlwaysSampleRules(), StratifiedSampler({"transfer": 1.0}, "s"),
-                                RandomSampler(0.0, "s")])
+    sampler = CompositeSampler(
+        [AlwaysSampleRules(), StratifiedSampler({"transfer": 1.0}, "s"), RandomSampler(0.0, "s")]
+    )
     assert sampler.decide(make_trace(status="error")).reason == "always:error"
     assert sampler.decide(make_trace(flags=["blocked:toxic_request"])).reason == "always:guardrail"
     assert sampler.decide(make_trace(intent="transfer")).reason == "stratified:transfer"
@@ -107,8 +108,9 @@ async def test_worker_dead_letters_after_max_attempts_on_timeout() -> None:
             await asyncio.sleep(1)
             return CascadeOutcome([], "done")
 
-    pool = EvalWorkerPool(store, Slow(store, [], 1.0), SimClock(0), timeout_s=0.01,
-                          max_attempts=2, backoff_base_s=0)
+    pool = EvalWorkerPool(
+        store, Slow(store, [], 1.0), SimClock(0), timeout_s=0.01, max_attempts=2, backoff_base_s=0
+    )
     await pool.run_once()
     job = store.get_job(t.trace_id)
     assert job["status"] == "failed" and "TimeoutError" in job["last_error"]
@@ -139,3 +141,14 @@ def test_heuristic_failure_opens_review_item() -> None:
     _pipeline(store).ingest(t)
     assert store.review_items()[0]["reason"].startswith("heuristic:required_tool_called")
     assert run_heuristics(t, 4000)
+
+
+def test_retention_purge_removes_old_traces_and_their_rows() -> None:
+    store = Store(":memory:")
+    old, new = make_trace(trace_id="old", request_id="r-old", ts=10.0), make_trace(ts=1e9)
+    for t in (old, new):
+        store.insert_trace(t)
+        _pipeline(store).ingest(t)
+    counts = store.purge_before(traces_before=100.0, evals_before=100.0)
+    assert counts["traces"] == 1 and counts["evals"] > 0
+    assert store.get_trace("old") is None and store.get_trace(new.trace_id) is not None

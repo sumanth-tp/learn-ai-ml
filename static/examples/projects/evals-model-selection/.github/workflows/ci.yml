@@ -1,0 +1,35 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+      # The regression gate: the offline run must still recommend a model and pass calibration.
+      - name: offline selection run
+        env:
+          MODELSEL_ALLOW_PRIVATE: "true"
+          MODELSEL_LOG_JSON: "false"
+        run: uv run modelsel run --include-private
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-selection-report
+          path: reports/
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t modelsel:ci .

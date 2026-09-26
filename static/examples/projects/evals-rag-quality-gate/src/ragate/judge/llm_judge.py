@@ -12,8 +12,9 @@ from ragate.retry import RetryExhaustedError, call_with_retries
 
 
 class LLMJudge:
-    def __init__(self, model: BaseChatModel, model_name: str, temperature: float,
-                 attempts: int = 3) -> None:
+    def __init__(
+        self, model: BaseChatModel, model_name: str, temperature: float, attempts: int = 3
+    ) -> None:
         self._structured = model.with_structured_output(JudgeOutput)
         self._model_id = f"{model_name}@t{temperature:g}"
         self.attempts = attempts

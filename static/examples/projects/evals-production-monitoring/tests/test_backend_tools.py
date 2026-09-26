@@ -7,7 +7,13 @@ from agentmon.agent.backend import (
     NotFound,
     PermissionDenied,
 )
-from agentmon.agent.tools import ToolArgsError, ToolContext, ToolRegistry, idempotency_key, tool_specs
+from agentmon.agent.tools import (
+    ToolArgsError,
+    ToolContext,
+    ToolRegistry,
+    idempotency_key,
+    tool_specs,
+)
 
 CTX = ToolContext(user_id="CUST-1", request_id="req-1")
 
@@ -55,8 +61,11 @@ def test_registry_validates_arguments(backend: FakeBankBackend) -> None:
     with pytest.raises(ToolArgsError, match="account_id"):
         reg.run("get_balance", {"account_id": "1001"}, CTX)
     with pytest.raises(ToolArgsError, match="amount"):
-        reg.run("transfer_funds", {"from_account": "ACC-1001", "to_account": "ACC-1002",
-                                   "amount": -5}, CTX)
+        reg.run(
+            "transfer_funds",
+            {"from_account": "ACC-1001", "to_account": "ACC-1002", "amount": -5},
+            CTX,
+        )
     with pytest.raises(ToolArgsError, match="unknown tool"):
         reg.run("delete_account", {}, CTX)
 

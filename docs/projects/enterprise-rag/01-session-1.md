@@ -338,11 +338,14 @@ became easier.
 
 ## 3. Create the environment and configure services
 
+**`NOT from session`** Lines beginning `# Reader note:` inside the code are explanatory comments added for this chapter. They do not change the executable statements.
+
 ### Complete file: `requirements.txt`
 
 Save this entire block at the path shown, relative to the project root.
 
 ```text
+# Reader note: These dependencies reproduce this checkpoint; keep this environment separate from the later deployment fork.
 # ==============================================================================
 # ENTERPRISE AGENTIC RAG - REQUIREMENTS (Local, No GCP)
 # ==============================================================================
@@ -393,6 +396,7 @@ sentence-transformers       # Used by FlashRank reranker internally
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Load service names and credentials once so every client uses the same configured endpoints.
 import os
 from dotenv import load_dotenv
 
@@ -535,10 +539,12 @@ Read the four files below as implementations of one contract: **a path enters; e
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Extract selectable PDF text page by page; a blank page triggers a second text parser, not OCR.
 import logfire
 from pypdf import PdfReader
 
 
+# Reader note: Text extraction cannot read pixels in a scanned page; inspect blank outputs before indexing.
 def parse_pdf(file_path: str) -> str:
     """
     Extract text from a PDF locally using pypdf.
@@ -594,6 +600,7 @@ def parse_pdf(file_path: str) -> str:
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Remove executable and metadata tags before text becomes retrievable evidence.
 from bs4 import BeautifulSoup 
 import logfire
 
@@ -633,6 +640,7 @@ def parse_html(file_path: str):
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Keep the original text content; decoding errors are ignored by this teaching parser.
 import logfire
 
 def parse_text(file_path: str):
@@ -654,6 +662,7 @@ def parse_text(file_path: str):
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Dispatch Office files through Unstructured and join the elements it returns.
 import logfire
 from unstructured.partition.auto import partition
 
@@ -710,6 +719,7 @@ the implementation's labels so the diagram and executable code agree.
 The processor's dispatch is straightforward:
 
 ```python
+# Reader note: The extension dispatcher calls only the parser matching the input suffix.
 from app.ingestion.loaders.pdf import parse_pdf
 from app.ingestion.loaders.html import parse_html
 from app.ingestion.loaders.text import parse_text
@@ -780,6 +790,7 @@ Follow three decisions in the code below:
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Use the same embedding family for stored passages and incoming queries.
 import time
 import logfire
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -816,6 +827,7 @@ def _load_fallback():
     return SentenceTransformer("all-mpnet-base-v2")
 
 
+# Reader note: The provider decision happens lazily on first use, before query or passage embedding.
 def _init():
     """Initialise embedding model once per process. Called lazily on first use."""
     global _active_model, _model_type
@@ -874,6 +886,7 @@ def embed_query(query: str) -> list[float]:
     return _active_model.encode([query])[0].tolist()
 
 
+# Reader note: Keep document batches together and preserve their input order.
 def embed_texts(texts: list[str]) -> list[list[float]]:
     _init()
     all_embeddings: list[list[float]] = []
@@ -889,6 +902,7 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
 public operations:
 
 ```python
+# Reader note: The query and document calls must use the same selected embedding family.
 from app.services.retrieval.embedding import (
     embed_texts,
     embed_query,
@@ -1010,9 +1024,11 @@ This distinction explains why the HTML loader and splitter must be inspected tog
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Pack blank-line paragraphs by character count; one long paragraph can exceed the target.
 from typing import List
 import logfire
 
+# Reader note: The threshold is a packing target, not a guaranteed maximum for oversized paragraphs.
 def chunk_text(text: str, chunk_size: int = 1500) -> List[str]:
     """
     Simple semantic-ish chunker that splits by paragraphs.
@@ -1146,6 +1162,7 @@ The code below is the complete implementation. After it, the commands build the 
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Route each extension to a parser, save inspectable chunks, then embed and upsert points.
 import os
 import sys
 import uuid
@@ -1184,6 +1201,7 @@ def save_processed_locally(data: dict, source_type: str, filename: str) -> str:
     return dest
 
 
+# Reader note: Parsing and chunking happen before vectors are written to Qdrant.
 def process_file(file_path: str, filename: str, source_type: str):
     """Parse → chunk → save locally → embed → index in Qdrant."""
     with logfire.span("Processing File", file=filename, source=source_type):
@@ -1256,6 +1274,7 @@ def process_directory(dir_path: str, source_type: str):
             process_file(os.path.join(dir_path, filename), filename, source_type)
 
 
+# Reader note: Wiping the collection deletes existing vectors; the ordinary true/noisy labels do not.
 def run_universal_ingestion(base_dir: str, explicit_source_type: str = None, wipe: bool = False):
     """
     Scan base_dir, map sub-folders to source types, and ingest all documents.
@@ -1529,6 +1548,7 @@ The project retrieves **15 candidates and retains five**. The whiteboard separat
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: The query vector must match the collection model and dimension before Qdrant can search.
 import logfire
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -1542,6 +1562,7 @@ client = QdrantClient(
     api_key=settings.QDRANT_API_KEY
 )
 
+# Reader note: Include payload so the responder can read the matched text, not only scores.
 def search_enterprise_knowledge(query: str, limit: int = 8):
     """
     Performs a high-precision search in the enterprise knowledge base.
@@ -1578,6 +1599,7 @@ def search_enterprise_knowledge(query: str, limit: int = 8):
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Rerank only the short candidate list returned by Qdrant, then pass ordered text onward.
 import time
 import logfire
 from flashrank import Ranker, RerankRequest
@@ -1603,6 +1625,7 @@ def _get_ranker() -> Ranker:
 
 
 
+# Reader note: A reranker changes ordering; it cannot recover a passage that retrieval omitted.
 def rerank_documents(query: str, documents: list[str], top_n: int = 5) -> list[str]:
     """
     Refines retrieval results by re-scoring documents against the query semantically.
@@ -1680,6 +1703,7 @@ recover it.
 dictionaries, calls `rerank`, and returns the top texts.
 
 ```python
+# Reader note: FlashRank scores only these supplied passages; the collection is not scanned here.
 from flashrank import Ranker, RerankRequest
 
 ranker = Ranker(cache_dir="/tmp/flashrank")
@@ -1772,6 +1796,7 @@ State is the object you inspect when the application takes the wrong route. Each
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Messages accumulate across graph nodes; ordinary state fields are replaced on update.
 from typing import TypedDict, List, Annotated
 import operator
 
@@ -1846,6 +1871,7 @@ For “What did I ask earlier?”, retrieval would add irrelevant document evide
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: The planner chooses a conversational answer or produces a retrieval query.
 from app.agents.state import AgentState
 from app.config import settings
 from langchain_groq import ChatGroq
@@ -1854,6 +1880,7 @@ import logfire
 # Direct Groq call — the LLM Gateway (Portkey routing/fallback/caching) arrives in a later stage
 llm = ChatGroq(api_key=settings.GROQ_API_KEY, model=settings.GROQ_MODEL, temperature=0)
 
+# Reader note: The route depends on the model output, so repeated questions can still trigger retrieval.
 def planner_node(state: AgentState):
     """
     The Planner determines if a search is needed based on the ENTIRE conversation.
@@ -1915,6 +1942,7 @@ autoscaling with the necessary nouns restored.
 The decisive implementation branch is:
 
 ```python
+# Reader note: This small state update shows the two planner outputs used by the graph route.
 def planner_update(decision: str) -> dict:
     decision = decision.strip()
     if decision == "CONVERSATIONAL":
@@ -1951,6 +1979,7 @@ Read the context assembly before the model invocation. It accepts chunks until t
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Build the final answer from conversation history plus the selected evidence.
 import logfire
 from app.agents.state import AgentState
 from app.config import settings
@@ -1960,6 +1989,7 @@ from langchain_groq import ChatGroq
 llm = ChatGroq(api_key=settings.GROQ_API_KEY, model=settings.GROQ_MODEL, temperature=0.1)
 
 
+# Reader note: The context is bounded before generation; inspect what was actually included.
 def generate_node(state: AgentState):
     """
     Synthesizes a response using both Documentation Context AND Conversation History.
@@ -2067,11 +2097,13 @@ interface makes the answer look grounded.
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Retrieve candidates first, rerank them second, and write the selected context to state.
 import logfire
 from app.agents.state import AgentState
 from app.services.retrieval.qdrant_service import search_enterprise_knowledge
 from app.services.retrieval.ranking_service import rerank_documents
 
+# Reader note: The first-stage search can return more candidates than the final answer receives.
 def retrieve_node(state: AgentState):
     """
     Performs vector search and semantic reranking for technical queries.
@@ -2103,6 +2135,7 @@ The complete central operation in `retrieve_node` is small enough to follow in
 one pass:
 
 ```python
+# Reader note: The snippet preserves the search-then-rerank order of the full retriever file.
 from app.services.retrieval.qdrant_service import search_enterprise_knowledge
 from app.services.retrieval.ranking_service import rerank_documents
 
@@ -2148,6 +2181,7 @@ A checkpointer associates state with a thread ID. Reusing that ID continues the 
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Wire node transitions and checkpoint state under a conversation thread ID.
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from app.agents.state import AgentState
@@ -2166,6 +2200,7 @@ workflow.add_node("retriever", retrieve_node)
 workflow.add_node("responder", generate_node)
 
 # 3. Define the Edges & Routing Logic
+# Reader note: This branch checks the planner decision stored in graph state.
 def route_planner(state: AgentState):
     """
     Routes the workflow based on the planner's decision.
@@ -2207,6 +2242,7 @@ responder. The checkpointer stores state under the `thread_id` supplied at
 invocation.
 
 ```python
+# Reader note: The graph uses an in-memory checkpointer keyed by thread ID.
 from langgraph.graph import END, StateGraph
 from langgraph.checkpoint.memory import MemorySaver
 from app.agents.state import AgentState
@@ -2282,6 +2318,7 @@ Follow one request through the file: validate its shape, choose the checkpoint t
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: The API is the entry point: validate a request, invoke the graph, and return its route and answer.
 # ============================================================
 # CRITICAL: logfire MUST be configured before ALL other imports
 # so that spans from all modules are captured from the start.
@@ -2328,6 +2365,7 @@ def get_graph_image():
 
 
 @app.post("/query")
+# Reader note: A thread ID selects conversation history; callers must not share one across users.
 def query(request: QueryRequest):
     """
     Executes the LangGraph RAG flow with memory using a POST request.
@@ -2473,6 +2511,7 @@ logfire auth
 The code uses nested spans around operations:
 
 ```python
+# Reader note: Child spans appear under the parent query span in the trace waterfall.
 import logfire
 
 logfire.configure(service_name="enterprise-rag-demo")
@@ -2541,6 +2580,7 @@ The complete file below makes one blocking HTTP request per user turn. Its chara
 Save this entire block at the path shown, relative to the project root.
 
 ```python
+# Reader note: Keep Streamlit display state separate from the graph checkpoint stored by the API.
 import os
 import streamlit as st
 import requests

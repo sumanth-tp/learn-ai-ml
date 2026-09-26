@@ -80,3 +80,11 @@ def test_union_and_subqueries_are_checked(v: SQLValidator) -> None:
         "SELECT * FROM orders WHERE customer_id IN (SELECT employee_id FROM employees)"
     )
     assert not bad.ok
+
+
+def test_policy_violations_are_flagged_as_security(v: SQLValidator) -> None:
+    assert v.validate("DROP TABLE orders").security_violation
+    assert v.validate("SELECT * FROM raw.customers").security_violation
+    assert v.validate("SELECT * FROM read_csv('/etc/passwd')").security_violation
+    # an unknown table is usually a hallucination, so it stays retryable
+    assert not v.validate("SELECT * FROM sales").security_violation

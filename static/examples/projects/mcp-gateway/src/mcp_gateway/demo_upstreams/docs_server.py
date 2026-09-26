@@ -15,9 +15,9 @@ from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 
 DOCS: dict[str, str] = {
-    "/public/handbook.md": "# Employee handbook\nCore hours are 10:00-16:00. Expenses need a receipt.",
-    "/public/security.md": "# Security basics\nReport phishing to security@example.com within 1 hour.",
-    "/engineering/runbook.md": "# Gateway runbook\nIf /readyz fails, check the upstream breaker state.",
+    "/public/handbook.md": "# Employee handbook\nCore hours 10:00-16:00. Expenses need receipts.",
+    "/public/security.md": "# Security basics\nReport phishing within one hour.",
+    "/engineering/runbook.md": "# Gateway runbook\nIf /readyz fails, check breaker state.",
     "/engineering/adr-007.md": "# ADR 7\nWe route every MCP call through the gateway.",
     "/finance/q3-forecast.md": "# Q3 forecast (confidential)\nRevenue 4.2M EUR, margin 18%.",
     "/hr/salaries.csv": "name,salary\nA. Example,90000\nB. Example,85000",

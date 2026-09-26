@@ -41,8 +41,9 @@ def call_with_retries(
             if attempt == attempts:
                 break
             delay = rng.uniform(0, min(max_delay_s, base_delay_s * 2 ** (attempt - 1)))
-            log.warning("retrying", what=what, attempt=attempt, delay_s=round(delay, 3),
-                        error=repr(exc))
+            log.warning(
+                "retrying", what=what, attempt=attempt, delay_s=round(delay, 3), error=repr(exc)
+            )
             (sleep or time.sleep)(delay)
     assert last is not None
     raise RetryExhaustedError(what, attempts, last)

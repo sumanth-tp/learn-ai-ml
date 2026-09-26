@@ -98,6 +98,7 @@ class ReviewQueue:
             raise KeyError(trace_id)
         case = case or draft_case(trace)
         now = self.clock.now()
+        self.store.add_review(trace_id, "manual", now)  # reviewers may promote any trace
         if case is None:
             self.store.set_review(
                 trace_id, "unusable", reviewer, now, note="no testable expectation"

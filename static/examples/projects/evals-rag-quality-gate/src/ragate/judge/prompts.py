@@ -108,8 +108,13 @@ CORRECTNESS_GEVAL = JudgePrompt(
 
 REGISTRY: dict[str, JudgePrompt] = {
     p.name: p
-    for p in (FAITHFULNESS, ANSWER_RELEVANCY, CONTEXT_RELEVANCE, CONTEXTUAL_RECALL,
-              CORRECTNESS_GEVAL)
+    for p in (
+        FAITHFULNESS,
+        ANSWER_RELEVANCY,
+        CONTEXT_RELEVANCE,
+        CONTEXTUAL_RECALL,
+        CORRECTNESS_GEVAL,
+    )
 }
 
 

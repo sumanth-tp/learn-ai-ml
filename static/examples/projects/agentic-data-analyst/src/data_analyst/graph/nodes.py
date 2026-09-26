@@ -85,6 +85,7 @@ class AnalystNodes:
             "attempts": 0,
             "errors": [],
             "last_error": None,
+            "blocked": False,
             "warnings": [],
             "estimate": None,
             "approval": None,
@@ -187,7 +188,11 @@ class AnalystNodes:
         if result.ok:
             emit("validate", "passed", warnings=result.warnings)
             return {"sql": result.sql, "warnings": result.warnings, "last_error": None}
-        return self._failure(state, "validate", f"validation failed: {result.error}")
+        update = self._failure(state, "validate", f"validation failed: {result.error}")
+        if result.security_violation:
+            log.warning("sql_policy_violation", error=result.error, sql=state["sql"])
+            update["blocked"] = True
+        return update
 
     def _failure(self, state: AnalystState, node: str, err: str) -> dict[str, Any]:
         """Record a failed step. A failing cached query is evicted, so one bad entry
@@ -295,11 +300,17 @@ class AnalystNodes:
         return {"chart_png_base64": chart.png_base64, **_usage(state, usage)}
 
     def finalize(self, state: AnalystState) -> dict[str, Any]:
-        status: Literal["answered", "rejected", "failed"]
+        status: Literal["answered", "rejected", "blocked", "failed"]
         approval = state.get("approval")
         if state.get("result") is not None:
             status = "answered"
             answer = state.get("answer") or ""
+        elif state.get("blocked"):
+            status = "blocked"
+            answer = (
+                "Refused: the generated query broke the SQL safety policy and was not run "
+                f"({state.get('last_error')})."
+            )
         elif approval is not None and not approval["approved"]:
             status = "rejected"
             answer = f"Not run: the reviewer ({approval['reviewer']}) rejected the query."
@@ -339,6 +350,8 @@ class AnalystNodes:
         return "finalize"
 
     def route_after_validate(self, state: AnalystState) -> str:
+        if state.get("blocked"):
+            return "finalize"
         return self._retry_or_stop(state) if state.get("last_error") else "estimate"
 
     def route_after_estimate(self, state: AnalystState) -> str:

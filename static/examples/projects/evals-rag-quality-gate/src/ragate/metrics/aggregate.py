@@ -49,26 +49,37 @@ def mean_field(field: str) -> Aggregate:
 
 PER_ITEM_METRICS = [
     # retriever (reference-based)
-    "recall_at_k", "precision_at_k", "hit_at_k", "mrr", "ndcg_at_k", "contextual_precision",
+    "recall_at_k",
+    "precision_at_k",
+    "hit_at_k",
+    "mrr",
+    "ndcg_at_k",
+    "contextual_precision",
     "contextual_recall",
     # generator
-    "faithfulness", "answer_relevancy", "correctness", "citation_validity",
-    "citation_precision", "citation_recall",
+    "faithfulness",
+    "answer_relevancy",
+    "correctness",
+    "citation_validity",
+    "citation_precision",
+    "citation_recall",
     # the RAG triad's third leg (the other two are faithfulness and answer_relevancy)
     "context_relevance",
 ]
 
 AGGREGATES: dict[str, Aggregate] = {m: mean_of(m) for m in PER_ITEM_METRICS}
-AGGREGATES.update({
-    "refusal_rate": rate(lambda i: i.expected_behaviour == "refuse", lambda i: i.refused),
-    "false_refusal_rate": rate(lambda i: i.expected_behaviour != "refuse", lambda i: i.refused),
-    "pii_leak_rate": rate(lambda i: True, lambda i: bool(i.pii_leaks)),
-    "judge_error_rate": rate(lambda i: True, lambda i: bool(i.errors)),
-    "latency_p50_ms": percentile("latency_ms", 50),
-    "latency_p95_ms": percentile("latency_ms", 95),
-    "cost_per_query_usd": mean_field("cost_usd"),
-    "tokens_per_query": mean_field("total_tokens"),
-})
+AGGREGATES.update(
+    {
+        "refusal_rate": rate(lambda i: i.expected_behaviour == "refuse", lambda i: i.refused),
+        "false_refusal_rate": rate(lambda i: i.expected_behaviour != "refuse", lambda i: i.refused),
+        "pii_leak_rate": rate(lambda i: True, lambda i: bool(i.pii_leaks)),
+        "judge_error_rate": rate(lambda i: True, lambda i: bool(i.errors)),
+        "latency_p50_ms": percentile("latency_ms", 50),
+        "latency_p95_ms": percentile("latency_ms", 95),
+        "cost_per_query_usd": mean_field("cost_usd"),
+        "tokens_per_query": mean_field("total_tokens"),
+    }
+)
 
 
 def aggregate_all(items: list[ItemResult]) -> dict[str, float | None]:

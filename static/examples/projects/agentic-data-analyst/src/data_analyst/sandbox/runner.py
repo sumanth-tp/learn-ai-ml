@@ -19,12 +19,11 @@ def _limit(mem_mb: int, cpu_s: int) -> None:
         ("RLIMIT_AS", mem_mb * 1024 * 1024),
         ("RLIMIT_CPU", cpu_s),
         ("RLIMIT_FSIZE", 20 * 1024 * 1024),
-        ("RLIMIT_NPROC", 0),
     ):
         res = getattr(resource, name, None)
         if res is None:
             continue
-        # macOS refuses some limits (RLIMIT_AS, RLIMIT_NPROC); the audit hook and the
+        # macOS refuses RLIMIT_AS; the audit hook and the
         # container's own limits still apply.
         with contextlib.suppress(ValueError, OSError):
             resource.setrlimit(res, (value, value))

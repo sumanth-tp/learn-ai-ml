@@ -38,8 +38,16 @@ def test_macro_f1_invented_label_costs_precision_only() -> None:
 
 
 def test_field_accuracy_normalises_and_zeroes_invalid() -> None:
-    gold = TicketFields(order_id="ORD-00001", product="Cobalt Blender", amount=10.0, priority=Priority.LOW, sentiment=Sentiment.NEUTRAL)
-    pred = TicketFields(order_id="ORD-00001", product="cobalt  blender", amount=10.001, priority=Priority.HIGH, sentiment=Sentiment.NEUTRAL)
+    gold = TicketFields(
+        order_id="ORD-00001", product="Cobalt Blender", amount=10.0, priority=Priority.LOW, sentiment=Sentiment.NEUTRAL
+    )
+    pred = TicketFields(
+        order_id="ORD-00001",
+        product="cobalt  blender",
+        amount=10.001,
+        priority=Priority.HIGH,
+        sentiment=Sentiment.NEUTRAL,
+    )
     matches = field_matches(gold, pred)
     assert matches == {"order_id": True, "product": True, "amount": True, "priority": False, "sentiment": True}
     assert field_accuracy(gold, pred) == 0.8

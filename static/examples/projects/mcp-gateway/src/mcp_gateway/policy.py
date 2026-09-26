@@ -186,11 +186,15 @@ class PolicyEngine:
         return cls(PolicyDocument.model_validate(yaml.safe_load(text)))
 
     def _evaluate(
-        self, p: Principal, kind: Literal["tools", "resources"], name: str,
+        self,
+        p: Principal,
+        kind: Literal["tools", "resources"],
+        name: str,
         args: dict[str, Any] | None,
     ) -> Decision:
         matching = [
-            r for r in self.doc.rules
+            r
+            for r in self.doc.rules
             if _subject_matches(r, p) and _glob_any(name, getattr(r, kind))
         ]
         for r in matching:
@@ -232,9 +236,7 @@ class PolicyEngine:
             if group_limits
             else lim.default
         )
-        tool_limit = next(
-            (v for k, v in lim.tools.items() if fnmatch.fnmatchcase(tool, k)), None
-        )
+        tool_limit = next((v for k, v in lim.tools.items() if fnmatch.fnmatchcase(tool, k)), None)
         return user_limit, tool_limit
 
 
@@ -263,9 +265,7 @@ class PolicyStore:
                 if mtime != self._mtime:
                     self._mtime = mtime
                     try:
-                        self._engine = PolicyEngine.from_yaml(
-                            self.path.read_text(encoding="utf-8")
-                        )
+                        self._engine = PolicyEngine.from_yaml(self.path.read_text(encoding="utf-8"))
                         self.last_error = None
                         log.info("policy reloaded from %s", self.path)
                     except Exception as exc:
