@@ -1,9 +1,14 @@
 ---
 title: Pandas Interview Questions (100)
-sidebar_position: 3
+sidebar_position: 32
+sidebar_label: "Reference · Pandas"
 ---
 
 # Pandas Interview Questions (100)
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](01-python-data.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 <details>
 <summary><strong>1. What is Pandas and what are its main data structures?</strong></summary>
@@ -144,8 +149,8 @@ df.dropna(thresh=2)           # keep rows with at least 2 non-NaN
 # Fill
 df.fillna(0)
 df.fillna(df.mean())          # fill with column mean
-df.fillna(method='ffill')     # forward fill
-df.fillna(method='bfill')     # backward fill
+df.ffill()     # forward fill
+df.bfill()     # backward fill
 df['A'].fillna(df['A'].median(), inplace=True)
 
 # Interpolate
@@ -858,29 +863,29 @@ df.to_clipboard()
 <details>
 <summary><strong>26. What is the difference between `copy()` and view in Pandas?</strong></summary>
 
-**Answer:** Slices can return views (shared memory) or copies; `copy()` forces a copy to avoid `SettingWithCopyWarning`.
+**Answer:** In pandas 3, Copy-on-Write makes a derived object behave independently when mutated. Use one `.loc` assignment on the original DataFrame when you intend to change it. Earlier pandas versions had different view/copy warnings; the comments below distinguish that historical behaviour.
 
 ```python
 import pandas as pd
 
 df = pd.DataFrame({'A': [1,2,3], 'B': [4,5,6]})
 
-# Slice may return a view
-subset = df[df['A'] > 1]         # might be a view
-subset['B'] = 99                 # SettingWithCopyWarning!
+# pandas 3: a derived object behaves independently on mutation
+subset = df[df['A'] > 1]         # derived DataFrame
+subset['B'] = 99                 # pandas 3: changes subset only; older pandas could warn
 
-# Always copy when you plan to modify
+# Explicit copying is useful when you need an eager independent copy
 subset = df[df['A'] > 1].copy()
 subset['B'] = 99                 # safe
 
-# Check if copy or view
-print(subset._is_copy)           # None if copy
+# Check observable behaviour rather than private internals
+assert df.loc[1, "B"] == 5
 
-# Correct chained assignment
+# One direct assignment on the original DataFrame
 df.loc[df['A'] > 1, 'B'] = 99   # directly on original
 ```
 
-**Interview Tip:** The fix for `SettingWithCopyWarning` is `.copy()` or using `.loc` on the original DataFrame.
+**Interview Tip:** State your pandas version. In pandas 3, chained assignment does not update the original object; mutate the intended frame directly. See [Copy-on-Write examples](99-tools-versions.md).
 </details>
 
 <details>
@@ -1447,10 +1452,10 @@ df = (
 
 **Why avoid inplace?**
 - Breaks method chaining
-- No performance benefit (Pandas still copies internally in most cases)
-- Can cause `SettingWithCopyWarning` on slices
+- Does not guarantee lower memory use; measure the actual operation
+- Mutating a derived object does not update its parent under pandas 3 Copy-on-Write
 
-**Interview Tip:** Prefer reassignment — it's more explicit, chainable, and equally fast.
+**Interview Tip:** Prefer clear reassignment for chaining; benchmark if allocation or speed is important.
 </details>
 
 <details>
@@ -2175,3 +2180,23 @@ five_bdays = today + BDay(5)
 ---
 
 Good luck! 🚀
+
+## Summary in simple points
+
+- Series and DataFrames combine labelled alignment with typed columns. Check schema, index, missingness and row counts after reading data.
+- Select with loc/iloc and explicit masks. pandas 3 Copy-on-Write means a chained selection should not be relied on to mutate its parent.
+- Use the intended DataFrame in a single assignment; inplace=True is not a general guarantee of lower memory use.
+- Handle missing values, categories, strings, extension dtypes and conversions under a documented data contract.
+- Groupby agg reduces groups, transform preserves row alignment, and apply permits more general operations with extra complexity.
+- Merge with explicit keys and cardinality validation. Concat stacks compatible data; duplicate keys or columns can silently change meaning.
+- Pivot, pivot_table, stack, unstack, melt/wide_to_long, explode and transpose reshape data with different uniqueness and aggregation requirements.
+- Use assign and pipe for readable transformations. Prefer vectorised operations when they fit instead of repeated row loops or incremental concatenation.
+- Date/time work needs timezone, frequency and availability rules. Rolling, expanding, cumulative and lag features must avoid future leakage.
+- merge_asof needs sorted time keys and a direction/tolerance contract; event time alone does not establish historical availability.
+- Use cut/qcut, value_counts, crosstab, correlations and grouped percentiles with correct denominators and missing-value handling.
+- Deduplicate using domain identity. Detect outliers and drift with cohort-aware analysis rather than automatically deleting unusual rows.
+- Sampling and cross-validation need saved IDs and suitable time/group boundaries. Fit learned transformations only on training data.
+- Read large files in chunks, select columns/dtypes and inspect memory per column. Arrow/Polars integration needs type and execution checks.
+- MultiIndex, xs, interval indexes and index set operations help express structured keys; preserve alignment when moving to NumPy or model inputs.
+- JSON normalisation, export formats, attrs, styling and display options serve different purposes. DataFrame attributes alone are not durable lineage.
+- Use compare, combine_first, update, where and mask according to their alignment/mutation contracts. Treat Pickle as trusted executable input, not a safe interchange format.

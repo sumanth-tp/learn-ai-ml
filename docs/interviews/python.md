@@ -1,9 +1,14 @@
 ---
 title: Python Interview Questions (100)
-sidebar_position: 1
+sidebar_position: 30
+sidebar_label: "Reference · Python"
 ---
 
 # Python Interview Questions (100)
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](01-python-data.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 ## Beginner Questions (1-30)
 
@@ -3476,7 +3481,7 @@ print(bad_append(2))  # [1, 2] -- unexpected!
 def good_append(item, lst=None):  # CORRECT
     if lst is None:
         lst = []
-    lst.append(lst)
+    lst.append(item)
     return lst
 
 # ANTI-PATTERN 2: Bare except
@@ -3911,3 +3916,22 @@ for method, desc in protocols.items():
 5. **Track weak areas**: Focus extra on topics you struggle with
 
 Good luck! 🚀
+
+## Summary in simple points
+
+- Lists, dictionaries and sets are mutable; tuples are immutable containers whose contents may still reference mutable objects. Choose structures by required operations, not slogans about speed.
+- Understand identity versus equality, hashing contracts, shallow versus deep copies, mutable defaults and shared class state.
+- Use comprehensions, generators, iterators, range, zip and enumerate with clear ordering, exhaustion and length assumptions.
+- Functions use positional/keyword arguments, closures, decorators and lambdas; distinguish lazy map/filter from eager collection creation.
+- Classes use properties, descriptors, MRO, abstract bases, dataclasses and protocols. Metaclasses, slots and subclass hooks solve specific construction or storage needs.
+- Handle expected errors explicitly. Context managers and contextlib make file, connection and lock cleanup reliable.
+- Use JSON for interoperable data, regex for suitable text patterns, and documented schemas for external inputs.
+- Understand imports, package boundaries, module caching and main guards. Use isolated environments and pyproject metadata for reproducible packaging.
+- Counter, defaultdict, deque, itertools and functools provide reusable counting, queueing, iteration and caching tools.
+- Test behaviours with unittest/pytest and controlled mocks. Coverage counts executed code; it does not prove useful assertions.
+- Profile before optimising. Understand reference ownership, garbage collection, weak references and the limitations of cache growth.
+- Choose threads, processes and asyncio for the actual workload. GIL behaviour depends on interpreter/build and extension code; do not assume every Python runtime has identical constraints.
+- Use pathlib and bounded file operations. Pass subprocess arguments safely and avoid logging secrets.
+- Type hints and structural protocols support analysis and interfaces; ordinary hints do not validate runtime input.
+- Know object construction, callable objects, repr/str, comparison methods and built-in utilities well enough to predict concrete output.
+- Explain performance and failure behaviour with runnable fixtures; avoid bare exceptions, mutable defaults, unbounded tasks and accidental shared state.

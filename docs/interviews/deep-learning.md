@@ -1,9 +1,14 @@
 ---
 title: Deep Learning Interview Questions
-sidebar_position: 6
+sidebar_position: 34
+sidebar_label: "Reference · Deep Learning"
 ---
 
 # Deep Learning Interview Questions
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](03-deep-learning-llms.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 100 essential deep learning interview questions with in-depth answers and code examples.
 
@@ -1769,3 +1774,24 @@ Latency requirements, throughput, model size vs accuracy, distribution shift, ex
 | 2022 | ChatGPT | RLHF alignment |
 | 2023 | LLaMA | Open-source LLM |
 | 2023 | Mistral/Mixtral | MoE + efficient inference |
+
+## Summary in simple points
+
+- Neural networks compose differentiable transformations; backpropagation applies the chain rule and an optimiser updates parameters.
+- Activation, initialisation, skip connections, normalisation and gradient controls affect signal propagation. Inspect vanishing/exploding gradients rather than guessing.
+- Dropout, augmentation, early stopping and regularisation target generalisation. Training and evaluation modes can change behaviour.
+- Convolutions have explicit channels, receptive fields, stride, padding and dilation. Depthwise, pointwise and transposed convolutions serve different purposes.
+- Pooling and strided convolution reduce spatial resolution. Classification, detection and segmentation need different outputs and metrics.
+- RNNs, LSTMs, GRUs and sequence-to-sequence models manage temporal state; teacher forcing changes what inputs training observes.
+- Attention uses queries, keys and values. Multi-head attention, positions and masks determine which tokens can influence each output.
+- Encoder, decoder and encoder-decoder transformers expose different context. Masked and causal objectives train different prediction tasks.
+- Tokenisation, embedding layers, word2vec and sentence embeddings determine representation granularity; pooling is not automatically a good semantic encoder.
+- Greedy, beam, temperature, top-k and top-p decoding change generation behaviour. Perplexity needs comparable tokenisation and data.
+- Autoencoders, VAEs, GANs and other generative models use different objectives and latent assumptions. Self-supervised and contrastive learning require suitable training signals.
+- Transfer learning, full fine-tuning, LoRA/PEFT, distillation, pruning and quantisation trade capacity, memory and cost differently.
+- RLHF and other feedback-based training depend on reward/preference quality. Deep RL also needs explicit environment and exploration assumptions.
+- Gradient checkpointing, accumulation and mixed precision change memory/compute behaviour. Save optimiser and runtime state needed to resume training.
+- KV caching, MQA/GQA, FlashAttention, sparse/local attention, MoE and speculation optimise different parts of inference; benchmark actual workloads.
+- RAG uses external evidence but does not remove hallucination. Search, vector storage and answer validation remain separate stages.
+- Framework autograd, export/compilation formats and serving runtimes have version-specific support. Test exported model parity rather than assuming it.
+- Distributed training, monitoring, deployment, prompts and checkpoint management need reproducibility and failure recovery. Curriculum and noisy-label techniques still require independent evaluation.

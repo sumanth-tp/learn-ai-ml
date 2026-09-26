@@ -1,9 +1,14 @@
 ---
 title: NumPy Interview Questions (100)
-sidebar_position: 2
+sidebar_position: 31
+sidebar_label: "Reference · Numpy"
 ---
 
 # NumPy Interview Questions (100)
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](03-deep-learning-llms.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 ## Beginner Questions (1-30)
 
@@ -3511,3 +3516,22 @@ print("- np.memmap: out-of-core data")
 | Rolling stats | `sliding_window_view` | O(n·w) |
 | Histogram | `np.histogram` | O(n) |
 
+## Summary in simple points
+
+- Read shape, axes, dtype, strides and memory layout before reasoning about an array. Estimate allocations before broadcasting.
+- Create, reshape, transpose, concatenate and index arrays with explicit view/copy expectations; advanced indexing usually allocates a copy.
+- Use ufuncs, reductions, accumulations, outer operations and conditional selection to express numerical work clearly.
+- Separate elementwise multiplication from matrix products; use einsum and tensordot when their axis contracts are clear.
+- Choose solve, least squares, eigenvalue routines, decompositions and pseudoinverses according to matrix structure and conditioning.
+- Use Generator for explicit random state and record seeds, splits and environment. Randomness alone does not guarantee reproducibility.
+- Sorting, argsort, unique, set operations, histograms and binning transform data in different ways; preserve ID alignment.
+- Handle missing values, masks, structured arrays and dtype conversion deliberately. Integer overflow and floating-point comparison need tests.
+- Use stable softmax, log-sum-exp and gradient checks. A mathematically equivalent expression may be numerically unsafe.
+- Window views, padding, differences, interpolation, numerical integration, FFT and smoothing need boundary and sampling assumptions.
+- Use memory mapping, output buffers and appropriate layout for large arrays. np.vectorize wraps Python calls and is not automatically a speed optimisation.
+- Reference implementations of regression, PCA, k-means, neural layers, attention and convolution should be compared against independently calculated small cases.
+- Ranking, confusion matrices, TF-IDF, Naive Bayes and matrix factorisation need correct normalisation and evaluation semantics.
+- Image kernels, equalisation and nonmaximum suppression require coordinate, channel and threshold conventions.
+- Markov chains, Kalman filters, orthogonalisation, multiscale features and simulated processes need model assumptions and numerical checks.
+- Treat sparse encodings and zero-copy buffers as explicit memory contracts; unsafe writes to shared views can corrupt other calculations.
+- Save arrays with schema/version context, benchmark representative workloads, and test nonfinite values, empty shapes and degenerate inputs.

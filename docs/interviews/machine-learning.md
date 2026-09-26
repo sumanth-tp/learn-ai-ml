@@ -1,9 +1,14 @@
 ---
 title: Machine Learning Interview Questions
-sidebar_position: 5
+sidebar_position: 33
+sidebar_label: "Reference · Machine Learning"
 ---
 
 # Machine Learning Interview Questions
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](02-ml-statistics.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 100 essential ML interview questions with in-depth answers and code examples.
 
@@ -2151,3 +2156,23 @@ Memory-based (user-user, item-item): uses similarity between users/items directl
 | K-Means | Clustering | k, n_init | Fast, scalable | Spherical clusters only |
 | DBSCAN | Density-based | eps, min_samples | Arbitrary shapes, detects noise | Sensitive to eps |
 | PCA | Linear dim reduction | n_components | Fast, interpretable | Linear only |
+
+## Summary in simple points
+
+- Define the prediction task, baseline and business error costs before selecting an algorithm. Supervised, unsupervised, semi-supervised and reinforcement learning use different feedback.
+- Separate training, tuning and final testing with time/entity-aware splits. Keep feature engineering and target encoding inside the training boundary.
+- Bias, variance, regularisation, learning curves and validation curves help diagnose generalisation failures; none replace a representative holdout.
+- Gradient descent, SGD, mini-batches and quasi-Newton methods have different optimisation and memory behaviour.
+- Linear/logistic models, Naive Bayes, nearest neighbours and SVMs rely on different representations and assumptions. Kernels and margin controls change SVM behaviour.
+- Trees choose impurity-reducing splits; pruning controls complexity. Bagging, random forests, boosting and stacking combine learners differently.
+- Tune hyperparameters with a fixed evaluation protocol. Grid, random and Bayesian searches trade off exploration cost and assumptions.
+- Use confusion matrices, precision/recall, PR/ROC curves and macro/micro averaging for the actual class mix. Accuracy alone can hide failures.
+- Calibration concerns probability reliability; ranking concerns order. Isotonic or other calibration needs suitable separate data.
+- Choose regression loss and metrics for outliers, zeros and asymmetric costs; R-squared is not a universal measure of usefulness.
+- PCA, random projections and nonlinear embeddings preserve different properties. Feature selection and feature hashing alter information and interpretability.
+- K-means, mixture/EM, density and hierarchical clustering optimise different objectives. Silhouette and elbow plots need domain validation.
+- Detect anomalies by relevant segment, distinguish data/concept drift, and use controlled online experiments to measure product effects.
+- Interpretation methods, tree importances and Shapley-based explanations describe model behaviour under assumptions; they do not automatically prove causality.
+- MLE, MAP, Bayesian models and Gaussian processes express different estimation/uncertainty assumptions. No model wins on every possible problem.
+- Embeddings, TF-IDF, cosine distance, recommendation factorisation and collaborative/content approaches need task-specific labels and ranking metrics.
+- Transfer learning, augmentation, label smoothing, multi-label/multiclass strategies and online updates require held-out checks for the intended deployment distribution.

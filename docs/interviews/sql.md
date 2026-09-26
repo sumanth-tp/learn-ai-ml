@@ -1,9 +1,14 @@
 ---
 title: SQL Interview Questions
-sidebar_position: 8
+sidebar_position: 36
+sidebar_label: "Reference · Sql"
 ---
 
 # SQL Interview Questions
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](01-python-data.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 100 essential SQL interview questions for data science and ML engineering roles.
 
@@ -1255,3 +1260,24 @@ CREATE INDEX ON feature_store (entity_id, feature_name, event_time DESC);
 | EXPLAIN | View query execution plan |
 | COALESCE | Handle NULLs with defaults |
 | CASE WHEN | Conditional logic |
+
+## Summary in simple points
+
+- Joins combine rows by keys; validate cardinality and missing-match behaviour. Self, lateral and anti-joins solve distinct relationship problems.
+- WHERE filters rows, GROUP BY forms groups and HAVING filters aggregates. Window functions retain rows while computing partition/order-aware results.
+- Choose explicit window frames and deterministic tie-breakers for ranks, running totals, latest records and growth calculations.
+- NULL introduces three-valued logic. Use IS NULL, COALESCE, NULLIF and suitable NOT EXISTS patterns deliberately.
+- DISTINCT, UNION, UNION ALL, INTERSECT and EXCEPT have different duplicate semantics; do not hide a faulty join with DISTINCT.
+- CTEs, subqueries, recursive queries, views and materialised views differ in expression, reuse and freshness. Performance depends on the engine and plan.
+- Indexes, covering/composite keys and cardinality affect access paths. Inspect EXPLAIN plans, selectivity and actual workload before adding hints.
+- Types, casts, strings, dates, arrays, JSON and domain constraints enforce different contracts. SQL dialect support is not interchangeable.
+- Primary/foreign keys, checks and uniqueness preserve integrity. Normalisation and denormalisation trade update consistency for read shape.
+- Transactions and isolation determine visibility and conflicts. Understand optimistic/pessimistic locking, deadlocks and retries.
+- Partitioning, sharding, replication, pruning and storage layout target different scale and availability problems. CAP applies under network partitions.
+- OLTP, OLAP, star/snowflake schemas and columnar stores serve different query/update patterns.
+- Pagination needs stable ordering. Avoid N+1 calls, unbounded scans, accidental casts and connection-pool exhaustion.
+- UPSERT/MERGE and queue claims require concurrency-aware keys and transaction semantics. SKIP LOCKED is an engine-specific queue tool, not a universal correctness guarantee.
+- Hierarchies, pivots, grouping sets, date sequences and temporal joins need explicit boundaries and missing-data rules.
+- Row-level security, authorisation and cache scope must preserve tenant identity. Stored procedures/triggers also need auditing and access controls.
+- PostgreSQL JSONB, extensions, inheritance, VACUUM, WAL and physical/logical replication are engine-specific operational concepts.
+- Feature stores need entity keys, feature versions, event and availability timestamps, freshness and reproducible historical joins.

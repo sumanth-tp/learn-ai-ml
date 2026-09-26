@@ -1,9 +1,14 @@
 ---
 title: Data Structures & Algorithms Interview Questions (100)
-sidebar_position: 8
+sidebar_position: 37
+sidebar_label: "Reference · Dsa"
 ---
 
 # Data Structures & Algorithms Interview Questions (100)
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](01-python-data.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 ## Core Concepts
 
@@ -3468,3 +3473,25 @@ class FileSystem:
 | Trie insert/search | O(L) | O(alphabet × L) |
 | Segment Tree query | O(log n) | O(n) |
 
+## Summary in simple points
+
+- Choose structures from required operations and explain time/space complexity, including worst-case or amortised assumptions.
+- Arrays, linked lists, stacks, queues, hash maps, heaps and trees trade access, insertion, ordering and memory differently.
+- Implement lists and pointer transformations with empty/single-node tests. Floyd's algorithm detects cycles; reversal and grouping require careful boundary links.
+- Stacks support parsing, minimum tracking and monotonic boundaries; queues/deques support BFS and sliding windows.
+- Binary search requires sorted data or a monotonic predicate. Specify inclusive/exclusive bounds and test absent targets.
+- Sorting and merge-based counting support inversion, interval, range-sum and order-statistic problems.
+- Heaps support top-k, merging sorted streams, streaming medians and greedy merge costs; preserve tie and duplicate rules.
+- Trees need traversal, subtree and path invariants. Validate BST bounds, reconstruct/serialise trees and reason about LCA and distance paths.
+- BFS finds shortest unweighted paths; DFS explores connectivity and search state. Clone graphs using identity-aware visited maps.
+- Topological ordering requires a DAG. Cycle detection, bipartite colouring, union-find and Euler paths answer different graph questions.
+- Dijkstra needs nonnegative weights; Bellman–Ford handles negative edges and detects relevant negative cycles. Floyd–Warshall computes all-pairs distances.
+- Prim and Kruskal construct minimum spanning trees under graph assumptions; they do not solve shortest-path problems.
+- Tries represent prefixes, while hash maps represent direct keys. Segment/Fenwick trees support structured range updates or queries.
+- Two pointers and sliding windows require a maintained invariant. Monotonic stacks solve boundary problems such as histogram rectangles.
+- Dynamic programming specifies state, recurrence, base cases and evaluation order. Distinguish sequence, grid, knapsack, interval and game states.
+- Backtracking explores choices with restoration and pruning; permutations, subsets, word search and wildcard search need explicit duplicate handling.
+- Greedy algorithms need an exchange or ordering argument. A plausible local choice is not proof of global optimality.
+- Bit operations, prefix sums, sieves, weighted sampling and numeric search each depend on representation and boundary assumptions.
+- Grid flood fills, image transforms, water flow and bridge problems need visited-state and coordinate conventions.
+- Caches, time-based maps, file systems and custom hash maps combine structures with API contracts; test updates, missing keys and capacity limits.

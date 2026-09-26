@@ -1,9 +1,10 @@
 {
-    "label": "Interview",
-    "position": 5,
-    "link": {
-      "type": "generated-index",
-      "description": "Interview Questions"
-    }
+  "label": "Interview Preparation",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "slug": "/category/interview",
+    "title": "Practical AI and ML Interview Preparation",
+    "description": "400 practical questions across 10 topics, with source evidence, answered follow-ups, code, diagrams and summaries. Begin with Start here, then use the coding labs and mixed-topic mocks. Earlier foundation banks remain available for revision."
   }
-  
+}

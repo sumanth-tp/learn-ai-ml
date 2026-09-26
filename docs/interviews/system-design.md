@@ -1,9 +1,14 @@
 ---
 title: System Design Interview Questions (100)
-sidebar_position: 9
+sidebar_position: 38
+sidebar_label: "Reference · System Design"
 ---
 
 # System Design Interview Questions (100)
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](09-system-design.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 ## Core System Design Concepts
 
@@ -2460,3 +2465,25 @@ Job spec:
 | Strangler Fig | Monolith migration | Parallel operation cost |
 | Two-Tower | Retrieval at scale | Approximate matching |
 
+## Summary in simple points
+
+- Start with workload, correctness, latency, availability, cost and authority requirements; estimate scale before drawing infrastructure.
+- Separate scaling, availability and reliability. SLOs and error budgets need explicit denominators and measurement windows.
+- Load balancing, discovery, gateways, service meshes and REST/GraphQL/gRPC have different routing and interface responsibilities.
+- Caching needs identity, freshness and invalidation across layers. Handle stampedes, hot keys and embedding/feature cache versioning.
+- Partitioning, sharding, consistent hashing and replication trade placement, rebalancing and failure behaviour; account for hot partitions.
+- Database indexes, connection pools, MVCC, WAL, OLTP/OLAP and storage layouts support different workloads and consistency needs.
+- Queues, streams, backpressure, schema evolution and data contracts need durable identity, ordering and recovery semantics.
+- Distributed locks, leader election, gossip, sagas, CQRS and event sourcing address distinct coordination/state problems.
+- Idempotency is an application contract; exactly-once claims apply to a stated boundary and do not automatically include arbitrary external effects.
+- Feature stores, real-time pipelines, lakes/warehouses and lineage must preserve historical availability and consistent feature definitions.
+- Recommendation, search, fraud, feed, notification and URL-shortening designs require task-specific access patterns and failure handling.
+- ML platforms need experiment tracking, tuning, workflow orchestration, model registries, CI/CD and explicit promotion gates.
+- Training/serving scale depends on hardware, batching, memory and communication. LLM serving adds tokenizer, KV-cache and generation constraints.
+- Model monitoring, drift, class imbalance, delayed labels, online learning and bandits require suitable feedback and statistical design.
+- Shadow, canary and blue-green deployments have different evidence and rollback requirements. Database migrations must preserve compatibility.
+- Circuit breakers, bulkheads, graceful failure, chaos tests and disaster recovery need concrete triggers and tested recovery paths.
+- Metrics, logs and distributed traces complement one another; preserve correlation while bounding sensitive data and cardinality.
+- Multi-tenancy, authentication, privacy, regional deployment and model documentation require controls across the full data lifecycle.
+- Kubernetes resources/operators, serverless, edge/CDN, managed databases and streaming vendors are implementation choices to evaluate against constraints.
+- Probabilistic data structures, zero-copy transfer and specialised analytics can help specific bottlenecks; validate approximation and memory assumptions.

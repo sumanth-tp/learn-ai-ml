@@ -1,9 +1,14 @@
 ---
 title: Statistics & Probability Interview Questions
-sidebar_position: 7
+sidebar_position: 35
+sidebar_label: "Reference · Statistics"
 ---
 
 # Statistics & Probability Interview Questions
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](02-ml-statistics.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 100 essential statistics interview questions for AI/ML roles with code examples.
 
@@ -1099,3 +1104,25 @@ Distribution F stochastically dominates G if F(x) &lt;= G(x) for all x (first-or
 | AIC | 2k - 2 log(L) |
 | KL Divergence | sum(P * log(P/Q)) |
 | Entropy | -sum(p * log2(p)) |
+
+## Summary in simple points
+
+- Define the population, sample, random variable and target estimand. Probability models assumptions; statistics learns from observations.
+- Expectations, variances, covariance and conditional laws describe different properties. Independence differs from conditional independence.
+- Bayes' rule combines priors with likelihoods; posterior probabilities depend on base rates and model assumptions.
+- Bernoulli, geometric, Poisson, exponential, beta, Dirichlet, gamma, normal and multivariate normal distributions fit different support and generative stories.
+- The law of large numbers concerns averages; the central limit theorem concerns a suitably scaled sampling distribution under conditions.
+- Sample moments, skewness, kurtosis, quantile plots and density estimates describe shape; diagnostic plots need interpretation rather than automatic verdicts.
+- Hypothesis tests use a null model, test statistic, significance level and decision rule. A p-value is not the probability the null is true.
+- Type I/II errors, power, effect size and one/two-sided choices should be planned before observing results. Multiple testing needs a suitable correction strategy.
+- Confidence intervals describe coverage of a procedure; Bayesian credible intervals condition on the model and prior. Point and interval estimates answer different questions.
+- Use t, chi-squared, F/ANOVA, rank-based, goodness-of-fit and independence tests only with their relevant assumptions and sampling design.
+- Bootstrap, permutation, jackknife and cross-validation resample for different purposes. Resample independent units and preserve the appropriate null or split structure.
+- OLS diagnostics include multicollinearity, heteroscedasticity and autocorrelation. Adjusted R-squared and information criteria penalise complexity in different ways.
+- Correlation, propensity matching, instrumental variables, difference-in-differences and discontinuity designs identify different quantities under explicit assumptions.
+- Time-series stationarity, ACF, ARIMA, cointegration and survival/censoring require specialised data assumptions; random row splits can be misleading.
+- MLE, MAP, moments, EM and MCMC are different estimation/computation methods. Importance sampling depends on support overlap and stable weights.
+- Entropy, KL divergence, mutual information and impurity measures quantify different distribution properties. Clarify whether Gini means tree impurity or inequality.
+- PCA, factor analysis and ICA seek different latent structure. Gaussian processes express covariance-based function priors.
+- Sufficiency, Cramer–Rao bounds, the delta method and bias–variance decomposition depend on mathematical regularity conditions.
+- Brier score and log-loss assess probability predictions. Odds ratios, z-scores, stochastic dominance and conditional expectation need their correct interpretation.

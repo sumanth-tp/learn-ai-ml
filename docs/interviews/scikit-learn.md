@@ -1,9 +1,14 @@
 ---
 title: Scikit-learn Interview Questions (100)
-sidebar_position: 10
+sidebar_position: 39
+sidebar_label: "Reference · Scikit Learn"
 ---
 
 # Scikit-learn Interview Questions (100)
+
+:::note Foundation reference
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](02-ml-statistics.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+:::
 
 ## Core Scikit-learn Concepts
 
@@ -1339,7 +1344,7 @@ hgbm = HistGradientBoostingClassifier(
 
 ```python
 
-from sklearn.metrics import (mean_squared_error, mean_absolute_error,
+from sklearn.metrics import (mean_squared_error, root_mean_squared_error, mean_absolute_error,
                               r2_score, mean_absolute_percentage_error,
                               explained_variance_score)
 import numpy as np
@@ -1348,7 +1353,7 @@ y_true = np.array([1., 2., 3., 4., 5.])
 y_pred = np.array([1.1, 2.2, 2.9, 4.1, 4.8])
 
 print(f"MSE:  {mean_squared_error(y_true, y_pred):.4f}")
-print(f"RMSE: {mean_squared_error(y_true, y_pred, squared=False):.4f}")
+print(f"RMSE: {root_mean_squared_error(y_true, y_pred):.4f}")
 print(f"MAE:  {mean_absolute_error(y_true, y_pred):.4f}")
 print(f"MAPE: {mean_absolute_percentage_error(y_true, y_pred):.4f}")
 print(f"R²:   {r2_score(y_true, y_pred):.4f}")   # 1=perfect, 0=mean, <0=worse than mean
@@ -2374,3 +2379,25 @@ Best practices:
 | Imputation | SimpleImputer | KNNImputer |
 | Anomaly | IsolationForest | LocalOutlierFactor |
 
+## Summary in simple points
+
+- The estimator API separates fit, transform, predict, scoring and parameters. Respect fitted-state and cloning conventions when composing models.
+- Pipelines keep learned preprocessing inside validation folds; ColumnTransformer handles columns with different type contracts.
+- Scale, impute, encode and select features using training data only. Treat unknown categories and missing values as expected serving cases.
+- Linear, regularised, neighbour, SVM, Naive Bayes, tree, ensemble and neural estimators need different preprocessing and tuning choices.
+- Bagging, voting, stacking and boosting combine predictions differently. Avoid leaking training predictions into a stacking meta-model.
+- Choose classification, regression, ranking and clustering metrics for the task. Interpret macro/micro averaging, PR thresholds and class imbalance explicitly.
+- Calibration changes probability reliability. Use appropriate calibration data and keep preprocessing and calibration with the deployed estimator.
+- Cross-validation strategies must respect time, groups and stratification. Nested validation separates hyperparameter selection from final estimation.
+- Grid, random and Bayesian search differ in cost and exploration; third-party search/AutoML tools are not all part of sklearn itself.
+- Learning and validation curves diagnose data/complexity effects. Permutation importance and other explanations need appropriate evaluation data.
+- PCA, kernel approximations, sparse decomposition, manifold methods and discriminant analysis preserve different structures; some named tools are external libraries.
+- K-means, MiniBatchKMeans, density, spectral, MeanShift and Birch clustering have different geometry, scale and parameter assumptions.
+- Custom transformers/estimators need get_params/set_params, fitted attributes, shape contracts and meaningful check_estimator validation.
+- FeatureUnion, FunctionTransformer, set_output and feature-name APIs help compose and inspect transformations; verify sparse/dense output expectations.
+- Text vectorisers, hashing, dictionaries and topic models have different vocabulary, collision and memory behaviour.
+- Multi-output, multi-label, one-versus-rest and one-versus-one strategies change target representation and training structure.
+- Sample/class weights, threshold choice and resampling address different objectives. Normalizer rescales rows, while feature scalers act by column.
+- Online partial_fit, warm_start and parallel n_jobs are distinct controls; watch oversubscription and class requirements.
+- Pipeline caching can save repeat work but needs valid cache identity. Persist only trusted artefacts with compatible dependency and feature-schema versions.
+- Use small runnable cases to check API migrations and preprocessing edge cases before evaluating real model quality.
