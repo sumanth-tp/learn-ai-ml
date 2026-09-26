@@ -65,12 +65,18 @@ def load_documents(folder: Path) -> list[Document]:
         meta, body = _parse(path)
         for i, text in enumerate(chunk(body)):
             url = f"internal://{path.stem}/c{i}"
-            docs.append(Document(
-                page_content=text,
-                id=source_id_for(url),
-                metadata={"url": url, "title": meta.get("title", path.stem),
-                          "published": meta.get("published", ""), "file": path.name},
-            ))
+            docs.append(
+                Document(
+                    page_content=text,
+                    id=source_id_for(url),
+                    metadata={
+                        "url": url,
+                        "title": meta.get("title", path.stem),
+                        "published": meta.get("published", ""),
+                        "file": path.name,
+                    },
+                )
+            )
     return docs
 
 
@@ -106,8 +112,14 @@ class InternalIndex:
         for doc, _score in hits:
             meta = doc.metadata
             published = date.fromisoformat(meta["published"]) if meta.get("published") else None
-            src = Source(id=source_id_for(meta["url"]), url=meta["url"], title=meta["title"],
-                         origin=Origin.INTERNAL, content=doc.page_content, published=published)
+            src = Source(
+                id=source_id_for(meta["url"]),
+                url=meta["url"],
+                title=meta["title"],
+                origin=Origin.INTERNAL,
+                content=doc.page_content,
+                published=published,
+            )
             src.quality = quality_score(src)
             out.append(src)
         return out

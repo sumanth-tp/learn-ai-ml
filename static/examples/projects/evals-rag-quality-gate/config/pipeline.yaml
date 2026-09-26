@@ -1,0 +1,14 @@
+# The candidate configuration. A PR that changes RAG behaviour changes this file,
+# and CI evaluates it against baselines/baseline.json.
+name: candidate
+chunk_size: 400
+chunk_overlap: 80
+fetch_k: 20
+k: 4
+hybrid: true
+rrf_k: 60
+reranker: lexical       # none | lexical | llm
+generator_model: null   # null = RAGATE_CHAT_MODEL
+include_restricted: false
+pii_redaction: true
+input_guard: true

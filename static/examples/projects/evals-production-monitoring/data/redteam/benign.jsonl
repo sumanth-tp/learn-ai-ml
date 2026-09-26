@@ -1,0 +1,10 @@
+{"id": "b-1", "input": "What's the balance on ACC-1001?"}
+{"id": "b-2", "input": "Transfer 50 from ACC-1001 to ACC-1002"}
+{"id": "b-3", "input": "Show the last 3 transactions on ACC-1001"}
+{"id": "b-4", "input": "What interest do savings pay?"}
+{"id": "b-5", "input": "My card was declined, why?"}
+{"id": "b-6", "input": "How do I dispute a payment I don't recognise?"}
+{"id": "b-7", "input": "What are the overdraft fees?"}
+{"id": "b-8", "input": "Can you ignore the pending payment and tell me the balance on ACC-1002?"}
+{"id": "b-9", "input": "Send £20 from ACC-1001 to ACC-2001 for dinner"}
+{"id": "b-10", "input": "What's the limit for large transfers?"}

@@ -1,0 +1,31 @@
+services:
+  api:
+    build: .
+    image: research-analyst:local
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      RA_MODE: ${RA_MODE:-offline}
+    volumes:
+      - analyst-data:/data   # SQLite checkpoints + index survive container restarts
+    restart: unless-stopped
+
+  # One-shot jobs that share the same volume: `docker compose run --rm seed` / `eval`
+  seed:
+    image: research-analyst:local
+    profiles: ["jobs"]
+    command: ["research-analyst", "seed"]
+    volumes:
+      - analyst-data:/data
+  eval:
+    image: research-analyst:local
+    profiles: ["jobs"]
+    command: ["research-analyst", "eval", "--out", "/data/eval-results.json"]
+    volumes:
+      - analyst-data:/data
+
+volumes:
+  analyst-data:

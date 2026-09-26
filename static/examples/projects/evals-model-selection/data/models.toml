@@ -1,0 +1,133 @@
+# Model catalogue, profiles and decision policy.
+# Reviewed like code: a new model release is a pull request that adds an entry
+# here and appends it to a profile's candidates. Prices are USD per million tokens;
+# check the provider's pricing page on the day you run, they change.
+
+[profiles.offline]
+candidates = ["fake:frontier-large", "fake:balanced-mini", "fake:verbose-mid", "fake:local-8b", "fake:leaky-tuned"]
+baseline = "fake:balanced-mini"
+judge = "fake:judge-large"
+meta_judge = "fake:meta-judge"
+
+[profiles.real]
+candidates = ["openai:gpt-4o-mini", "openai:gpt-4o", "anthropic:claude-haiku-4-5", "anthropic:claude-sonnet-5", "ollama:llama3.1:8b"]
+baseline = "openai:gpt-4o-mini"
+judge = "openai:gpt-4o"
+meta_judge = "anthropic:claude-sonnet-5"
+
+[decision]
+weights = { quality = 0.6, cost = 0.25, latency = 0.15 }
+quality_weights = { classification = 0.35, extraction = 0.35, reply = 0.30 }
+min_json_validity = 0.95
+max_p95_latency_ms = 4000
+max_cost_per_1k_tickets_usd = 5.0
+min_detectable_effect = 0.03
+
+# ---------------------------------------------------------------- real models
+[models."openai:gpt-4o-mini"]
+family = "openai"
+input_per_mtok = 0.15
+output_per_mtok = 0.60
+rpm = 500
+
+[models."openai:gpt-4o"]
+family = "openai"
+input_per_mtok = 2.50
+output_per_mtok = 10.00
+rpm = 500
+supports_logprobs = true
+
+[models."anthropic:claude-haiku-4-5"]
+family = "anthropic"
+input_per_mtok = 1.00
+output_per_mtok = 5.00
+rpm = 50
+
+[models."anthropic:claude-sonnet-5"]
+family = "anthropic"
+input_per_mtok = 2.00
+output_per_mtok = 10.00
+rpm = 50
+
+[models."ollama:llama3.1:8b"]
+family = "meta-llama"
+input_per_mtok = 0.0
+output_per_mtok = 0.0
+rpm = 120
+
+# ---------------------------------------------------------------- offline fakes
+# Each fake stands for a kind of model you will meet: strong and pricey, cheap
+# and good, verbose, small local, and one that has seen the public test split.
+
+[models."fake:frontier-large"]
+family = "frontier"
+input_per_mtok = 2.50
+output_per_mtok = 10.00
+rpm = 60000
+[models."fake:frontier-large".fake]
+skill = 0.95
+json_error_rate = 0.005
+latency_ms = 1500
+signature = "Warm regards,\nThe Support Team"
+
+[models."fake:balanced-mini"]
+family = "mini"
+input_per_mtok = 0.15
+output_per_mtok = 0.60
+rpm = 60000
+[models."fake:balanced-mini".fake]
+skill = 0.90
+json_error_rate = 0.01
+latency_ms = 700
+
+[models."fake:verbose-mid"]
+family = "mid"
+input_per_mtok = 1.00
+output_per_mtok = 5.00
+rpm = 60000
+[models."fake:verbose-mid".fake]
+skill = 0.88
+json_error_rate = 0.01
+verbosity = 2
+latency_ms = 1100
+
+[models."fake:local-8b"]
+family = "local"
+input_per_mtok = 0.0
+output_per_mtok = 0.0
+rpm = 60000
+[models."fake:local-8b".fake]
+skill = 0.72
+json_error_rate = 0.09
+latency_ms = 1300
+
+[models."fake:leaky-tuned"]
+family = "leaky"
+input_per_mtok = 0.30
+output_per_mtok = 1.20
+rpm = 60000
+[models."fake:leaky-tuned".fake]
+skill = 0.74
+json_error_rate = 0.02
+latency_ms = 800
+contaminated_on = ["test"]
+
+[models."fake:judge-large"]
+family = "frontier"
+input_per_mtok = 2.50
+output_per_mtok = 10.00
+rpm = 60000
+supports_logprobs = true
+[models."fake:judge-large".judge]
+noise = 0.35
+position_bias = 0.35
+verbosity_bias = 0.6
+self_bonus = 1.2
+
+[models."fake:meta-judge"]
+family = "meta"
+input_per_mtok = 2.00
+output_per_mtok = 10.00
+rpm = 60000
+[models."fake:meta-judge".judge]
+noise = 0.15

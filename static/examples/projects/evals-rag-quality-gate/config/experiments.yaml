@@ -1,0 +1,20 @@
+# Each variant overrides the base config. Run with `ragate experiments`.
+base: config/pipeline.yaml
+metrics: [recall_at_k, mrr, ndcg_at_k, faithfulness, correctness, refusal_rate,
+          pii_leak_rate, latency_p95_ms, cost_per_query_usd]
+select_by: correctness
+constraints:            # a variant must satisfy these to be recommended
+  faithfulness: {min: 0.85}
+  pii_leak_rate: {max: 0.0}
+  refusal_rate: {min: 0.80}
+variants:
+  - {name: baseline, overrides: {}}
+  - {name: chunk-200, overrides: {chunk_size: 200, chunk_overlap: 40}}
+  - {name: chunk-800, overrides: {chunk_size: 800, chunk_overlap: 120}}
+  - {name: k-2, overrides: {k: 2}}
+  - {name: k-8, overrides: {k: 8}}
+  - {name: no-rerank, overrides: {reranker: none}}
+  - {name: dense-only, overrides: {hybrid: false, reranker: none}}
+  - {name: model-4.1-mini, overrides: {generator_model: gpt-4.1-mini}}
+  - {name: model-4.1-nano, overrides: {generator_model: gpt-4.1-nano}}
+  - {name: unsafe-no-guards, overrides: {include_restricted: true, pii_redaction: false, input_guard: false}}

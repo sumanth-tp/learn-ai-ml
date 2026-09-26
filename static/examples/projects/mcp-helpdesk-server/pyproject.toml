@@ -20,6 +20,7 @@ dependencies = [
     "langchain-core>=1.6.5",
     "langchain-openai>=1.6.6",
     "uvicorn>=0.54.0",
+    "httpx>=0.28.1",
     "starlette>=1.7.0",
 ]
 
@@ -45,12 +46,12 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 addopts = "-ra"
-filterwarnings = ["ignore::DeprecationWarning"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore:The logging capability is deprecated"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = ["migrations/versions"]
+extend-exclude = ["src/helpdesk_mcp/migrations/versions"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "ASYNC", "S", "RUF", "SIM"]
@@ -58,4 +59,3 @@ ignore = ["S101", "RUF012"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S105", "S106", "S311"]
-"src/helpdesk_mcp/seed.py" = ["S311"]

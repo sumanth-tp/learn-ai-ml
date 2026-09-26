@@ -1,0 +1,116 @@
+# Policy-as-code for the gateway. Reviewed and tested like any other code.
+# Semantics: default deny; deny overrides allow; an allow grants only when
+# every argument constraint holds; constraints fail closed (a constrained
+# argument that is missing is a violation unless marked optional).
+version: 1
+
+rules:
+  # --- everyone ------------------------------------------------------------
+  - id: employees-read-public
+    effect: allow
+    description: Any employee may read public documents.
+    subjects: {groups: [employees]}
+    tools: [docs_read_doc]
+    constraints:
+      path: {prefix: /public/}
+    resources: ["docs://docs/index"]
+
+  - id: employees-browse-public
+    effect: allow
+    # prefix is required here: list_docs defaults to "/" upstream, which
+    # would list every path, so an omitted argument must not pass.
+    subjects: {groups: [employees]}
+    tools: [docs_list_docs, docs_search_docs]
+    constraints:
+      prefix: {prefix: /public}
+
+  # --- engineering ---------------------------------------------------------
+  - id: engineering-read
+    effect: allow
+    subjects: {groups: [engineering]}
+    tools: [docs_read_doc]
+    constraints:
+      path: {prefix: /engineering/}
+
+  - id: engineering-browse
+    effect: allow
+    subjects: {groups: [engineering]}
+    tools: [docs_list_docs, docs_search_docs]
+    constraints:
+      prefix: {prefix: /engineering}
+
+  - id: engineering-diagnostics
+    effect: allow
+    subjects: {groups: [engineering]}
+    tools: [docs_backend_status]
+
+  # --- support -------------------------------------------------------------
+  - id: support-tickets
+    effect: allow
+    subjects: {groups: [support]}
+    tools: [tickets_search_tickets, tickets_get_ticket, tickets_add_comment]
+    constraints:
+      comment: {max_length: 2000, optional: true}
+
+  - id: support-small-refunds
+    effect: allow
+    description: Support may refund up to 100 per call, in EUR or USD.
+    subjects: {groups: [support]}
+    tools: [payments_refund]
+    constraints:
+      amount: {min: 0.01, max: 100}
+      currency: {enum: [EUR, USD]}
+      idempotency_key: {pattern: "^[A-Za-z0-9-]{8,64}$"}
+
+  # --- finance -------------------------------------------------------------
+  - id: finance-balances
+    effect: allow
+    subjects: {groups: [finance]}
+    tools: [payments_get_balance]
+
+  - id: finance-refunds
+    effect: allow
+    subjects: {groups: [finance]}
+    tools: [payments_refund]
+    constraints:
+      amount: {min: 0.01, max: 5000}
+      currency: {enum: [EUR, USD]}
+      idempotency_key: {pattern: "^[A-Za-z0-9-]{8,64}$"}
+
+  - id: finance-read
+    effect: allow
+    subjects: {groups: [finance]}
+    tools: [docs_read_doc]
+    constraints:
+      path: {prefix: /finance/}
+
+  # --- named individuals ---------------------------------------------------
+  - id: cfo-large-refunds
+    effect: allow
+    description: The CFO may approve refunds up to 50,000.
+    subjects: {users: [cfo@example.com]}
+    tools: [payments_refund]
+    constraints:
+      amount: {min: 0.01, max: 50000}
+      currency: {enum: [EUR, USD]}
+      idempotency_key: {pattern: "^[A-Za-z0-9-]{8,64}$"}
+
+  # --- guard rails (deny overrides every allow above) ----------------------
+  - id: contractors-no-payments
+    effect: deny
+    description: Contractors never touch payments, whatever other group they are in.
+    subjects: {groups: [contractors]}
+    tools: ["payments_*"]
+
+  - id: nobody-deletes
+    effect: deny
+    subjects: {groups: ["*"]}
+    tools: ["*_delete*"]
+
+limits:
+  default: {per_minute: 60, per_day: 2000}
+  groups:
+    contractors: {per_minute: 20, per_day: 300}
+  tools:
+    payments_refund: {per_minute: 5, per_day: 50}
+    tickets_add_comment: {per_minute: 20, per_day: 500}

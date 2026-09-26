@@ -18,17 +18,51 @@ DIALECT = "duckdb"
 
 # Statement or clause types that write, change configuration or reach outside the DB.
 FORBIDDEN_NODES: tuple[type[exp.Expression], ...] = (
-    exp.Insert, exp.Update, exp.Delete, exp.Merge, exp.Create, exp.Drop, exp.Alter,
-    exp.TruncateTable, exp.Copy, exp.Attach, exp.Detach, exp.Pragma, exp.Set, exp.Command,
-    exp.Transaction, exp.Commit, exp.Rollback, exp.Use, exp.Into, exp.Grant, exp.Export,
+    exp.Insert,
+    exp.Update,
+    exp.Delete,
+    exp.Merge,
+    exp.Create,
+    exp.Drop,
+    exp.Alter,
+    exp.TruncateTable,
+    exp.Copy,
+    exp.Attach,
+    exp.Detach,
+    exp.Pragma,
+    exp.Set,
+    exp.Command,
+    exp.Transaction,
+    exp.Commit,
+    exp.Rollback,
+    exp.Use,
+    exp.Into,
+    exp.Grant,
+    exp.Export,
     exp.LoadData,
 )
 
 # Functions that read files, run nested SQL or expose settings and internals.
 FORBIDDEN_FUNCTION_PREFIXES: tuple[str, ...] = (
-    "read_", "glob", "query", "sniff_", "duckdb_", "pragma_", "current_setting",
-    "getvariable", "setvariable", "install", "load", "parquet_", "iceberg_", "delta_",
-    "sqlite_", "postgres_", "mysql_", "http", "system",
+    "read_",
+    "glob",
+    "query",
+    "sniff_",
+    "duckdb_",
+    "pragma_",
+    "current_setting",
+    "getvariable",
+    "setvariable",
+    "install",
+    "load",
+    "parquet_",
+    "iceberg_",
+    "delta_",
+    "sqlite_",
+    "postgres_",
+    "mysql_",
+    "http",
+    "system",
 )
 
 
@@ -76,9 +110,8 @@ class SQLValidator:
             if name in cte_names and not table.db:
                 continue
             if name not in self.allowed:
-                return _fail(
-                    f"table {name!r} is not allowed; allowed tables: {', '.join(sorted(self.allowed))}"
-                )
+                allowed = ", ".join(sorted(self.allowed))
+                return _fail(f"table {name!r} is not allowed; allowed tables: {allowed}")
             tables.add(name)
         if not tables:
             return _fail("the query must read from at least one allowed table")

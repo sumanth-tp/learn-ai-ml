@@ -1,0 +1,76 @@
+# Alert rules, evaluated every hour over trailing windows.
+# severity "page" wakes someone up; "ticket" goes to the team queue.
+
+[[threshold]]
+name = "required_tool_rate_low"      # tier-0 heuristic, runs on 100% of traffic
+metric = "required_tool_rate"
+op = "<"
+threshold = 0.95
+window_hours = 6
+min_samples = 20
+severity = "page"
+
+[[threshold]]
+name = "groundedness_low"            # judge metric, sampled traffic only
+metric = "groundedness_pass_rate"
+op = "<"
+threshold = 0.85
+window_hours = 24
+min_samples = 15
+severity = "page"
+
+[[threshold]]
+name = "thumbs_down_high"
+metric = "thumbs_down_rate"
+op = ">"
+threshold = 0.06
+window_hours = 24
+min_samples = 60
+severity = "ticket"
+
+[[threshold]]
+name = "p95_latency_high"
+metric = "p95_latency_ms"
+op = ">"
+threshold = 4000
+window_hours = 6
+min_samples = 20
+severity = "ticket"
+
+# Quality SLO: 90% of requests are good events (no failed quality check, no thumbs-down).
+[[burn_rate]]
+name = "quality_slo_fast_burn"
+slo_target = 0.90
+long_window_hours = 6
+short_window_hours = 1
+burn_threshold = 2.5
+min_samples = 5
+severity = "page"
+
+[[burn_rate]]
+name = "quality_slo_slow_burn"
+slo_target = 0.90
+long_window_hours = 24
+short_window_hours = 6
+burn_threshold = 1.5
+min_samples = 20
+severity = "ticket"
+
+[[drift]]
+name = "intent_mix_drift"
+kind = "intent"
+baseline_hours = 72
+window_hours = 24
+threshold = 0.2
+min_samples = 50
+severity = "ticket"
+
+[[drift]]
+name = "groundedness_score_drift"
+kind = "score"
+evaluator = "judge_groundedness"
+baseline_hours = 72
+window_hours = 24
+threshold = 0.2
+min_samples = 15
+severity = "ticket"

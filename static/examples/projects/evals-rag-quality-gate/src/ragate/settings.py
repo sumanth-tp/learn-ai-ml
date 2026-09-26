@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     data_dir: Path = Path("data")
     state_dir: Path = Path(".ragate")
     config_dir: Path = Path("config")
+    baselines_dir: Path = Path("baselines")
+    reports_dir: Path = Path("reports")
 
     log_level: str = "INFO"
     log_json: bool = False

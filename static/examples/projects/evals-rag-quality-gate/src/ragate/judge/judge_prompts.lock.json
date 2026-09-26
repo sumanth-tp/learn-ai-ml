@@ -1,0 +1,22 @@
+{
+  "answer_relevancy": {
+    "version": "1.0.0",
+    "sha": "c96992ced06d"
+  },
+  "context_relevance": {
+    "version": "1.0.0",
+    "sha": "1784a3ec01d8"
+  },
+  "contextual_recall": {
+    "version": "1.0.0",
+    "sha": "36352aa07a94"
+  },
+  "correctness_geval": {
+    "version": "1.0.0",
+    "sha": "16cf65c4dd76"
+  },
+  "faithfulness": {
+    "version": "1.0.0",
+    "sha": "fdff00021043"
+  }
+}

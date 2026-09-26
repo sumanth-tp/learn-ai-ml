@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: support
+      POSTGRES_PASSWORD: support
+      POSTGRES_DB: support
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U support -d support"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: dev
+      FAKE_LLM: ${FAKE_LLM:-true}
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # Orders, refunds, threads and approvals (SQLAlchemy, psycopg 3 driver)
+      DATABASE_URL: postgresql+psycopg://support:support@db:5432/support
+      # Checkpoints (short-term memory) and the Store (long-term memory)
+      CHECKPOINT_BACKEND: postgres
+      POSTGRES_URL: postgresql://support:support@db:5432/support
+      REFUND_GATEWAY: stub
+      REFUND_APPROVAL_THRESHOLD: "100"
+      API_TOKEN: ${API_TOKEN:-dev-customer-token}
+      REVIEWER_TOKEN: ${REVIEWER_TOKEN:-dev-reviewer-token}
+      LOG_JSON: "true"
+      LANGSMITH_TRACING: ${LANGSMITH_TRACING:-false}
+      LANGSMITH_API_KEY: ${LANGSMITH_API_KEY:-}
+      LANGSMITH_PROJECT: ${LANGSMITH_PROJECT:-support-agent}
+
+volumes:
+  pgdata:

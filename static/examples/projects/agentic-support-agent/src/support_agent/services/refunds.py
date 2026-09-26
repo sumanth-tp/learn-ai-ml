@@ -144,7 +144,9 @@ class RefundService:
         # Network call happens outside any DB transaction.
         try:
             result = self._gateway.refund(
-                idempotency_key=idempotency_key, order_id=order_id, amount=amount,
+                idempotency_key=idempotency_key,
+                order_id=order_id,
+                amount=amount,
                 currency=currency,
             )
         except PermanentGatewayError as exc:
@@ -157,14 +159,25 @@ class RefundService:
 
         self._complete(refund_id, order_id, amount, result.provider_ref)
         log.info("refund issued", extra={"order_id": order_id, "amount": str(amount)})
-        return {"refund_id": refund_id, "order_id": order_id, "amount": str(amount),
-                "currency": currency, "status": "succeeded",
-                "provider_ref": result.provider_ref, "replayed": False}
+        return {
+            "refund_id": refund_id,
+            "order_id": order_id,
+            "amount": str(amount),
+            "currency": currency,
+            "status": "succeeded",
+            "provider_ref": result.provider_ref,
+            "replayed": False,
+        }
 
     # -- internals ----------------------------------------------------------
 
     def _claim(
-        self, user_id: str, order_id: str, amount: Decimal, reason: str, key: str,
+        self,
+        user_id: str,
+        order_id: str,
+        amount: Decimal,
+        reason: str,
+        key: str,
         approved_by: str | None,
     ) -> tuple[int, str, dict[str, Any] | None]:
         """Find or create the ledger row for this key.
@@ -179,12 +192,19 @@ class RefundService:
             existing = s.scalar(select(Refund).where(Refund.idempotency_key == key))
             if existing is not None:
                 if existing.status == "succeeded":
-                    return existing.id, order.currency, {
-                        "refund_id": existing.id, "order_id": order_id,
-                        "amount": str(existing.amount), "currency": order.currency,
-                        "status": "succeeded", "provider_ref": existing.provider_ref,
-                        "replayed": True,
-                    }
+                    return (
+                        existing.id,
+                        order.currency,
+                        {
+                            "refund_id": existing.id,
+                            "order_id": order_id,
+                            "amount": str(existing.amount),
+                            "currency": order.currency,
+                            "status": "succeeded",
+                            "provider_ref": existing.provider_ref,
+                            "replayed": True,
+                        },
+                    )
                 return existing.id, order.currency, None  # pending/failed: finish it
             if amount <= 0:
                 raise NotAllowedError("Refund amount must be positive.")
@@ -198,8 +218,14 @@ class RefundService:
                 raise NotAllowedError(
                     f"Only {available:.2f} {order.currency} can still be refunded on {order_id}."
                 )
-            row = Refund(idempotency_key=key, order_id=order_id, amount=amount,
-                         reason=reason[:500], status="pending", approved_by=approved_by)
+            row = Refund(
+                idempotency_key=key,
+                order_id=order_id,
+                amount=amount,
+                reason=reason[:500],
+                status="pending",
+                approved_by=approved_by,
+            )
             s.add(row)
             try:
                 s.flush()
@@ -237,9 +263,9 @@ class RefundService:
         with session_scope(self._factory) as s:
             return int(
                 s.scalar(
-                    select(func.count()).select_from(Refund).where(
-                        Refund.order_id == order_id, Refund.status == "succeeded"
-                    )
+                    select(func.count())
+                    .select_from(Refund)
+                    .where(Refund.order_id == order_id, Refund.status == "succeeded")
                 )
                 or 0
             )

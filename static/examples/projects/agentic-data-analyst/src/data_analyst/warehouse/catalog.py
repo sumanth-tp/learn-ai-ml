@@ -25,11 +25,17 @@ class Table(BaseModel):
     name: str
     description: str
     columns: list[Column]
+    glossary: list[str] = []
 
     def document(self) -> str:
-        """Text that gets embedded for schema retrieval."""
+        """Text that gets embedded for schema retrieval.
+
+        The glossary holds the business words people actually use ("revenue", "units
+        sold") so a question finds the table even when no column is named that way.
+        """
         cols = "; ".join(f"{c.name}: {c.description}" for c in self.columns)
-        return f"Table {self.name}. {self.description} Columns: {cols}"
+        terms = f" Business terms: {', '.join(self.glossary)}." if self.glossary else ""
+        return f"Table {self.name}. {self.description}{terms} Columns: {cols}"
 
 
 class Relationship(BaseModel):
@@ -56,6 +62,7 @@ TABLES: list[Table] = [
             _c("segment", "VARCHAR", "customer segment: consumer, smb or enterprise"),
             _c("signup_date", "DATE", "date the customer signed up"),
         ],
+        glossary=["customer", "customers", "buyer", "account", "segment", "country"],
     ),
     Table(
         name="products",
@@ -68,6 +75,7 @@ TABLES: list[Table] = [
             _c("list_price", "DECIMAL(10,2)", "current list price in USD"),
             _c("unit_cost", "DECIMAL(10,2)", "cost to us per unit in USD, for margin"),
         ],
+        glossary=["product", "products", "category", "catalogue", "price", "margin"],
     ),
     Table(
         name="orders",
@@ -82,6 +90,7 @@ TABLES: list[Table] = [
             _c("status", "VARCHAR", "completed, cancelled, refunded or pending"),
             _c("channel", "VARCHAR", "sales channel: web, mobile or store"),
         ],
+        glossary=["order", "orders", "sales", "revenue", "year", "month", "channel", "cancelled"],
     ),
     Table(
         name="order_items",
@@ -97,6 +106,15 @@ TABLES: list[Table] = [
             _c("unit_price", "DECIMAL(10,2)", "price per unit actually charged, in USD"),
             _c("discount_pct", "DECIMAL(5,2)", "discount percentage applied, 0 to 30"),
         ],
+        glossary=[
+            "revenue",
+            "sales",
+            "units sold",
+            "quantity",
+            "order value",
+            "basket",
+            "discount",
+        ],
     ),
     Table(
         name="suppliers",
@@ -107,6 +125,7 @@ TABLES: list[Table] = [
             _c("country", "VARCHAR", "supplier country"),
             _c("contact_email", "VARCHAR", "supplier contact email (masked)", "email"),
         ],
+        glossary=["supplier", "suppliers", "vendor"],
     ),
     Table(
         name="inventory_snapshots",
@@ -116,6 +135,7 @@ TABLES: list[Table] = [
             _c("product_id", "INTEGER", "product counted"),
             _c("units_on_hand", "INTEGER", "units in the warehouse at that date"),
         ],
+        glossary=["inventory", "stock", "on hand"],
     ),
     Table(
         name="marketing_campaigns",
@@ -128,6 +148,7 @@ TABLES: list[Table] = [
             _c("end_date", "DATE", "campaign end date"),
             _c("budget", "DECIMAL(12,2)", "campaign budget in USD"),
         ],
+        glossary=["marketing", "campaign", "budget", "spend"],
     ),
     Table(
         name="support_tickets",
@@ -140,6 +161,7 @@ TABLES: list[Table] = [
             _c("category", "VARCHAR", "billing, delivery, product or account"),
             _c("priority", "VARCHAR", "low, medium or high"),
         ],
+        glossary=["support", "ticket", "resolution time", "priority", "complaint"],
     ),
     Table(
         name="web_sessions",
@@ -152,18 +174,54 @@ TABLES: list[Table] = [
             _c("pages_viewed", "INTEGER", "number of pages viewed in the session"),
             _c("converted", "BOOLEAN", "true when the session ended in an order"),
         ],
+        glossary=["web", "session", "visit", "conversion", "converted", "device", "traffic"],
     ),
 ]
 
 RELATIONSHIPS: list[Relationship] = [
-    Relationship(left="orders", left_column="customer_id", right="customers", right_column="customer_id"),
-    Relationship(left="order_items", left_column="order_id", right="orders", right_column="order_id"),
-    Relationship(left="order_items", left_column="product_id", right="products", right_column="product_id"),
-    Relationship(left="products", left_column="supplier_id", right="suppliers", right_column="supplier_id"),
-    Relationship(left="inventory_snapshots", left_column="product_id", right="products", right_column="product_id"),
-    Relationship(left="support_tickets", left_column="customer_id", right="customers", right_column="customer_id"),
-    Relationship(left="web_sessions", left_column="customer_id", right="customers", right_column="customer_id"),
+    Relationship(
+        left="orders", left_column="customer_id", right="customers", right_column="customer_id"
+    ),
+    Relationship(
+        left="order_items", left_column="order_id", right="orders", right_column="order_id"
+    ),
+    Relationship(
+        left="order_items", left_column="product_id", right="products", right_column="product_id"
+    ),
+    Relationship(
+        left="products", left_column="supplier_id", right="suppliers", right_column="supplier_id"
+    ),
+    Relationship(
+        left="inventory_snapshots",
+        left_column="product_id",
+        right="products",
+        right_column="product_id",
+    ),
+    Relationship(
+        left="support_tickets",
+        left_column="customer_id",
+        right="customers",
+        right_column="customer_id",
+    ),
+    Relationship(
+        left="web_sessions",
+        left_column="customer_id",
+        right="customers",
+        right_column="customer_id",
+    ),
 ]
+
+# Governed metrics: a business term implies the tables its definition needs. This is
+# what a semantic layer (dbt metrics, Cube, LookML) gives you, in miniature.
+METRICS: dict[str, list[str]] = {
+    "revenue": ["order_items", "orders"],
+    "sales": ["order_items", "orders"],
+    "order value": ["order_items", "orders"],
+    "units sold": ["order_items", "products"],
+    "margin": ["order_items", "products", "orders"],
+    "conversion": ["web_sessions"],
+    "resolution time": ["support_tickets"],
+}
 
 TABLES_BY_NAME: dict[str, Table] = {t.name: t for t in TABLES}
 ALLOWED_TABLES: frozenset[str] = frozenset(TABLES_BY_NAME)

@@ -13,6 +13,7 @@ import hashlib
 import json
 import math
 import re
+from itertools import pairwise
 from typing import Any
 
 from langchain_core.callbacks import CallbackManagerForLLMRun
@@ -22,16 +23,16 @@ from langchain_core.messages import AIMessage, BaseMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
 from pydantic import Field
 
-from ragate.text import content_tokens, coverage, sentences
+from ragate.text import content_tokens, sentences
 
 REFUSAL_TEXT = "I can't find that in the Fernhill handbook."
 
 # How the fake behaves when it stands in for a given model name. Real models differ
 # in verbosity and in how readily they refuse; the fake mimics that with two knobs.
 FAKE_PROFILES: dict[str, dict[str, float]] = {
-    "gpt-4o-mini": {"max_sentences": 2, "refusal_threshold": 0.5},
+    "gpt-4o-mini": {"max_sentences": 2, "refusal_threshold": 0.4},
     "gpt-4.1-mini": {"max_sentences": 3, "refusal_threshold": 0.3},
-    "gpt-4.1-nano": {"max_sentences": 1, "refusal_threshold": 0.6},
+    "gpt-4.1-nano": {"max_sentences": 1, "refusal_threshold": 0.5},
 }
 
 
@@ -51,7 +52,7 @@ class HashingEmbeddings(Embeddings):
     def _embed(self, text: str) -> list[float]:
         vec = [0.0] * self.dim
         toks = content_tokens(text)
-        feats = toks + [f"{a}_{b}" for a, b in zip(toks, toks[1:], strict=False)]
+        feats = toks + [f"{a}_{b}" for a, b in pairwise(toks)]
         for feat in feats:
             digest = hashlib.blake2b(feat.encode(), digest_size=8).digest()
             idx = int.from_bytes(digest[:4], "little") % self.dim
@@ -112,21 +113,32 @@ class ExtractiveChatModel(BaseChatModel):
             if match:
                 for sent in sentences(match["text"]):
                     candidates.append((match["doc"], sent))
-        if not question or not candidates:
+        need = set(content_tokens(question))
+        if not need or not candidates:
             return REFUSAL_TEXT
-        scored = sorted(
-            ((coverage(question, sent), i, doc, sent) for i, (doc, sent) in enumerate(candidates)),
-            key=lambda row: (-row[0], row[1]),
-        )
-        best = scored[0][0]
-        if best < self.refusal_threshold:
-            return REFUSAL_TEXT
+        # IDF over the context: a question word that is rare (or absent) matters more.
+        # "share option scheme" is unanswerable because "share" and "option" never
+        # appear, even though "company" and "scheme" do.
+        sent_tokens = [set(content_tokens(sent)) for _, sent in candidates]
+        n = len(candidates)
+        weight = {t: math.log(1 + n / (1 + sum(t in st for st in sent_tokens))) for t in need}
+        total = sum(weight.values())
+        # Greedy weighted set cover: each step takes the sentence that covers the most
+        # still-uncovered weight. That is how a model stitches a multi-hop answer.
+        covered: set[str] = set()
         picked: list[tuple[str, str]] = []
-        for score, _, doc, sent in scored:
-            if len(picked) >= self.max_sentences:
+        while len(picked) < self.max_sentences:
+            best_gain, best = 0.0, None
+            for (doc, sent), toks in zip(candidates, sent_tokens, strict=True):
+                gain = sum(weight[t] for t in (need - covered) & toks)
+                if gain > best_gain and (doc, sent) not in picked:
+                    best_gain, best = gain, (doc, sent)
+            if best is None or best_gain / total < 0.15:
                 break
-            if score >= max(0.2, best * 0.5) and (doc, sent) not in picked:
-                picked.append((doc, sent))
+            picked.append(best)
+            covered |= need & set(content_tokens(best[1]))
+        if sum(weight[t] for t in covered) / total < self.refusal_threshold:
+            return REFUSAL_TEXT
         return " ".join(f"{sent} [{doc}]" for doc, sent in picked)
 
     def _generate(

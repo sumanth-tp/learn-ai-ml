@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Analyst Agent</title>
+<style>
+  :root { --bg:#f6f5f1; --fg:#222; --muted:#6b6b6b; --card:#fff; --line:#ddd; --accent:#2f6f5e; --warn:#a36a00; --err:#a33; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1c1d1f; --fg:#e6e6e6; --muted:#9a9a9a; --card:#26282b; --line:#3a3c40; --accent:#6fbfa5; --warn:#e0a43a; --err:#e07070; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, sans-serif; }
+  main { max-width:960px; margin:0 auto; padding:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px 16px; margin:12px 0; }
+  form { display:flex; gap:8px; flex-wrap:wrap; }
+  input[type=text] { flex:1 1 320px; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); }
+  button { padding:8px 14px; border:0; border-radius:6px; background:var(--accent); color:#fff; cursor:pointer; }
+  button.secondary { background:var(--muted); }
+  #log { font:12px/1.4 ui-monospace, monospace; color:var(--muted); max-height:180px; overflow:auto; white-space:pre-wrap; }
+  pre { white-space:pre-wrap; word-break:break-word; font-size:13px; }
+  table { border-collapse:collapse; width:100%; font-size:13px; display:block; overflow-x:auto; }
+  th, td { border-bottom:1px solid var(--line); padding:4px 8px; text-align:left; }
+  img { max-width:100%; }
+  .status-answered { color:var(--accent); } .status-rejected { color:var(--warn); } .status-failed { color:var(--err); }
+  .hidden { display:none; }
+  small { color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Data analyst agent</h1>
+  <p><small>Ask about orders, customers, products, suppliers, stock, campaigns, tickets and web sessions. Follow-ups remember the thread.</small></p>
+  <div class="card">
+    <form id="ask">
+      <input id="q" type="text" placeholder="e.g. Total revenue by year" required minlength="3">
+      <button>Ask</button>
+      <button type="button" class="secondary" id="new">New thread</button>
+    </form>
+    <p><small>Thread <code id="thread"></code> · API key <input id="key" type="password" size="12" placeholder="optional"></small></p>
+  </div>
+  <div class="card hidden" id="approval">
+    <strong>Approval required</strong>
+    <pre id="approval-body"></pre>
+    <button id="approve">Approve</button> <button class="secondary" id="reject">Reject</button>
+  </div>
+  <div class="card"><div id="log"></div></div>
+  <div class="card hidden" id="final">
+    <h3 id="status"></h3>
+    <p id="answer"></p>
+    <pre id="sql"></pre>
+    <div id="table"></div>
+    <img id="chart" alt="chart of the result">
+    <p><small id="meta"></small></p>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let thread = Math.random().toString(36).slice(2, 10);
+$("thread").textContent = thread;
+$("new").onclick = () => { thread = Math.random().toString(36).slice(2, 10); $("thread").textContent = thread; $("log").textContent = ""; };
+
+function log(line) { $("log").textContent += line + "\n"; $("log").scrollTop = 1e9; }
+
+function renderFinal(d) {
+  $("final").classList.remove("hidden");
+  $("status").textContent = d.status;
+  $("status").className = "status-" + d.status;
+  $("answer").textContent = d.answer || "";
+  $("sql").textContent = d.sql ? `${d.sql}   -- source: ${d.sql_source}` : "";
+  const t = $("table"); t.textContent = "";
+  if (d.result) {
+    const table = document.createElement("table");
+    const head = table.insertRow();
+    d.result.columns.forEach((c) => { const th = document.createElement("th"); th.textContent = c; head.appendChild(th); });
+    d.result.rows.slice(0, 50).forEach((r) => { const tr = table.insertRow(); r.forEach((v) => { tr.insertCell().textContent = v; }); });
+    t.appendChild(table);
+  }
+  const img = $("chart");
+  if (d.chart_png_base64) { img.src = "data:image/png;base64," + d.chart_png_base64; img.classList.remove("hidden"); }
+  else { img.classList.add("hidden"); }
+  $("meta").textContent = `retries ${d.retries} · llm calls ${d.llm_calls} · $${d.cost_usd.toFixed(5)} · ${d.elapsed_ms} ms`;
+}
+
+async function stream(url, body) {
+  const headers = { "Content-Type": "application/json" };
+  if ($("key").value) headers["X-API-Key"] = $("key").value;
+  const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+  if (!res.ok) { log(`HTTP ${res.status}: ${await res.text()}`); return; }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = buffer.indexOf("\n\n")) >= 0) {
+      const raw = buffer.slice(0, idx); buffer = buffer.slice(idx + 2);
+      const type = (raw.match(/^event: (.*)$/m) || [])[1];
+      const data = JSON.parse((raw.match(/^data: (.*)$/m) || [])[1] || "{}");
+      if (type === "progress") log(`[${data.node}] ${data.message}`);
+      else if (type === "node") log(`node ${data.node} done`);
+      else if (type === "approval_required") {
+        $("approval").classList.remove("hidden");
+        $("approval-body").textContent = `${data.sql}\n\nestimated rows ${data.estimate.estimated_rows.toLocaleString()}, largest intermediate ${data.estimate.max_intermediate_rows.toLocaleString()}`;
+      } else if (type === "final") renderFinal(data);
+      else if (type === "error") log(`error: ${data.error}`);
+    }
+  }
+}
+
+$("ask").onsubmit = (e) => { e.preventDefault(); $("final").classList.add("hidden"); stream(`/v1/threads/${thread}/ask`, { question: $("q").value }); };
+const decide = (approved) => { $("approval").classList.add("hidden"); stream(`/v1/threads/${thread}/approval`, { approved, reviewer: "web-ui" }); };
+$("approve").onclick = () => decide(true);
+$("reject").onclick = () => decide(false);
+</script>
+</body>
+</html>

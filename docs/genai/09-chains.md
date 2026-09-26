@@ -58,6 +58,29 @@ And that is not even the best thing. That was just one way to create a pipeline 
 
 Very complex structures are possible. Today we build all three: **sequential**, **parallel** and **conditional**. Learn these three and you can build any complexity quickly.
 
+## Common chain types
+
+The following table captures the chain types in the supplied reference image.
+
+| Chain name | Description |
+| --- | --- |
+| `LLMChain` | Calls an LLM with a prompt template. For example, take a topic and generate an explanation. |
+| `SequentialChain` | Runs multiple chains in a defined sequence, passing named outputs into later steps. Supports multiple input and output variables. |
+| `SimpleSequentialChain` | A simpler sequential pipeline where each step has one input and one output. For example, topic → outline → explanation. |
+| `ConversationalRetrievalChain` | Combines conversation history with document retrieval to answer follow-up questions using relevant context. |
+| `RetrievalQA` | Retrieves relevant documents and passes their content to an LLM to answer a question. |
+| `RouterChain` | Selects a destination chain based on the input, such as routing a question to billing or technical support. |
+| `MultiPromptChain` | Routes an input to one of several prompt-specific chains, such as a maths tutor or a writing assistant. |
+| HyDE chain — Hypothetical Document Embeddings | Generates a hypothetical answer or document, embeds it, and uses that embedding to retrieve real documents. The generated text is a retrieval aid, not verified evidence. |
+| Agent executor chain | Runs an agent's decision-and-tool loop, executing selected tools and returning their results to the agent until it finishes. |
+| `SQLDatabaseChain` | Converts a natural-language question into SQL, queries a database, and uses the results to produce an answer. |
+
+:::note Names and versions
+The image uses `HydeChain` and `AgentExecutorChain` as labels. The corresponding LangChain API names are [`HypotheticalDocumentEmbedder`](https://reference.langchain.com/python/langchain-classic/chains/hyde/base/HypotheticalDocumentEmbedder) and [`AgentExecutor`](https://reference.langchain.com/python/langchain-classic/agents/agent/AgentExecutor).
+
+Several names in this table belong to older LangChain APIs. For example, `LLMChain` is deprecated in favour of runnable composition such as `prompt | model | parser`. The examples below teach that LCEL approach. See the [LangChain classic API reference](https://reference.langchain.com/python/langchain-classic/agents/agent).
+:::
+
 ## A very simple chain
 
 Three steps: ask the user for a prompt, send it to an LLM, display the response properly.

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support agent console</title>
+<style>
+  :root { --bg:#f6f5f1; --panel:#fff; --ink:#1f2328; --muted:#6b6f76; --accent:#2f6f5e; --line:#dedbd2; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#181a1b; --panel:#222527; --ink:#e7e5e0; --muted:#9a9ea4; --accent:#6fbfa8; --line:#34383b; } }
+  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+  main { display:grid; grid-template-columns:2fr 1fr; gap:16px; padding:16px; max-width:1100px; margin:auto; }
+  @media (max-width:800px) { main { grid-template-columns:1fr; } }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; }
+  h2 { margin:0 0 8px; font-size:16px; }
+  #log { height:420px; overflow-y:auto; border:1px solid var(--line); border-radius:8px; padding:8px; }
+  .m { margin:6px 0; white-space:pre-wrap; } .user { color:var(--accent); } .sys { color:var(--muted); font-size:13px; }
+  input, select, button, textarea { font:inherit; padding:6px 8px; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+  button { background:var(--accent); color:#fff; border:none; cursor:pointer; }
+  form { display:flex; gap:8px; margin-top:8px; } form input { flex:1; }
+  .card { border:1px solid var(--line); border-radius:8px; padding:8px; margin:8px 0; font-size:14px; }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h2>Customer chat</h2>
+    <label>Customer <select id="user"><option>cust_001</option><option>cust_002</option><option>cust_003</option></select></label>
+    <label>API token <input id="token" value="dev-customer-token" size="18"></label>
+    <button type="button" id="newthread">New conversation</button>
+    <div class="sys" id="thread">thread: new</div>
+    <div id="log"></div>
+    <form id="chat"><input id="msg" placeholder="Where is my order ORD-1003?" autocomplete="off"><button>Send</button></form>
+  </section>
+  <section>
+    <h2>Refund review queue</h2>
+    <label>Reviewer token <input id="rtoken" value="dev-reviewer-token" size="18"></label>
+    <button type="button" id="refresh">Refresh</button>
+    <div id="queue"></div>
+  </section>
+</main>
+<script>
+let threadId = null;
+const $ = (id) => document.getElementById(id);
+function line(text, cls) { const d = document.createElement('div'); d.className = 'm ' + (cls || ''); d.textContent = text; $('log').appendChild(d); $('log').scrollTop = 1e9; return d; }
+
+async function readSSE(resp, onEvent) {
+  const reader = resp.body.getReader(); const dec = new TextDecoder(); let buf = '';
+  for (;;) {
+    const { value, done } = await reader.read(); if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i; while ((i = buf.indexOf('\n\n')) >= 0) {
+      const raw = buf.slice(0, i); buf = buf.slice(i + 2);
+      const ev = /event: (.*)/.exec(raw)?.[1]; const data = /data: (.*)/.exec(raw)?.[1];
+      if (ev) onEvent(ev, JSON.parse(data || '{}'));
+    }
+  }
+}
+
+$('chat').addEventListener('submit', async (e) => {
+  e.preventDefault(); const text = $('msg').value.trim(); if (!text) return;
+  $('msg').value = ''; line('You: ' + text, 'user'); const out = line('Assistant: ');
+  const resp = await fetch('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + $('token').value, 'X-User-Id': $('user').value },
+    body: JSON.stringify({ message: text, thread_id: threadId }) });
+  if (!resp.ok) { out.textContent = 'Error ' + resp.status + ': ' + await resp.text(); return; }
+  let streamed = false;
+  await readSSE(resp, (ev, data) => {
+    if (ev === 'metadata') { threadId = data.thread_id; $('thread').textContent = 'thread: ' + threadId; }
+    if (ev === 'token') { streamed = true; out.textContent += data.text; }
+    if (ev === 'update') line('node: ' + data.node, 'sys');
+    if (ev === 'message') { out.textContent += data.content; streamed = true; }
+    if (ev === 'done' && !streamed) out.textContent += data.answer;
+    if (ev === 'error') out.textContent += ' [error: ' + data.detail + ']';
+  });
+});
+$('newthread').onclick = () => { threadId = null; $('thread').textContent = 'thread: new'; $('log').innerHTML = ''; };
+
+async function refresh() {
+  const resp = await fetch('/v1/approvals', { headers: { 'Authorization': 'Bearer ' + $('rtoken').value, 'X-Reviewer': 'console-reviewer' } });
+  const q = $('queue'); q.innerHTML = '';
+  if (!resp.ok) { q.textContent = 'Error ' + resp.status; return; }
+  const items = await resp.json(); if (!items.length) q.textContent = 'Nothing waiting.';
+  for (const it of items) {
+    const c = document.createElement('div'); c.className = 'card';
+    c.textContent = `${it.payload.order_id}: ${it.payload.amount} GBP for ${it.payload.user_id}. Reason: ${it.payload.reason}`;
+    for (const approved of [true, false]) {
+      const b = document.createElement('button'); b.textContent = approved ? 'Approve' : 'Reject'; b.style.marginLeft = '8px';
+      b.onclick = async () => {
+        const r = await fetch(`/v1/threads/${it.thread_id}/resume`, { method: 'POST', headers: { 'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + $('rtoken').value, 'X-Reviewer': 'console-reviewer' },
+          body: JSON.stringify({ approved, interrupt_id: it.interrupt_id, note: approved ? '' : 'Outside policy' }) });
+        if (r.ok) await readSSE(r, (ev, data) => { if (ev === 'done' && it.thread_id === threadId) line('Assistant: ' + data.answer); });
+        else alert('Resume failed: ' + r.status);
+        refresh();
+      };
+      c.appendChild(b);
+    }
+    q.appendChild(c);
+  }
+}
+$('refresh').onclick = refresh; refresh();
+</script>
+</body>
+</html>

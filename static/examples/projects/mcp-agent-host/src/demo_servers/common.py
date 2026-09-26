@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any
+from typing import Any, Literal
 
 import uvicorn
 from mcp.server.fastmcp import FastMCP
@@ -11,6 +11,12 @@ from mcp.server.lowlevel.server import NotificationOptions
 from mcp.server.transport_security import TransportSecuritySettings
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+
+
+def log_level() -> Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
+    """FastMCP logs every request at INFO, which floods a stdio host's stderr."""
+    level = os.environ.get("MCP_LOG_LEVEL", "WARNING").upper()
+    return level if level in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"} else "WARNING"  # type: ignore[return-value]
 
 
 def advertise_list_changed(mcp: FastMCP) -> None:
@@ -31,7 +37,9 @@ def advertise_list_changed(mcp: FastMCP) -> None:
     ):
         return original(
             notification_options
-            or NotificationOptions(prompts_changed=True, resources_changed=True, tools_changed=True),
+            or NotificationOptions(
+                prompts_changed=True, resources_changed=True, tools_changed=True
+            ),
             experimental_capabilities,
         )
 

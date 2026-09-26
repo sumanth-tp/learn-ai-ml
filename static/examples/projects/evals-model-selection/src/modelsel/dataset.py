@@ -39,11 +39,13 @@ PRODUCTS = [
     "Vega Espresso Machine",
 ]
 
+# fmt: off
 NAMES = [
     "Priya", "Tom", "Amara", "Luis", "Mei", "Oliver", "Fatima", "Kenji", "Sofia", "Daniel",
     "Aisha", "Marco", "Hannah", "Ravi", "Chloe", "Ibrahim", "Elena", "Noah", "Zara", "Lukas",
     "Grace", "Omar", "Isla", "Arjun", "Nora", "Felix", "Leah", "Mateo", "Yuki", "Samuel",
 ]
+# fmt: on
 
 ACTIONS: dict[Label, str] = {
     Label.BILLING: "I have corrected the invoice and the adjusted amount will show on your next statement.",
@@ -73,6 +75,7 @@ class Template:
 T = Template
 P, S, L = Priority, Sentiment, Label
 
+# fmt: off
 TEMPLATES: list[Template] = [
     T(L.BILLING, "Hi, my invoice for {order} shows {amount} but the {product} was on offer. Please fix the bill.", P.MEDIUM, S.NEUTRAL, True, True),
     T(L.BILLING, "Why was I charged {amount} for my {product}? The price on the website was lower. Order {order}.", P.MEDIUM, S.NEGATIVE, True, True),
@@ -104,6 +107,7 @@ TEMPLATES: list[Template] = [
     T(L.OTHER, "Just wanted to say the {product} is brilliant. Thanks to the team!", P.LOW, S.POSITIVE, False, False),
     T(L.OTHER, "Are you hiring for customer support roles?", P.LOW, S.NEUTRAL, False, False, ("no_product",)),
 ]
+# fmt: on
 
 SPLIT_SIZES: dict[Split, int] = {"dev": 40, "test": 80, "private": 30}
 """150 items. ``private`` is held out: scored only for release decisions."""
@@ -217,8 +221,13 @@ def build_human_labels(items: list[BenchmarkItem], n: int = 40, seed: int = 11) 
         action_label = rng.choice([lb for lb in Label if lb != it.label]) if wrong_action else None
         filler = rng.choice([0, 0, 0, 1, 2])
         text = compose_reply(
-            it.customer_name, it.label, it.fields.product, it.fields.order_id,
-            parts=parts, action_label=action_label, filler_paragraphs=filler,
+            it.customer_name,
+            it.label,
+            it.fields.product,
+            it.fields.order_id,
+            parts=parts,
+            action_label=action_label,
+            filler_paragraphs=filler,
             close=signatures.get(author, CLOSE),
         )
         got = 0.0
@@ -240,9 +249,17 @@ def build_human_labels(items: list[BenchmarkItem], n: int = 40, seed: int = 11) 
         preference = "A" if diff >= 2 else "B" if diff <= -2 else "tie"
         rows.append(
             HumanLabel(
-                id=f"hl-{k:03d}", item_id=it.id, ticket=it.ticket, reference_reply=it.reference_reply,
-                reply_a=reply_a, reply_b=reply_b, author_a=a_author, author_b=b_author,
-                ratings_a=ratings_a, ratings_b=ratings_b, preference=preference,
+                id=f"hl-{k:03d}",
+                item_id=it.id,
+                ticket=it.ticket,
+                reference_reply=it.reference_reply,
+                reply_a=reply_a,
+                reply_b=reply_b,
+                author_a=a_author,
+                author_b=b_author,
+                ratings_a=ratings_a,
+                ratings_b=ratings_b,
+                preference=preference,
             )
         )
     return rows

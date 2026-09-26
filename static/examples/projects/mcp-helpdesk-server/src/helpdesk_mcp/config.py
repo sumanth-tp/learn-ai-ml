@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8000
     mcp_path: str = "/mcp"
+    # Public URL clients use (https://helpdesk-mcp.example.com). Enables the
+    # OAuth protected-resource metadata endpoint so clients can discover the IdP.
+    public_base_url: str | None = None
     log_level: str = "INFO"
     log_json: bool = True
 
@@ -81,6 +84,9 @@ class Settings(BaseSettings):
                 raise ValueError("HELPDESK_JWT_SECRET must be set in prod")
             if "dev-only" in self.cursor_secret.get_secret_value():
                 raise ValueError("HELPDESK_CURSOR_SECRET must be set in prod")
+        loopback = self.host in {"127.0.0.1", "localhost", "::1"}
+        if self.auth_mode == "local" and self.transport == "http" and not loopback:
+            raise ValueError("auth_mode 'local' over HTTP is only allowed on a loopback host")
         if self.jwt_algorithm == "RS256" and not (self.jwt_public_key or self.jwt_jwks_uri):
             raise ValueError("RS256 needs HELPDESK_JWT_PUBLIC_KEY or HELPDESK_JWT_JWKS_URI")
         return self

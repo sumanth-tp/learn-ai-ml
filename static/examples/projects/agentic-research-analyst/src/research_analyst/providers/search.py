@@ -42,26 +42,48 @@ def _is_transient(exc: BaseException) -> bool:
     if isinstance(exc, httpx.TimeoutException | httpx.TransportError):
         return True
     return isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code in (
-        429, 500, 502, 503, 504)
+        429,
+        500,
+        502,
+        503,
+        504,
+    )
 
 
 class TavilySearch:
     """Tavily REST API. Retries 429/5xx/timeouts with jittered exponential backoff."""
 
-    def __init__(self, api_key: str, url: str, timeout_s: float, attempts: int = 3) -> None:
+    def __init__(
+        self,
+        api_key: str,
+        url: str,
+        timeout_s: float,
+        attempts: int = 3,
+        transport: httpx.AsyncBaseTransport | None = None,
+        max_backoff_s: float = 8.0,
+    ) -> None:
         self._url = url
         self._attempts = attempts
+        self._max_backoff = max_backoff_s
         self._client = httpx.AsyncClient(
-            timeout=timeout_s, headers={"Authorization": f"Bearer {api_key}"}
+            timeout=timeout_s,
+            headers={"Authorization": f"Bearer {api_key}"},
+            transport=transport,
         )
 
     async def search(self, query: str, k: int) -> list[WebResult]:
-        payload = {"query": query, "max_results": k, "search_depth": "basic",
-                   "include_answer": False}
+        payload = {
+            "query": query,
+            "max_results": k,
+            "search_depth": "basic",
+            "include_answer": False,
+        }
         try:
             async for attempt in AsyncRetrying(
                 stop=stop_after_attempt(self._attempts),
-                wait=wait_exponential_jitter(initial=0.5, max=8),
+                wait=wait_exponential_jitter(
+                    initial=min(0.5, self._max_backoff), max=self._max_backoff
+                ),
                 retry=retry_if_exception(_is_transient),
                 reraise=True,
             ):
@@ -78,8 +100,14 @@ class TavilySearch:
                     published = date.fromisoformat(raw[:10])
                 except ValueError:
                     published = None
-            results.append(WebResult(url=item["url"], title=item.get("title", item["url"]),
-                                     content=item.get("content", ""), published=published))
+            results.append(
+                WebResult(
+                    url=item["url"],
+                    title=item.get("title", item["url"]),
+                    content=item.get("content", ""),
+                    published=published,
+                )
+            )
         return results
 
     async def aclose(self) -> None:
@@ -90,8 +118,11 @@ class StubWebSearch:
     """Offline 'internet': a JSONL corpus ranked by hashed bag-of-words cosine similarity."""
 
     def __init__(self, corpus_file: Path) -> None:
-        self._docs = [WebResult.model_validate(json.loads(line))
-                      for line in corpus_file.read_text().splitlines() if line.strip()]
+        self._docs = [
+            WebResult.model_validate(json.loads(line))
+            for line in corpus_file.read_text().splitlines()
+            if line.strip()
+        ]
         self._emb = HashingEmbeddings()
         self._vecs = self._emb.embed_documents([f"{d.title}. {d.content}" for d in self._docs])
         self.calls: list[str] = []
@@ -100,8 +131,10 @@ class StubWebSearch:
         self.calls.append(query)
         q = self._emb.embed_query(query)
         scored = sorted(
-            ((sum(a * b for a, b in zip(q, v, strict=True)), d)
-             for v, d in zip(self._vecs, self._docs, strict=True)),
+            (
+                (sum(a * b for a, b in zip(q, v, strict=True)), d)
+                for v, d in zip(self._vecs, self._docs, strict=True)
+            ),
             key=lambda x: -x[0],
         )
         return [d for score, d in scored[:k] if score > 0.05]
@@ -115,5 +148,6 @@ def build_web_search(settings: Settings) -> WebSearch:
         if settings.mode == "live":
             log.warning("TAVILY_API_KEY not set; live mode is using the stub web search")
         return StubWebSearch(settings.corpus_dir / "web.jsonl")
-    return TavilySearch(settings.tavily_api_key.get_secret_value(), settings.web_search_url,
-                        settings.http_timeout_s)
+    return TavilySearch(
+        settings.tavily_api_key.get_secret_value(), settings.web_search_url, settings.http_timeout_s
+    )

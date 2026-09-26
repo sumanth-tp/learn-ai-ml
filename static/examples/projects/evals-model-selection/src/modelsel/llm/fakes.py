@@ -80,7 +80,20 @@ def heuristic_fields(ticket: str) -> dict[str, Any]:
     product = next((p for p in PRODUCTS if p in ticket), None)
     if any(w in low for w in ("urgent", "tomorrow", "today", "someone else")):
         priority = Priority.URGENT
-    elif any(w in low for w in ("not acceptable", "stopped working", "nine days", "bricked", "immediately", "cannot", "error", "twice", "done with")):
+    elif any(
+        w in low
+        for w in (
+            "not acceptable",
+            "stopped working",
+            "nine days",
+            "bricked",
+            "immediately",
+            "cannot",
+            "error",
+            "twice",
+            "done with",
+        )
+    ):
         priority = Priority.HIGH
     elif any(w in low for w in ("?", "please", "could", "how do")) and not any(w in low for w in ("why", "still")):
         priority = Priority.LOW
@@ -176,8 +189,9 @@ class FakeTicketModel(_FakeBase):
 
         if "TASK: continue" in system:
             half = _section(user, "PREFIX")
-            if seen is not None:
-                return seen.ticket[len(half):], base_latency, {}
+            known = next((it for text, it in self.memorised.items() if half and text.startswith(half)), None)
+            if known is not None:
+                return known.ticket[len(half) :], base_latency, {}
             return " and I would like some help with this please.", base_latency, {}
 
         if "TASK: classify" in system:
@@ -193,8 +207,15 @@ class FakeTicketModel(_FakeBase):
                 return seen.fields.model_dump_json(), base_latency * 0.6, {}
             fields = heuristic_fields(ticket)
             if rng.random() > p.skill:
+                # a plausible but wrong value, the typical extraction mistake
                 key_to_break = rng.choice(["priority", "sentiment", "product", "amount"])
-                fields[key_to_break] = {"priority": "normal", "sentiment": "angry"}.get(key_to_break)
+                wrong = {
+                    "priority": rng.choice([x.value for x in Priority if x.value != fields["priority"]]),
+                    "sentiment": rng.choice([x.value for x in Sentiment if x.value != fields["sentiment"]]),
+                    "product": None if fields["product"] else rng.choice(PRODUCTS),
+                    "amount": None if fields["amount"] else round(rng.uniform(5, 50), 2),
+                }
+                fields[key_to_break] = wrong[key_to_break]
             if rng.random() < p.json_error_rate:
                 return "Sure! Here is the JSON:\n" + json.dumps(fields)[:-1], base_latency * 0.6, {}
             return json.dumps(fields), base_latency * 0.6, {}
@@ -203,12 +224,19 @@ class FakeTicketModel(_FakeBase):
         name = name_match.group(1) if name_match else "there"
         fields = heuristic_fields(ticket)
         label = seen.label if seen is not None else heuristic_label(ticket)
-        parts = [part for part in ("greeting", "ack", "action", "order", "close") if rng.random() < 0.55 + 0.45 * p.skill]
+        parts = [
+            part for part in ("greeting", "ack", "action", "order", "close") if rng.random() < 0.55 + 0.45 * p.skill
+        ]
         wrong = seen is None and rng.random() > p.skill
         text = compose_reply(
-            name, label, fields["product"], fields["order_id"], parts=parts,
+            name,
+            label,
+            fields["product"],
+            fields["order_id"],
+            parts=parts,
             action_label=rng.choice([lb for lb in Label if lb != label]) if wrong else None,
-            filler_paragraphs=p.verbosity, close=p.signature or CLOSE,
+            filler_paragraphs=p.verbosity,
+            close=p.signature or CLOSE,
         )
         return text, base_latency * (1 + 0.4 * p.verbosity), {}
 
@@ -288,5 +316,7 @@ class FakeJudgeModel(_FakeBase):
         top = [{"token": t, "logprob": v - z} for t, v in sorted(logits.items(), key=lambda kv: -kv[1])]
         best = top[0]["token"]
         text = f"Steps: checked greeting, acknowledgement, next action, order reference, close.\nScore: {best}"
-        logprobs = {"content": [{"token": best, "logprob": top[0]["logprob"], "top_logprobs": top, "position": "score"}]}
+        logprobs = {
+            "content": [{"token": best, "logprob": top[0]["logprob"], "top_logprobs": top, "position": "score"}]
+        }
         return text, latency, {"logprobs": logprobs}

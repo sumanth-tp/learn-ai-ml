@@ -14,6 +14,7 @@ which are the per-upstream credential from the secret broker.
 from __future__ import annotations
 
 import importlib
+import os
 import re
 import sys
 from collections.abc import Callable
@@ -88,8 +89,26 @@ class UpstreamsFile(BaseModel):
         return self
 
 
+_ENV_REF = re.compile(r"\$\{([A-Z0-9_]+)(?::-([^}]*))?\}")
+
+
+def expand_env(text: str, environ: dict[str, str] | None = None) -> str:
+    """Expand ``${VAR}`` and ``${VAR:-default}`` so one file serves laptop and compose."""
+    env = os.environ if environ is None else environ
+
+    def sub(m: re.Match[str]) -> str:
+        value = env.get(m.group(1))
+        if value is None:
+            if m.group(2) is None:
+                raise KeyError(f"environment variable {m.group(1)} is not set")
+            return m.group(2)
+        return value
+
+    return _ENV_REF.sub(sub, text)
+
+
 def load_upstreams(path: Path) -> list[UpstreamSpec]:
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    data = yaml.safe_load(expand_env(path.read_text(encoding="utf-8"))) or {}
     return UpstreamsFile.model_validate(data).upstreams
 
 

@@ -1,0 +1,18 @@
+{"id": "docs-leave", "query": "How many days of annual leave do I get under the leave policy?", "expected_tool": "docs__search"}
+{"id": "docs-meals", "query": "What is the daily meal allowance in the expense policy?", "expected_tool": "docs__search"}
+{"id": "docs-oncall", "query": "Within how many minutes must an on-call page be acknowledged?", "expected_tool": "docs__search"}
+{"id": "docs-security", "query": "What does the security handbook say about reporting a lost laptop?", "expected_tool": "docs__search"}
+{"id": "docs-vendor", "query": "How long does vendor onboarding take?", "expected_tool": "docs__search"}
+{"id": "notes-search", "query": "What did I write about the rollout plan in my notes?", "expected_tool": "notes__search", "expected_args": {"query": "the rollout plan"}}
+{"id": "notes-list", "query": "List my notes please", "expected_tool": "notes__list_notes"}
+{"id": "notes-read", "query": "Read note sprint-goals", "expected_tool": "notes__read_note", "expected_args": {"name": "sprint-goals"}}
+{"id": "notes-write", "query": "Save a note called standup-log saying the demo went well", "expected_tool": "notes__write_note", "expected_args": {"name": "standup-log"}}
+{"id": "notes-delete", "query": "Delete note reading-list", "expected_tool": "notes__delete_note", "expected_args": {"name": "reading-list"}}
+{"id": "notes-tags", "query": "I want to tag my notes by project", "expected_tool": "notes__enable_tag_tools"}
+{"id": "cal-list", "query": "What meetings do I have on 2026-10-05?", "expected_tool": "calendar__list_events", "expected_args": {"day": "2026-10-05"}}
+{"id": "cal-free", "query": "Find a free slot on 2026-10-05 for a chat", "expected_tool": "calendar__find_free_slot", "expected_args": {"day": "2026-10-05"}}
+{"id": "cal-create", "query": "Schedule a meeting with Dana on 2026-10-06", "expected_tool": "calendar__create_event"}
+{"id": "cal-cancel", "query": "Cancel event evt_1on1", "expected_tool": "calendar__cancel_event", "expected_args": {"event_id": "evt_1on1"}}
+{"id": "cal-summary", "query": "Give me a summary of 2026-10-05, summarise my day", "expected_tool": "calendar__summarise_day", "expected_args": {"day": "2026-10-05"}}
+{"id": "none-greeting", "query": "Hi there, who are you?", "expected_tool": null}
+{"id": "none-thanks", "query": "Thanks, that was helpful", "expected_tool": null}

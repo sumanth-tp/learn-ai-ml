@@ -1,0 +1,27 @@
+# Upstream MCP servers behind the gateway. Each name becomes a namespace:
+# the payments server's "refund" tool is served as "payments_refund".
+# Credentials are *references*; the secret broker resolves them
+# (GATEWAY_SECRET_<REF> env vars, or files in GATEWAY_SECRETS_DIR).
+upstreams:
+  - name: docs
+    transport: stdio
+    description: Company documents (read-only)
+    command: python            # "python" means the gateway's own interpreter
+    args: ["-m", "mcp_gateway.demo_upstreams.docs_server"]
+    credential: {secret: docs_token, inject_as: env, env_var: DOCS_API_TOKEN}
+    cacheable_tools: [list_docs, read_doc, search_docs]
+
+  - name: payments
+    transport: http
+    description: Balances and refunds
+    url: ${PAYMENTS_URL:-http://127.0.0.1:9101/mcp}
+    credential: {secret: payments_token, inject_as: bearer}
+    cacheable_tools: [get_balance]
+    timeout_seconds: 10
+
+  - name: tickets
+    transport: http
+    description: Support tickets
+    url: ${TICKETS_URL:-http://127.0.0.1:9102/mcp}
+    credential: {secret: tickets_key, inject_as: header, header: X-Api-Key}
+    cacheable_tools: [search_tickets, get_ticket]

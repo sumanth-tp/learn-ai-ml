@@ -19,7 +19,7 @@ from mcp.server.fastmcp.exceptions import ToolError
 from mcp.types import ToolAnnotations
 from pydantic import BaseModel
 
-from demo_servers.common import advertise_list_changed
+from demo_servers.common import advertise_list_changed, log_level
 
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 MAX_NOTE_BYTES = 64_000
@@ -47,6 +47,7 @@ def create_server(root: Path | None = None) -> FastMCP:
     mcp = FastMCP(
         "notes",
         instructions="Personal notes stored as Markdown files. Names are lowercase slugs.",
+        log_level=log_level(),
     )
     advertise_list_changed(mcp)
 

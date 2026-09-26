@@ -24,6 +24,7 @@ from pydantic import BaseModel
 from demo_servers.common import (
     add_health_route,
     advertise_list_changed,
+    log_level,
     serve_http,
     transport_security,
 )
@@ -93,6 +94,7 @@ def create_server(store_path: Path | None = None, seed_path: Path | None = None)
     mcp = FastMCP(
         "calendar",
         instructions="Team calendar. Times are ISO 8601 in UTC.",
+        log_level=log_level(),
         transport_security=transport_security(),
     )
     advertise_list_changed(mcp)
@@ -156,7 +158,7 @@ def create_server(store_path: Path | None = None, seed_path: Path | None = None)
         if not events:
             return f"No events on {day}."
         listing = "\n".join(
-            f"- {e.start:%H:%M}-{e.end:%H:%M} {e.title} ({', '.join(e.attendees) or 'no attendees'})"
+            f"- {e.start:%H:%M}-{e.end:%H:%M} {e.title} ({', '.join(e.attendees) or 'nobody'})"
             for e in events
         )
         can_sample = ctx.session.check_client_capability(

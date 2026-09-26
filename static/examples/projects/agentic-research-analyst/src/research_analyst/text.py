@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import re
 
-STOPWORDS = frozenset(
-    """a an and are as at be been but by can could do does for from has have how if in into is
-    it its of on or our should than that the their them then there these they this to was we
-    were what when where which while who why will with would you your vs versus about instead
-    also any all not no so such via per""".split()
-)
+_STOPWORD_TEXT = """
+a an and are as at be been but by can could do does for from has have how if in into is it its
+of on or our should than that the their them then there these they this to was we were what
+when where which while who why will with would you your vs versus about instead also any all
+not no so such via per
+"""
+STOPWORDS = frozenset(_STOPWORD_TEXT.split())
 
 
 def stem(token: str) -> str:

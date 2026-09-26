@@ -148,6 +148,7 @@ const config: Config = {
         { to: "/docs/category/coding", label: "Code", position: "left" },
         { to: "/docs/category/cheetsheet", label: "Cheatsheets", position: "left" },
         { to: "/docs/category/interview", label: "Interviews", position: "left" },
+        { to: "/docs/category/projects", label: "Projects", position: "left" },
         { to: "/ai-news", label: "AI updates", position: "left" },
         { to: "/explore", label: "Explore", position: "left" },
         { type: "search", position: "right" },

@@ -27,9 +27,11 @@ class RedactingFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         record.msg = redact(str(record.msg))
         if record.args:
-            record.args = tuple(redact_obj(a) for a in record.args) if isinstance(
-                record.args, tuple
-            ) else redact_obj(record.args)
+            record.args = (
+                tuple(redact_obj(a) for a in record.args)
+                if isinstance(record.args, tuple)
+                else redact_obj(record.args)
+            )
         for key, value in list(record.__dict__.items()):
             if key not in _RESERVED:
                 setattr(record, key, redact_obj(value))

@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.0
     llm_timeout_s: float = 30.0
     llm_max_retries: int = 2
+    llm_node_retry_attempts: int = Field(default=3, ge=1)
+    llm_node_retry_initial_s: float = 0.5
     embeddings_model: str = "text-embedding-3-small"
     openai_api_key: SecretStr | None = None
     anthropic_api_key: SecretStr | None = None

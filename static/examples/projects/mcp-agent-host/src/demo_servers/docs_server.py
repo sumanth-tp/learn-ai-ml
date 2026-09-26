@@ -22,12 +22,52 @@ from mcp.server.fastmcp.exceptions import ToolError
 from mcp.types import ToolAnnotations
 from pydantic import BaseModel
 
-from demo_servers.common import add_health_route, advertise_list_changed, serve_http, transport_security
+from demo_servers.common import (
+    add_health_route,
+    advertise_list_changed,
+    log_level,
+    serve_http,
+    transport_security,
+)
 
 TOKEN_RE = re.compile(r"[a-z0-9]+")
 STOPWORDS = frozenset(
-    "a an and are as at be by for from how i in is it of on or our the to we what when "
-    "where which who why with you your do does can".split()
+    [
+        "a",
+        "an",
+        "and",
+        "are",
+        "as",
+        "at",
+        "be",
+        "by",
+        "for",
+        "from",
+        "how",
+        "i",
+        "in",
+        "is",
+        "it",
+        "of",
+        "on",
+        "or",
+        "our",
+        "the",
+        "to",
+        "we",
+        "what",
+        "when",
+        "where",
+        "which",
+        "who",
+        "why",
+        "with",
+        "you",
+        "your",
+        "do",
+        "does",
+        "can",
+    ]
 )
 
 
@@ -113,6 +153,7 @@ def create_server(docs_dir: Path | None = None) -> FastMCP:
     mcp = FastMCP(
         "docs",
         instructions="Company handbook and policies. Search first, then cite slugs.",
+        log_level=log_level(),
         transport_security=transport_security(),
     )
     advertise_list_changed(mcp)

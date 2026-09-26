@@ -1,0 +1,24 @@
+# Golden decisions for config/policy.yaml. CI fails if any decision changes,
+# so a policy edit that widens or narrows access must update this file in
+# the same review.
+cases:
+  - {name: employee reads public, user: ana, groups: [employees], tool: docs_read_doc, args: {path: /public/handbook.md}, expect: allow}
+  - {name: employee reads finance, user: ana, groups: [employees], tool: docs_read_doc, args: {path: /finance/q3-forecast.md}, expect: deny}
+  - {name: traversal out of public, user: ana, groups: [employees], tool: docs_read_doc, args: {path: /public/../hr/salaries.csv}, expect: deny}
+  - {name: list without prefix, user: ana, groups: [employees], tool: docs_list_docs, args: {}, expect: deny}
+  - {name: list public, user: ana, groups: [employees], tool: docs_list_docs, args: {prefix: /public}, expect: allow}
+  - {name: engineer reads runbook, user: eli, groups: [employees, engineering], tool: docs_read_doc, args: {path: /engineering/runbook.md}, expect: allow}
+  - {name: engineer diagnostics, user: eli, groups: [engineering], tool: docs_backend_status, args: {}, expect: allow}
+  - {name: employee diagnostics, user: ana, groups: [employees], tool: docs_backend_status, args: {}, expect: deny}
+  - {name: support small refund, user: sam, groups: [support], tool: payments_refund, args: {order_id: O-1, amount: 40, currency: EUR, idempotency_key: key-00000001}, expect: allow}
+  - {name: support large refund, user: sam, groups: [support], tool: payments_refund, args: {order_id: O-1, amount: 400, currency: EUR, idempotency_key: key-00000001}, expect: deny}
+  - {name: support bad currency, user: sam, groups: [support], tool: payments_refund, args: {order_id: O-1, amount: 40, currency: BTC, idempotency_key: key-00000001}, expect: deny}
+  - {name: support refund amount as string, user: sam, groups: [support], tool: payments_refund, args: {order_id: O-1, amount: "40", currency: EUR, idempotency_key: key-00000001}, expect: deny}
+  - {name: support refund no key, user: sam, groups: [support], tool: payments_refund, args: {order_id: O-1, amount: 40, currency: EUR}, expect: deny}
+  - {name: support balance, user: sam, groups: [support], tool: payments_get_balance, args: {account: ACC-1001}, expect: deny}
+  - {name: finance large refund, user: fin, groups: [finance], tool: payments_refund, args: {order_id: O-2, amount: 4000, currency: USD, idempotency_key: key-00000002}, expect: allow}
+  - {name: cfo huge refund, user: u-77, email: cfo@example.com, groups: [finance], tool: payments_refund, args: {order_id: O-3, amount: 40000, currency: EUR, idempotency_key: key-00000003}, expect: allow}
+  - {name: contractor in finance, user: carl, groups: [finance, contractors], tool: payments_get_balance, args: {account: ACC-1001}, expect: deny}
+  - {name: support tickets, user: sam, groups: [support], tool: tickets_get_ticket, args: {ticket_id: T-1}, expect: allow}
+  - {name: engineer tickets, user: eli, groups: [engineering], tool: tickets_get_ticket, args: {ticket_id: T-1}, expect: deny}
+  - {name: unknown tool, user: sam, groups: [support], tool: tickets_delete_ticket, args: {ticket_id: T-1}, expect: deny}

@@ -1,0 +1,11 @@
+# Offline regression gate. A candidate (prompt, model, code) ships only if every
+# floor holds and nothing drops more than max_drop_vs_baseline versus the last release.
+[gate]
+tool_call_accuracy = 0.95
+trajectory_match = 0.95
+task_completion = 0.95
+groundedness = 0.95
+policy = 1.0
+step_efficiency = 0.80
+max_loop_rate = 0.0
+max_drop_vs_baseline = 0.03

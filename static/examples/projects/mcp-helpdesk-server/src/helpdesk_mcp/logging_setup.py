@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import logging
 import sys
+import warnings
 
+import fastmcp  # noqa: F401  (import first so its log setup runs before we replace it)
 import structlog
 
 
@@ -26,9 +28,7 @@ def configure_logging(level: str = "INFO", json: bool = True) -> None:
         structlog.processors.TimeStamper(fmt="iso", utc=True),
     ]
     renderer = (
-        structlog.processors.JSONRenderer()
-        if json
-        else structlog.dev.ConsoleRenderer(colors=False)
+        structlog.processors.JSONRenderer() if json else structlog.dev.ConsoleRenderer(colors=False)
     )
     structlog.configure(
         processors=[*shared, structlog.stdlib.ProcessorFormatter.wrap_for_formatter],
@@ -55,7 +55,12 @@ def configure_logging(level: str = "INFO", json: bool = True) -> None:
         lib = logging.getLogger(name)
         lib.handlers[:] = []
         lib.propagate = True
-    logging.getLogger("sqlalchemy.engine").setLevel("WARNING")
+    # MCP 2026-07-28 deprecates the logging capability (SEP-2577). We still send
+    # log notifications because handshake-era clients show them; silence the
+    # per-call warning so it does not flood our own logs.
+    warnings.filterwarnings("ignore", message="The logging capability is deprecated")
+    for noisy in ("sqlalchemy.engine", "alembic", "httpx", "httpx2", "httpcore"):
+        logging.getLogger(noisy).setLevel("WARNING")
 
 
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:

@@ -9,20 +9,48 @@ Three layers of dedup, cheapest first:
 from __future__ import annotations
 
 import hashlib
+import re
 from datetime import date
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from research_analyst.models import Origin, Source
 from research_analyst.text import jaccard, shingles
 
-_TRACKING_PARAMS = {"utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
-                    "gclid", "fbclid", "ref", "mc_cid", "mc_eid"}
+_TRACKING_PARAMS = {
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
+    "gclid",
+    "fbclid",
+    "ref",
+    "mc_cid",
+    "mc_eid",
+}
 
 # Domain tiers. In production this is a reviewed, versioned allow/deny list.
-HIGH_TRUST_SUFFIXES = (".gov", ".edu", ".int", "iea.org", "irena.org", "nrel.gov", "nature.com",
-                       "sciencedirect.com", "reuters.com", "ft.com", "bloomberg.com")
-MEDIUM_TRUST_SUFFIXES = ("energy-storage.news", "pv-magazine.com", "canarymedia.com",
-                         "carbonbrief.org", "electrek.co", "wikipedia.org")
+HIGH_TRUST_SUFFIXES = (
+    ".gov",
+    ".edu",
+    ".int",
+    "iea.org",
+    "irena.org",
+    "nrel.gov",
+    "nature.com",
+    "sciencedirect.com",
+    "reuters.com",
+    "ft.com",
+    "bloomberg.com",
+)
+MEDIUM_TRUST_SUFFIXES = (
+    "energy-storage.news",
+    "pv-magazine.com",
+    "canarymedia.com",
+    "carbonbrief.org",
+    "electrek.co",
+    "wikipedia.org",
+)
 LOW_TRUST_MARKERS = ("best-", "top10", "clickfarm", "deals", "coupon", "blogspot")
 
 
@@ -31,8 +59,9 @@ def canonical_url(url: str) -> str:
     scheme = "https" if parts.scheme in ("http", "https", "") else parts.scheme
     host = parts.netloc.lower().removeprefix("www.")
     path = parts.path.rstrip("/") or "/"
-    query = urlencode(sorted((k, v) for k, v in parse_qsl(parts.query)
-                             if k.lower() not in _TRACKING_PARAMS))
+    query = urlencode(
+        sorted((k, v) for k, v in parse_qsl(parts.query) if k.lower() not in _TRACKING_PARAMS)
+    )
     return urlunsplit((scheme, host, path, query, ""))
 
 
@@ -64,13 +93,16 @@ def recency_score(published: date | None, today: date | None = None) -> float:
 def quality_score(source: Source, today: date | None = None) -> float:
     """0..1. Domain trust dominates; recency and substance adjust it."""
     substance = min(1.0, len(source.content) / 600)
-    score = (0.6 * domain_score(source.url, source.origin)
-             + 0.25 * recency_score(source.published, today)
-             + 0.15 * substance)
+    domain = domain_score(source.url, source.origin)
+    if domain <= 0.1:  # deny-listed domains are capped, however fresh or long they are
+        return 0.15
+    score = 0.6 * domain + 0.25 * recency_score(source.published, today) + 0.15 * substance
     return round(score, 3)
 
 
-def deduplicate(sources: list[Source], threshold: float = 0.8) -> tuple[list[Source], dict[str, str]]:
+def deduplicate(
+    sources: list[Source], threshold: float = 0.8
+) -> tuple[list[Source], dict[str, str]]:
     """Collapse near-duplicate sources. Returns survivors and an alias map old_id -> kept_id.
 
     The higher-quality copy survives, so a syndicated copy on a content farm never
@@ -92,10 +124,28 @@ def deduplicate(sources: list[Source], threshold: float = 0.8) -> tuple[list[Sou
     return [k for k, _ in kept], alias
 
 
-def merge_sources(left: dict[str, Source] | None, right: dict[str, Source] | None) -> dict[str, Source]:
+def merge_sources(
+    left: dict[str, Source] | None, right: dict[str, Source] | None
+) -> dict[str, Source]:
     """LangGraph reducer: union by id; parallel workers finding the same page is not an error."""
     merged = dict(left or {})
     for sid, src in (right or {}).items():
         if sid not in merged or src.quality > merged[sid].quality:
             merged[sid] = src
     return merged
+
+
+_INJECTION = re.compile(
+    r"ignore (all |any )?(previous|prior|above) instructions|disregard (the|your) (system|previous)"
+    r"|you are now|system prompt|reveal your|do not cite",
+    re.IGNORECASE,
+)
+
+
+def looks_like_injection(text: str) -> bool:
+    """Heuristic tripwire for prompt injection in retrieved text. Cheap, high precision.
+
+    It is one layer: prompts also mark sources as untrusted data, outputs are schema-bound,
+    and citations are validated against the evidence actually retrieved.
+    """
+    return bool(_INJECTION.search(text))

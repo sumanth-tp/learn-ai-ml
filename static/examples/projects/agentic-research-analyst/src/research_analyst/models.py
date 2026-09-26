@@ -95,8 +95,14 @@ class RevisionRequest(BaseModel):
     instruction: str
 
 
+class CriterionScore(BaseModel):
+    criterion: str
+    score: float = Field(ge=1, le=5)
+
+
 class Critique(BaseModel):
-    scores: dict[str, float] = Field(description="Rubric criterion -> score 1..5.")
+    # a list, not dict[str, float]: OpenAI strict JSON schema forbids free-form object keys
+    scores: list[CriterionScore] = Field(description="One score 1..5 per rubric criterion.")
     overall: float = Field(ge=1, le=5)
     revision_requests: list[RevisionRequest] = Field(default_factory=list)
     summary: str = ""

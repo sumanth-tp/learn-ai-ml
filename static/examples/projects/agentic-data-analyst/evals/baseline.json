@@ -1,0 +1,24 @@
+{
+  "min_execution_accuracy": 0.9375,
+  "min_validity_rate": 1.0,
+  "max_mean_retries": 0.62,
+  "max_p95_latency_ms": 2000.0,
+  "max_cost_per_question_usd": 0.0005,
+  "passing_ids": [
+    "q01",
+    "q02",
+    "q03",
+    "q04",
+    "q05",
+    "q06",
+    "q07",
+    "q08",
+    "q09",
+    "q10",
+    "q11",
+    "q12",
+    "q13",
+    "q14",
+    "q16"
+  ]
+}

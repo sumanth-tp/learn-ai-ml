@@ -1,0 +1,102 @@
+# Model-selection report: support-ticket triage
+
+Run `{{ s.run_id }}` · profile `{{ s.profile }}` · splits {{ s.splits | join(", ") }} · dataset `{{ s.dataset_hash }}` · prompts `{{ s.prompt_version }}` · judge `{{ s.judge }}`
+
+## Recommendation
+
+{% if s.recommendation.model_id %}
+**{{ s.recommendation.model_id }}**{% if s.recommendation.runner_up %} (runner-up: {{ s.recommendation.runner_up }}){% endif %}. {{ s.recommendation.reason }}
+{% else %}
+**No recommendation.** {{ s.recommendation.reason }}
+{% endif %}
+
+### Caveats
+
+{% for c in s.caveats %}
+- {{ c }}
+{% else %}
+- None.
+{% endfor %}
+
+## Results on the test split ({{ s.n_test_items }} items)
+
+| Model | Composite [95% CI] | Accuracy | Macro-F1 [95% CI] | JSON valid | Field acc. | Reply (1–5) | p95 latency | Cost / 1k tickets | Gates |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+{% for m in s.models %}
+| {{ m.model_id }} | {{ m.quality | f3 }} [{{ m.quality_low | f3 }}, {{ m.quality_high | f3 }}] | {{ m.accuracy | pct }} | {{ m.macro_f1_ci[0] | f3 }} [{{ m.macro_f1_ci[1] | f3 }}, {{ m.macro_f1_ci[2] | f3 }}] | {{ m.json_validity | pct }} | {{ m.field_accuracy | pct }} | {{ m.reply_score | f2 }} | {{ m.p95_latency_ms | ms }} | {{ m.cost_per_1k_usd | usd }} | {{ "pass" if m.passes else m.gate_failures | join("; ") }} |
+{% endfor %}
+
+Pareto frontier among models that pass the gates (quality ↑, cost ↓, p95 latency ↓): {{ s.pareto | join(", ") }}
+
+## Weighted decision matrix
+
+Weights: {% for k, v in s.weights.items() %}{{ k }} {{ v }}{{ ", " if not loop.last }}{% endfor %}. Scores are min-max normalised across the models that pass the gates.
+
+| Model | Quality | Cost | Latency | Total |
+| --- | --- | --- | --- | --- |
+{% for mid, row in s.matrix.items() | sort(attribute="1.total", reverse=true) %}
+| {{ mid }} | {{ row.quality | f2 }} | {{ row.cost | f2 }} | {{ row.latency | f2 }} | **{{ row.total | f2 }}** |
+{% endfor %}
+
+## Significance against the baseline ({{ s.baseline }})
+
+| Candidate | Composite diff [95% CI] | p (bootstrap) | p (permutation) | McNemar (only cand. / only base) | p (McNemar) | Significant after Holm |
+| --- | --- | --- | --- | --- | --- | --- |
+{% for mid, t in s.tests_vs_baseline.items() %}
+| {{ mid }} | {{ "%+.3f" | format(t.composite_diff) }} [{{ "%+.3f" | format(t.diff_low) }}, {{ "%+.3f" | format(t.diff_high) }}] | {{ t.p_bootstrap | f3 }} | {{ t.p_permutation | f3 }} | {{ t.mcnemar_only_candidate }} / {{ t.mcnemar_only_reference }} | {{ t.p_mcnemar | f3 }} | {{ "yes" if t.significant_holm else "no" }} |
+{% endfor %}
+
+Pairwise reply win rate against the baseline (swap-and-average):
+
+| Candidate | Win rate [95% CI] | Order consistency |
+| --- | --- | --- |
+{% for mid, w in s.pairwise_vs_baseline.items() %}
+| {{ mid }} | {{ w.win_rate | f2 }} [{{ w.low | f2 }}, {{ w.high | f2 }}] | {{ w.consistency | pct }} |
+{% endfor %}
+
+{% if s.sample_size %}
+## Sample size
+
+Between {{ s.sample_size.pair[0] }} and {{ s.sample_size.pair[1] }}: SD of per-item composite differences {{ s.sample_size.sd_of_differences | f3 }}, discordant classification rate {{ s.sample_size.discordant_rate | pct }}.
+With {{ s.sample_size.n_items }} items the minimum detectable effect is **{{ s.sample_size.mde_at_current_n | f3 }}** (80% power, α = 0.05).
+Detecting {{ s.sample_size.target_effect }} needs about **{{ s.sample_size.n_needed_composite }}** items{% if s.sample_size.n_needed_accuracy is defined %} (accuracy via McNemar: {{ s.sample_size.n_needed_accuracy }}){% endif %}.
+{% endif %}
+
+## Judge calibration ({{ s.calibration.judge_id }}, {{ s.calibration.n_rows }} human-labelled pairs)
+
+| Check | Value |
+| --- | --- |
+| Spearman vs human mean | {{ s.calibration.spearman | f3 }} |
+| Quadratic-weighted kappa vs human median | {{ s.calibration.weighted_kappa | f3 }} |
+| Fleiss' kappa, humans only (ceiling) | {{ s.calibration.human_fleiss | f3 }} |
+| Fleiss' kappa, humans + judge | {{ s.calibration.human_plus_judge_fleiss | f3 }} |
+| Pairwise kappa, single order → swapped | {{ s.calibration.pairwise_kappa_single | f3 }} → {{ s.calibration.pairwise_kappa_swapped | f3 }} |
+| Position consistency under swap | {{ s.calibration.position_consistency | pct }} |
+| Verbosity: score change from padding | {{ "%+.2f" | format(s.calibration.verbosity_delta) }} (p={{ s.calibration.verbosity_p | f3 }}) |
+| Self-preference: own-family residual minus others | {% if s.calibration.self_preference_delta is not none %}{{ "%+.2f" | format(s.calibration.self_preference_delta) }} (p={{ s.calibration.self_preference_p | f3 }}){% else %}n/a{% endif %} |
+| Meta-judge agreement on worst cases | {{ s.calibration.meta_agreement | pct }} |
+| Trusted | {{ "yes" if s.calibration.trusted else "no" }} |
+
+Mitigation ablation (Spearman or kappa with humans):
+
+{% for k, v in s.calibration.ablation.items() %}
+- {{ k }}: {{ v | f3 }}
+{% endfor %}
+
+## Contamination
+
+| Model | 8-gram probe (test) | Probe (private) | Test quality | Private quality | Gap | Flagged |
+| --- | --- | --- | --- | --- | --- | --- |
+{% for mid, c in s.contamination.items() %}
+| {{ mid }} | {{ c.probe_test | f2 }} | {{ c.probe_private | f2 if c.probe_private is defined else "n/a" }} | {{ c.test_quality | f3 if c.test_quality is defined else "n/a" }} | {{ c.private_quality | f3 if c.private_quality is defined else "n/a" }} | {{ "%+.3f" | format(c.gap) if c.gap is defined else "n/a" }} | {{ "yes" if c.probe_flagged or c.gap_flagged | default(false) else "no" }} |
+{% endfor %}
+
+## Slices (mean composite)
+
+{% for tag, rows in s.slices.items() %}
+- **{{ tag }}**: {% for mid, v in rows.items() %}{{ mid }} {{ v | f3 }}{{ "; " if not loop.last }}{% endfor %}
+
+{% endfor %}
+
+---
+Billed this run: {{ s.billed_usd | usd }} · cache entries: {{ s.cache_entries }} · duration: {{ s.duration_s }} s. Re-run after adding a model to `data/models.toml`; cached calls are free.

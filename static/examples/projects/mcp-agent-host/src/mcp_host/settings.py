@@ -14,7 +14,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # OpenAI-compatible function names: ^[a-zA-Z0-9_-]{1,64}$. Server names become a
@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     checkpoint_db: str = "data/state/checkpoints.sqlite"
     api_host: str = "127.0.0.1"
     api_port: int = 8000
+    api_key: SecretStr | None = None  # when set, every API call needs "Bearer <key>"
 
     # Observability
     log_level: str = "INFO"

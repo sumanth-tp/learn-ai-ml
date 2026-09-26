@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP agent host</title>
+<style>
+  :root { --bg:#f7f5ef; --fg:#222; --muted:#666; --card:#fff; --accent:#2d6a4f; --warn:#9c4221; }
+  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width:760px; margin:0 auto; padding:16px; }
+  #log { background:var(--card); border-radius:8px; padding:12px; min-height:320px; white-space:pre-wrap; }
+  .tool { color:var(--muted); font-size:13px; } .flag { color:var(--warn); }
+  form { display:flex; gap:8px; margin-top:12px; } input { flex:1; padding:8px; }
+  button { padding:8px 14px; background:var(--accent); color:#fff; border:0; border-radius:6px; }
+  #approval { margin-top:12px; padding:12px; border:2px solid var(--warn); border-radius:8px; display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>MCP agent host</h1>
+  <div id="status" class="tool"></div>
+  <div id="log"></div>
+  <div id="approval"><b>Approval needed</b><pre id="calls"></pre>
+    <button id="yes">Approve</button> <button id="no">Reject</button></div>
+  <form id="f"><input id="q" placeholder="Ask about notes, calendar or company docs" autocomplete="off"><button>Send</button></form>
+</main>
+<script>
+const thread = localStorage.getItem("thread") || ("web-" + Math.random().toString(36).slice(2, 10));
+try { localStorage.setItem("thread", thread); } catch (e) {}
+const log = document.getElementById("log"), approval = document.getElementById("approval");
+let pending = [];
+function add(text, cls) { const s = document.createElement("div"); if (cls) s.className = cls; s.textContent = text; log.appendChild(s); return s; }
+async function stream(path, body) {
+  const res = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (!res.ok) { add("error " + res.status + ": " + await res.text(), "flag"); return; }
+  const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "", answer = null;
+  for (;;) {
+    const { value, done } = await reader.read(); if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i; while ((i = buf.indexOf("\n\n")) >= 0) {
+      const raw = buf.slice(0, i); buf = buf.slice(i + 2);
+      const data = JSON.parse(raw.split("\n").find(l => l.startsWith("data: ")).slice(6));
+      if (data.type === "token") { answer = answer || add("", ""); answer.textContent += data.text; }
+      else if (data.type === "tool_call") add("→ " + data.tool + " " + JSON.stringify(data.args), "tool");
+      else if (data.type === "tool_result") add("← " + data.tool + " [" + data.status + (data.flagged ? ", FLAGGED" : "") + "]", data.flagged ? "tool flag" : "tool");
+      else if (data.type === "approval_required") { pending = data.calls; document.getElementById("calls").textContent = JSON.stringify(data.calls, null, 2); approval.style.display = "block"; }
+      else if (data.type === "error") add("error: " + data.message, "flag");
+    }
+  }
+}
+document.getElementById("f").onsubmit = async (e) => { e.preventDefault(); const q = document.getElementById("q"); add("you: " + q.value); const t = q.value; q.value = ""; await stream(`/threads/${thread}/messages`, { text: t }); };
+async function decide(ok) { approval.style.display = "none"; await stream(`/threads/${thread}/approval`, { approve: ok ? pending.map(c => c.id) : [] }); }
+document.getElementById("yes").onclick = () => decide(true);
+document.getElementById("no").onclick = () => decide(false);
+fetch("/healthz").then(r => r.json()).then(h => { document.getElementById("status").textContent = "servers: " + h.status + (Object.keys(h.unavailable).length ? " (down: " + Object.keys(h.unavailable).join(", ") + ")" : ""); });
+</script>
+</body>
+</html>

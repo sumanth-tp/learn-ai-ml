@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      FAKE_LLM: "true"        # CI never needs an API key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.15"
+          enable-cache: true
+      - name: Install
+        run: uv sync --frozen --python 3.12
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Test
+        run: uv run pytest -q
+      - name: Eval regression gate
+        run: uv run support-agent eval --offline
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t support-agent:ci .
+      - name: Smoke test the image
+        run: |
+          docker run -d --name app -p 8000:8000 -e FAKE_LLM=true support-agent:ci
+          for i in $(seq 1 30); do curl -fs localhost:8000/healthz && break; sleep 1; done
+          curl -fs -N -X POST localhost:8000/v1/chat \
+            -H 'Authorization: Bearer dev-customer-token' -H 'X-User-Id: cust_001' \
+            -H 'Content-Type: application/json' -d '{"message":"Where is ORD-1003?"}' | tee out.txt
+          grep -q RM555GB out.txt

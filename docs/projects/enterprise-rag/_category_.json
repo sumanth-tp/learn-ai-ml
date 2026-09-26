@@ -1,0 +1,10 @@
+{
+  "label": "Enterprise RAG",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "slug": "/category/projects/enterprise-rag",
+    "title": "Enterprise RAG: Two Session Project",
+    "description": "Follow the complete project from ingestion and retrieval to guardrails, gateways, evaluation, AWS deployment and visual document parsing. Includes source-aligned diagrams and session doubts."
+  }
+}

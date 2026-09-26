@@ -43,9 +43,11 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "N"]
-ignore = ["RUF001", "RUF002", "RUF003"]
+# E501: the formatter owns line length; N818: domain exception names read better
+ignore = ["RUF001", "RUF002", "RUF003", "E501", "N818"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["tests"]
 asyncio_mode = "auto"
 addopts = "-q"

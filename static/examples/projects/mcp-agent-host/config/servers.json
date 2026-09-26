@@ -1,0 +1,47 @@
+{
+  "servers": {
+    "notes": {
+      "description": "Personal Markdown notes, launched as a subprocess over stdio",
+      "connection": {
+        "transport": "stdio",
+        "command": "python",
+        "args": ["-m", "demo_servers.notes_server"],
+        "env": {"NOTES_DIR": "${NOTES_DIR:-data/notes}"}
+      },
+      "policy": {
+        "allow": ["*"],
+        "deny": [],
+        "destructive": ["delete_note"],
+        "allow_sampling": false
+      },
+      "timeout_s": 10,
+      "max_output_chars": 4000
+    },
+    "calendar": {
+      "description": "Team calendar over streamable HTTP",
+      "connection": {
+        "transport": "http",
+        "url": "${CALENDAR_URL:-http://127.0.0.1:8101/mcp}"
+      },
+      "policy": {
+        "allow": ["*"],
+        "destructive": ["cancel_event"],
+        "allow_sampling": true
+      },
+      "timeout_s": 20
+    },
+    "docs": {
+      "description": "Company handbook RAG server over streamable HTTP",
+      "connection": {
+        "transport": "http",
+        "url": "${DOCS_URL:-http://127.0.0.1:8102/mcp}"
+      },
+      "policy": {
+        "allow": ["search"],
+        "allow_sampling": false
+      },
+      "timeout_s": 15,
+      "max_output_chars": 3000
+    }
+  }
+}

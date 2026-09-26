@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model selection report</title>
+<style>
+:root { --bg:#fbfaf7; --fg:#26241f; --muted:#6b675e; --line:#e3dfd5; --accent:#2f6f5e; --warn:#9a5b13; --bar:#9cc5b8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1d1c1a; --fg:#e8e4da; --muted:#a39e92; --line:#3a3833; --accent:#7cc2ad; --warn:#e0a458; --bar:#3f7667; } }
+body { background:var(--bg); color:var(--fg); font:15px/1.55 system-ui, sans-serif; margin:0; padding:24px 16px; }
+main { max-width:1080px; margin:0 auto; }
+h1 { font-size:1.5rem; margin:0 0 4px; } h2 { font-size:1.15rem; margin:32px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+.meta { color:var(--muted); font-size:.85rem; }
+.rec { border-left:4px solid var(--accent); padding:12px 16px; background:color-mix(in srgb, var(--accent) 8%, transparent); margin:16px 0; }
+.caveat { color:var(--warn); }
+.scroll { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:.88rem; font-variant-numeric:tabular-nums; }
+th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
+th { color:var(--muted); font-weight:600; }
+.bar { background:var(--bar); height:8px; border-radius:4px; display:inline-block; vertical-align:middle; margin-right:6px; }
+.fail { color:var(--warn); }
+</style>
+</head>
+<body>
+<main>
+<h1>Model selection: support-ticket triage</h1>
+<div class="meta">Run {{ s.run_id }} · profile {{ s.profile }} · splits {{ s.splits | join(", ") }} · dataset {{ s.dataset_hash }} · prompts {{ s.prompt_version }} · judge {{ s.judge }}</div>
+
+<div class="rec">
+{% if s.recommendation.model_id %}
+<strong>Recommended: {{ s.recommendation.model_id }}</strong>{% if s.recommendation.runner_up %} · runner-up {{ s.recommendation.runner_up }}{% endif %}<br>{{ s.recommendation.reason }}
+{% else %}
+<strong>No recommendation.</strong> {{ s.recommendation.reason }}
+{% endif %}
+</div>
+
+<h2>Caveats</h2>
+<ul>{% for c in s.caveats %}<li class="caveat">{{ c }}</li>{% else %}<li>None.</li>{% endfor %}</ul>
+
+<h2>Results on the test split ({{ s.n_test_items }} items)</h2>
+<div class="scroll"><table>
+<tr><th>Model</th><th>Composite [95% CI]</th><th>Accuracy</th><th>Macro-F1</th><th>JSON valid</th><th>Field acc.</th><th>Reply</th><th>p95</th><th>Cost/1k</th><th>Gates</th></tr>
+{% for m in s.models %}
+<tr>
+<td>{{ m.model_id }}{% if m.model_id in s.pareto %} ◆{% endif %}</td>
+<td><span class="bar" style="width:{{ (m.quality * 80) | round(0) | int }}px"></span>{{ m.quality | f3 }} [{{ m.quality_low | f3 }}, {{ m.quality_high | f3 }}]</td>
+<td>{{ m.accuracy | pct }}</td><td>{{ m.macro_f1_ci[0] | f3 }}</td><td>{{ m.json_validity | pct }}</td><td>{{ m.field_accuracy | pct }}</td>
+<td>{{ m.reply_score | f2 }}</td><td>{{ m.p95_latency_ms | ms }}</td><td>{{ m.cost_per_1k_usd | usd }}</td>
+<td>{% if m.passes %}pass{% else %}<span class="fail">{{ m.gate_failures | join("; ") }}</span>{% endif %}</td>
+</tr>
+{% endfor %}
+</table></div>
+<p class="meta">◆ on the Pareto frontier of the models that pass the gates (quality ↑, cost ↓, p95 latency ↓).</p>
+
+<h2>Weighted decision matrix</h2>
+<div class="scroll"><table>
+<tr><th>Model</th><th>Quality</th><th>Cost</th><th>Latency</th><th>Total</th></tr>
+{% for mid, row in s.matrix.items() | sort(attribute="1.total", reverse=true) %}
+<tr><td>{{ mid }}</td><td>{{ row.quality | f2 }}</td><td>{{ row.cost | f2 }}</td><td>{{ row.latency | f2 }}</td><td><strong>{{ row.total | f2 }}</strong></td></tr>
+{% endfor %}
+</table></div>
+
+<h2>Significance against the baseline ({{ s.baseline }})</h2>
+<div class="scroll"><table>
+<tr><th>Candidate</th><th>Composite diff [95% CI]</th><th>p perm.</th><th>McNemar</th><th>p McNemar</th><th>Holm</th><th>Reply win rate</th></tr>
+{% for mid, t in s.tests_vs_baseline.items() %}
+<tr><td>{{ mid }}</td><td>{{ "%+.3f" | format(t.composite_diff) }} [{{ "%+.3f" | format(t.diff_low) }}, {{ "%+.3f" | format(t.diff_high) }}]</td>
+<td>{{ t.p_permutation | f3 }}</td><td>{{ t.mcnemar_only_candidate }} / {{ t.mcnemar_only_reference }}</td><td>{{ t.p_mcnemar | f3 }}</td>
+<td>{{ "significant" if t.significant_holm else "not significant" }}</td>
+<td>{% if mid in s.pairwise_vs_baseline %}{{ s.pairwise_vs_baseline[mid].win_rate | f2 }}{% else %}n/a{% endif %}</td></tr>
+{% endfor %}
+</table></div>
+
+{% if s.sample_size %}
+<h2>Sample size</h2>
+<p>{{ s.sample_size.n_items }} paired items detect composite differences of <strong>{{ s.sample_size.mde_at_current_n | f3 }}</strong> or more. Detecting {{ s.sample_size.target_effect }} needs about <strong>{{ s.sample_size.n_needed_composite }}</strong> items.</p>
+{% endif %}
+
+<h2>Judge calibration</h2>
+<div class="scroll"><table>
+<tr><th>Check</th><th>Value</th></tr>
+<tr><td>Spearman vs human mean</td><td>{{ s.calibration.spearman | f3 }}</td></tr>
+<tr><td>Weighted kappa vs human median</td><td>{{ s.calibration.weighted_kappa | f3 }}</td></tr>
+<tr><td>Fleiss' kappa humans (ceiling) / with judge</td><td>{{ s.calibration.human_fleiss | f3 }} / {{ s.calibration.human_plus_judge_fleiss | f3 }}</td></tr>
+<tr><td>Pairwise kappa single → swapped</td><td>{{ s.calibration.pairwise_kappa_single | f3 }} → {{ s.calibration.pairwise_kappa_swapped | f3 }}</td></tr>
+<tr><td>Position consistency</td><td>{{ s.calibration.position_consistency | pct }}</td></tr>
+<tr><td>Verbosity delta</td><td>{{ "%+.2f" | format(s.calibration.verbosity_delta) }} (p={{ s.calibration.verbosity_p | f3 }})</td></tr>
+<tr><td>Self-preference delta</td><td>{% if s.calibration.self_preference_delta is not none %}{{ "%+.2f" | format(s.calibration.self_preference_delta) }}{% else %}n/a{% endif %}</td></tr>
+<tr><td>Meta-judge agreement</td><td>{{ s.calibration.meta_agreement | pct }}</td></tr>
+{% for k, v in s.calibration.ablation.items() %}<tr><td>Ablation: {{ k }}</td><td>{{ v | f3 }}</td></tr>{% endfor %}
+</table></div>
+
+<h2>Contamination</h2>
+<div class="scroll"><table>
+<tr><th>Model</th><th>Probe test</th><th>Probe private</th><th>Gap (test − private)</th><th>Flagged</th></tr>
+{% for mid, c in s.contamination.items() %}
+<tr><td>{{ mid }}</td><td>{{ c.probe_test | f2 }}</td><td>{{ c.probe_private | f2 if c.probe_private is defined else "n/a" }}</td>
+<td>{{ "%+.3f" | format(c.gap) if c.gap is defined else "n/a" }}</td><td>{{ "yes" if c.probe_flagged or c.gap_flagged | default(false) else "no" }}</td></tr>
+{% endfor %}
+</table></div>
+
+<p class="meta">Billed this run {{ s.billed_usd | usd }} · cache entries {{ s.cache_entries }} · {{ s.duration_s }} s.</p>
+</main>
+</body>
+</html>

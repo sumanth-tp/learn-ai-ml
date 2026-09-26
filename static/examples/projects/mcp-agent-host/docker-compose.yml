@@ -1,0 +1,64 @@
+# docker compose up --build        -> host on http://localhost:8000
+# docker compose --profile tracing up --build   -> plus Jaeger on http://localhost:16686
+x-server-env: &server-env
+  MCP_HOST: 0.0.0.0
+  MCP_LOG_LEVEL: WARNING
+  # DNS-rebinding protection: accept only the compose service names.
+  MCP_ALLOWED_HOSTS: "calendar:*,docs:*,127.0.0.1:*,localhost:*"
+
+services:
+  calendar:
+    build: .
+    command: ["calendar-server"]
+    environment:
+      <<: *server-env
+      MCP_PORT: "8101"
+      CALENDAR_STORE: /app/data/state/calendar.json
+    volumes: [calendar-state:/app/data/state]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/healthz', timeout=2)"]
+      interval: 5s
+      retries: 10
+
+  docs:
+    build: .
+    command: ["docs-server"]
+    environment:
+      <<: *server-env
+      MCP_PORT: "8102"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/healthz', timeout=2)"]
+      interval: 5s
+      retries: 10
+
+  host:
+    build: .
+    command: ["mcp-host", "serve"]
+    ports: ["8000:8000"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      HOST_API_HOST: 0.0.0.0
+      HOST_CHECKPOINT_DB: /app/data/state/checkpoints.sqlite
+      CALENDAR_URL: http://calendar:8101/mcp
+      DOCS_URL: http://docs:8102/mcp
+      NOTES_DIR: /app/data/notes
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://jaeger:4318}
+    # A named volume on a non-empty image path is seeded from the image on first run.
+    volumes: [host-state:/app/data/state, host-notes:/app/data/notes]
+    depends_on:
+      calendar: {condition: service_healthy}
+      docs: {condition: service_healthy}
+
+  jaeger:
+    profiles: [tracing]
+    image: jaegertracing/all-in-one:1.62.0
+    ports: ["16686:16686"]
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+
+volumes:
+  calendar-state:
+  host-state:
+  host-notes:

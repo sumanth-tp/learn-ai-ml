@@ -198,8 +198,8 @@ class PolicyEngine:
                 return Decision(False, r.id, f"denied by rule '{r.id}'")
         violations: list[str] = []
         for r in matching:  # allow rules, in file order
-            if args is None:
-                return Decision(True, r.id, "visible")
+            if args is None:  # visibility checks and resources: constraints are about tool args
+                return Decision(True, r.id, f"allowed by rule '{r.id}'")
             errs = [m for k, c in r.constraints.items() if (m := _check_constraint(k, c, args))]
             if not errs:
                 return Decision(True, r.id, f"allowed by rule '{r.id}'")
@@ -215,7 +215,7 @@ class PolicyEngine:
         return self._evaluate(p, "tools", tool, None).allowed
 
     def check_resource(self, p: Principal, uri: str) -> Decision:
-        return self._evaluate(p, "resources", uri, {})
+        return self._evaluate(p, "resources", uri, None)
 
     def resource_visible(self, p: Principal, uri: str) -> bool:
         return self._evaluate(p, "resources", uri, None).allowed

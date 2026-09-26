@@ -1,0 +1,6 @@
+# USD per 1M tokens. Check your provider's current price list before relying on cost numbers.
+models:
+  gpt-4o-mini: {input_per_1m: 0.15, output_per_1m: 0.60}
+  gpt-4.1-mini: {input_per_1m: 0.40, output_per_1m: 1.60}
+  gpt-4.1-nano: {input_per_1m: 0.10, output_per_1m: 0.40}
+  text-embedding-3-small: {input_per_1m: 0.02}
