@@ -1,0 +1,1152 @@
+{
+  "add_comment": {
+    "annotations": {
+      "destructive_hint": false,
+      "idempotent_hint": true,
+      "read_only_hint": false,
+      "title": "Add comment"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "maxLength": 5000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 8,
+              "pattern": "^[A-Za-z0-9_.:-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Unique string for this intended action (for example a UUID). If the call is retried with the same key, the original result is returned instead of creating a duplicate."
+        },
+        "internal": {
+          "default": false,
+          "description": "Agent-only note hidden from the requester.",
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "description": "Numeric ticket id, e.g. 42.",
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "body"
+      ],
+      "type": "object"
+    },
+    "output": {
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "internal": {
+          "description": "True if only helpdesk agents can see this comment.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "author",
+        "body",
+        "internal",
+        "created_at"
+      ],
+      "type": "object"
+    }
+  },
+  "assign_ticket": {
+    "annotations": {
+      "destructive_hint": false,
+      "idempotent_hint": true,
+      "read_only_hint": false,
+      "title": "Assign ticket"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "assignee": {
+          "description": "User id of the agent.",
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ticket_id": {
+          "description": "Numeric ticket id, e.g. 42.",
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "assignee"
+      ],
+      "type": "object"
+    },
+    "output": {
+      "description": "A helpdesk ticket as returned to clients.",
+      "properties": {
+        "assignee": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "enum": [
+            "access",
+            "hardware",
+            "software",
+            "network",
+            "email",
+            "other"
+          ],
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "priority": {
+          "enum": [
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ],
+          "type": "string"
+        },
+        "requester": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "in_progress",
+            "waiting_on_user",
+            "resolved",
+            "closed"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "uri": {
+          "description": "Resource URI for this ticket, readable with resources/read.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Increments on every change. Pass it back as expected_version when updating.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "status",
+        "priority",
+        "category",
+        "requester",
+        "assignee",
+        "version",
+        "created_at",
+        "updated_at",
+        "uri"
+      ],
+      "type": "object"
+    }
+  },
+  "create_ticket": {
+    "annotations": {
+      "destructive_hint": false,
+      "idempotent_hint": true,
+      "open_world_hint": false,
+      "read_only_hint": false,
+      "title": "Create ticket"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "default": "other",
+          "enum": [
+            "access",
+            "hardware",
+            "software",
+            "network",
+            "email",
+            "other"
+          ],
+          "type": "string"
+        },
+        "description": {
+          "description": "What happened, what the user expected, and any error text.",
+          "maxLength": 10000,
+          "minLength": 10,
+          "type": "string"
+        },
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 8,
+              "pattern": "^[A-Za-z0-9_.:-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Unique string for this intended action (for example a UUID). If the call is retried with the same key, the original result is returned instead of creating a duplicate."
+        },
+        "priority": {
+          "default": "p3",
+          "description": "p1 many users down, p2 a team blocked, p3 one user, p4 question.",
+          "enum": [
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "description": "One-line summary of the problem.",
+          "maxLength": 200,
+          "minLength": 5,
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description"
+      ],
+      "type": "object"
+    },
+    "output": {
+      "description": "A helpdesk ticket as returned to clients.",
+      "properties": {
+        "assignee": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "enum": [
+            "access",
+            "hardware",
+            "software",
+            "network",
+            "email",
+            "other"
+          ],
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "priority": {
+          "enum": [
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ],
+          "type": "string"
+        },
+        "requester": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "in_progress",
+            "waiting_on_user",
+            "resolved",
+            "closed"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "uri": {
+          "description": "Resource URI for this ticket, readable with resources/read.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Increments on every change. Pass it back as expected_version when updating.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "status",
+        "priority",
+        "category",
+        "requester",
+        "assignee",
+        "version",
+        "created_at",
+        "updated_at",
+        "uri"
+      ],
+      "type": "object"
+    }
+  },
+  "delete_ticket": {
+    "annotations": {
+      "destructive_hint": true,
+      "idempotent_hint": false,
+      "read_only_hint": false,
+      "title": "Delete ticket"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "confirm_token": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Only pass the token returned by a previous delete_ticket call, after the user has explicitly agreed."
+        },
+        "ticket_id": {
+          "description": "Numeric ticket id, e.g. 42.",
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ticket_id"
+      ],
+      "type": "object"
+    },
+    "output": {
+      "description": "Outcome of a destructive request.",
+      "properties": {
+        "confirm_token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Present when status is confirmation_required. Show the user what will be deleted, and only if they agree call delete_ticket again with this token."
+        },
+        "expires_in_s": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "description": "'deleted', 'cancelled' or 'confirmation_required'.",
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "status",
+        "ticket_id",
+        "message"
+      ],
+      "type": "object"
+    }
+  },
+  "get_ticket": {
+    "annotations": {
+      "read_only_hint": true,
+      "title": "Get ticket"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "ticket_id": {
+          "description": "Numeric ticket id, e.g. 42.",
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ticket_id"
+      ],
+      "type": "object"
+    },
+    "output": {
+      "properties": {
+        "assignee": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "enum": [
+            "access",
+            "hardware",
+            "software",
+            "network",
+            "email",
+            "other"
+          ],
+          "type": "string"
+        },
+        "comments": {
+          "items": {
+            "properties": {
+              "author": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "created_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "internal": {
+                "description": "True if only helpdesk agents can see this comment.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "author",
+              "body",
+              "internal",
+              "created_at"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "priority": {
+          "enum": [
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ],
+          "type": "string"
+        },
+        "requester": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "in_progress",
+            "waiting_on_user",
+            "resolved",
+            "closed"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "uri": {
+          "description": "Resource URI for this ticket, readable with resources/read.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Increments on every change. Pass it back as expected_version when updating.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "status",
+        "priority",
+        "category",
+        "requester",
+        "assignee",
+        "version",
+        "created_at",
+        "updated_at",
+        "uri"
+      ],
+      "type": "object"
+    }
+  },
+  "incident_report": {
+    "annotations": {
+      "read_only_hint": true,
+      "title": "Incident report"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "anyOf": [
+            {
+              "enum": [
+                "access",
+                "hardware",
+                "software",
+                "network",
+                "email",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "window_hours": {
+          "default": 24,
+          "maximum": 720,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "output": {
+      "properties": {
+        "by_category": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "by_priority": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "open_p1_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "tickets_scanned": {
+          "type": "integer"
+        },
+        "top_category": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "window_hours": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "window_hours",
+        "tickets_scanned",
+        "by_category",
+        "by_priority",
+        "open_p1_ids",
+        "top_category"
+      ],
+      "type": "object"
+    }
+  },
+  "search_tickets": {
+    "annotations": {
+      "read_only_hint": true,
+      "title": "Search tickets"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "assignee": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "category": {
+          "anyOf": [
+            {
+              "enum": [
+                "access",
+                "hardware",
+                "software",
+                "network",
+                "email",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "next_cursor from a previous call, to fetch the following page."
+        },
+        "limit": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Page size, max 100."
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "enum": [
+                "p1",
+                "p2",
+                "p3",
+                "p4"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Case-insensitive text in title or description."
+        },
+        "status": {
+          "anyOf": [
+            {
+              "enum": [
+                "open",
+                "in_progress",
+                "waiting_on_user",
+                "resolved",
+                "closed"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object"
+    },
+    "output": {
+      "properties": {
+        "items": {
+          "items": {
+            "description": "A helpdesk ticket as returned to clients.",
+            "properties": {
+              "assignee": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "category": {
+                "enum": [
+                  "access",
+                  "hardware",
+                  "software",
+                  "network",
+                  "email",
+                  "other"
+                ],
+                "type": "string"
+              },
+              "created_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "priority": {
+                "enum": [
+                  "p1",
+                  "p2",
+                  "p3",
+                  "p4"
+                ],
+                "type": "string"
+              },
+              "requester": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "open",
+                  "in_progress",
+                  "waiting_on_user",
+                  "resolved",
+                  "closed"
+                ],
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "updated_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "uri": {
+                "description": "Resource URI for this ticket, readable with resources/read.",
+                "type": "string"
+              },
+              "version": {
+                "description": "Increments on every change. Pass it back as expected_version when updating.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "description",
+              "status",
+              "priority",
+              "category",
+              "requester",
+              "assignee",
+              "version",
+              "created_at",
+              "updated_at",
+              "uri"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Opaque cursor for the next page; null when there are no more."
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "type": "object"
+    }
+  },
+  "suggest_triage": {
+    "annotations": {
+      "open_world_hint": true,
+      "read_only_hint": true,
+      "title": "Suggest triage"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "ticket_id": {
+          "description": "Numeric ticket id, e.g. 42.",
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ticket_id"
+      ],
+      "type": "object"
+    },
+    "output": {
+      "description": "A suggested classification. Advisory only; nothing is changed until update_ticket.",
+      "properties": {
+        "category": {
+          "enum": [
+            "access",
+            "hardware",
+            "software",
+            "network",
+            "email",
+            "other"
+          ],
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ],
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "source": {
+          "description": "'llm' when a model produced it, 'fallback' when rules did.",
+          "type": "string"
+        },
+        "suggested_kb_slugs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "category",
+        "priority",
+        "rationale",
+        "source"
+      ],
+      "type": "object"
+    }
+  },
+  "update_ticket": {
+    "annotations": {
+      "destructive_hint": false,
+      "idempotent_hint": true,
+      "read_only_hint": false,
+      "title": "Update ticket"
+    },
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "anyOf": [
+            {
+              "enum": [
+                "access",
+                "hardware",
+                "software",
+                "network",
+                "email",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The version you last read. The update fails if it changed."
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "enum": [
+                "p1",
+                "p2",
+                "p3",
+                "p4"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "status": {
+          "anyOf": [
+            {
+              "enum": [
+                "open",
+                "in_progress",
+                "waiting_on_user",
+                "resolved",
+                "closed"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ticket_id": {
+          "description": "Numeric ticket id, e.g. 42.",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 5,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "ticket_id"
+      ],
+      "type": "object"
+    },
+    "output": {
+      "description": "A helpdesk ticket as returned to clients.",
+      "properties": {
+        "assignee": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "enum": [
+            "access",
+            "hardware",
+            "software",
+            "network",
+            "email",
+            "other"
+          ],
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "priority": {
+          "enum": [
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ],
+          "type": "string"
+        },
+        "requester": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "in_progress",
+            "waiting_on_user",
+            "resolved",
+            "closed"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "uri": {
+          "description": "Resource URI for this ticket, readable with resources/read.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Increments on every change. Pass it back as expected_version when updating.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "status",
+        "priority",
+        "category",
+        "requester",
+        "assignee",
+        "version",
+        "created_at",
+        "updated_at",
+        "uri"
+      ],
+      "type": "object"
+    }
+  }
+}

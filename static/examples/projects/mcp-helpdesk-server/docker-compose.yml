@@ -1,0 +1,41 @@
+# One command brings up the whole system:  docker compose up --build
+#   postgres -> migrate (one-shot) -> seed (one-shot) -> server on :8000
+# Then:  make token USER_ID=sam ROLE=agent  and point a client at http://localhost:8000/mcp
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: helpdesk
+      POSTGRES_PASSWORD: helpdesk          # local only; prod uses a managed DB + secret store
+      POSTGRES_DB: helpdesk
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U helpdesk -d helpdesk"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: .
+    command: ["helpdesk-mcp", "migrate"]
+    env_file: [.env.compose]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  seed:
+    build: .
+    command: ["helpdesk-mcp", "seed"]
+    env_file: [.env.compose]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+
+  server:
+    build: .
+    env_file: [.env.compose]
+    ports: ["8000:8000"]
+    depends_on:
+      seed: {condition: service_completed_successfully}
+    restart: unless-stopped
+
+volumes:
+  pgdata:

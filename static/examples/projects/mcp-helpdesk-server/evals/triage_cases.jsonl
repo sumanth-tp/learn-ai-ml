@@ -1,0 +1,30 @@
+{"id": "t01", "title": "Locked out of SSO", "description": "I typed my password wrong three times and now I am locked out.", "category": "access", "priority": "p3"}
+{"id": "t02", "title": "MFA app lost", "description": "New phone, my MFA codes are gone and I cannot work. Deadline today.", "category": "access", "priority": "p2"}
+{"id": "t03", "title": "Need access to finance share", "description": "Please grant me access to the finance shared drive when convenient.", "category": "access", "priority": "p4"}
+{"id": "t04", "title": "VPN outage", "description": "The VPN is down for everyone in the Leeds office since 9am.", "category": "network", "priority": "p1"}
+{"id": "t05", "title": "Wi-Fi drops in meeting room 3", "description": "The wifi keeps dropping in room 3 for our whole team during calls.", "category": "network", "priority": "p2"}
+{"id": "t06", "title": "Slow internet at home", "description": "My internet feels slow on the VPN, pages take ages.", "category": "network", "priority": "p3"}
+{"id": "t07", "title": "DNS question", "description": "Question: how do I flush DNS on a Mac?", "category": "network", "priority": "p4"}
+{"id": "t08", "title": "Outlook not syncing", "description": "Outlook stopped syncing my inbox this morning.", "category": "email", "priority": "p3"}
+{"id": "t09", "title": "Shared mailbox missing", "description": "The support team cannot see the shared mailbox, the whole team is blocked.", "category": "email", "priority": "p2"}
+{"id": "t10", "title": "Email outage", "description": "Email is down for all users, nobody can send or receive.", "category": "email", "priority": "p1"}
+{"id": "t11", "title": "Calendar invite formatting", "description": "Minor: calendar invites show the wrong time zone label.", "category": "email", "priority": "p4"}
+{"id": "t12", "title": "Laptop will not boot", "description": "My laptop shows a black screen and will not start. I cannot work.", "category": "hardware", "priority": "p2"}
+{"id": "t13", "title": "Monitor flickers", "description": "External monitor flickers when docked.", "category": "hardware", "priority": "p3"}
+{"id": "t14", "title": "Printer jam on floor 2", "description": "The printer on floor 2 jams on every job.", "category": "hardware", "priority": "p3"}
+{"id": "t15", "title": "Keyboard request", "description": "Nice to have: a UK layout keyboard for my desk.", "category": "hardware", "priority": "p4"}
+{"id": "t16", "title": "Battery swelling", "description": "The laptop battery is swelling and the case is bending.", "category": "hardware", "priority": "p3"}
+{"id": "t17", "title": "Excel crashes on open", "description": "Excel crashes every time I open the quarterly model.", "category": "software", "priority": "p3"}
+{"id": "t18", "title": "Install Python", "description": "Please install Python 3.12 on my machine.", "category": "software", "priority": "p3"}
+{"id": "t19", "title": "Licence expired", "description": "Our design licence expired and the team is blocked from exporting files.", "category": "software", "priority": "p2"}
+{"id": "t20", "title": "ERP down", "description": "Production down: the ERP app crashes for all users after last night's update.", "category": "software", "priority": "p1"}
+{"id": "t21", "title": "Password expiry reminder", "description": "Question: how do I change the password expiry reminder?", "category": "access", "priority": "p4"}
+{"id": "t22", "title": "Proxy blocks site", "description": "The proxy blocks our vendor portal and I need it urgently.", "category": "network", "priority": "p2"}
+{"id": "t23", "title": "Dock not charging", "description": "My dock stopped charging the laptop.", "category": "hardware", "priority": "p3"}
+{"id": "t24", "title": "Whole office no network", "description": "Whole office has no network connection, all users affected.", "category": "network", "priority": "p1"}
+{"id": "t25", "title": "Chair broken", "description": "My office chair is broken.", "category": "other", "priority": "p3"}
+{"id": "t26", "title": "Badge not working", "description": "My building badge stopped opening the side door.", "category": "other", "priority": "p3"}
+{"id": "t27", "title": "Mailbox full", "description": "My mailbox is full and I cannot receive email from clients. Urgent.", "category": "email", "priority": "p2"}
+{"id": "t28", "title": "SSO outage", "description": "SSO login is failing for everyone, outage across the company.", "category": "access", "priority": "p1"}
+{"id": "t29", "title": "Software update prompt", "description": "An update prompt keeps appearing for the chat app.", "category": "software", "priority": "p3"}
+{"id": "t30", "title": "Screen brightness", "description": "Minor issue: the screen brightness keys do nothing.", "category": "hardware", "priority": "p4"}
