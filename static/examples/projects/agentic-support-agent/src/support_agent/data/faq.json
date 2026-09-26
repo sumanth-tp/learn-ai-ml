@@ -1,0 +1,12 @@
+[
+  {"id": "returns-window", "title": "Return window", "text": "You can return most items within 30 days of delivery. Items must be unused and in their original packaging. Start a return from your order page or ask the assistant with your order number."},
+  {"id": "refund-timing", "title": "How long refunds take", "text": "Refunds go back to the original payment method. Card refunds usually appear within 5 to 10 working days after we approve them. Refunds over 100 pounds are checked by a member of the team first, which can add one working day."},
+  {"id": "shipping-times", "title": "Delivery times", "text": "Standard delivery takes 3 to 5 working days in the UK. Express delivery takes 1 to 2 working days. You get a tracking number by email when your order ships."},
+  {"id": "shipping-cost", "title": "Delivery cost", "text": "Standard delivery is free on orders over 40 pounds, otherwise it costs 3.99 pounds. Express delivery costs 7.99 pounds."},
+  {"id": "cancel-order", "title": "Cancelling an order", "text": "You can cancel an order until it ships. Once it has shipped, wait for delivery and start a return instead."},
+  {"id": "damaged-item", "title": "Damaged or faulty items", "text": "If an item arrives damaged or faulty, tell us within 14 days of delivery with a photo. We refund or replace it and pay for the return postage."},
+  {"id": "non-returnable", "title": "Items that cannot be returned", "text": "Gift cards, personalised items, underwear and opened software cannot be returned unless faulty."},
+  {"id": "payment-methods", "title": "Payment methods", "text": "We accept Visa, Mastercard, American Express, PayPal and Apple Pay. We never ask for your full card number in chat."},
+  {"id": "account-email", "title": "Changing your email address", "text": "Change your email address in Account settings. For security the assistant cannot change account details for you."},
+  {"id": "contact-human", "title": "Talking to a person", "text": "Ask the assistant for a human at any time. Our team works 8am to 8pm, seven days a week, and replies within 2 hours."}
+]

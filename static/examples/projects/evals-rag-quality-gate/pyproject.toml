@@ -1,0 +1,58 @@
+[project]
+name = "ragate"
+version = "0.1.0"
+description = "Offline evaluation system and CI release gate for a RAG policy assistant."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "deepeval>=4.2.6",
+    "faiss-cpu>=1.15.1",
+    "fastapi>=0.141.1",
+    "langchain-core>=1.6.5",
+    "langchain-openai>=1.6.6",
+    "langsmith>=0.14.1",
+    "numpy>=2.5.3",
+    "prometheus-client>=0.23.1",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "pyyaml>=6.0.3",
+    "rank-bm25>=0.2.2",
+    "structlog>=26.1.0",
+    "typer>=0.27.2",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+ragate = "ragate.cli:app"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ragate"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/ragate/cli.py" = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["demo: needs real API keys and network (skipped by default)"]
+filterwarnings = ["ignore::DeprecationWarning"]

@@ -16,11 +16,11 @@ My requirements, which override anything else:
 
 ## The playlists
 
-| # | Course | Playlist | Videos |
-|---|---|---|---|
-| 1 | Agentic AI using LangGraph | https://www.youtube.com/playlist?list=PLKnIA16_RmvYsvB8qkUQuJmJNuiCUJFPL | 28 |
-| 2 | Model Context Protocol (MCP Trilogy) | https://www.youtube.com/playlist?list=PLKnIA16_Rmva_oZ9F4ayUu9qcWgF7Fyc0 | 8 |
-| 3 | LLM Evaluation | https://www.youtube.com/playlist?list=PLEneLIDJFpcA | 19 |
+| #   | Course                               | Playlist                                                                 | Videos |
+| --- | ------------------------------------ | ------------------------------------------------------------------------ | ------ |
+| 1   | Agentic AI using LangGraph           | https://www.youtube.com/playlist?list=PLKnIA16_RmvYsvB8qkUQuJmJNuiCUJFPL | 28     |
+| 2   | Model Context Protocol (MCP Trilogy) | https://www.youtube.com/playlist?list=PLKnIA16_Rmva_oZ9F4ayUu9qcWgF7Fyc0 | 8      |
+| 3   | LLM Evaluation                       | https://www.youtube.com/playlist?list=PLEneLIDJFpcA                      | 19     |
 
 Each playlist starts with a short "New Playlist" announcement video. **Include
 it** as page 1. The notes are 1:1 with the playlist: one page per video, in
@@ -43,8 +43,8 @@ playlist order, nothing skipped, nothing merged.
      -o "subs/%(id)s.%(ext)s" "https://www.youtube.com/watch?v=<VIDEO_ID>"
    ```
 
-   - The default and `tv` clients fail with "The page needs to be reloaded".
-     Use `android`.
+   - The default and `tv` clients fail with "The page needs to be reloaded". Use
+     `android`.
    - **Never fetch in parallel.** Sleep 6–8 s between videos. If a video fails,
      rotate the client (`android`, `ios`, `mweb`, `web_embedded`, `android_vr`)
      and retry in a later round.
@@ -69,13 +69,12 @@ playlist order, nothing skipped, nothing merged.
 ## Step 1: English transcript (for every video, before any notes)
 
 The captions are Hinglish written in Devanagari. English technical words appear
-transliterated: "लैंग ग्राफ" = LangGraph, "स्टेट" = state, "नोड" = node,
-"इनवोक" = invoke. Produce one English transcript file per video:
+transliterated: "लैंग ग्राफ" = LangGraph, "स्टेट" = state, "नोड" = node, "इनवोक"
+= invoke. Produce one English transcript file per video:
 
 - Keep **every** block, in order, with its timestamp.
-- Translate faithfully. Keep the speaker's meaning, examples, analogies,
-  asides, corrections and warnings. Remove only pure filler ("ठीक है?",
-  "right?").
+- Translate faithfully. Keep the speaker's meaning, examples, analogies, asides,
+  corrections and warnings. Remove only pure filler ("ठीक है?", "right?").
 - Spell code identifiers, library names and values correctly (`StateGraph`,
   `add_edge`, `TypedDict`, `gpt-4o-mini`).
 - Fix obvious speech-recognition errors from context, such as "Lindin" →
@@ -111,28 +110,27 @@ video's point, built only from the speaker's own framing.
 
 ### What the notes must be
 
-- **Same order as the video.** Headings follow the video's own segments as
-  they happen: the recap, the "why", the "what", each example, each demo, and
-  "what comes next". Never reorder, merge, or impose your own topic structure.
+- **Same order as the video.** Headings follow the video's own segments as they
+  happen: the recap, the "why", the "what", each example, each demo, and "what
+  comes next". Never reorder, merge, or impose your own topic structure.
 - **Nothing added.** No facts, tips, best practices, extra examples, further
-  reading, checklists, interview questions, projects or explanations the
-  speaker does not give. There is one exception. If he states something
-  factually wrong (a wrong API name, date or library behaviour), keep what he
-  said and add a short note giving the correction. Leave simplifications and
-  opinions alone.
+  reading, checklists, interview questions, projects or explanations the speaker
+  does not give. There is one exception. If he states something factually wrong
+  (a wrong API name, date or library behaviour), keep what he said and add a
+  short note giving the correction. Leave simplifications and opinions alone.
 - **Nothing skipped.** Every topic, example, analogy, number, diagram
   description, code step, bug and its fix, warning, aside and homework must
-  appear, at the point where he gives it. Only "like and subscribe" and
-  sponsor plugs may be dropped.
+  appear, at the point where he gives it. Only "like and subscribe" and sponsor
+  plugs may be dropped.
 - **Feels like watching.** Write flowing teaching prose that walks through the
   video as it unfolds. Keep his running examples exactly, with the same names,
   numbers and scenarios. Use an impersonal voice. **Never** write "He says…",
   "Nitish explains…" or "In this video he…".
 - **Your own words, not a transcript dump.** Explain each point clearly and
-  completely, but do not paste the translation. Short quotes of a definition
-  are fine.
-- **Slides.** When he reads out slide content, include that content as prose
-  or a list.
+  completely, but do not paste the translation. Short quotes of a definition are
+  fine.
+- **Slides.** When he reads out slide content, include that content as prose or
+  a list.
 - **Code:**
   - Reproduce the code he writes or reads out, with his variable names, in the
     order he builds it.
@@ -145,9 +143,9 @@ video's point, built only from the speaker's own framing.
   - Never add functionality.
   - Include only outputs he reads out, as short `text` blocks. Never invent
     outputs.
-- **Diagrams.** Only when he draws or walks through a flow (a graph of nodes,
-  an architecture, a pipeline, a loop), recreate it as a Mermaid diagram at
-  that point. No decorative diagrams. Never embed screenshots or video frames.
+- **Diagrams.** Only when he draws or walks through a flow (a graph of nodes, an
+  architecture, a pipeline, a loop), recreate it as a Mermaid diagram at that
+  point. No decorative diagrams. Never embed screenshots or video frames.
 - **Tables.** Use them only for comparisons he makes (X vs Y, or a checklist he
   ticks off repeatedly). Use lists for everything else.
 - **No links** to other pages or sites, except the video link in the header.
@@ -172,16 +170,16 @@ before moving on.
 
 ## Working method
 
-Process one video at a time: fetch → English transcript → notes → coverage
-check → next video. Long videos (1–2 hours) should be translated in chunks of
-about 30 blocks, appended to the transcript file. If you are interrupted,
-resume. Never re-translate a finished transcript, never overwrite a finished
-page, and continue a partial transcript from its first missing block.
+Process one video at a time: fetch → English transcript → notes → coverage check
+→ next video. Long videos (1–2 hours) should be translated in chunks of about 30
+blocks, appended to the transcript file. If you are interrupted, resume. Never
+re-translate a finished transcript, never overwrite a finished page, and
+continue a partial transcript from its first missing block.
 
 ## Deliverables
 
-1. `english/<course>/<NN>-<videoId>.md`: the full English transcript for each
-   of the 55 videos.
+1. `english/<course>/<NN>-<videoId>.md`: the full English transcript for each of
+   the 55 videos.
 2. `<folder>/NN-<slug>.md`: one notes page per video.
 3. A final report listing, per video: the page path, the number of transcript
    blocks, the headings in order, any `[unclear]` passages, any correction
