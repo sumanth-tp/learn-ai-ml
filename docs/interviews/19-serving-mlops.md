@@ -1,14 +1,14 @@
 ---
 title: Serving, LLMOps, MLOps, and Observability
-sidebar_label: 8 · Serving and operations
-sidebar_position: 8
+sidebar_label: "19 · Serving and operations"
+sidebar_position: 19
 ---
 
 # Serving, LLMOps, MLOps, and Observability
 
 Explain how a model-backed system meets its quality, latency, availability, and cost constraints after deployment.
 
-**Evidence:** [S9](98-sources.md#s9) reports traffic spikes, queuing, scaling, and degradation; [S1](98-sources.md#s1) reports inference optimisation; [S8](98-sources.md#s8) attributes batching design to candidate reports. Specific capacities and incidents below are practice inputs.
+**Evidence:** [S9](24-sources.md#s9) reports traffic spikes, queuing, scaling, and degradation; [S1](24-sources.md#s1) reports inference optimisation; [S8](24-sources.md#s8) attributes batching design to candidate reports. Specific capacities and incidents below are practice inputs.
 
 ## Request latency has several owners
 
@@ -27,7 +27,7 @@ flowchart LR
 
 ## OPS01 · Traffic jumps tenfold. What do you do first?
 
-**Evidence: reported theme → scenario, [S9](98-sources.md#s9).**
+**Evidence: reported theme → scenario, [S9](24-sources.md#s9).**
 
 **Answer.** Protect capacity before chasing perfect throughput. Inspect queue age, active requests, provider quotas, database connections, GPU memory, and dependency latency. Bound admission per tenant and globally, shed excess work explicitly, and cancel abandoned requests. Prioritise critical tasks and use predefined degradation such as shorter outputs or a lower-cost path whose quality has been evaluated.
 
@@ -45,7 +45,7 @@ Little's law relates long-run averages in a stable system. It does not tell you 
 
 ## OPS02 · Design inference batching for a single GPU
 
-**Evidence: publisher-attributed reported task, [S8](98-sources.md#s8).**
+**Evidence: publisher-attributed reported task, [S8](24-sources.md#s8).**
 
 **Answer.** Clarify maximum tokens, batch compatibility, latency targets, and memory. Collect compatible requests until a size/token limit or maximum waiting time is reached. Batch by token budget as well as request count; 100 long prompts and 100 short prompts have very different costs. For autoregressive generation, continuous batching admits/removes sequences as they progress.
 
@@ -83,7 +83,7 @@ This reference is not a production scheduler: padding, output reservations, dead
 
 ## OPS03 · TTFT, inter-token latency, and total latency
 
-**Evidence: reported optimisation theme → practice question, [S1](98-sources.md#s1).**
+**Evidence: reported optimisation theme → practice question, [S1](24-sources.md#s1).**
 
 **Answer.** Time to first token includes queueing and prefill before the first streamed token. Inter-token latency describes subsequent token delivery. End-to-end latency includes full completion and any validation. Streaming improves perceived responsiveness but does not automatically reduce total compute.
 
@@ -189,7 +189,7 @@ assert variant in {"candidate", "baseline"}
 
 ## OPS08 · Design observability without logging everything
 
-**Evidence: reported tracing theme, [S9](98-sources.md#s9).**
+**Evidence: reported tracing theme, [S9](24-sources.md#s9).**
 
 **Answer.** Trace request → retrieval → model → tools → validation. Record durations, status, token/cost counts, model/prompt/index versions, and redacted identifiers. Distinguish application failures from model-quality failures. Sample and redact content based on purpose and access policy; avoid treating raw prompts as harmless logs.
 
@@ -222,7 +222,7 @@ This excludes many real costs and quality differences; it is a starting calculat
 
 ## OPS10 · Train, serve, monitor, and retrain a conventional ML model
 
-**Evidence: reported ML system-design theme, [S1](98-sources.md#s1).**
+**Evidence: reported ML system-design theme, [S1](24-sources.md#s1).**
 
 **Answer.** Use a versioned data snapshot and feature pipeline, a reproducible training job, validation gates, a registry, a deployment manifest, and serving/quality monitoring. Separate batch scoring from online prediction when latency permits. Promote a candidate only after testing the features and serving package, not merely a notebook's model score.
 

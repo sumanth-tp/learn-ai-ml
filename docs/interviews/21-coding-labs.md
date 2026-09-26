@@ -1,7 +1,7 @@
 ---
 title: Runnable Interview Coding Labs
-sidebar_label: Coding labs
-sidebar_position: 11
+sidebar_label: "21 · Coding labs"
+sidebar_position: 21
 ---
 
 # Runnable Interview Coding Labs
@@ -25,7 +25,7 @@ python -m unittest -v test_labs.py
 
 The checked environment is **Python 3.12.8**, NumPy **2.5.3**, pandas **3.0.6**, scikit-learn **1.9.1**, with transitive versions recorded in `requirements.txt`. The eight labs need NumPy and the standard library; pandas/scikit-learn also support the inline chapter examples. The tests run without API keys, a GPU, paid calls or network access. Installation needs access to your package index. On Windows use `.venv\Scripts\activate`.
 
-The suite contains **32 tests**. Passing small fixtures establishes the behaviours tested, not production readiness. The [version notebook](99-tools-versions.md) separates this tested environment from observed framework releases.
+The suite contains **32 tests**. Passing small fixtures establishes the behaviours tested, not production readiness. The [version notebook](23-tools-versions.md) separates this tested environment from observed framework releases.
 
 ```mermaid
 flowchart LR
@@ -38,7 +38,7 @@ flowchart LR
 
 ## Lab 1 · Retrieval, permissions and ranking metrics {#lab-1}
 
-**Source connection:** live RAG and retrieval debugging appear in [S1 and S6](98-sources.md). **Reference:** [retrieval.py](/examples/interviews/retrieval.py). **Practise:** RAG01–09, RAG17–18, RAG31–34.
+**Source connection:** live RAG and retrieval debugging appear in [S1 and S6](24-sources.md). **Reference:** [retrieval.py](/examples/interviews/retrieval.py). **Practise:** RAG01–09, RAG17–18, RAG31–34.
 
 **Task, 40 minutes.** Given documents with ID, tenant, text and revision, return authorised current evidence. Implement rank fusion and precision, recall, hit rate, reciprocal rank and graded nDCG. Show a no-evidence path.
 
@@ -59,7 +59,7 @@ The demo returns the `refund` document for tenant `acme`, excludes the other ten
 
 ## Lab 2 · Projected attention and causal masking {#lab-2}
 
-**Source connection:** single-head to multi-head implementation in [S1](98-sources.md#s1). **Reference:** [attention.py](/examples/interviews/attention.py). **Practise:** DL01, DL13–16, DL30.
+**Source connection:** single-head to multi-head implementation in [S1](24-sources.md#s1). **Reference:** [attention.py](/examples/interviews/attention.py). **Practise:** DL01, DL13–16, DL30.
 
 **Task, 45 minutes.** Accept `x` shaped `(batch, time, width)` and four projection matrices. Project Q/K/V, split heads, apply scaled dot-product attention, merge heads and project output. Support causal and padding masks.
 
@@ -78,7 +78,7 @@ Expected demo shapes are output `(1, 3, 8)` and weights `(1, 2, 3, 3)`. Tests co
 
 ## Lab 3 · Bounded asynchronous evaluation workers {#lab-3}
 
-**Source connection:** async coding in [S1](98-sources.md#s1), evaluation scale in [S5](98-sources.md#s5). **Reference:** [async_workers.py](/examples/interviews/async_workers.py). **Practise:** PY01, PY09–12, EV08, OPS12–14.
+**Source connection:** async coding in [S1](24-sources.md#s1), evaluation scale in [S5](24-sources.md#s5). **Reference:** [async_workers.py](/examples/interviews/async_workers.py). **Practise:** PY01, PY09–12, EV08, OPS12–14.
 
 **Task, 35 minutes.** Consume a case iterator, cap queued and active work, preserve case IDs, handle per-case timeouts/errors, and propagate cancellation.
 
@@ -150,7 +150,7 @@ The demo chooses feature value `4.0` for `p1`. It excludes the tempting `999.0` 
 
 ## Lab 6 · Dependency scheduling and cycles {#lab-6}
 
-**Source connection:** topological sorting in [S3](98-sources.md#s3). **Reference:** [graph.py](/examples/interviews/graph.py). **Practise:** PY06, AG12, SYS15.
+**Source connection:** topological sorting in [S3](24-sources.md#s3). **Reference:** [graph.py](/examples/interviews/graph.py). **Practise:** PY06, AG12, SYS15.
 
 **Task, 25 minutes.** Return a deterministic valid ordering for declared nodes and prerequisite edges. Handle duplicate edges, disconnected nodes and cycles.
 
@@ -169,7 +169,7 @@ The demo returns `audit, parse, embed, index`. `audit` is independent; `parse` s
 
 ## Lab 7 · Stable gradients and a convolution reference {#lab-7}
 
-**Source connection:** loss derivations and convolution implementation in [S1](98-sources.md#s1). **Reference:** [numerical.py](/examples/interviews/numerical.py). **Practise:** ML03, ML13–14, DL11, DL17, DL39.
+**Source connection:** loss derivations and convolution implementation in [S1](24-sources.md#s1). **Reference:** [numerical.py](/examples/interviews/numerical.py). **Practise:** ML03, ML13–14, DL11, DL17, DL39.
 
 **Task, 45 minutes.** Implement stable binary logistic loss and gradient, verify with central finite differences, then implement a small NCHW convolution reference.
 
@@ -188,7 +188,7 @@ The logistic gradient matches finite differences within `1e-8`. Extreme logits o
 
 ## Lab 8 · Evaluation gates that cannot hide missing cases {#lab-8}
 
-**Source connection:** scalable comparative evaluation in [S5](98-sources.md#s5), QA gates in [S4](98-sources.md#s4). **Reference:** [eval_gate.py](/examples/interviews/eval_gate.py). **Practise:** EV06, EV10, EV13–17, EV33–39, QA16.
+**Source connection:** scalable comparative evaluation in [S5](24-sources.md#s5), QA gates in [S4](24-sources.md#s4). **Reference:** [eval_gate.py](/examples/interviews/eval_gate.py). **Practise:** EV06, EV10, EV13–17, EV33–39, QA16.
 
 **Task, 40 minutes.** Compare baseline and candidate on exactly the expected IDs. Reject missing, duplicate, nonfinite and out-of-range scores. Gate critical candidate failures independently of quality. Compute a paired bootstrap confidence interval.
 

@@ -1,14 +1,14 @@
 ---
 title: LLM, RAG, and Agent Evaluation
-sidebar_label: 6 · Evaluation
-sidebar_position: 6
+sidebar_label: "17 · Evaluation"
+sidebar_position: 17
 ---
 
 # LLM, RAG, and Agent Evaluation
 
 Turn “the model seems better” into a reproducible decision with measurable uncertainty and known limits.
 
-**Evidence:** [S2](98-sources.md#s2) reports measuring RAG/agent quality; [S4](98-sources.md#s4) reports metrics, golden datasets, and CI evaluations; [S5](98-sources.md#s5) reports automated, scalable, reusable evaluation and domain validation. Numerical examples and follow-ups are original.
+**Evidence:** [S2](24-sources.md#s2) reports measuring RAG/agent quality; [S4](24-sources.md#s4) reports metrics, golden datasets, and CI evaluations; [S5](24-sources.md#s5) reports automated, scalable, reusable evaluation and domain validation. Numerical examples and follow-ups are original.
 
 ## Evaluation is a system
 
@@ -28,7 +28,7 @@ The evaluator can be wrong. Treat its data, code, models, prompts, and reliabili
 
 ## EV01 · How do you measure the accuracy of a generative system?
 
-**Evidence: reported, [S2](98-sources.md#s2).**
+**Evidence: reported, [S2](24-sources.md#s2).**
 
 **Answer.** First define the task. A classification-like extraction can have exact correctness. Open-ended assistance needs several dimensions. A research assistant needs useful coverage, supported claims, credible sources, and completion; a booking agent needs the correct authorised booking in the environment.
 
@@ -61,7 +61,7 @@ assert accuracy == 1 and critical_failures == 1
 
 ## EV02 · Build a golden dataset from scratch
 
-**Evidence: reported, [S4](98-sources.md#s4).**
+**Evidence: reported, [S4](24-sources.md#s4).**
 
 **Answer.** Start with a task taxonomy and representative inputs. Sample real usage where authorised, add known failure cases and difficult edge cases, and obtain expert labels for correctness and policy. Synthetic cases increase coverage but should not be the only evidence of performance on real traffic.
 
@@ -92,7 +92,7 @@ A case needs more than prompt and reference answer:
 
 ## EV03 · Detect hallucinations at scale
 
-**Evidence: reported, [S5](98-sources.md#s5); hallucination measurement also in [S4](98-sources.md#s4).**
+**Evidence: reported, [S5](24-sources.md#s5); hallucination measurement also in [S4](24-sources.md#s4).**
 
 **Answer.** Define the error precisely: unsupported claim, contradicted claim, false world fact, fabricated citation, or invalid tool result. Break answers into checkable claims when useful. Use deterministic checks for IDs, numbers, schema, and executable facts; use evidence comparison or a calibrated judge for semantic claims; route uncertain/high-impact cases to experts.
 
@@ -118,7 +118,7 @@ assert recall_score(human_hallucination, detected) == .5
 
 ## EV04 · Design an LLM-as-a-judge rubric
 
-**Evidence: reported validation theme, [S5](98-sources.md#s5).**
+**Evidence: reported validation theme, [S5](24-sources.md#s5).**
 
 **Answer.** Choose a narrow criterion and define anchored outcomes. For claim support, “pass” might require every material claim to be supported by the supplied evidence; “fail” needs at least one contradicted/unsupported material claim; “uncertain” applies when evidence is ambiguous. Ask for evidence locations and a concise justification that reviewers can audit.
 
@@ -144,7 +144,7 @@ assert result["reason"] and set(result["evidence_ids"]) <= {"p7", "p8"}
 
 ## EV05 · Two experts disagree on the correct answer
 
-**Evidence: reported domain-validation question, [S5](98-sources.md#s5).**
+**Evidence: reported domain-validation question, [S5](24-sources.md#s5).**
 
 **Answer.** Preserve both labels and reasons before adjudication. The disagreement may expose an unclear rubric, missing context, genuine ambiguity, or annotator error. Decide whether several outputs should be accepted, a clarification should be expected, or the case should be excluded for a documented reason.
 
@@ -217,7 +217,7 @@ assert .53 < pass_at_k < .54
 
 ## EV08 · Design a reusable evaluation platform
 
-**Evidence: reported, [S5](98-sources.md#s5).**
+**Evidence: reported, [S5](24-sources.md#s5).**
 
 **Answer.** Separate case loading, system-under-test adapters, execution, grading, aggregation, and reporting. Define typed artefacts with stable IDs so a failed grader can be rerun without paying for generation again. Store raw outputs securely enough for authorised review and store derived scores separately.
 
@@ -263,7 +263,7 @@ Configuration supplies domain rubrics and provider settings; trusted code implem
 - **Can a metric upgrade change a release result?** Yes. Version the evaluator and rerun the baseline when its behaviour changes.
 - **Why not use semantic similarity as correctness?** Contradictory answers with similar words can embed closely. Test negation, numbers, and entity substitutions.
 
-[Version snapshot and API caveats](99-tools-versions.md) distinguish current release metadata from versions actually used in the local labs.
+[Version snapshot and API caveats](23-tools-versions.md) distinguish current release metadata from versions actually used in the local labs.
 
 **Executable check:**
 
@@ -278,7 +278,7 @@ assert required <= case.keys()
 
 ## EV10 · Convert evaluations into a CI release gate
 
-**Evidence: reported, [S4](98-sources.md#s4).**
+**Evidence: reported, [S4](24-sources.md#s4).**
 
 **Answer.** Use several layers with different cost/frequency. Every change runs deterministic contract/security tests. Changes to prompts/models/retrieval also run a stable behavioural subset. Scheduled or release jobs run broader, repeated, and adversarial evaluations. Production monitoring closes the loop.
 
@@ -290,7 +290,7 @@ Fail closed on missing required evidence, missing slices, corrupt results, or an
 - **What if the provider is down?** A run can be incomplete rather than “model worse”. Retry under policy or require a valid run; preserve the failure reason.
 - **How do you test the gate?** Feed missing cases, duplicate IDs, NaNs, invalid ranges, a large regression, and a safety failure into the gate itself.
 
-Run [the release-gate lab](11-coding-labs.md#lab-8).
+Run [the release-gate lab](21-coding-labs.md#lab-8).
 
 **Executable check:**
 

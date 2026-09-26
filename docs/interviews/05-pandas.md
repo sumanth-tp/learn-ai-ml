@@ -1,13 +1,13 @@
 ---
 title: Pandas Interview Questions (100)
-sidebar_position: 32
-sidebar_label: "Reference · Pandas"
+sidebar_position: 5
+sidebar_label: "5 · pandas foundations"
 ---
 
 # Pandas Interview Questions (100)
 
 :::note Foundation reference
-This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](01-python-data.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. After revising these foundations, continue with the [practical topic bank](13-python-data.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](23-tools-versions.md) for current behaviour and [coding labs](21-coding-labs.md) for runnable implementations.
 :::
 
 <details>
@@ -885,7 +885,7 @@ assert df.loc[1, "B"] == 5
 df.loc[df['A'] > 1, 'B'] = 99   # directly on original
 ```
 
-**Interview Tip:** State your pandas version. In pandas 3, chained assignment does not update the original object; mutate the intended frame directly. See [Copy-on-Write examples](99-tools-versions.md).
+**Interview Tip:** State your pandas version. In pandas 3, chained assignment does not update the original object; mutate the intended frame directly. See [Copy-on-Write examples](23-tools-versions.md).
 </details>
 
 <details>

@@ -1,14 +1,14 @@
 ---
 title: Retrieval, Search, and RAG
-sidebar_label: 4 · Retrieval and RAG
-sidebar_position: 4
+sidebar_label: "15 · Retrieval and RAG"
+sidebar_position: 15
 ---
 
 # Retrieval, Search, and RAG
 
 Build retrieval that finds usable evidence, respects permissions, and supports a verifiable answer.
 
-**Evidence:** [S6](98-sources.md#s6) reports pipeline, embedding, retrieval-debugging, and response-validation questions; [S3](98-sources.md#s3) reports vector-document updates; [S2](98-sources.md#s2) reports sensitive-data and evaluation questions. Every numerical workload and detailed follow-up below is an original practice extension.
+**Evidence:** [S6](24-sources.md#s6) reports pipeline, embedding, retrieval-debugging, and response-validation questions; [S3](24-sources.md#s3) reports vector-document updates; [S2](24-sources.md#s2) reports sensitive-data and evaluation questions. Every numerical workload and detailed follow-up below is an original practice extension.
 
 ## The two paths you must explain
 
@@ -33,7 +33,7 @@ Keep intermediate artefacts. Without parsed text, retrieved IDs, rankings, conte
 
 ## RAG01 · Build a basic RAG system in a live interview
 
-**Evidence: reported, [S1](98-sources.md#s1), [S6](98-sources.md#s6).**
+**Evidence: reported, [S1](24-sources.md#s1), [S6](24-sources.md#s6).**
 
 **Answer.** Clarify corpus format, question types, freshness, access model, and what counts as a correct answer. Start with a small end-to-end path: parse documents, preserve source metadata, chunk, index, retrieve, and build an answer from returned evidence. Add a no-evidence path before adding sophisticated retrieval.
 
@@ -47,7 +47,7 @@ In a time-limited round, a lexical baseline with transparent diagnostics can exp
 - **How many chunks?** Select using measured retrieval quality and the usable context budget. “Always five” is not a general answer.
 - **What makes it RAG?** Generated output is conditioned on retrieved external evidence. A vector search endpoint alone is retrieval, not the full system.
 
-**Code:** [the retrieval lab](11-coding-labs.md#lab-1) supplies a local pipeline and metrics without network or model charges. Its extractive answer is deliberately a baseline; the live-generation extension is specified separately.
+**Code:** [the retrieval lab](21-coding-labs.md#lab-1) supplies a local pipeline and metrics without network or model charges. Its extractive answer is deliberately a baseline; the live-generation extension is specified separately.
 
 **Executable check:**
 
@@ -63,7 +63,7 @@ assert evidence[0]["source_id"] == "d1"
 
 ## RAG02 · Why are the retrieved passages irrelevant?
 
-**Evidence: reported, [S6](98-sources.md#s6).**
+**Evidence: reported, [S6](24-sources.md#s6).**
 
 **Answer.** Freeze a failing query and inspect each stage. Is the relevant text in the source? Did parsing preserve it? Did chunking separate the heading, table, or qualifying sentence? Is the current revision indexed? Do permissions exclude it correctly? Are query and document embeddings compatible? Did retrieval find it but reranking or truncation remove it?
 
@@ -88,7 +88,7 @@ assert first_loss == "retrieved"
 
 ## RAG03 · Sparse, dense, hybrid, and reranking: compare them
 
-**Evidence: reported retrieval-improvement question, [S6](98-sources.md#s6).**
+**Evidence: reported retrieval-improvement question, [S6](24-sources.md#s6).**
 
 | Technique | Strength | Failure mode |
 | --- | --- | --- |
@@ -150,7 +150,7 @@ assert all(c["heading"] == "Refund exceptions" for c in chunks)
 
 ## RAG05 · Explain embeddings, distance, and ANN indexes
 
-**Evidence: embeddings reported in [S6](98-sources.md#s6); index questions are extensions.**
+**Evidence: embeddings reported in [S6](24-sources.md#s6); index questions are extensions.**
 
 **Answer.** Embeddings represent inputs as vectors trained to make particular relationships useful. Cosine similarity normalises by vector norms; dot product also depends on magnitude; Euclidean distance measures geometric separation. For unit-normalised vectors, cosine and squared Euclidean distance yield equivalent ordering, since `||u-v||² = 2-2(u·v)`.
 
@@ -177,7 +177,7 @@ assert np.isclose(np.sum((u - v) ** 2), 2 - 2 * (u @ v))
 
 ## RAG06 · Update and delete documents without stale answers
 
-**Evidence: reported, [S3](98-sources.md#s3).**
+**Evidence: reported, [S3](24-sources.md#s3).**
 
 **Answer.** Track source ID, content hash, revision, and an ingestion manifest listing active chunk IDs. For an update, parse/chunk/embed the new revision, validate it, and atomically switch which revision is active. Remove or tombstone the superseded chunks. A failed partial upload should not leave half-old, half-new evidence visible.
 
@@ -201,7 +201,7 @@ stateDiagram-v2
 
 ## RAG07 · Protect sensitive data in retrieval
 
-**Evidence: reported, [S2](98-sources.md#s2).**
+**Evidence: reported, [S2](24-sources.md#s2).**
 
 **Answer.** Derive identity and tenant from authenticated server context. Enforce authorisation in storage/retrieval before text reaches the model. Apply the same rules to lexical candidates, vectors, parent expansion, rerankers, tools, citations, logs, and caches. A prompt saying “do not reveal private documents” is not access control.
 
@@ -213,7 +213,7 @@ Permissions can change while an index is stale. Recheck access before returning 
 - **Can a shared cache leak?** Yes, if keys omit identity/access scope or if permission changes do not invalidate entries.
 - **What should the test assert?** No unauthorised IDs or text at any stage, including traces and citation previews, not merely a polite final refusal.
 
-Continue with [security testing](07-testing-security.md).
+Continue with [security testing](18-testing-security.md).
 
 **Executable check:**
 
@@ -228,7 +228,7 @@ assert [d["id"] for d in allowed] == ["a"]
 
 ## RAG08 · Measure retrieval separately from generated answers
 
-**Evidence: reported evaluation, [S2](98-sources.md#s2), [S3](98-sources.md#s3).**
+**Evidence: reported evaluation, [S2](24-sources.md#s2), [S3](24-sources.md#s3).**
 
 **Answer.** Create queries with relevance labels and, where practical, required evidence units. For a ranked list `[x, a, b]` and relevant set `{a, b, c}`, recall@3 is 2/3, precision@3 is 2/3, hit@3 is 1, and reciprocal rank is 1/2. These are different questions about the result list.
 
@@ -260,7 +260,7 @@ assert recall == precision == 2/3 and rr == .5
 
 ## RAG09 · The answer cites a document but invents the claim
 
-**Evidence: reported response-validation theme → scenario, [S6](98-sources.md#s6).**
+**Evidence: reported response-validation theme → scenario, [S6](24-sources.md#s6).**
 
 **Answer.** Verify three layers: the cited ID exists and was actually supplied; the cited passage supports the particular claim; and important claims are covered by citations. A syntactically valid citation proves only formatting.
 
@@ -285,7 +285,7 @@ assert citation_precision == .5
 
 ## RAG10 · Handle multi-turn conversation without corrupting retrieval
 
-**Evidence: reported theme, [S9](98-sources.md#s9).**
+**Evidence: reported theme, [S9](24-sources.md#s9).**
 
 **Answer.** Resolve references such as “does that apply to the annual plan?” using relevant conversation context. Preserve the original question, rewritten query, retrieved evidence, and the rewrite's source turns. Do not let a summariser silently change customer IDs, dates, negations, or previously stated constraints.
 
@@ -308,7 +308,7 @@ assert "Plan A UK" in standalone_query
 
 ## RAG11 · Multi-query, HyDE, decomposition, and GraphRAG
 
-**Evidence: graph-RAG theme reported in [S1](98-sources.md#s1); detailed scenario is a practice extension.**
+**Evidence: graph-RAG theme reported in [S1](24-sources.md#s1); detailed scenario is a practice extension.**
 
 | Technique | Useful when | Main risk |
 | --- | --- | --- |
@@ -348,7 +348,7 @@ Estimate size first: 10 million vectors × 768 dimensions × 4 bytes is about **
 
 - **What proves the chosen store works?** Benchmarks on representative vectors, filters, updates, concurrency, and failure/recovery, with exact-search recall checks.
 - **Can managed services remove all operational work?** They shift responsibilities. You still own schema, permissions, data quality, costs, and application behaviour.
-- **Which versions matter?** Client and server, distance/index settings, embedding revision, parser, schema, and reranker. See the [version notebook](99-tools-versions.md).
+- **Which versions matter?** Client and server, distance/index settings, embedding revision, parser, schema, and reranker. See the [version notebook](23-tools-versions.md).
 
 **Executable check:**
 

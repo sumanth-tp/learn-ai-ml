@@ -1,14 +1,14 @@
 ---
 title: Machine Learning and Statistical Reasoning
-sidebar_label: 2 · ML and statistics
-sidebar_position: 2
+sidebar_label: "9 · Practical ML and statistics"
+sidebar_position: 9
 ---
 
 # Machine Learning and Statistical Reasoning
 
 Connect mathematical definitions to model choices, trustworthy experiments, and operational decisions.
 
-**Evidence:** [S1](98-sources.md#s1) reports loss derivations, k-means, statistics, and ML coding; [S2](98-sources.md#s2) reports predictive modelling inside an LLM workflow. Other scenarios are explicit practice extensions. Prerequisites: [ML foundations](machine-learning.md) and [statistics](statistics.md).
+**Evidence:** [S1](24-sources.md#s1) reports loss derivations, k-means, statistics, and ML coding; [S2](24-sources.md#s2) reports predictive modelling inside an LLM workflow. Other scenarios are explicit practice extensions. Prerequisites: [ML foundations](07-machine-learning.md) and [statistics](06-statistics.md).
 
 ## The model-development loop
 
@@ -28,7 +28,7 @@ A score is meaningful only after you define what it predicts, who it generalises
 
 ## ML01 · Validation AUC is 0.99; production predictions are poor
 
-**Evidence: practice extension of reported ML depth in [S1](98-sources.md#s1).**
+**Evidence: practice extension of reported ML depth in [S1](24-sources.md#s1).**
 
 **Answer.** Start with leakage and dataset mismatch before tuning another model. Audit target-derived columns, post-outcome events, duplicates across splits, entity overlap, and preprocessing fitted on the full dataset. Then reproduce the serving transformation on a captured input and compare the features with training.
 
@@ -93,7 +93,7 @@ assert balanced_accuracy_score([0, 1], pred) == 0.5
 
 ## ML03 · Why cross-entropy for logistic regression? Why can MSE be non-convex?
 
-**Evidence: reported derivation, paraphrased from [S1](98-sources.md#s1).**
+**Evidence: reported derivation, paraphrased from [S1](24-sources.md#s1).**
 
 **Answer.** Let `z = w·x + b`, `p = sigmoid(z)`, and `y` be 0 or 1. The Bernoulli negative log-likelihood is:
 
@@ -114,11 +114,11 @@ For half squared error `L = 0.5(p-y)²`, the derivative is `(p-y)p(1-p)`. For `y
 - **Why use a logits-based loss implementation?** It evaluates the log-sum-exp form stably instead of separately taking logs of probabilities rounded to zero.
 - **Does convex mean a unique solution?** Not necessarily. Rank deficiency, separable data, and absent regularisation affect uniqueness and finite optima.
 
-**Code:** the [numerical lab](11-coding-labs.md#lab-7) compares analytical and finite-difference gradients.
+**Code:** the [numerical lab](21-coding-labs.md#lab-7) compares analytical and finite-difference gradients.
 
 ## ML04 · Derive the k-means centroid, then change the loss
 
-**Evidence: reported, [S1](98-sources.md#s1).**
+**Evidence: reported, [S1](24-sources.md#s1).**
 
 **Answer.** For fixed cluster membership, minimise `J(μ) = Σ ||xᵢ-μ||²`. Setting `∇μ J = 2nμ - 2Σxᵢ = 0` gives `μ = mean(xᵢ)`. This is why a mean appears in k-means: it is the optimiser of squared Euclidean distortion, not an arbitrary representative.
 
@@ -234,7 +234,7 @@ assert gaps[-1] < gaps[0]
 
 ## ML08 · Explain p-values and confidence intervals without misleading the interviewer
 
-**Evidence: reported statistics themes, [S1](98-sources.md#s1).**
+**Evidence: reported statistics themes, [S1](24-sources.md#s1).**
 
 **Answer.** Specify the null hypothesis, the test statistic, and sampling assumptions. A p-value is the probability, under the null model, of a statistic at least as extreme as observed. It is not the probability that the null is true or the probability a result happened “by chance”. A confidence procedure's 95% coverage is a repeated-sampling property; a particular realised interval is not assigned a frequentist probability over a fixed parameter.
 
@@ -262,7 +262,7 @@ assert lo < observations.mean() < hi
 
 ## ML09 · Design an A/B test for a new model
 
-**Evidence: reported theme → practice scenario, [S1](98-sources.md#s1).**
+**Evidence: reported theme → practice scenario, [S1](24-sources.md#s1).**
 
 **Answer.** Choose the unit of randomisation: user, account, conversation, or request. Keep assignment stable to avoid mixing treatment histories. Define a primary outcome, safety guardrails, minimum detectable effect, duration, and stopping policy before launch. Check sample-ratio mismatch and logging consistency before interpreting uplift.
 

@@ -1,14 +1,14 @@
 ---
 title: Python, APIs, SQL, and Data Pipelines
-sidebar_label: 1 · Software and data
-sidebar_position: 1
+sidebar_label: "13 · APIs and data pipelines"
+sidebar_position: 13
 ---
 
 # Python, APIs, SQL, and Data Pipelines
 
 Build the software and data contracts that make models useful and their evaluations trustworthy.
 
-**Evidence:** [S1](98-sources.md#s1) reports async, SQL, and coding rounds; [S3](98-sources.md#s3) reports REST, framework choices, topological sort, and deduplication. Concrete workloads below are original practice extensions. All examples use synthetic data.
+**Evidence:** [S1](24-sources.md#s1) reports async, SQL, and coding rounds; [S3](24-sources.md#s3) reports REST, framework choices, topological sort, and deduplication. Concrete workloads below are original practice extensions. All examples use synthetic data.
 
 ## Mental model
 
@@ -28,7 +28,7 @@ A model call is a remote operation with uncertain duration, cost, and failure mo
 
 ## PY01 · Evaluate 10,000 prompts without overwhelming the provider
 
-**Evidence: reported theme → practice scenario, [S1](98-sources.md#s1).** The interviewer gives a script that creates one task for every prompt. It exhausts memory, hits rate limits, and loses results when one call fails.
+**Evidence: reported theme → practice scenario, [S1](24-sources.md#s1).** The interviewer gives a script that creates one task for every prompt. It exhausts memory, hits rate limits, and loses results when one call fails.
 
 **Answer.** Separate work admission from execution. A bounded queue limits queued work; a fixed worker pool limits in-flight calls. A semaphore alone limits active requests but does not stop you allocating a million waiting tasks. Track each case by a stable ID, save each completed result, and support resumption without repeating successful paid calls.
 
@@ -47,7 +47,7 @@ Concurrency limits and rate limits solve different problems. Ten workers can exc
 - **What happens if a worker is cancelled?** Release resources in `finally`; propagate cancellation. Do not catch cancellation and silently turn it into a successful score.
 - **Should one bad prompt stop the run?** A corrupt case should become a recorded case error. A broken credential or invalid global configuration should usually fail the run promptly.
 
-**Test:** inject a timeout, malformed response, quota error, and worker cancellation; verify the concurrency bound, complete case accounting, and no “failed = score zero” conflation. [Python documents cancellation and TaskGroup behaviour](https://docs.python.org/3/library/asyncio-task.html). Run [the bounded-worker lab](11-coding-labs.md#lab-3).
+**Test:** inject a timeout, malformed response, quota error, and worker cancellation; verify the concurrency bound, complete case accounting, and no “failed = score zero” conflation. [Python documents cancellation and TaskGroup behaviour](https://docs.python.org/3/library/asyncio-task.html). Run [the bounded-worker lab](21-coding-labs.md#lab-3).
 
 **Executable check:**
 
@@ -94,11 +94,11 @@ sequenceDiagram
 - **Why not promise exactly once?** Delivery and execution can fail independently. Describe atomic boundaries, deduplication, reconciliation, and remaining failure windows.
 - **What if approval expires?** Revalidate authorisation before first execution. A retry returning an existing result should not execute again.
 
-**Test:** crash before commit, after commit, and before returning; retry with the same and conflicting payloads. [The durable action lab](11-coding-labs.md#lab-4) exercises these boundaries in SQLite.
+**Test:** crash before commit, after commit, and before returning; retry with the same and conflicting payloads. [The durable action lab](21-coding-labs.md#lab-4) exercises these boundaries in SQLite.
 
 ## PY03 · FastAPI or Flask for an inference service?
 
-**Evidence: reported, paraphrased from [S3](98-sources.md#s3).**
+**Evidence: reported, paraphrased from [S3](24-sources.md#s3).**
 
 **Answer.** Compare the service's workload, contracts, existing code, and operational support. FastAPI's ASGI model and typed request/response integration suit async APIs. Flask is a mature web framework whose established extensions and existing application can be the best fit. Neither framework makes GPU inference faster or fixes an overloaded database.
 
@@ -117,7 +117,7 @@ Use a long-lived client and connection pool. Load a model once per appropriate w
 - **What should validation reject?** Oversized input, unsupported types, invalid IDs, missing required fields, and disallowed options, before model work starts.
 - **How do you test without a paid model?** Inject a fake provider at the client boundary, then run a smaller live contract suite separately.
 
-**Read:** [FastAPI async guidance](https://fastapi.tiangolo.com/async/), [Flask async guidance](https://flask.palletsprojects.com/en/stable/async-await/). See [versions](99-tools-versions.md) before copying older Pydantic code.
+**Read:** [FastAPI async guidance](https://fastapi.tiangolo.com/async/), [Flask async guidance](https://flask.palletsprojects.com/en/stable/async-await/). See [versions](23-tools-versions.md) before copying older Pydantic code.
 
 **Executable check:**
 
@@ -135,7 +135,7 @@ assert validate_request({"text": "refund policy"}) == "refund policy"
 
 ## PY04 · Build features without using information from the future
 
-**Evidence: reported SQL theme → practice scenario, [S1](98-sources.md#s1).** A fraud training set joins each transaction to the customer's latest risk score. Offline performance looks exceptional.
+**Evidence: reported SQL theme → practice scenario, [S1](24-sources.md#s1).** A fraud training set joins each transaction to the customer's latest risk score. Offline performance looks exceptional.
 
 **Answer.** “Latest today” is not “known when this transaction occurred”. Track both the feature's event time and its availability time. A score describing Monday but computed Wednesday was unavailable to Tuesday's prediction. Join only values satisfying both time constraints, then choose the newest eligible record with a deterministic tie-breaker.
 
@@ -160,11 +160,11 @@ Use UTC storage with a documented timezone convention. A “same day” join can
 - **Is `merge_asof` enough?** A backward event-time join helps, but availability time, entity partitioning, sorting, and tie rules still require explicit treatment.
 - **Which index?** Start from entity and temporal filtering; inspect a real query plan. Data distribution determines whether an index scan, partition pruning, or batch temporal join is best.
 
-**Test:** future events, late-arriving past events, two entities with the same timestamps, missing features, and exact boundary equality. The [feature-join lab](11-coding-labs.md#lab-5) includes these cases.
+**Test:** future events, late-arriving past events, two entities with the same timestamps, missing features, and exact boundary equality. The [feature-join lab](21-coding-labs.md#lab-5) includes these cases.
 
 ## PY05 · Deduplicate documents or evaluation cases without losing meaning
 
-**Evidence: reported coding task, [S3](98-sources.md#s3); pipeline constraints are extensions.**
+**Evidence: reported coding task, [S3](24-sources.md#s3); pipeline constraints are extensions.**
 
 **Answer.** First define equality: exact text, canonical URL, business ID, document revision, or semantic similarity. Deduplication by a lossy normalisation can merge two distinct policy clauses or languages. For a stable list of hashable IDs, preserve the first occurrence:
 
@@ -192,7 +192,7 @@ Expected time is O(n), space O(u) for u unique values. For a stream larger than 
 
 ## PY06 · Topologically schedule ingestion and evaluation steps
 
-**Evidence: reported, [S3](98-sources.md#s3).**
+**Evidence: reported, [S3](24-sources.md#s3).**
 
 **Answer.** Model prerequisite relationships as a directed graph. Kahn's algorithm starts with zero-indegree nodes, emits them, and reduces successor indegrees. If fewer than all nodes are emitted, a cycle prevents a valid ordering. Complexity is O(V + E) with a queue and adjacency lists.
 
@@ -215,7 +215,7 @@ Topological order is not a full scheduler: independent nodes may run concurrentl
 - **Can a failed embedding stage be skipped?** Only if a valid cached artefact with the same input and configuration hash exists.
 - **What identifies a cached stage?** Input content, implementation version, parameters, dependency versions, and relevant external-state versions.
 
-Run the graph exercise in [the coding labs](11-coding-labs.md#lab-6).
+Run the graph exercise in [the coding labs](21-coding-labs.md#lab-6).
 
 ## PY07 · A pandas upgrade changes a preprocessing result
 

@@ -1,14 +1,14 @@
 ---
 title: Agents, Tool Use, Memory, and MCP
-sidebar_label: 5 · Agents and tools
-sidebar_position: 5
+sidebar_label: "16 · Agents and tools"
+sidebar_position: 16
 ---
 
 # Agents, Tool Use, Memory, and MCP
 
 Design systems that choose actions while keeping execution, state, and permissions under explicit control.
 
-**Evidence:** [S3](98-sources.md#s3) reports LangChain/LangGraph and framework-choice questions; [S2](98-sources.md#s2) reports combining agents with predictive ML; [S4](98-sources.md#s4) reports testing agent/tool workflows. Detailed failure scenarios are original practice extensions.
+**Evidence:** [S3](24-sources.md#s3) reports LangChain/LangGraph and framework-choice questions; [S2](24-sources.md#s2) reports combining agents with predictive ML; [S4](24-sources.md#s4) reports testing agent/tool workflows. Detailed failure scenarios are original practice extensions.
 
 ## Separate a proposal from its execution
 
@@ -31,7 +31,7 @@ The model can propose actions. The application decides which actions are allowed
 
 ## AG01 · When should you use an agent instead of a workflow?
 
-**Evidence: reported framework-choice theme → design exercise, [S3](98-sources.md#s3).**
+**Evidence: reported framework-choice theme → design exercise, [S3](24-sources.md#s3).**
 
 **Answer.** Use a fixed workflow when the steps and decision boundaries are known: extract fields, validate, look up a record, apply a policy, and produce a response. Use model-directed execution when the required path genuinely depends on information discovered during the task, such as research across unknown sources.
 
@@ -61,7 +61,7 @@ assert transitions["validated"] == "retrieve"
 
 ## AG02 · LangChain versus LangGraph, and why use either?
 
-**Evidence: reported, [S3](98-sources.md#s3).**
+**Evidence: reported, [S3](24-sources.md#s3).**
 
 **Answer.** LangChain provides model/tool abstractions and higher-level application/agent components. LangGraph focuses on stateful graph execution, persistence, and control over orchestration. Their ecosystem overlaps; they are not mutually exclusive competitors.
 
@@ -73,7 +73,7 @@ Compare explicit state, persistence, interrupt/resume, debugging, deployment con
 - **What does a checkpointer guarantee?** It persists execution state according to the runtime's contract. It does not make an external payment exactly once.
 - **How handle an upgrade?** Pin runtime and checkpoint schema versions, replay representative saved states, and test migrations before deploying new nodes.
 
-See [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence) and the [version notebook](99-tools-versions.md). API examples from older pre-1.x tutorials should be checked against the installed release.
+See [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence) and the [version notebook](23-tools-versions.md). API examples from older pre-1.x tutorials should be checked against the installed release.
 
 **Executable check:**
 
@@ -86,7 +86,7 @@ assert state["next_node"] == "review" and state["status"] == "paused"
 
 ## AG03 · Design a tool contract the model can use correctly
 
-**Evidence: practice extension of [S4](98-sources.md#s4).**
+**Evidence: practice extension of [S4](24-sources.md#s4).**
 
 **Answer.** Use a narrow verb with an explicit argument schema and typed outcomes. Define units, allowed ranges, required identifiers, side effects, preconditions, and error categories. Separate search/read tools from mutation tools. An ambiguous `do_action(data)` interface makes planning and QA difficult.
 
@@ -176,7 +176,7 @@ assert not may_continue
 
 ## AG06 · Memory, context, state, and retrieval: distinguish them
 
-**Evidence: practice extension connected to [S9](98-sources.md#s9).**
+**Evidence: practice extension connected to [S9](24-sources.md#s9).**
 
 | Term | Meaning | Example |
 | --- | --- | --- |
@@ -208,7 +208,7 @@ assert not can_apply
 
 ## AG07 · Integrate a predictive model into an LLM workflow
 
-**Evidence: reported weather scenario, [S2](98-sources.md#s2).**
+**Evidence: reported weather scenario, [S2](24-sources.md#s2).**
 
 **Answer.** Separate language interpretation, data preparation, prediction, and explanation. Validate latitude/longitude and time, select an approved forecast service/model, fetch bounded features, and return typed numeric predictions with units, horizon, model version, and uncertainty. The LLM can explain those results; it should not invent a forecast by summarising historical text.
 
@@ -288,7 +288,7 @@ assert not can_commit
 
 ## AG10 · Evaluate a trajectory, not only the final sentence
 
-**Evidence: reported testing theme, [S4](98-sources.md#s4).**
+**Evidence: reported testing theme, [S4](24-sources.md#s4).**
 
 **Answer.** A refund agent may write a perfect confirmation after refunding the wrong order. Grade the terminal environment state, authorised effects, tool argument validity, policy adherence, efficiency, and final communication. Allow multiple valid action paths; an exact expected tool sequence can penalise legitimate implementations.
 

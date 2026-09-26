@@ -1,13 +1,13 @@
 ---
 title: Statistics & Probability Interview Questions
-sidebar_position: 35
-sidebar_label: "Reference · Statistics"
+sidebar_position: 6
+sidebar_label: "6 · Statistics and probability"
 ---
 
 # Statistics & Probability Interview Questions
 
 :::note Foundation reference
-This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](02-ml-statistics.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. After revising these foundations, continue with the [practical topic bank](09-ml-statistics.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](23-tools-versions.md) for current behaviour and [coding labs](21-coding-labs.md) for runnable implementations.
 :::
 
 100 essential statistics interview questions for AI/ML roles with code examples.

@@ -1,14 +1,14 @@
 ---
 title: Ranking, Recommendations, Vision, Speech, and Forecasting
-sidebar_label: 10 · Applied modelling
-sidebar_position: 10
+sidebar_label: "12 · Applied modelling"
+sidebar_position: 12
 ---
 
 # Ranking, Recommendations, Vision, Speech, and Forecasting
 
 Apply the same data, modelling, evaluation, and deployment discipline when the task extends beyond text generation.
 
-**Evidence:** [S1](98-sources.md#s1) reports computer vision, embeddings, ML coding, and system design; [S2](98-sources.md#s2) reports forecasting; [S3](98-sources.md#s3) reports ranking; [S7](98-sources.md#s7) describes broad multimodal ML interviews. Unless explicitly labelled reported, the following incidents are original practice extensions.
+**Evidence:** [S1](24-sources.md#s1) reports computer vision, embeddings, ML coding, and system design; [S2](24-sources.md#s2) reports forecasting; [S3](24-sources.md#s3) reports ranking; [S7](24-sources.md#s7) describes broad multimodal ML interviews. Unless explicitly labelled reported, the following incidents are original practice extensions.
 
 ## A shared pipeline across modalities
 
@@ -44,7 +44,7 @@ Evaluate candidate recall separately from ranking nDCG and user outcomes. Logged
 
 ## APP02 · Train embeddings with contrastive learning
 
-**Evidence: practice extension of reported embedding-system interviews, [S1](98-sources.md#s1).**
+**Evidence: practice extension of reported embedding-system interviews, [S1](24-sources.md#s1).**
 
 **Answer.** Positive pairs represent relationships you want nearby; negatives represent distinctions. A contrastive objective increases relative similarity of positives against competing candidates. Pair quality matters: two near-duplicate support articles should not accidentally be strong negatives if both answer the query.
 
@@ -78,7 +78,7 @@ assert field_accuracy == 0.5
 
 ## APP04 · Object detection or segmentation?
 
-**Evidence: practice extension of reported vision questions, [S1](98-sources.md#s1).**
+**Evidence: practice extension of reported vision questions, [S1](24-sources.md#s1).**
 
 | Task | Output | Typical metric |
 | --- | --- | --- |
@@ -99,7 +99,7 @@ assert box_iou == 0.6
 
 ## APP05 · Forecast tomorrow's temperature across regions
 
-**Evidence: reported scenario, [S2](98-sources.md#s2).**
+**Evidence: reported scenario, [S2](24-sources.md#s2).**
 
 **Answer.** Fix units, timezone, resolution, horizon, source freshness, and missingness before modelling. Compare persistence/seasonal baselines, external forecast products, and learned models. Train with rolling-origin evaluation and geographic holdouts that match the deployment question. Do not randomly split overlapping windows and call it future forecasting.
 
@@ -152,7 +152,7 @@ This example assumes uniform scaling and no crop; actual pipelines must track of
 
 ## APP08 · Explain diffusion models and when they matter
 
-**Evidence: reported broad multimodal interview theme, [S7](98-sources.md#s7); this is a practice explanation.**
+**Evidence: reported broad multimodal interview theme, [S7](24-sources.md#s7); this is a practice explanation.**
 
 **Answer.** A diffusion model learns to reverse a noising process, often predicting noise or another parameterisation of the denoising target. Sampling repeatedly applies a learned denoising update. Latent diffusion performs much of this process in a compressed representation, reducing cost but adding autoencoder reconstruction limits.
 

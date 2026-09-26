@@ -1,14 +1,14 @@
 ---
 title: Testing, Security, and Quality Assurance for AI Systems
-sidebar_label: 7 · Testing and security
-sidebar_position: 7
+sidebar_label: "18 · Testing and security"
+sidebar_position: 18
 ---
 
 # Testing, Security, and Quality Assurance for AI Systems
 
 Test the model's behaviour and the application's guarantees independently, then test how they fail together.
 
-**Evidence:** [S4](98-sources.md#s4) reports AI test strategy, nondeterminism, hallucinations, RAG, datasets, CI, security, and tool workflows. The incidents, fixtures, and cross-questions below are original production exercises derived from those reported areas. Use synthetic identities and documents for security tests.
+**Evidence:** [S4](24-sources.md#s4) reports AI test strategy, nondeterminism, hallucinations, RAG, datasets, CI, security, and tool workflows. The incidents, fixtures, and cross-questions below are original production exercises derived from those reported areas. Use synthetic identities and documents for security tests.
 
 ## A layered test strategy
 
@@ -23,7 +23,7 @@ flowchart TB
 
 ## QA01 · Design a test strategy for an AI product
 
-**Evidence: reported, [S4](98-sources.md#s4).**
+**Evidence: reported, [S4](24-sources.md#s4).**
 
 **Answer.** Identify user tasks, harmful outcomes, and deterministic promises first. Authentication, tenant isolation, schema validation, idempotency, and budget enforcement are ordinary software contracts. Relevance, factual support, and conversational quality require representative examples and behavioural evaluation. Tool-using agents also require checks on actual state changes.
 
@@ -53,7 +53,7 @@ The support labels in this snippet are supplied annotations, not automatically e
 
 ## QA02 · The same prompt produces different answers. What should assertions do?
 
-**Evidence: reported, [S4](98-sources.md#s4).**
+**Evidence: reported, [S4](24-sources.md#s4).**
 
 **Answer.** Assert invariant meaning and constraints where wording can vary. For a retrieval answer, required facts, valid citations, supported claims, and appropriate abstention matter more than punctuation. Use exact assertions for IDs, amounts, schemas, and prohibited actions. Repeat stochastic cases according to a planned sampling policy and report failure rates with uncertainty.
 
@@ -69,7 +69,7 @@ assert set(actual["missing_fields"]) == set(accepted["missing_fields"])
 
 ## QA03 · Test RAG without confusing retrieval and generation defects
 
-**Evidence: reported, [S4](98-sources.md#s4).**
+**Evidence: reported, [S4](24-sources.md#s4).**
 
 **Answer.** Test ingestion with known text/table fixtures, retrieval against relevance labels, context assembly against permissions/token budgets, and generation against supplied evidence. Use both real retrieval plus a controlled generator and oracle evidence plus the real generator. Then test the integrated path.
 
@@ -87,7 +87,7 @@ These checks establish ID coverage and access in a fixture. They do not establis
 
 ## QA04 · Build a regression dataset and keep it useful
 
-**Evidence: reported, [S4](98-sources.md#s4).**
+**Evidence: reported, [S4](24-sources.md#s4).**
 
 **Answer.** Keep a representative core, incident-derived cases, and adversarial/edge suites with separate reporting. Each case records provenance, versions, expected behaviour, and severity. Track additions/removals and stale references. Hold out a final evaluation set so repeatedly tuning to the regression suite does not become the only evidence.
 
@@ -105,7 +105,7 @@ assert {"ordinary", "tenant_boundary", "no_evidence"} <= {c["slice"] for c in ca
 
 ## QA05 · Prompt injection, jailbreaks, and ordinary bad input differ how?
 
-**Evidence: reported security theme, [S4](98-sources.md#s4).**
+**Evidence: reported security theme, [S4](24-sources.md#s4).**
 
 | Input | Main concern | Example test |
 | --- | --- | --- |
@@ -128,7 +128,7 @@ assert not document_requested_tools & authorised_tools
 
 ## QA06 · Test sensitive-data leakage and tenant isolation
 
-**Evidence: reported, [S2](98-sources.md#s2), [S4](98-sources.md#s4).**
+**Evidence: reported, [S2](24-sources.md#s2), [S4](24-sources.md#s4).**
 
 **Answer.** Seed synthetic canaries in separate tenants. Query through semantic search, exact search, parent expansion, citations, exports, caches, and logs. Test explicit requests, indirect injection, account switching, stale permissions, and reused conversation IDs. Check both returned text and identifiers; even document existence can be sensitive.
 
@@ -144,7 +144,7 @@ This is a unit-test illustration; production enforcement belongs in the service/
 
 ## QA07 · Test tool-calling workflows and side effects
 
-**Evidence: reported, [S4](98-sources.md#s4).**
+**Evidence: reported, [S4](24-sources.md#s4).**
 
 **Answer.** Provide a stateful fake tool backend with explicit resources and permissions. Verify selected tool, argument validity, authorisation, approval where required, execution count, final state, and user-facing explanation. Simulate timeouts after commit, malformed results, revoked access, and conflicting updates.
 
@@ -179,7 +179,7 @@ Property-based generators can vary Unicode, length, duplicate IDs, missing field
 
 ## QA09 · Fairness and harmful-content testing without a single magic score
 
-**Evidence: reported bias/security theme, [S4](98-sources.md#s4).**
+**Evidence: reported bias/security theme, [S4](24-sources.md#s4).**
 
 **Answer.** Define the decision context and relevant groups with domain input. Compare error rates, coverage, calibration, refusals, and utility where appropriate, with sample sizes and uncertainty. Counterfactual pairs can expose unjustified differences, but changing a word can also change legitimate task context; review the pair construction.
 
@@ -195,7 +195,7 @@ print(rates, "absolute gap:", abs(rates["group_a"] - rates["group_b"]))
 
 ## QA10 · Release with flaky model tests and an urgent deadline?
 
-**Evidence: reported CI evaluation theme → scenario, [S4](98-sources.md#s4).**
+**Evidence: reported CI evaluation theme → scenario, [S4](24-sources.md#s4).**
 
 **Answer.** Classify failures as infrastructure, evaluator, data, deterministic product defects, or stochastic behaviour. Repair or isolate the cause without hiding its existence. Critical permission/action invariants remain hard gates. For statistical quality, use a predefined comparison and an explicit incomplete-run state.
 
@@ -231,7 +231,7 @@ retry_result = ledger["op-1"]
 assert retry_result["effect_count"] == 1
 ```
 
-This fixture expresses the expected state; the [action lab](11-coding-labs.md#lab-4) implements the durable boundary. **Cross-question:** **New ID on retry?** That may create a second effect. **Conflicting payload?** Reject reuse of the key with different semantics.
+This fixture expresses the expected state; the [action lab](21-coding-labs.md#lab-4) implements the durable boundary. **Cross-question:** **New ID on retry?** That may create a second effect. **Conflicting payload?** Reject reuse of the key with different semantics.
 
 ## QA13 · Test cross-user conversation IDs
 

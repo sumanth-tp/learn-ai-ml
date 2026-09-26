@@ -1,14 +1,14 @@
 ---
 title: Deep Learning, Transformers, and LLM Adaptation
-sidebar_label: 3 · Deep learning and LLMs
-sidebar_position: 3
+sidebar_label: "11 · Transformers and LLMs"
+sidebar_position: 11
 ---
 
 # Deep Learning, Transformers, and LLM Adaptation
 
 Explain the tensor operations, learning objectives, and inference constraints underneath model APIs.
 
-**Evidence:** [S1](98-sources.md#s1) explicitly reports attention coding, convolution, decoding, KV caches, and attention optimisations. The remaining scenarios extend those themes. See [deep-learning foundations](deep-learning.md) for additional CNN, RNN, and optimisation definitions.
+**Evidence:** [S1](24-sources.md#s1) explicitly reports attention coding, convolution, decoding, KV caches, and attention optimisations. The remaining scenarios extend those themes. See [deep-learning foundations](10-deep-learning.md) for additional CNN, RNN, and optimisation definitions.
 
 ## From text to output
 
@@ -28,7 +28,7 @@ The model predicts tokens. The application supplies task context, enforces autho
 
 ## DL01 · Implement attention and then extend it to multiple heads
 
-**Evidence: reported, [S1](98-sources.md#s1).**
+**Evidence: reported, [S1](24-sources.md#s1).**
 
 **Answer.** For input `X` shaped `(batch, tokens, d_model)`, learned projections produce Q, K, V. Reshape them to `(batch, heads, tokens, d_head)`. Compute `QKᵀ / sqrt(d_head)`, apply a causal/padding mask, normalise along the key dimension, multiply by V, concatenate heads, and apply an output projection.
 
@@ -59,11 +59,11 @@ print(out)
 - **How test causal behaviour?** Change only future input tokens and verify earlier outputs are unchanged. Shape checks alone miss a reversed mask.
 - **Are mask booleans universal?** No. Different attention APIs use different conventions. Verify the exact function contract.
 
-Run [the attention lab](11-coding-labs.md#lab-2), which includes a causality test and a reference calculation.
+Run [the attention lab](21-coding-labs.md#lab-2), which includes a causality test and a reference calculation.
 
 ## DL02 · Encoder, decoder, and encoder-decoder: what differs?
 
-**Evidence: reported transformer theme → comparison exercise, [S1](98-sources.md#s1).**
+**Evidence: reported transformer theme → comparison exercise, [S1](24-sources.md#s1).**
 
 | Architecture | Attention pattern | Typical use | Testing concern |
 | --- | --- | --- | --- |
@@ -93,7 +93,7 @@ assert encoder_allowed[0, 3] and not decoder_allowed[0, 3]
 
 ## DL03 · Temperature, top-k, top-p, greedy, and beam search
 
-**Evidence: reported follow-ups, [S1](98-sources.md#s1).**
+**Evidence: reported follow-ups, [S1](24-sources.md#s1).**
 
 **Answer.** Temperature rescales logits before sampling. Lower positive temperature concentrates probability; higher temperature flattens it. Top-k keeps a fixed number of highest-probability candidates; top-p keeps a smallest high-probability set reaching a cumulative mass threshold. Greedy decoding selects the highest-probability token each step. Beam search retains several high-scoring partial sequences and uses a sequence-level scoring policy.
 
@@ -127,7 +127,7 @@ assert logits.argmax() == 0  # Greedy decoding avoids division by zero.
 
 ## DL04 · Estimate the memory needed for inference
 
-**Evidence: reported KV-cache theme → numerical exercise, [S1](98-sources.md#s1).**
+**Evidence: reported KV-cache theme → numerical exercise, [S1](24-sources.md#s1).**
 
 **Answer.** Separate model weights, KV cache, activations/workspace, and framework/runtime overhead. For a conventional decoder cache:
 
@@ -149,7 +149,7 @@ A hypothetical 8-billion-parameter model needs about 16 GB decimal for two-byte 
 
 ## DL05 · FlashAttention, paged attention, batching, and speculative decoding differ how?
 
-**Evidence: reported optimisation follow-ups, [S1](98-sources.md#s1).**
+**Evidence: reported optimisation follow-ups, [S1](24-sources.md#s1).**
 
 | Technique | Main target | What to measure |
 | --- | --- | --- |
@@ -182,7 +182,7 @@ assert allocated - sum(sequence_lengths) == 24
 
 ## DL06 · Prompting, RAG, fine-tuning, or a conventional model?
 
-**Evidence: practice extension connecting [S2](98-sources.md#s2) and [S6](98-sources.md#s6).** A customer wants current policy answers, consistent JSON, and numeric demand forecasts.
+**Evidence: practice extension connecting [S2](24-sources.md#s2) and [S6](24-sources.md#s6).** A customer wants current policy answers, consistent JSON, and numeric demand forecasts.
 
 **Answer.** Decompose the needs. Current, access-controlled evidence suggests retrieval. Output structure suggests constrained generation plus validation. Stable behaviour/style may benefit from fine-tuning if simpler instructions and examples fail. Numeric forecasts need a validated forecasting model. These solutions can coexist.
 
@@ -302,7 +302,7 @@ assert dpo_loss < np.log(2)
 
 ## DL10 · Debug a deep-learning training loop
 
-**Evidence: reported ML coding theme → practice scenario, [S1](98-sources.md#s1).**
+**Evidence: reported ML coding theme → practice scenario, [S1](24-sources.md#s1).**
 
 **Answer.** Verify data, shapes, objective, gradients, optimiser, and evaluation state in that order. A tiny subset should usually be overfittable by a sufficiently expressive model; if it is not, inspect the pipeline before scaling. Backpropagation applies the chain rule through the computation graph. Accidentally detaching a tensor or converting it to an ordinary number can break that path.
 
@@ -337,7 +337,7 @@ assert not np.array_equal(weights, before)
 
 ## DL11 · Implement a convolution and explain its output shape
 
-**Evidence: reported, [S1](98-sources.md#s1).**
+**Evidence: reported, [S1](24-sources.md#s1).**
 
 **Answer.** For input height H, padding P, kernel K, stride S, and dilation D, output height is `floor((H + 2P - D(K-1) - 1)/S + 1)` when the configuration is valid. Iterate over output locations, multiply each corresponding patch by the kernel, sum input channels, and add the output-channel bias. Most deep-learning “convolutions” implement cross-correlation, without flipping the kernel.
 
@@ -361,7 +361,7 @@ assert (out_h, out_w) == (4, 5)
 
 ## DL12 · Tokenisation, embeddings, perplexity, and structured outputs
 
-**Evidence: reported embeddings theme, [S6](98-sources.md#s6); remaining constraints are practice extensions.**
+**Evidence: reported embeddings theme, [S6](24-sources.md#s6); remaining constraints are practice extensions.**
 
 **Answer.** Tokenisers map text to vocabulary IDs; embeddings map IDs or whole inputs into vectors. A sentence embedding model's pooling and training objective determine whether distances are useful for retrieval. A language model's token embedding table is not automatically a strong sentence-retrieval model.
 

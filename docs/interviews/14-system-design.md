@@ -1,13 +1,13 @@
 ---
 title: System Design Interview Questions (100)
-sidebar_position: 38
-sidebar_label: "Reference · System Design"
+sidebar_position: 14
+sidebar_label: "14 · System design foundations"
 ---
 
 # System Design Interview Questions (100)
 
 :::note Foundation reference
-This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. Start with the [practical topic bank](09-system-design.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](99-tools-versions.md) for current behaviour and [coding labs](11-coding-labs.md) for runnable implementations.
+This earlier 100-entry bank remains for prerequisite revision. Its questions were not part of the interview-source audit, and some examples are fragments rather than standalone programmes. After revising these foundations, continue with the [practical topic bank](20-system-design.md) for sourced scenarios, answered follow-ups and tested code. See [tools and versions](23-tools-versions.md) for current behaviour and [coding labs](21-coding-labs.md) for runnable implementations.
 :::
 
 ## Core System Design Concepts

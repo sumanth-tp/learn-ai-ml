@@ -1,14 +1,14 @@
 ---
 title: Mixed-Topic Mock Interviews and Study Plan
-sidebar_label: Mocks and study plan
-sidebar_position: 12
+sidebar_label: "22 · Mocks and study plan"
+sidebar_position: 22
 ---
 
 # Mixed-Topic Mock Interviews and Study Plan
 
 Use timed implementation and cross-examination to find what you can explain under pressure.
 
-These are original practice rounds assembled from the [reported task families](98-sources.md) and the new topic banks. They are organised by task, across all target roles. They are not leaked employer rounds or predictions of a particular company's process.
+These are original practice rounds assembled from the [reported task families](24-sources.md) and the new topic banks. They are organised by task, across all target roles. They are not leaked employer rounds or predictions of a particular company's process.
 
 ## How to score a response
 
@@ -32,7 +32,7 @@ An aggregate score cannot compensate for a severe error such as allowing cross-t
 | Time | Work |
 | --- | --- |
 | 0–8 minutes | Clarify tenant identity, corpus, updates, expected answers and latency |
-| 8–25 minutes | Implement a baseline using [Lab 1](11-coding-labs.md#lab-1) contracts |
+| 8–25 minutes | Implement a baseline using [Lab 1](21-coding-labs.md#lab-1) contracts |
 | 25–40 minutes | Diagnose retrieval and cache failures using intermediate artefacts |
 | 40–52 minutes | Design labels, ranking metrics, answer/citation checks and negative cases |
 | 52–60 minutes | Compare options, summarise limits and propose a measured rollout |
@@ -47,7 +47,7 @@ An aggregate score cannot compensate for a severe error such as allowing cross-t
 
 **Prompt:** An assistant prepares a refund, gets approval and calls a tool. The connection times out. A restarted worker repeats the action. The user then cancels while the provider is still working.
 
-**Expected implementation:** Adapt [Lab 4](11-coding-labs.md#lab-4) with immutable action identity and payload binding. Demonstrate pre-commit rollback, post-commit response loss, restart and conflicting payload rejection. Draw the remote-provider boundary explicitly.
+**Expected implementation:** Adapt [Lab 4](21-coding-labs.md#lab-4) with immutable action identity and payload binding. Demonstrate pre-commit rollback, post-commit response loss, restart and conflicting payload rejection. Draw the remote-provider boundary explicitly.
 
 **Expected design:** Separate proposed, approved, submitted, uncertain, committed and compensated states. Approval binds the exact operation; tool execution rechecks current authority and mutable preconditions. Use provider idempotency where supported and reconcile uncertain outcomes. Preserve a receipt and audit history. A cancellation signal is not proof that the effect stopped.
 
@@ -61,7 +61,7 @@ An aggregate score cannot compensate for a severe error such as allowing cross-t
 
 **Expected answer:** First restore complete case identity and distinguish failures from missing scores. Re-evaluate under the same judge/rubric or establish an overlap study. Compare paired cases, estimate uncertainty at the independent unit, inspect severe and high-volume slices, and use a prespecified margin. Report quality, safety, latency, cost and completion separately.
 
-**Coding:** Implement [Lab 8](11-coding-labs.md#lab-8). Inject a duplicate ID, NaN, missing score and critical failure. None may silently produce a pass.
+**Coding:** Implement [Lab 8](21-coding-labs.md#lab-8). Inject a duplicate ID, NaN, missing score and critical failure. None may silently produce a pass.
 
 **Cross-questions:** “Zero attacks succeeded in 100 cases; is risk zero?” No; under independent trials the one-sided 95% upper bound is about 3%. “Why not bootstrap individual messages?” Messages from one conversation may be correlated. “Can longer answers win the judge unfairly?” Yes; calibrate correctness separately from verbosity and order effects.
 
@@ -75,7 +75,7 @@ An aggregate score cannot compensate for a severe error such as allowing cross-t
 
 **Cross-questions:** “Future-token changes alter the first output; what failed?” The causal mask or positions. “Why does a seed not guarantee identical GPU output?” Runtime, kernels, hardware and nondeterminism also matter. “Does LoRA reduce all memory 128 times?” That ratio can describe trainable matrices only; base weights and activations still exist.
 
-**Read after attempting:** [Labs 2 and 7](11-coding-labs.md); ML03–04, ML13–14; DL01–05, DL13–25, DL30, DL39.
+**Read after attempting:** [Labs 2 and 7](21-coding-labs.md); ML03–04, ML13–14; DL01–05, DL13–25, DL30, DL39.
 
 ## Round E · A production incident, 45 minutes
 
@@ -91,7 +91,7 @@ An aggregate score cannot compensate for a severe error such as allowing cross-t
 
 **Prompt:** Recommend relevant items or forecast regional demand. Validation looks excellent, but new users or new regions perform badly. A feature pipeline backfills historical events and the experiment increases clicks without increasing task success.
 
-**Expected answer:** Define entity/time/spatial splits, build a transparent baseline and audit point-in-time availability. Examine cold start, exposure bias, metric choice and downstream effects. Use the feature join in [Lab 5](11-coding-labs.md#lab-5). Compare a global model with local or hierarchical alternatives using held-out regions and realistic serving constraints.
+**Expected answer:** Define entity/time/spatial splits, build a transparent baseline and audit point-in-time availability. Examine cold start, exposure bias, metric choice and downstream effects. Use the feature join in [Lab 5](21-coding-labs.md#lab-5). Compare a global model with local or hierarchical alternatives using held-out regions and realistic serving constraints.
 
 **Cross-questions:** “An event happened yesterday; can yesterday's model use it?” Only if it was available then. “Does a high silhouette score prove useful segments?” No; downstream usefulness needs measurement. “Can inverse propensity weighting evaluate an unseen action?” Without overlap, the effect is not identified by those logs.
 
@@ -114,11 +114,11 @@ Use one real project, including a personal lab if that is the work you have done
 
 | Pass | Work | Exit evidence |
 | --- | --- | --- |
-| Foundations | Python/data and ML/statistics, then relevant reference banks | Solve small coding and loss/metric exercises without notes |
-| Mechanisms | Deep learning, RAG and agents | Draw the flow, implement a core routine, explain each failure boundary |
-| Measurement | Evaluation and QA/security | Build adversarial cases and show a gate rejecting known bad outputs |
-| Operations | Serving, system design and applied modelling | Defend a capacity estimate, rollout and real failure response |
-| Rehearsal | Six mixed-topic mocks and project defence | Repeat weak rounds with new inputs rather than memorised wording |
+| Programming and data (1–5) | Python, algorithms, SQL, NumPy and pandas | Solve small coding and data-transformation exercises without notes |
+| Statistics and modelling (6–12) | Probability, ML, scikit-learn, deep learning, LLMs and applied modelling | Derive losses, compare models and defend validation choices |
+| Building AI systems (13–16) | APIs/data pipelines, system design foundations, RAG and agents | Draw the flow, implement a core routine and explain each failure boundary |
+| Advanced production work (17–20) | Evaluation, QA/security, serving and architecture cases | Show a gate rejecting bad outputs; defend capacity, rollout and recovery |
+| Interview rehearsal (21–22) | Coding labs, six mixed-topic mocks and project defence | Repeat weak rounds with new inputs rather than memorised wording |
 
 At the end of a topic, close the page and reconstruct its summary. Mark each question **explain**, **implement**, **test**, **defend**. Study the missing capability rather than rereading only the answer you already recognise.
 

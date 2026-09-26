@@ -1,15 +1,15 @@
 ---
 id: practical-system-design
 title: AI System Design and Project Defence
-sidebar_label: 9 · Architecture cases
-sidebar_position: 9
+sidebar_label: "20 · Architecture and project defence"
+sidebar_position: 20
 ---
 
 # AI System Design and Project Defence
 
 Turn ambiguous business requests into explicit contracts, measurable architecture choices, and a safe release plan.
 
-**Evidence:** [S3](98-sources.md#s3) reports résumé ranking; [S2](98-sources.md#s2) reports predictive weather tooling; [S8](98-sources.md#s8) reports publisher-attributed support-agent, claims, and batching prompts. The workloads and solutions here are original. [S7](98-sources.md#s7) and [V1](98-sources.md#v1) support practising project and design defence.
+**Evidence:** [S3](24-sources.md#s3) reports résumé ranking; [S2](24-sources.md#s2) reports predictive weather tooling; [S8](24-sources.md#s8) reports publisher-attributed support-agent, claims, and batching prompts. The workloads and solutions here are original. [S7](24-sources.md#s7) and [V1](24-sources.md#v1) support practising project and design defence.
 
 ## Explain the decisions behind the design
 
@@ -38,7 +38,7 @@ These options can coexist. State which part of the system uses each and which ex
 
 ## SYS01 · Design a customer-support agent
 
-**Evidence: publisher-attributed reported task, [S8](98-sources.md#s8).**
+**Evidence: publisher-attributed reported task, [S8](24-sources.md#s8).**
 
 **Scenario.** A retailer handles policy questions, order-status queries, and refunds. Assume 20 requests/second peak, authenticated users, and a product requirement that refunds require explicit confirmation.
 
@@ -69,7 +69,7 @@ Use integer minor units or an appropriate decimal representation for money. This
 
 ## SYS02 · Design enterprise document Q&A
 
-**Evidence: reported live-RAG theme, [S1](98-sources.md#s1), and security theme, [S2](98-sources.md#s2).**
+**Evidence: reported live-RAG theme, [S1](24-sources.md#s1), and security theme, [S2](24-sources.md#s2).**
 
 **Scenario.** One million documents, several tenants, policy changes daily, p95 answer latency target five seconds.
 
@@ -88,7 +88,7 @@ This is an allocation, not a prediction of p95 by summing stage quantiles. Measu
 
 ## SYS03 · Design a résumé matching and ranking system
 
-**Evidence: reported, [S3](98-sources.md#s3).**
+**Evidence: reported, [S3](24-sources.md#s3).**
 
 **Answer.** Clarify whether the system assists reviewers or makes hiring decisions. Extract evidence-backed skills, experience, dates, and job requirements with uncertainty and provenance. Establish lexical/rules and embedding baselines. Rank relevant evidence while keeping protected or irrelevant personal attributes out of scoring features according to the product's policy and applicable requirements.
 
@@ -106,7 +106,7 @@ assert round(coverage, 2) == 0.67
 
 ## SYS04 · Design an agent that evaluates insurance claims
 
-**Evidence: publisher-attributed task family, [S8](98-sources.md#s8).**
+**Evidence: publisher-attributed task family, [S8](24-sources.md#s8).**
 
 **Answer.** Treat the output as a recommendation unless explicit authority and validated policy permit automation. Parse claims/documents, preserve source evidence, retrieve the effective policy, and apply deterministic eligibility/calculation rules where available. Route missing documents, conflicting evidence, and uncertain interpretations for review.
 
@@ -127,7 +127,7 @@ Version policy and extraction models. Cache reusable policy context; avoid multi
 
 ## SYS05 · Design a reusable asynchronous evaluation service
 
-**Evidence: reported reusable/scalable evaluation questions, [S5](98-sources.md#s5).**
+**Evidence: reported reusable/scalable evaluation questions, [S5](24-sources.md#s5).**
 
 **Answer.** Accept a dataset/configuration reference, validate it, create a run ID, and enqueue per-case work. Workers call the system under test under provider quotas and persist outputs. Graders read those artefacts independently, write versioned results, and aggregation checks completeness before producing comparisons.
 
@@ -145,7 +145,7 @@ Use leases/heartbeats for abandoned work, stable IDs for deduplication, per-tena
 
 ## SYS06 · Design a long-running research agent
 
-**Evidence: reported research-agent context, [S2](98-sources.md#s2); detailed design is a practice extension.**
+**Evidence: reported research-agent context, [S2](24-sources.md#s2); detailed design is a practice extension.**
 
 **Answer.** Define a bounded research question, approved sources/tools, evidence quality rules, budget, and completion criteria. Persist tasks and source artefacts, permit checkpoint/resume, and maintain claims linked to evidence. Parallel workers can investigate independent subquestions; a single synthesis step reconciles conflicting evidence and identifies remaining gaps.
 
@@ -162,7 +162,7 @@ A budget limit should yield a partial report with explicit unresolved questions,
 
 ## SYS07 · Defend a project without inventing production experience
 
-**Evidence: reported project rounds, [S1](98-sources.md#s1), [S7](98-sources.md#s7), [V1](98-sources.md#v1).**
+**Evidence: reported project rounds, [S1](24-sources.md#s1), [S7](24-sources.md#s7), [V1](24-sources.md#v1).**
 
 **Answer.** Present the problem, users, your contribution, baseline, constraints, decisive trade-off, measured results, and a failure you investigated. Label a prototype, synthetic benchmark, or personal project accurately. The interviewer can probe details such as where a metric came from, how errors were sampled, and which system boundary you owned.
 

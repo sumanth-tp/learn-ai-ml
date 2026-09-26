@@ -1,7 +1,7 @@
 ---
 title: Tools, Versions and Reproducibility Notebook
 sidebar_label: Tools and versions
-sidebar_position: 99
+sidebar_position: 23
 ---
 
 # Tools, Versions and Reproducibility Notebook
@@ -12,7 +12,7 @@ Name the mechanism, pin the implementation, and show what you actually tested.
 
 ## Tested coding environment
 
-The [eight coding labs](11-coding-labs.md) and new chapter Python examples were checked using **Python 3.12.8 on macOS ARM64** with NumPy **2.5.3**, pandas **3.0.6**, scikit-learn **1.9.1** and the transitive versions in the [requirements file](/examples/interviews/requirements.txt). The labs make no paid/model/network calls. Framework integrations, GPU kernels and remote services in the broader topic discussions are not certified by those local tests.
+The [eight coding labs](21-coding-labs.md) and new chapter Python examples were checked using **Python 3.12.8 on macOS ARM64** with NumPy **2.5.3**, pandas **3.0.6**, scikit-learn **1.9.1** and the transitive versions in the [requirements file](/examples/interviews/requirements.txt). The labs make no paid/model/network calls. Framework integrations, GPU kernels and remote services in the broader topic discussions are not certified by those local tests.
 
 ```bash
 python3.12 -m venv .venv
