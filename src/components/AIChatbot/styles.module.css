@@ -45,6 +45,8 @@
 .markdown pre[data-language]::before { content: attr(data-language); position: sticky; left: 100%; display: block; width: max-content; margin: -.85rem 0 .25rem auto; color: #7f8795; font-family: var(--ifm-font-family-base); font-size: .56rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .markdown pre code { padding: 0; border: 0; background: transparent; color: inherit; font-size: inherit; white-space: pre; }
 .markdown :not(pre) > code { padding: .12rem .32rem; border: 1px solid color-mix(in srgb,var(--brand-400) 18%,transparent); border-radius: .35rem; background: var(--brand-tint); color: var(--ifm-code-color); font-size: .84em; overflow-wrap: anywhere; }
+.markdown td pre, .markdown th pre { width: 24rem; max-width: 65vw; margin: 0; }
+.panel[data-expanded='true'] .markdown td pre, .panel[data-expanded='true'] .markdown th pre { width: 36rem; }
 .tableScroll { width: 100%; margin: .85rem 0 1rem; overflow-x: auto; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface-raised); }
 .markdown table { width: max-content; min-width: 100%; margin: 0; border: 0; border-collapse: collapse; background: var(--surface-raised); font-size: .78rem; }
 .markdown thead { background: color-mix(in srgb,var(--brand-500) 10%,var(--surface-1)); }

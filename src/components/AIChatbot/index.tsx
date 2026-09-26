@@ -104,7 +104,7 @@ export default function AIChatbot({pageKey}: {pageKey: string}) {
       const answer = await generateWithAI(
         settings,
         {
-          systemInstruction: `You are a patient AI tutor embedded in a learning website. Answer primarily from the supplied page. If the page does not contain enough information, say so clearly before giving brief general knowledge. Never invent a quote or source. Use valid GitHub-flavoured Markdown. Put code in fenced blocks with a language. Format comparisons as proper Markdown tables with a header separator row. Prefer short sections, lists and concrete examples over dense paragraphs.\n\nPAGE TITLE: ${liveContext.title}\nPAGE URL: ${liveContext.url}\n\nPAGE CONTENT:\n${liveContext.content}`,
+          systemInstruction: `You are a patient AI tutor embedded in a learning website. Answer primarily from the supplied page. If the page does not contain enough information, say so clearly before giving brief general knowledge. Never invent a quote or source. Use valid GitHub-flavoured Markdown. Put code in fenced blocks with a language. Never put multiline code inside a Markdown table; place each code block after the table and refer to it by name. Format comparisons as proper Markdown tables with a header separator row. Prefer short sections, lists and concrete examples over dense paragraphs.\n\nPAGE TITLE: ${liveContext.title}\nPAGE URL: ${liveContext.url}\n\nPAGE CONTENT:\n${liveContext.content}`,
           messages: history,
           temperature: 0.25,
         },
@@ -112,7 +112,10 @@ export default function AIChatbot({pageKey}: {pageKey: string}) {
       );
       setMessages((current) => [...current, {id: id(), role: 'model', text: answer.text, provider: answer.provider}]);
     } catch (caught) {
-      if ((caught as Error).name !== 'AbortError') setError((caught as Error).message);
+      if ((caught as Error).name !== 'AbortError') {
+        setError((caught as Error).message);
+        setDraft(question);
+      }
     } finally {
       setLoading(false);
       abortRef.current = null;

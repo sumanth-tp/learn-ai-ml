@@ -1,0 +1,8 @@
+{
+  "label": "LLM Evaluation",
+  "position": 3.3,
+  "link": {
+    "type": "generated-index",
+    "description": "Notes on the CampusX LLM Evaluations playlist, one page per video in playlist order, translated from the Hindi transcripts."
+  }
+}

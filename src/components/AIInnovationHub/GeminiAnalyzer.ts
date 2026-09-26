@@ -128,15 +128,24 @@ async function analyseBatch(
   signal?: AbortSignal,
 ): Promise<Discovery[]> {
   const compact = items.map(({id, category, title, description, source, publishedAt, metrics, details}) => ({
-    id, category, title, description, source, publishedAt, metrics, details,
+    id, category, title: title.slice(0, 180), description: description.slice(0, 450),
+    source, publishedAt, metrics: metrics?.slice(0, 3), details,
   }));
+  const records = JSON.stringify(compact);
+  if (records.length > 7_000 && items.length > 1) {
+    const middle = Math.ceil(items.length / 2);
+    return [
+      ...await analyseBatch(items.slice(0, middle), settings, signal),
+      ...await analyseBatch(items.slice(middle), settings, signal),
+    ];
+  }
   const response = await generateWithAI(
     settings,
     {
       systemInstruction: 'You are a careful AI news editor. Work only from the supplied records. Do not invent facts, benchmarks, links or dates. Return one valid JSON object only, with no Markdown fence or commentary.',
       messages: [{
         role: 'user',
-        parts: [{text: `Edit every record for an AI/ML learner. Keep simpleExplanation under 45 words and whyImportant under 35 words. Add exactly 2 concrete short use cases answering "what can I use this for?" Add at most 2 short prerequisites and 2 feasible project ideas. Preserve each id exactly. Return this shape: {"items":[{"sourceId":"...","simpleExplanation":"...","whyImportant":"...","useCases":["...","..."],"prerequisites":["..."],"projectIdeas":["..."]}]}.\n\nRECORDS:\n${JSON.stringify(compact)}`}],
+        parts: [{text: `Edit every record for an AI/ML learner. Keep simpleExplanation under 45 words and whyImportant under 35 words. Add exactly 2 concrete short use cases answering "what can I use this for?" Add at most 2 short prerequisites and 2 feasible project ideas. Preserve each id exactly. Return this shape: {"items":[{"sourceId":"...","simpleExplanation":"...","whyImportant":"...","useCases":["...","..."],"prerequisites":["..."],"projectIdeas":["..."]}]}.\n\nRECORDS:\n${records}`}],
       }],
       temperature: 0.1,
       responseJson: true,

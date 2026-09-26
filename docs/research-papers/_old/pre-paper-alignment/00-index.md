@@ -14,11 +14,10 @@ Read each paper as a sequence of decisions: what problem the authors faced, what
 they changed, how the method works, and what the experiments actually support.
 
 These chapters follow your requested priority order. ResNet and DDPM come last.
-Every chapter opens with a one-minute summary, then walks through the paper **in
-its own section order**, from the abstract to the appendix, so you can read it
-side by side with the PDF. The language is plain: every term is explained the
-first time it appears, and each formula follows the idea it expresses. Each
-chapter ends with runnable code, interview scenarios and one hands-on project.
+Every chapter now opens with a one-minute explanation before moving from
+intuition to equations, architecture, code, experiments and limitations. It then
+connects the original work to later upgrades and ends with realistic interview
+scenarios and worked answer expectations.
 
 ## What every chapter gives you
 
@@ -26,15 +25,13 @@ chapter ends with runnable code, interview scenarios and one hands-on project.
 | --- | --- |
 | Paper in one minute | The problem, key idea and historical importance without jargon |
 | Architecture flow | A Mermaid diagram that turns the paper's training or inference path into one visual story |
-| Section-by-section walkthrough | The paper's own sections, numbered as in the PDF, with its equations, key table rows and the authors' interpretation, in plain language |
-| Teaching aids, clearly marked | Intuition, worked numbers and "in the real world" boxes, labelled _not from the paper_ so you always know what the authors said |
-| Corrections and caveats | Notes where the paper contradicts itself, makes an untested claim or was later superseded |
-| Real-world examples | Documented deployments plus illustrated workflows, with the boundary between the two stated |
+| Concept walkthrough | Intuition first, then notation, shapes and the original architecture |
+| Real-world example | A concrete workflow plus the boundary between documented use and illustration |
 | Interactive lab | A local, accessible control panel for changing the paper's important variables and inspecting exact values |
-| Progressive implementation | The runnable script split into stages, a paper-to-code map, and a table of where the script departs from the paper |
+| Progressive implementation | The runnable script split into setup, core method, training/inference and verification stages |
+| Evidence and limitations | What the experiments support, what the metrics mean and what can still fail |
 | Further evolution | Primary-source links to later papers or official model releases, with the change each introduced |
 | Interview practice | Scenario questions covering design, maths, implementation, debugging, evaluation and production trade-offs |
-| Project | One weekend-sized project on a real public dataset, with steps tied to the paper's sections and a measurable target |
 
 The embedded original paper remains available at the end of every chapter, so
 the explanation can always be checked against the authors' figures, tables and
@@ -74,8 +71,7 @@ labs run locally in the page and expose a data-table alternative where a chart
 is used. After that, use the staged code tabs; open the collapsed complete script
 only when you are ready to run or modify the whole program.
 
-The results sections follow the paper's own tables. The main text shows the
-headline rows; open the collapsed "Full Table" blocks when you want every row. A
+The experiment sections explain how to interpret the paper's evidence. A
 benchmark result always belongs to a particular dataset, scoring rule, model and
 evaluation setting. The embedded PDF lets you inspect the full tables, appendix
 and original wording without leaving the chapter.
