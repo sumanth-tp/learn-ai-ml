@@ -209,6 +209,10 @@ Most production systems use both: fine-tune for behaviour, RAG for facts.
 
 The playlist takes you to level 1, with a taste of 4. Most **value** appears between 2 and 5.
 
+:::tip Want the code for these?
+This chapter stays conceptual on purpose. [LangChain Advanced Topics](/docs/genai/langchain-advanced/create-agent) gives several of the ideas above — memory, LangGraph-style agents, multi-agent supervisors, caching — real, runnable code from LangChain's own v1.0 documentation.
+:::
+
 ## Checklist
 
 - [ ] I can name three advanced-RAG techniques and the failure each fixes

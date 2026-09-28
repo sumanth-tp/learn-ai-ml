@@ -1,0 +1,8 @@
+{
+  "label": "LangChain Advanced Topics",
+  "position": 24,
+  "link": {
+    "type": "generated-index",
+    "description": "Industry-important LangChain concepts the CampusX playlist does not cover — gathered from LangChain's official documentation, not the video course. Covers the v1.0 create_agent architecture (middleware, human-in-the-loop, short/long-term memory, multi-agent subagents), LCEL gaps (streaming, retries/fallbacks, callbacks and tracing, caching), and retrievers beyond the ones the playlist demos (self-query, parent-document, ensemble). Every topic carries runnable Python."
+  }
+}
