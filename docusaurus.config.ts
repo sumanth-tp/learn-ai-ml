@@ -2,6 +2,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
 
+const path = require("path");
 const math = require("remark-math");
 const katex = require("rehype-katex");
 
@@ -43,6 +44,20 @@ const config: Config = {
   ],
   plugins: [
     require.resolve("./plugins/learn-index"),
+    // Mermaid pulls this in; its UMD build passes `require` as a value, which webpack can't analyse.
+    () => ({
+      name: "vscode-languageserver-types-esm",
+      configureWebpack: () => ({
+        resolve: {
+          alias: {
+            "vscode-languageserver-types$": path.join(
+              path.dirname(require.resolve("vscode-languageserver-types")),
+              "../esm/main.js",
+            ),
+          },
+        },
+      }),
+    }),
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
       {

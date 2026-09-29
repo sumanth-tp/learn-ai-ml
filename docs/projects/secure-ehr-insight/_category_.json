@@ -1,0 +1,10 @@
+{
+  "label": "Secure EHR Insight & Clinical Validator",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "slug": "/category/projects/secure-ehr-insight",
+    "title": "Secure EHR Insight & Clinical Validator: AI FDE Live Marathon",
+    "description": "A HIPAA-aware clinical Q&A system built live end to end: PostgreSQL + pgvector, domain-specific embeddings, Microsoft Presidio redaction, NVIDIA NeMo Guardrails, FastAPI, Streamlit, and a Dockerised AWS EC2 deployment."
+  }
+}
