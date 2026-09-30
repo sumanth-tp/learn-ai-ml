@@ -3,11 +3,6 @@
   margin-top: 0;
 }
 
-/* Give the article the reclaimed space when the right contents pane closes. */
-.docItemContainerExpanded :global(.theme-doc-markdown.markdown) {
-  max-width: 100%;
-}
-
 @media (min-width: 997px) {
   .docItemCol {
     max-width: 75% !important;

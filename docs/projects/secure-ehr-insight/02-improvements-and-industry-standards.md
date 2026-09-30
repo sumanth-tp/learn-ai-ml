@@ -12,7 +12,7 @@ tags: [projects, healthcare, hipaa, security, mlops, aws, addition]
 ---
 
 :::note Not from the session
-Everything in this chapter is an addition — analysis of gaps between the
+Everything in this chapter is an addition: an analysis of gaps between the
 live build in [the previous chapter](/docs/projects/secure-ehr-insight/live-implementation)
 and what a production hospital deployment would require, plus concrete
 fixes. None of this was said in the video; it follows directly from the
@@ -20,8 +20,8 @@ project's own stated goal (HIPAA-aware AI) and from where the live build
 explicitly cut corners for time.
 :::
 
-The live session builds a genuinely good *architecture* — scoped retrieval,
-redaction before the LLM, guardrails against clinical advice. What's missing
+The live session builds a genuinely good *architecture*: scoped retrieval,
+redaction before the LLM, and guardrails against clinical advice. What's missing
 is everything a compliance review, a security audit, or a real on-call
 rotation would ask about next. Grouped by the risk each one addresses.
 
@@ -30,14 +30,14 @@ rotation would ask about next. Grouped by the risk each one addresses.
 This is the single biggest gap, and it's easy to miss because the pipeline
 *looks* compliant.
 
-The system redacts PHI before it reaches DeepSeek — but redaction is
+The system redacts PHI before it reaches DeepSeek, but redaction is
 probabilistic (Presidio's `score_threshold=0.4`, plus whatever it simply
-doesn't recognize), and DeepSeek is a general-purpose third-party API. Under
+doesn't recognise), and DeepSeek is a general-purpose third-party API. Under
 HIPAA, any vendor that could plausibly receive PHI must sign a **Business
 Associate Agreement (BAA)** with the covered entity. Most consumer-facing
 LLM APIs, DeepSeek included, do not offer one.
 
-**Fix:** route the final LLM call through a provider that will sign a BAA —
+**Fix:** route the final LLM call through a provider that will sign a BAA.
 **Azure OpenAI Service**, **AWS Bedrock**, or **Google Vertex AI** all offer
 one under their enterprise terms. This is a one-line change in
 `src/guardrails/config.yml` (swap the `engine`/`model`/`base_url`), but it's
@@ -55,15 +55,15 @@ models:
       api_version: "2024-10-21"
 ```
 
-Treat redaction as **defense in depth**, not as the reason a non-BAA vendor
+Treat redaction as **defence in depth**, not as the reason a non-BAA vendor
 becomes acceptable. Both controls should exist together.
 
 ## 2. No authentication, no audit trail
 
 Anyone who reaches port 8501 can select any patient and ask anything.
 HIPAA's **accounting-of-disclosures** and **minimum-necessary** rules
-require knowing *which authorized user* accessed *which patient's* data,
-*when*, and *why* — none of which this build records.
+require knowing *which authorised user* accessed *which patient's* data,
+*when*, and *why*. This build records none of it.
 
 **Fix, layered:**
 
@@ -71,7 +71,7 @@ require knowing *which authorized user* accessed *which patient's* data,
   simple OAuth2 proxy in front of the container) so every session carries a
   real clinician identity, not an anonymous browser tab.
 - **Audit log:** every call to `/api/v1/chat` should write an immutable
-  record — `(user_id, patient_id, question, redacted_context_hash, guardrail_verdict, timestamp)` — to a separate, append-only store (a
+  record, `(user_id, patient_id, question, redacted_context_hash, guardrail_verdict, timestamp)`, to a separate, append-only store (a
   dedicated Postgres table with no `UPDATE`/`DELETE` grants, or a managed
   audit log service). Hash the context rather than storing it raw, so the
   audit trail itself doesn't become a second copy of PHI.
@@ -87,17 +87,17 @@ await audit_log.write({
 })
 ```
 
-- **Authorization:** scope which patients a given clinician is even allowed
-  to select — "minimum necessary" means a doctor should not be able to
+- **Authorisation:** scope which patients a given clinician is even allowed
+  to select. "Minimum necessary" means a doctor should not be able to
   browse patients outside their own care team from the dropdown at all,
   which today lists every embedded `subject_id` to everyone.
 
-## 3. pgvector has no index — it's a sequential scan at scale
+## 3. pgvector has no index, so search is a sequential scan at scale
 
 Every query in the live build runs `ORDER BY clinical_embedding <=> vector
 LIMIT n` with **no index on the `clinical_embedding` column**. At ~11,000
-rows that's invisible. At the full ~230,000 rows — let alone a real
-hospital's tens of millions — every single query becomes a full table scan
+rows that's invisible. At the full ~230,000 rows, let alone a real
+hospital's tens of millions, every single query becomes a full table scan
 of every vector, which will not hold up in production.
 
 **Fix:** add an HNSW (or IVFFlat) index once the column is populated:
@@ -108,8 +108,8 @@ CREATE INDEX ON patient_encounters
 ```
 
 HNSW is the current pgvector recommendation for read-heavy similarity
-search — build it *after* the bulk of embeddings exist (an index built over
-an empty/mostly-null column has nothing useful to organize), and rebuild or
+search. Build it *after* the bulk of embeddings exist (an index built over
+an empty/mostly-null column has nothing useful to organise), and rebuild or
 `REINDEX` after a large backfill.
 
 ## 4. The embedding backfill is a blocking script, not a pipeline
@@ -128,7 +128,7 @@ to remember to re-run.
 ## 5. Secrets and network exposure
 
 - **`.env` on the server, `chmod 600`, is the entire secrets story.** No
-  rotation, no centralized management, and the DeepSeek key and DB
+  rotation, no centralised management, and the DeepSeek key and DB
   password both live in one plaintext file on a box that's also running a
   public-facing web app. **Fix:** AWS Secrets Manager or Parameter Store,
   pulled at container start, never written to disk as a file at all.
@@ -136,7 +136,7 @@ to remember to re-run.
   box**, reachable (even if IP-scoped) on a public subnet. **Fix:** AWS RDS
   for PostgreSQL (with the `pgvector` extension, which RDS supports
   natively) in a **private subnet**, with the application security group as
-  its only allowed inbound source — no public IP on the database at all.
+  its only allowed inbound source, and no public IP on the database at all.
 - **No TLS anywhere.** Streamlit is served over plain HTTP on `:8501`;
   `psycopg` isn't shown enforcing `sslmode=require` to Postgres. **Fix:** put
   an Application Load Balancer with an ACM certificate in front of the EC2
@@ -147,10 +147,10 @@ to remember to re-run.
 
 Bappy names this gap himself: redeploying means SSH in, `git pull`, rebuild,
 restart, by hand, every time. There's also no automated test for the
-guardrail flows or the redaction recognizers — a Colang edit or a Presidio
+guardrail flows or the redaction recognisers, so a Colang edit or a Presidio
 config change ships with no regression check.
 
-**Fix — a minimal CI/CD pipeline:**
+**Fix: a minimal CI/CD pipeline.**
 
 ```mermaid
 flowchart LR
@@ -160,8 +160,8 @@ flowchart LR
     B -->|"fail"| E["Block deploy,<br/>notify"]
 ```
 
-A concrete regression test set costs little and catches real regressions —
-for example, pin the exact cases already demonstrated live as permanent
+A concrete regression test set costs little and catches real regressions.
+For example, pin the exact cases already demonstrated live as permanent
 tests:
 
 ```python

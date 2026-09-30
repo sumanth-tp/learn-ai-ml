@@ -469,6 +469,33 @@ body {
   outline: none;
 }
 
+/* The pill background above replaces Infima's icon, which is a fixed-black
+   background image anyway; this one follows the theme. On phones the input
+   collapses to a bare pill, so the icon is its only label. */
+.navbar__search {
+  position: relative;
+}
+
+.navbar__search::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+  margin: auto 0;
+  background-color: var(--text-muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.6-3.6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.6-3.6'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+.navbar__search:focus-within::before {
+  background-color: var(--ifm-color-primary);
+}
+
 /* Sidebar. Docusaurus already makes the inner viewport sticky; overriding the
    container's height makes its box spill into the footer, so only paint here. */
 .theme-doc-sidebar-container {

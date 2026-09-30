@@ -1,0 +1,10 @@
+{
+  "label": "AI Security, Evals, Memory & AgentOps",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "slug": "/category/projects/ai-security",
+    "title": "The Complete AI Security Course: Guardrails, Evals, Memory and AgentOps",
+    "description": "Follow the eight-hour course module by module: guardrails and observability, LLM evaluation with Ragas, thirteen agentic memory techniques, and a production AgentOps stack on AWS with Bedrock guardrails, hybrid search, caching, MCP, EKS and load testing."
+  }
+}

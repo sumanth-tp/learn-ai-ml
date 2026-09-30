@@ -30,13 +30,17 @@ tags:
 > minutes ·
 > [Project source (GitHub)](https://github.com/nimowhyca/Secure-EHR-Insight-Clinical-Validator)
 >
-> Taught live by **Monal Bappy** (data ingestion, retrieval, PII redaction,
-> guardrails, API, UI) and **Bappy Ahmed Baki** (Docker + AWS EC2
-> deployment), moderated by Krish Naik. Notes follow the session in order.
+> Taught live by two mentors: **Monal** (problem framing, data, retrieval, PII
+> redaction, guardrails, API and UI) and **Bappy** (Docker and AWS EC2
+> deployment), hosted by Krish Naik. Notes follow the session in order.
+>
+> Diagrams captioned *Redrawn from…* recreate the instructors' whiteboards,
+> with timestamps. Monal's originals ship in the repository as
+> `instructor_notes/monal-handwritten-notes.pdf`.
 
 Build an assistant that lets a doctor ask questions about a patient's history
 in plain language, without ever letting raw patient data reach a language
-model. The project is small on purpose — the point is not a complex agent, it
+model. The project is small on purpose. The point is not a complex agent; it
 is a **privacy-first pipeline** that an AI forward deployed engineer (FDE)
 would actually be allowed to ship into a hospital.
 
@@ -46,45 +50,66 @@ A hospital's electronic health record (EHR) system accumulates millions of
 rows of admissions, prescriptions and lab results over time. A doctor who
 wants to know "what was this patient's last recorded dosage?" currently has
 to scroll through that history by hand. The obvious pitch is "use an LLM to
-answer questions over the records in natural language" — and that pitch, on
+answer questions over the records in natural language", and that pitch, on
 its own, is a **HIPAA violation waiting to happen**.
 
 The session opens by pressure-testing that obvious answer:
 
 - **Naive answer:** RAG, or text-to-SQL, over the hospital's database.
 - **Why it fails immediately:** the raw rows contain **PHI** (protected
-  health information) — names, addresses, phone numbers, social security
+  health information): names, addresses, phone numbers, social security
   numbers, financial and medical details. Sending that to a third-party LLM
   API is exactly what HIPAA exists to prevent. If the data leaks, the
   hospital faces a legal hearing, not a bug ticket.
 
+*Redrawn from Monal's whiteboard, 0:13 to 0:25 (page 1 of the handwritten notes).*
+
+```mermaid
+flowchart TB
+    subgraph HAVE["What the hospital has"]
+        direction LR
+        H["Hospital"] --> E["EHR system<br/>millions of rows"]
+        E --> R["Admissions · prescriptions · lab results<br/>(relational data)"]
+    end
+    subgraph NAIVE["The obvious answer"]
+        direction LR
+        D["Raw patient data"] --> T["RAG · Text2SQL · vector DB"] -->|"extract"| L["LLM"]
+    end
+    subgraph NEED["What the solution needs"]
+        direction LR
+        S1["Privacy-first pipeline"] ~~~ S2["Guardrails"] ~~~ S3["Protected personal data"]
+    end
+    HAVE --> NAIVE
+    NAIVE -->|"raw PHI reaches the LLM:<br/>a HIPAA violation"| NEED
+```
+
 :::note What HIPAA actually requires
 HIPAA (the US Health Insurance Portability and Accountability Act) protects
-PHI — any demographic or clinical detail that could identify a patient.
-Covered entities include healthcare providers, insurers, clearing houses, and
-their business associates (EHR platforms, IT vendors, and — relevant here —
-whoever builds the AI layer on top). The dataset used in this project, MIMIC-IV,
-is already a public, de-identified research release; the point of the exercise
-is not "the data is dirty," it is **learning to build the compliant pipeline
-a real hospital dataset would require**, using safe data to rehearse it.
+PHI: any demographic or clinical detail that could identify a patient, such
+as a name, address, phone number, social security number, medical record or
+photo. It applies to healthcare providers, insurers and clearing houses, and
+to their business associates: EHR platforms, IT vendors and, relevant here,
+whoever builds the AI layer on top. Monal's point is that these companies
+care first about whether a solution is compliant, and only then about what
+it does.
 :::
 
 So the brief is not "build a RAG chatbot." It is: build a chatbot that
 **never lets identifying information reach the LLM**, and that **refuses to
-let the LLM behave like a clinician**. Those two constraints — redaction and
-guardrails — are where HIPAA compliance actually lives in this system.
+let the LLM behave like a clinician**. Those two constraints, redaction and
+guardrails, are where HIPAA compliance actually lives in this system.
 
 ### Doubts · Is this only an AI problem? · 00:20:42
 
 **Monal (to the class):** "If hospital shares data to an LLM, that is a
-violation of HIPAA — very, very serious." He deliberately doesn't let the
+violation of HIPAA. Very, very serious." He deliberately doesn't let the
 class settle on "RAG + vector DB + LLM" as a complete answer.
 
 **Response:** An AI engineer thinks "how do I solve it with the model." An
 FDE has to also think about **who the client is** (a regulated hospital),
 **where it will be deployed** (their existing Postgres, not a new vendor's
 stack), and **what happens before the model ever sees the data**. The
-security and redaction layer is not a bonus feature bolted on afterwards — it
+security and redaction layer is not a bonus feature bolted on afterwards; it
 is the reason the rest of the architecture is shaped the way it is.
 
 **Summary**
@@ -102,15 +127,36 @@ class is watching an FDE work, not a from-scratch tutorial:
 
 | Classic SDLC                          | AI SDLC (what this session follows)                                              |
 | -------------------------------------- | ---------------------------------------------------------------------------------- |
-| Product manager writes tickets         | **You** write the plan, the steps, and the edge cases up front — before asking AI  |
+| Product manager writes tickets         | **You** write the plan, the steps, and the edge cases up front, before asking AI  |
 | Developer writes the code              | AI drafts boilerplate + implementation; you review, run it, and validate the result |
 | QA writes and runs test cases          | You ask AI for unit tests, run them, and keep looping until satisfied              |
 | Code review, checking for secrets      | You ask AI for a PR-style self-review: secrets, security flaws, regressions        |
 | Maintenance and hot fixes              | You keep a documented plan/log so a future AI session has full context for fixes   |
 
+*Redrawn from Monal's whiteboard, 0:29 to 0:37 (page 2).*
+
+```mermaid
+flowchart LR
+    subgraph OLD["Classic SDLC"]
+        direction TB
+        PM["Product manager"] --> TK["Work split into tickets<br/>and sprints"]
+        TK --> CD["Developer codes"]
+        CD --> QA["QA writes tests"]
+        QA --> CR["Code review"]
+    end
+    subgraph NEW["AI SDLC: 'vibe coding on steroids'"]
+        direction TB
+        PL["You write plan · steps.md<br/>tasks · edge cases"] --> BP["Boilerplate from plan.md:<br/>structure, system design, then execution"]
+        BP --> TS["AI writes unit tests and test cases,<br/>reports; you review"]
+        TS --> PR["AI drafts PRs; checks for secrets<br/>(security flaws), performance regressions"]
+        PR --> MT["Monitoring and updates:<br/>hot fixes, update the docs"]
+    end
+    OLD -->|"same stages, AI drafts each one"| NEW
+```
+
 :::note Not "vibe coding"
 Monal is explicit that AI SDLC "does not mean asking ChatGPT to create a
-project." Someone with no SDLC background cannot do a good version of it —
+project." Someone with no SDLC background cannot do a good version of it:
 you still have to know what the edge cases are, what the acceptance criteria
 are, and what "done" looks like. AI changes *who* writes the first draft of
 each artifact, not *whether* the artifacts (plan, tests, review, docs) exist.
@@ -118,27 +164,30 @@ each artifact, not *whether* the artifacts (plan, tests, review, docs) exist.
 
 ## Solution architecture
 
-This is the flow Monal draws on screen and builds toward, piece by piece.
-Every phase in this chapter maps onto one part of this diagram.
+This is the flow Monal draws on screen ("In-depth overview", 0:39 to 0:59;
+page 3 of the handwritten notes), redrawn here. Every phase in this chapter
+builds one part of it.
 
 ```mermaid
 flowchart TB
-    A["Hospital EHR ecosystem<br/>(Postgres, millions of rows)"] --> B["Phase 0<br/>Ingest baseline CSV into Postgres on EC2"]
-    B --> C["Phase 1<br/>Install pgvector extension"]
-    C --> D["Add clinical_embedding vector(768) column"]
-    D --> E["Phase 2<br/>Domain-specific embeddings<br/>(BioClinical ModernBERT)"]
-    E --> F[("patient_encounters<br/>rows + embeddings")]
-
-    G["Doctor selects Patient ID<br/>(dropdown, not free text)"] --> H["Doctor asks a question"]
-    H --> I["Embed the question<br/>(same 768-d model)"]
-    F --> J["Cosine similarity search<br/>scoped to the selected patient only"]
-    I --> J
-    J --> K["Redact PHI<br/>Microsoft Presidio"]
-    K --> L{"NeMo Guardrails:<br/>is this a legal question to ask?"}
-    L -->|"No — asks for diagnosis/prescription"| M["Refuse:<br/>'consult the attending physician'"]
-    L -->|"Yes — asks about recorded history"| N["Context + question -> DeepSeek LLM"]
-    N --> O["Answer + AI-generated disclaimer<br/>rendered in Streamlit"]
+    D["Data"] --> ING["Ingest into Postgres 14 on EC2<br/>(the hospital DB)"]
+    ING -->|"① our work starts here"| PGV["pgvector: add a new column"]
+    EMB["Embedding of each note"] --> PGV
+    DOC["Doctor / healthcare professional"] --> DD["Drop-down: select patient by ID"]
+    DD -->|"~100 rows instead of 25 million"| Q["Query"]
+    PGV --> S["Similarity search on the DB"]
+    Q --> S
+    S --> RED["Redaction: remove PHI, mask personal data<br/>such as age and location (Microsoft Presidio)"]
+    RED --> EX["'My credit card info is: 345'<br/>becomes 'My credit card info is: [card-no]'"]
+    Q -->|"the question itself"| G{"Guardrail<br/>(NVIDIA NeMo)"}
+    EX --> G
+    G -->|"reject, e.g. 'What medicine should I prescribe?'"| REJ["Refused"]
+    G -->|"allowed"| CTX["Context: the ~100 redacted rows<br/>Query: the question"]
+    CTX --> LLM["LLM"] --> UI["Streamlit UI"]
 ```
+
+He labels redaction and the guardrail together as the two places HIPAA
+compliance lives in this system.
 
 The two design decisions worth naming explicitly, because they are the
 difference between a toy demo and something a hospital's infra team would
@@ -150,10 +199,10 @@ accept:
    Qdrant or any other dedicated vector database would mean asking the client
    to trust and pay for an entirely new system, for a capability their
    existing database already has a plugin for. When a client already has
-   infrastructure that solves the problem, extend it — don't replace it.
+   infrastructure that solves the problem, extend it rather than replace it.
 2. **The patient is selected before the question is asked.** A hospital
    table can hold tens of millions of rows. Running a semantic search across
-   all of it, per query, does not scale and is not necessary — a doctor never
+   all of it, per query, does not scale and is not necessary. A doctor never
    asks about "the database," they ask about *their* patient. Narrowing to one
    `subject_id` first turns "search 25 million rows" into "search ~100 rows,"
    which is both faster and a second, independent privacy boundary: a
@@ -176,7 +225,7 @@ are used here.
   check it against guardrails, answer. There is no tool-selection decision to
   make, so a full agent framework would be solving a problem this project
   doesn't have. Conversation memory is instead a plain Python list of
-  `{role, content}` messages, replayed on every call — "that is how memory
+  `{role, content}` messages, replayed on every call; as Monal puts it, "that is how memory
   works," even inside LangGraph.
 
 **Summary**
@@ -193,7 +242,7 @@ are used here.
 | Programming           | Python, OOP basics, SQL, Git                                              |
 | Concepts              | RAG, embeddings, vector similarity, what an LLM call is                   |
 | Infrastructure        | AWS account (EC2), a Postgres client, Docker                              |
-| LLM access            | A DeepSeek API key (cheap — the whole session cost under \$0.10 in tokens) |
+| LLM access            | A DeepSeek API key (cheap: the whole session cost under \$0.10 in tokens) |
 | Not required          | Machine learning / statistics background, LangChain/LangGraph expertise  |
 
 ### Complete file: `requirements.txt`
@@ -222,12 +271,13 @@ numpy==2.4.6
 ```
 
 Presidio's analyzer is built on spaCy, so `en_core_web_lg` (the large English
-pipeline) has to be installed alongside it — that's the one dependency
+pipeline) has to be installed alongside it. It's the one dependency
 pinned by URL rather than by name.
 
 ## Repository structure
 
-The layout is built up folder by folder over the session, ending here:
+The repository is built up folder by folder over the session. This is what
+it holds at the end:
 
 ```text
 Secure-EHR-Insight-Clinical-Validator/
@@ -254,30 +304,60 @@ Secure-EHR-Insight-Clinical-Validator/
 │   └── ui/
 │       └── app.py                    # Streamlit chat UI
 ├── instructor_notes/
-│   └── AWS_EC2_Docker_Deployment_Guide.md
+│   ├── instruction.txt               # every command run live, in order
+│   ├── AWS_EC2_Docker_Deployment_Guide.md
+│   └── monal-handwritten-notes.pdf
+├── uv_instructions.txt               # how the Python environment was created
 ├── requirements.txt
-├── .env                               # never committed
-├── Dockerfile
-├── start.sh
-└── .dockerignore
+├── readme.md                         # empty
+└── .gitignore                        # contains only `.env`
 ```
 
-`scripts/` are one-shot operational tools — run once to set up state, not
-imported by the running application. `src/` is the actual application: three
-independently testable layers (database, redaction, guardrails) glued
-together by an `api/` and a `ui/`.
+Three more files appear only on the deployment server in Phase 8:
+`Dockerfile`, `start.sh` and `.dockerignore`. Bappy writes them there with
+shell heredocs and says he hasn't pushed them yet, so they are not in the
+repository. The `.env` file is never committed.
+
+`scripts/` holds one-shot tools. You run each once to set up state, and the
+running application never imports them. `src/` is the application itself:
+three layers you can test on their own (database, redaction, guardrails),
+joined by an `api/` and a `ui/`.
 
 ## Phase 0 — Give the client their data (EC2 + Postgres)
 
 Every real engagement starts with data that already lives somewhere. There is
 no client here, so the session manufactures one: a Postgres database on a
 plain EC2 instance, standing in for "the hospital's existing EHR database."
+Monal calls this phase zero because, on a real engagement, the client hands
+you this part.
+
+Phase 0 runs in this order: put the project under version control, look at
+the dataset, build the database server on AWS, create the application's
+database user, point the project at it with a `.env` file, set up Python,
+and load the CSV.
+
+*Redrawn from Monal's Phase 0 board, 1:10 to 1:34 (page 4).*
+
+```mermaid
+flowchart TB
+    subgraph AWS["On AWS, in this order"]
+        direction LR
+        SG["① Security group"] --> EC2["② EC2 instance<br/>4 GB RAM · 20 GB storage"] --> EIP["③ Elastic IP"]
+    end
+    EIP --> LI["Launch the instance"] --> PG["Install Postgres<br/>and configure it"]
+    subgraph LOCAL["On your machine"]
+        direction LR
+        UV["uv: one global environment"] --> PY["Data ingestion in Python:<br/>schema · CSV into the EC2 database · test"]
+    end
+    PY -->|"connects to the Elastic IP"| PG
+    PG --> DONE["Data is ingested:<br/>the stand-in hospital database exists"]
+```
 
 ### Set up version control before touching AWS
 
-The very first thing done on screen — before AWS is even opened — is
-creating the GitHub repository and committing the empty project, so every
-phase that follows can be pushed as it's built:
+The first thing done on screen, before AWS is even opened, is creating the
+GitHub repository and committing the empty project. Every phase that follows
+can then be pushed as it's built:
 
 ```bash
 git init
@@ -289,32 +369,64 @@ git remote add origin https://github.com/<you>/Secure-EHR-Insight-Clinical-Valid
 git push -u origin main
 ```
 
-Repository visibility was set to **public**, no license selected. Every
-later phase in this chapter closes the same way — `git add .`, a short
-commit message naming the phase just finished (e.g. "data source added",
-"embeddings storage script added", "guardrails added"), then `git push` —
-which is why the finished repository's file layout and its commit history
-line up with this chapter's own section order.
+The repository is **public**, with no licence. Every later phase ends the
+same way: `git add .`, a short commit message naming what was just finished
+("phase 0 1 completed", "data source added", "embeddings storage script
+added"), then `git push`. That is why the repository's history follows the
+same order as this chapter.
 
-The exact order matters here: **security group, then EC2 instance, then
-Elastic IP.** Monal did it in the opposite order live and had to backtrack,
-because the instance's public IP isn't stable yet when you need to start
-referencing it in your `.env` file.
+### The dataset
+
+The session uses **MIMIC-IV**, a public, de-identified electronic health
+record dataset, in the cleaned CSV version published on
+[Kaggle](https://www.kaggle.com/datasets/isaacritharson/mimic-iv-cleaned-medical-transcripts).
+The file is about 373 MB and has roughly 232,000 rows. Each row is one
+clinical event, so the same patient appears on many rows.
+
+| Column                                  | What it holds                                                                      |
+| --------------------------------------- | ---------------------------------------------------------------------------------- |
+| `subject_id`                            | The patient. A synthetic ID, already anonymised, repeated across that patient's rows |
+| `hadm_id`                               | One hospital admission                                                             |
+| `admission_type`, `admission_location`  | For example `URGENT`, `TRANSFER FROM HOSPITAL`                                     |
+| `drug`, `dose_val_rx`, `dose_unit_rx`, `route` | What was prescribed, and how it was given                                   |
+| `test_name`, `comments`                 | A lab test and the free-text note about it, for example "No VRE isolated."         |
+| `description`, `drg_severity`           | The discharge diagnosis, for example "OTHER DISORDERS OF THE LIVER", and its severity |
+
+Monal singles out the free-text columns, `comments` and `description`, as
+the ones a doctor's questions will hit. Phase 2 turns them into embeddings.
+Nothing is filtered out at this stage; retrieval decides later which rows
+matter for a given question.
+
+:::note Why use data that is already anonymised?
+If MIMIC-IV is already de-identified, why build a redaction pipeline around
+it? Because no company can publish real patient data, so any public dataset
+is already clean. The point of the project is to build the pipeline a real
+hospital dataset would need, and rehearse it on safe data.
+:::
 
 ### AWS console walkthrough — security group, EC2 instance, Elastic IP
 
-**Step 1 — Create the security group first, empty of any instance to attach to yet.**
+Now build the stand-in for the hospital's database server. Do the three
+console tasks in this order: **security group, then EC2 instance, then
+Elastic IP.** Monal created the instance first live, and the IP he had
+written down went stale before he used it. The troubleshooting section after
+the ingestion script shows what that cost.
+
+**Step 1 — Create the security group.**
+
+A security group is the instance's firewall: it lists who may connect, and
+on which ports.
 
 1. Console search bar → type **"security groups"** → open **Security Groups**
    under EC2.
 2. **Create security group.**
 3. Name it something identifiable, e.g. `ytfd-clinical-database-server`.
 4. Under **Inbound rules**, click **Add rule** twice:
-   - Rule 1 — Type: **SSH**, Source: **My IP** (the console auto-fills your
+   - Rule 1: type **SSH**, source **My IP** (the console auto-fills your
      current public IP; this restricts SSH to only your machine).
-   - Rule 2 — Type: **PostgreSQL** (auto-populates port `5432`), Source:
+   - Rule 2: type **PostgreSQL** (auto-populates port `5432`), source
      **My IP**.
-5. **Create security group.** Note the security group ID/name — you'll pick
+5. **Create security group.** Note its name; you'll pick
    it from a dropdown in the next step.
 
 **Step 2 — Launch the EC2 instance, attaching that security group.**
@@ -324,12 +436,12 @@ referencing it in your `.env` file.
 3. **Application and OS Images (AMI):** select **Ubuntu**, then the
    **24.04 LTS** version from the dropdown (24.04 was chosen for familiarity;
    26.04 was also available and equally stable).
-4. **Instance type:** select a small free-tier-eligible type — the session
+4. **Instance type:** select a small free-tier-eligible type. The session
    used a **2 vCPU / 4 GB RAM** class (shown as `c7i-flex` in the console),
    priced at roughly **\$0.08/hour** for Linux at the time of recording.
 5. **Key pair:** click **Create new key pair** → name it (e.g. `FDE-database-pair`)
    → format **`.pem`** (for SSH from a terminal, not PuTTY's `.ppk`) → **Create
-   key pair**. The browser downloads the `.pem` file immediately — move it
+   key pair**. The browser downloads the `.pem` file immediately. Move it
    somewhere you'll remember (e.g. a dedicated `aws-keys/` folder) and never
    commit it to Git. You cannot re-download this file later; losing it means
    losing SSH access to the instance.
@@ -342,7 +454,10 @@ referencing it in your `.env` file.
 9. Back in **Instances**, wait for **Instance state** to show **Running** and
    **Status check** to pass before continuing.
 
-**Step 3 — Allocate and associate an Elastic IP, so the instance's public IP never changes.**
+**Step 3 — Give the instance a fixed IP (Elastic IP).**
+
+Without this, the public IP can change whenever the instance restarts, and
+you'd have to update `.env` every time.
 
 1. EC2 console → left sidebar → **Network & Security → Elastic IPs**.
 2. **Allocate Elastic IP address** → leave the network border group as your
@@ -352,13 +467,13 @@ referencing it in your `.env` file.
    created in Step 2 from the dropdown (identify it by its **private IP
    address**, shown alongside the instance name, if you have more than one
    running).
-5. **Associate.** Refresh the **Instances** list — the instance's **Public
+5. **Associate.** Refresh the **Instances** list: the instance's **Public
    IPv4 address** column now matches the Elastic IP exactly. This value is
    what goes into `DB_HOST` in your `.env` file, and it will survive a stop/
    start of the instance.
 
 :::note Why this order specifically
-An Elastic IP associates with an *existing* instance — you cannot associate
+An Elastic IP associates with an *existing* instance, so you cannot associate
 one before the instance exists, and the instance's security group has to
 already exist before you can attach it at launch time. Reversing steps 1 and
 2 just means going back to edit the instance afterwards; reversing step 3
@@ -371,10 +486,10 @@ relative to 1-2 doesn't work at all.
 ssh -i "FDE-database-pair.pem" ubuntu@<your-elastic-ip>
 ```
 
-(On first connection, accept the host-key prompt — the security group
-already guarantees only your IP can reach port 22, so this is the expected
-first-time SSH warning, not a red flag.) Once connected, configure it for
-remote access:
+On the first connection, accept the host-key prompt. The security group
+already ensures only your IP can reach port 22, so this is the normal
+first-time SSH warning. Once connected, add the PostgreSQL package
+repository and install PostgreSQL 14:
 
 ```bash
 # Add the PostgreSQL APT repository
@@ -389,7 +504,11 @@ sudo apt update
 sudo apt install -y postgresql-14 postgresql-contrib-14
 ```
 
-Then two config edits (`sudo nano ...`, `Ctrl+O`, `Enter`, `Ctrl+X` to save):
+**Step 5 — Let Postgres accept connections from outside the instance.**
+
+By default Postgres only listens on `localhost`. Two config edits change
+that. Open each file with `sudo nano <file>`, make the change, then save with
+`Ctrl+X`, `Y`, `Enter`:
 
 ```text
 # /etc/postgresql/14/main/postgresql.conf
@@ -401,13 +520,24 @@ host    all             all             0.0.0.0/0               scram-sha-256
 
 `listen_addresses = '*'` and a permissive `pg_hba.conf` line are only safe
 *because* the security group already restricts who can reach port 5432 at
-all — the database-level openness relies on the network-level restriction
-sitting in front of it.
+all. The database is open only because the network in front of it isn't.
 
-5. **Create a dedicated application user**, not the Postgres superuser:
+**Step 6 — Create the database and a dedicated application user.**
+
+The Python code connects as its own user, not as the Postgres superuser.
+Create the database, then open `psql` as the `postgres` system user:
+
+```bash
+sudo -u postgres psql -c "CREATE DATABASE ehr_db;"
+sudo -i -u postgres psql
+```
+
+The first command may print a warning that it could not change directory.
+That's harmless: the database is still created. Inside `psql`, create the
+user and give it this database (use your own password; this one is
+published in the repository):
 
 ```sql
-CREATE DATABASE ehr_db;
 CREATE USER fde_admin WITH PASSWORD 'SecureEHR2026!';
 ALTER ROLE fde_admin SET client_encoding TO 'utf8';
 ALTER ROLE fde_admin SET default_transaction_isolation TO 'read committed';
@@ -416,21 +546,58 @@ GRANT ALL PRIVILEGES ON DATABASE ehr_db TO fde_admin;
 
 \c ehr_db
 GRANT ALL ON SCHEMA public TO fde_admin;
+\q
 ```
 
-This EC2 instance is used for the rest of Phase 0's live setup — but see the
-troubleshooting section right after the ingestion script below for what
-actually went wrong the first time it was run, and how it was diagnosed.
+**Step 7 — Point the project at the database with a `.env` file.**
 
-### The dataset
+Back on your own machine, create `.env` in the project root. Monal starts
+it with only `DB_HOST` right after the Elastic IP step, but every script
+reads all five values:
 
-The session uses **MIMIC-IV**, a public, de-identified electronic health
-record dataset (~230,000 rows, ~373 MB as a flat CSV) covering admissions,
-prescriptions, lab tests and discharge diagnoses. Key columns: `subject_id`
-(the patient), `hadm_id` (the admission), `drug`, `dose_val_rx`, `test_name`,
-`comments` (free-text doctor notes), and `description` (the discharge
-diagnosis). `comments` and `description` are the fields the embeddings are
-built from later.
+```env
+DB_HOST=<your-elastic-ip>
+DB_PORT=5432
+DB_NAME=ehr_db
+DB_USER=fde_admin
+DB_PASSWORD=<the password from step 6>
+```
+
+Keep `.env` out of Git. Monal notices it about to be committed at the end of
+phase 1 and adds a one-line `.gitignore` containing just `.env`, which is
+still the whole of the repository's `.gitignore`.
+
+### Set up the Python environment
+
+Monal manages Python with `uv`. He keeps one Python 3.12 environment outside
+the project folder rather than a `.venv` inside it, a personal preference;
+a normal project `.venv` works the same.
+
+```bash
+uv venv --python 3.12 <path-to-env>
+# activate: <path-to-env>\Scripts\activate (Windows) or source <path-to-env>/bin/activate
+uv pip install -r requirements.txt
+uv pip install pandas psycopg2-binary python-dotenv sqlalchemy
+```
+
+He installed everything before the stream: PyTorch and the embedding model
+take several minutes to download.
+
+:::warning Install `psycopg2-binary` as well as `requirements.txt`
+Scripts 01 to 05 connect with a plain `postgresql://` URL, which SQLAlchemy
+serves with the `psycopg2` driver. `requirements.txt` only contains
+`psycopg` version 3, which the API uses through `postgresql+psycopg://`. With
+just `requirements.txt` installed, every setup script fails with
+`ModuleNotFoundError: No module named 'psycopg2'`. It worked live because
+the session's `instruction.txt` installs `psycopg2-binary` separately, as in
+the last line above.
+:::
+
+### Load the CSV into Postgres
+
+With the database reachable and Python ready, ingestion takes two files: a
+table definition, and a script that creates the table and pushes the CSV
+into it.
 
 ### Complete file: `src/database/schema.sql`
 
@@ -488,36 +655,36 @@ from pathlib import Path
 def ingest_data():
     # Load environment variables
     load_dotenv()
-
+    
     # 1. Dynamically resolve project root based on this script's location
     script_dir = Path(__file__).resolve().parent       # .../live-FDE-2/scripts
     project_root = script_dir.parent                   # .../live-FDE-2
-
+    
     # 2. Build absolute paths to data and schema
     csv_path = project_root / 'data' / 'MIMIC_IV_Trasncript.csv'
     schema_path = project_root / 'src' / 'database' / 'schema.sql'
-
+    
     # Verify the file actually exists before trying to read it
     if not csv_path.exists():
         raise FileNotFoundError(f"CRITICAL: Could not find dataset at {csv_path}")
-
+        
     db_url = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     engine = create_engine(db_url)
-
+    
     print(f"Executing schema setup from:\n  {schema_path}")
     with engine.begin() as conn:
         with open(schema_path, 'r') as file:
             conn.execute(text(file.read()))
-
+            
     print(f"Loading clinical data from:\n  {csv_path}")
     df = pd.read_csv(csv_path)
     # Replace NaN/NaT with None so SQLAlchemy inserts SQL NULLs instead of breaking
     df = df.where(pd.notnull(df), None)
-
+    
     print(f"Ingesting {len(df)} records into remote AWS PostgreSQL instance...")
     df.to_sql('patient_encounters', engine, if_exists='append', index=False)
-
-    print("Baseline legacy data ingestion complete.")
+    
+    print("✅ Baseline legacy data ingestion complete.")
 
 if __name__ == "__main__":
     ingest_data()
@@ -527,61 +694,54 @@ Walking through it: the script resolves paths **relative to its own file
 location**, not the current working directory, so it can be run from
 anywhere. It runs `schema.sql` directly through the same connection (creating
 the table if it doesn't exist), then loads the whole CSV into a
-pandas DataFrame. `df.where(pd.notnull(df), None)` matters more than it looks
-— pandas represents missing values as `NaN`/`NaT`, and SQLAlchemy's parameter
+pandas DataFrame. `df.where(pd.notnull(df), None)` matters more than it looks.
+Pandas represents missing values as `NaN`/`NaT`, and SQLAlchemy's parameter
 binder doesn't know what to do with those; swapping them for Python `None`
 lets it insert proper SQL `NULL`s instead of failing the whole batch.
 `df.to_sql(..., if_exists='append')` then does the insert in one call.
 
-### Debugging the first ingestion run — a real troubleshooting session
+Expect the insert to take several minutes. There is nothing slow in the
+code: roughly 232,000 rows are travelling over the network to a small EC2
+instance, and "the database itself takes time to insert all these rows."
+
+### Debugging the first ingestion run
 
 Running `python scripts/01_ingest_baseline_data.py` for the first time did
-**not** work, and the session keeps the failure and the fix on screen
-instead of cutting to a working take. Worth walking through, because the
-actual bug and the actual diagnosis are both more instructive than a clean
-success would have been:
+**not** work. The session keeps the failure on screen instead of cutting to
+a working take, and it's worth following, because it mixes a configuration
+mistake with a server problem, and each one hides the other:
 
-1. **First error:** `invalid literal for int with base 10` — a
-   connection-string parsing failure, not the schema or the CSV. The
-   instinct is to suspect the Python code; the actual first check was
-   whether Postgres was even running.
-2. **Checked the EC2 instance:** `sudo systemctl status postgresql` showed
-   the service **was not running** — despite having been configured
-   earlier. `sudo systemctl restart postgresql` brought it up. Re-running
-   the script still failed, but with a *different* error — progress, even
-   though it didn't work yet.
-3. **Second error, after the restart:** the script could reach *some* host,
-   but the connection was refused. Re-checking the `.env` file's `DB_HOST`
-   against the EC2 console's **Elastic IP** revealed the actual root
-   cause: **the IP address noted down earlier in `.env` was wrong** — a
-   direct consequence of creating the EC2 instance *before* the security
-   group and Elastic IP, the exact ordering mistake flagged above. The
-   instance's IP had changed since it was first written down.
-4. **After correcting the IP in `.env`:** a third error — `connection
-   refused` specifically on port `5432`. This looks like a security-group
-   problem, so the security group's inbound rules were re-checked
-   carefully — and were already correct (SSH + PostgreSQL, both scoped to
-   "My IP"). The rules were not the bug this time.
-5. **Root cause, finally:** Postgres itself had quietly stopped again (or
-   never fully come back up from the earlier restart). A second
-   `sudo systemctl restart postgresql`, waiting a few seconds, and
-   re-running the script succeeded — "it was not an issue from our side.
-   We just needed to restart it because it was stuck."
+1. **First error:** `ValueError: invalid literal for int() with base 10`.
+   Monal's first check is not the code but the server: `sudo systemctl
+   status postgresql` shows the service is **not running**, so he starts it.
+   The error stays.
+2. **The actual cause of that error was `.env`.** It still held only
+   `DB_HOST`, and that IP was the one written down before the Elastic IP was
+   attached, so it was stale. With `DB_PORT` unset, the script builds a URL
+   containing `:None/`, and SQLAlchemy fails trying to read `None` as a port
+   number. That is exactly the message above. Fixing the IP and adding the
+   port, database name, user and password makes it go away.
+3. **Second error:** `connection refused` on port 5432. It looks like a
+   firewall problem, so the security group's inbound rules are re-checked.
+   They are correct: SSH and PostgreSQL, both limited to "My IP".
+4. **Real cause:** Postgres had got stuck again. One more `sudo systemctl
+   restart postgresql`, a few seconds' wait, and the ingestion runs. In
+   Monal's words, "it was not an issue from our side. We just needed to
+   restart it because it was stuck."
 
-:::warning If Postgres won't accept connections
-Two independent things can cause this, and they look identical from the
-Python side — a generic connection error. Check them **in this order**,
-because the second one is easy to misdiagnose as the first:
+:::warning If the scripts can't reach Postgres
+From Python, all of these look like a generic connection error. Check them
+in this order:
 
-1. **Is the recorded IP actually current?** Re-check `.env`'s `DB_HOST`
-   against the EC2 console's Elastic IP — especially if the instance was
-   created before the Elastic IP was allocated and associated.
-2. **Is Postgres actually running?** `sudo systemctl status postgresql`,
-   then `sudo systemctl restart postgresql` if it isn't (or even if it
-   claims to be, if every other check passes and the error persists).
+1. **Is `.env` complete?** All five `DB_` values must be set. A missing
+   `DB_PORT` produces `invalid literal for int() with base 10: 'None'`.
+2. **Is `DB_HOST` current?** Compare it with the Elastic IP in the EC2
+   console, especially if the instance existed before the Elastic IP did.
+3. **Is Postgres running?** Run `sudo systemctl status postgresql`, then
+   `sudo systemctl restart postgresql`. Restart it even if it claims to be
+   running when everything else checks out.
 
-Only after both of those check out is a security-group rule or a
-credentials typo the likely cause.
+Only then suspect the security group or a mistyped password.
 :::
 
 ### Complete file: `scripts/02_verify_ingestion.py`
@@ -593,38 +753,44 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
 def verify_ingestion():
+    # Load environment variables
     load_dotenv()
-
+    
     db_url = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     engine = create_engine(db_url)
-
-    print("Verifying data integrity in AWS PostgreSQL...\n")
-
+    
+    print("🔍 Verifying Data Integrity in AWS PostgreSQL...\n")
+    
     with engine.connect() as conn:
+        # 1. Check Total Row Count
         count_result = conn.execute(text("SELECT COUNT(*) FROM patient_encounters")).scalar()
         print(f"Total records found: {count_result}")
-
+        
         if count_result == 0:
-            print("Warning: table is empty. Ingestion may have failed.")
+            print("⚠️ Warning: Table is empty. Ingestion may have failed.")
             return
-
+            
+        # 2. Retrieve a Sample of Critical Clinical Columns
+        # We select specific columns so the terminal output is readable
+        print("\nFetching sample clinical records...")
         query = text("""
-            SELECT
-                subject_id,
-                admission_type,
-                drug,
-                drg_severity
-            FROM patient_encounters
+            SELECT 
+                subject_id, 
+                admission_type, 
+                drug, 
+                drg_severity 
+            FROM patient_encounters 
             WHERE drug IS NOT NULL
             LIMIT 5
         """)
-
+        
+        # Use Pandas for clean terminal formatting
         sample_df = pd.read_sql(query, conn)
-
+        
         print("-" * 65)
         print(sample_df.to_string(index=False))
         print("-" * 65)
-        print("\nVerification complete. Legacy database state is confirmed.")
+        print("\n✅ Verification complete. Legacy database state is confirmed.")
 
 if __name__ == "__main__":
     verify_ingestion()
@@ -648,9 +814,21 @@ Postgres allows.
 
 ## Phase 1 — Turning Postgres into a vector store (pgvector)
 
-With rows in place, the "starting point" for the actual AI work is reached.
-This is the first FDE decision: **can the client's existing database do
-what a dedicated vector database would?**
+With the rows in place, the AI work can start. Monal draws the line clearly:
+phase 0 is what the client gives you; from phase 1 on, you are choosing the
+solution. The first choice is this: **can the client's existing database do
+what a dedicated vector database would?** Postgres can, once the `pgvector`
+extension is installed, so the plan is to install it, add an embedding
+column to the existing table, and fill it.
+
+*Redrawn from Monal's Phase 1 board, 1:54 to 2:02 (page 4).*
+
+```mermaid
+flowchart LR
+    EXT["Install pgvector"] --> DB["Database ehr_db"]
+    DB --> T["Table patient_encounters<br/>existing columns + clinical_embedding vector(768)"]
+    M["Embedding model"] -->|"768 numbers per row"| T
+```
 
 ```bash
 # On the EC2 instance
@@ -673,32 +851,33 @@ from dotenv import load_dotenv
 
 def apply_pgvector():
     load_dotenv()
-
+    
     db_url = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     engine = create_engine(db_url)
-
-    print("Connecting to AWS to apply pgvector schema upgrade...")
-
+    
+    print("🚀 Connecting to AWS to apply pgvector schema upgrade...")
+    
     try:
         with engine.begin() as conn:
-            # Note: Extension was activated via DBA superuser.
+            # Note: Extension was activated via DBA superuser. 
             # We only alter the application table here.
             print("Adding 'clinical_embedding' column (768 dimensions)...")
             conn.execute(text("ALTER TABLE patient_encounters ADD COLUMN IF NOT EXISTS clinical_embedding vector(768);"))
-
+            
+            # Verify the column was added
             verify = conn.execute(text("""
-                SELECT column_name, data_type
-                FROM information_schema.columns
+                SELECT column_name, data_type 
+                FROM information_schema.columns 
                 WHERE table_name = 'patient_encounters' AND column_name = 'clinical_embedding';
             """)).fetchone()
-
+            
             if verify:
-                print(f"Schema upgrade complete. Confirmed column: {verify[0]} ({verify[1]})")
+                print(f"✅ Schema upgrade complete. Confirmed column: {verify[0]} ({verify[1]})")
             else:
-                print("Column not found after alter attempt.")
-
+                print("❌ Column not found after alter attempt.")
+            
     except Exception as e:
-        print(f"Error applying schema: {e}")
+        print(f"❌ Error applying schema: {e}")
 
 if __name__ == "__main__":
     apply_pgvector()
@@ -709,7 +888,7 @@ extension needs Postgres superuser rights (done once, by hand, on the EC2
 box), while altering the application table only needs the `fde_admin`
 application user's ordinary privileges. The script also **verifies the
 column by querying `information_schema.columns`** rather than trusting that
-`ALTER TABLE ... IF NOT EXISTS` silently succeeded — the same "test at every
+`ALTER TABLE ... IF NOT EXISTS` silently succeeded. It's the same "test at every
 checkpoint" discipline as Phase 0.
 
 ### Doubts · Why 768 dimensions? · 01:58:20
@@ -718,7 +897,7 @@ checkpoint" discipline as Phase 0.
 extract the embedding vector space of dimension 768. So I also want that to
 be 768."
 
-**Response:** The vector column's dimension isn't a free choice — it has to
+**Response:** The vector column's dimension isn't a free choice: it has to
 exactly match whatever embedding model will populate it, decided in the next
 phase. 768 is the output size of the domain-specific `bioclinical-modernbert`
 sentence-transformer chosen for cost and domain-fit reasons (see below), not
@@ -730,6 +909,15 @@ model and every insert fails.
 The table has a `clinical_embedding` column; every value in it is still
 `NULL`. Before writing the embedding script, the session asks: **which
 embedding model?**
+
+*Redrawn from Monal's Phase 2 board, 2:09 to 2:14 (page 5).*
+
+```mermaid
+flowchart LR
+    C["comments and other fields<br/>(text)"] --> E{"Which embedder?<br/>MiniLM, or a clinical model?"}
+    E -->|"must know medicines, drugs, diseases"| B["BioClinical ModernBERT<br/>768 dimensions"]
+    B --> COL["clinical_embedding column<br/>NULL becomes a vector"]
+```
 
 ### Doubts · Why not a general-purpose embedder? · 02:11:20
 
@@ -745,16 +933,17 @@ confirmed:
   treating them as the meaningful medical units they are. A model
   pre-trained on clinical text keeps that vocabulary intact.
 - **PHI-shaped text.** The text being embedded is doctor's notes and
-  diagnoses — exactly the sensitive content this whole project exists to
+  diagnoses, exactly the sensitive content this whole project exists to
   protect. Choosing an embedding provider is *also* a data-handling
   decision, not just an accuracy one.
 
 The model chosen: **`NeuML/bioclinical-modernbert-base-embeddings`**, a
-sentence-transformer run **locally on CPU** — no embedding API call ever
+sentence-transformer run **locally on CPU**, so no embedding API call ever
 leaves the machine. Its output dimension is 768, which is why the column was
-sized that way. (OpenAI's embeddings, by comparison, run 1024–3072
-dimensions and cost money per call — a real consideration when the row count
-is a quarter of a million.)
+sized that way. Monal tried another model first and switched to this one for
+better results. OpenAI's embedding models, by comparison, return 1536 or
+3072 dimensions and charge per call, which adds up across a quarter of a
+million rows.
 
 ### Complete file: `scripts/04_generate_embeddings.py`
 
@@ -769,36 +958,39 @@ def generate_and_store_embeddings():
     load_dotenv()
     db_url = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     engine = create_engine(db_url)
-
+    
     # 1. Load the BioClinical ModernBERT embedding model
-    print("Loading local BioClinical ModernBERT model...")
+    print("⏳ Loading local BioClinical ModernBERT model...")
     model = SentenceTransformer('NeuML/bioclinical-modernbert-base-embeddings')
-
+    
     # Guardrail: Programmatically verify the output dimension is 768
     if model.get_sentence_embedding_dimension() != 768:
         raise ValueError("CRITICAL DIMENSION MISMATCH: Model output does not match database vector(768).")
 
+    # Increase batch size for network efficiency
     batch_size = 2
-    demo_limit = 100  # kept small live; a real backfill removes this cap
-
+    # For a demo, 10,000 records is perfect to prove scale without waiting hours
+    demo_limit = 100
+    
     with engine.begin() as conn:
-        print(f"Generating batched embeddings for up to {demo_limit} patient records...")
-
+        print(f"🚀 Generating batched embeddings for up to {demo_limit} patient records...")
+        
         with tqdm(total=demo_limit, desc="Vectorizing PHI", unit="rows") as pbar:
             processed = 0
-
+            
             while processed < demo_limit:
+                # Fetch a batch of records
                 select_query = text("""
-                    SELECT id, admission_type, drug, test_name, drg_severity, description, comments
-                    FROM patient_encounters
-                    WHERE clinical_embedding IS NULL
+                    SELECT id, admission_type, drug, test_name, drg_severity, description, comments 
+                    FROM patient_encounters 
+                    WHERE clinical_embedding IS NULL 
                     LIMIT :batch_size
                 """)
                 batch = conn.execute(select_query, {"batch_size": batch_size}).mappings().fetchall()
-
+                
                 if not batch:
-                    break  # No more NULL records
-
+                    break # No more NULL records
+                
                 # 1. Extract strings into a single list for parallel processing
                 clinical_texts = []
                 ids = []
@@ -810,31 +1002,32 @@ def generate_and_store_embeddings():
                     if row['drg_severity']: components.append(f"Severity Level: {row['drg_severity']}")
                     if row['description']: components.append(f"Diagnosis: {row['description']}")
                     if row['comments']: components.append(f"Notes: {row['comments'][:250]}")
-
+                    
                     clinical_texts.append(" | ".join(components))
                     ids.append(row['id'])
-
-                # 2. BATCHED ENCODING: feed the entire list to the model at once
+                
+                # 2. BATCHED ENCODING: Feed the entire list to the model at once!
+                # This engages PyTorch's parallel processing.
                 embeddings = model.encode(clinical_texts, batch_size=batch_size).tolist()
-
+                
                 # 3. Prepare BULK update parameters
                 update_params = [
-                    {"id": record_id, "embedding": str(emb)}
+                    {"id": record_id, "embedding": str(emb)} 
                     for record_id, emb in zip(ids, embeddings)
                 ]
-
-                # 4. BULK UPDATE: execute all rows in a single round-trip
+                
+                # 4. BULK UPDATE: execute all 250 rows in a single network round-trip
                 update_query = text("""
-                    UPDATE patient_encounters
-                    SET clinical_embedding = :embedding
+                    UPDATE patient_encounters 
+                    SET clinical_embedding = :embedding 
                     WHERE id = :id
                 """)
                 conn.execute(update_query, update_params)
-
+                
                 processed += len(batch)
                 pbar.update(len(batch))
 
-    print("\nPhase 3 complete: clinical records are vectorized and ready for hybrid search.")
+    print("\n✅ Phase 3 Complete: Clinical records are vectorized and ready for hybrid search.")
 
 if __name__ == "__main__":
     generate_and_store_embeddings()
@@ -849,24 +1042,45 @@ Three things worth understanding, not just reading:
   query like "liver disease and fluid retention" match a row even if the
   word "liver" only appears in the `description` field and "fluid retention"
   only appears in the `comments`.
-- **`WHERE clinical_embedding IS NULL`** is the resumability safeguard —
+- **`WHERE clinical_embedding IS NULL`** is the resumability safeguard:
   rows that already have a vector are never re-processed, so the script can
   be re-run after a crash or a deliberate pause without redoing work.
 - **The dimension check runs before any encoding happens.** If the model's
   output size doesn't match what the column expects, the script fails loud
   and immediately, instead of failing 50,000 rows into a silent mismatch.
 
+:::note The comments and the values in this script disagree
+The comments describe the script's original settings, a batch of 250 rows
+and a cap of 10,000 ("execute all 250 rows in a single network round-trip").
+The committed values are `batch_size = 2` and `demo_limit = 100`. Monal
+lowered them live, first to 2 and 2, then to a limit of 10, so the class
+could watch a run finish. For a real backfill, raise `batch_size` back to
+around 250 and set `demo_limit` to the number of rows in the table.
+:::
+
 :::warning This does not scale to the full dataset live
 Encoding and writing embeddings **one small batch at a time on a CPU-only
 EC2 instance** is slow: two rows took roughly a second in the demo, and the
-full ~230,000-row dataset was estimated at **6-7 hours** at that rate — not
-something a live session can wait through. Monal's actual workaround: a
+full ~230,000-row dataset was estimated at **6-7 hours** at that rate, far
+too long to wait through live. Monal's actual workaround: a
 *separate* EC2 instance, prepared **before** the stream, already had ~11,000
 rows embedded; the session swaps its own `.env` to point at that instance's
 IP and continues from there. The demo dataset for every later step is
-therefore ~11,000 rows, not the full 230,000 — worth remembering when a
+therefore ~11,000 rows, not the full 230,000. Remember this when the
 `patients` dropdown later looks smaller than expected.
 :::
+
+*Redrawn from Monal's recap board, 2:21 to 2:27 (page 5).*
+
+```mermaid
+flowchart LR
+    subgraph DONE["Done live, on the demo instance"]
+        direction TB
+        A["EC2 · Postgres · database · table"] --> B["Ingested data"] --> C["pgvector extension"] --> D2["New embedding column"] --> E["Embeddings from combined patient details"]
+    end
+    DONE -. "all 230k rows would take 6-7 hours" .-> PREP["Prepared instance:<br/>~11,000 rows embedded in 20 min"]
+    PREP -->|"select it in .env"| Q["query → embedding → cosine search → Postgres"]
+```
 
 ## Phase 3 — Semantic search, scoped to one patient
 
@@ -884,55 +1098,60 @@ def test_vector_search():
     load_dotenv()
     db_url = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     engine = create_engine(db_url)
-
-    print("Loading local BioClinical ModernBERT model...")
+    
+    print("⏳ Loading local BioClinical ModernBERT model...")
     model = SentenceTransformer('NeuML/bioclinical-modernbert-base-embeddings')
-
+    
     # 1. Define a complex, natural language medical query
     query_text = "Patient presenting with severe liver disease and fluid retention needing diuretics"
-    print(f"\nSemantic Query: '{query_text}'")
-
+    print(f"\n🔍 Semantic Query: '{query_text}'")
+    
     # 2. Vectorize the query locally
     query_vector = model.encode(query_text).tolist()
-
+    
     # 3. Search AWS using pgvector's cosine distance operator (<=>)
     search_sql = text("""
-        SELECT
-            id,
-            description,
-            drug,
+        SELECT 
+            id, 
+            description, 
+            drug, 
             clinical_embedding <=> CAST(:query_vector AS vector(768)) AS cosine_distance
         FROM patient_encounters
         WHERE clinical_embedding IS NOT NULL
         ORDER BY cosine_distance ASC
         LIMIT 3;
     """)
-
+    
     with engine.connect() as conn:
+        # Pass the vector as a string-formatted array
         results = conn.execute(search_sql, {"query_vector": str(query_vector)}).mappings().fetchall()
-
-        print("\nTop 3 Semantic Matches:")
+        
+        print("\n🏆 Top 3 Semantic Matches:")
         for rank, row in enumerate(results, 1):
             print("-" * 65)
             print(f"Rank {rank} (Distance: {row['cosine_distance']:.4f})")
             print(f"Diagnosis : {row['description']}")
             print(f"Drug      : {row['drug']}")
             print(f"Record ID : {row['id']}")
-
+            
 if __name__ == "__main__":
     test_vector_search()
 ```
 
-`<=>` is pgvector's **cosine distance** operator — smaller means more
+`<=>` is pgvector's **cosine distance** operator: smaller means more
 similar, the opposite direction from cosine *similarity*. `ORDER BY
 cosine_distance ASC LIMIT 3` is doing the same job FAISS or Pinecone would,
 directly inside a SQL `ORDER BY`. `WHERE clinical_embedding IS NOT NULL`
-matters at this stage of the demo specifically because most of the ~230,000
-rows are still un-embedded — without that filter, every un-embedded row
-would either error out or sort arbitrarily.
+matters at this stage because most of the ~230,000 rows have no vector yet.
+Their distance would be `NULL`, and the filter keeps them out of the ranking
+instead of relying on where Postgres happens to sort nulls.
+
+Run live against the instance with ~11,000 embedded rows, the query
+("severe liver disease and fluid retention needing diuretics") returned
+three different patients, each with a liver-related diagnosis.
 
 Note that this test script searches the *whole* table (minus the null
-filter) — the patient-scoping (`WHERE subject_id = :patient_id`) is added
+filter). The patient-scoping (`WHERE subject_id = :patient_id`) is added
 one layer up, in the FastAPI endpoint, once a patient has actually been
 selected. This script's job is only to prove the cosine-distance query
 itself is correct.
@@ -943,7 +1162,7 @@ itself is correct.
 this is a good approach to do similarity search on all 25 million rows of
 data?"
 
-**Response:** No — and the fix isn't a bigger index, it's a smaller search
+**Response:** No, and the fix isn't a bigger index, it's a smaller search
 space. A doctor works with a small, repeated set of patients, not the whole
 hospital. Making patient selection a **mandatory dropdown step before the
 chat box even appears** turns "search everything" into "search ~100 rows for
@@ -965,32 +1184,32 @@ from presidio_anonymizer import AnonymizerEngine
 
 class ClinicalPIIRedactor:
     def __init__(self):
-        print("Initializing Microsoft Presidio Zero-Trust Middleware...")
+        print("⏳ Initializing Microsoft Presidio Zero-Trust Middleware...")
         self.analyzer = AnalyzerEngine()
         self.anonymizer = AnonymizerEngine()
-
+        
         # --- FDE FIX 1: Custom SSN Pattern Recognizer ---
         # Overrides the strict checksum to catch ANY xxx-xx-xxxx format
         ssn_pattern = Pattern(name="catch_all_ssn", regex=r"\d{3}-\d{2}-\d{4}", score=0.9)
         ssn_recognizer = PatternRecognizer(supported_entity="US_SSN", patterns=[ssn_pattern])
         self.analyzer.registry.add_recognizer(ssn_recognizer)
-
+        
         # --- FDE FIX 2: Custom Deny-List for Medical Facilities ---
         # Forces Presidio to recognize specific hospital names as organizations
         hospital_recognizer = PatternRecognizer(
             supported_entity="ORGANIZATION",
             deny_list=["Massachusetts General Hospital", "Mayo Clinic", "Cleveland Clinic"],
-            deny_list_score=1.0
+            deny_list_score=1.0  # <--- Changed this from 'score'
         )
         self.analyzer.registry.add_recognizer(hospital_recognizer)
 
         self.target_entities = [
-            "PERSON",
-            "PHONE_NUMBER",
-            "EMAIL_ADDRESS",
-            "US_SSN",
-            "LOCATION",
-            "ORGANIZATION",
+            "PERSON", 
+            "PHONE_NUMBER", 
+            "EMAIL_ADDRESS", 
+            "US_SSN", 
+            "LOCATION", 
+            "ORGANIZATION", 
             "DATE_TIME"
         ]
 
@@ -1002,36 +1221,36 @@ class ClinicalPIIRedactor:
             text=raw_text,
             entities=self.target_entities,
             language='en',
-            score_threshold=0.4
+            score_threshold=0.4 
         )
-
+        
         anonymized_result = self.anonymizer.anonymize(
             text=raw_text,
             analyzer_results=analyzer_results
         )
-
+        
         return anonymized_result.text
 
 if __name__ == "__main__":
     redactor = ClinicalPIIRedactor()
-
+    
     simulated_ehr_note = """
-    Patient John Doe (SSN: 234-00-1234) was admitted to Massachusetts General Hospital
-    on March 15th following a severe reaction to Furosemide.
+    Patient John Doe (SSN: 234-00-1234) was admitted to Massachusetts General Hospital 
+    on March 15th following a severe reaction to Furosemide. 
     Wife Jane Doe can be reached at 415-555-0198 or jane.doe@email.com.
     """
-
-    print("\nRAW PHI FROM DATABASE:")
+    
+    print("\n🚨 RAW PHI FROM DATABASE:")
     print(simulated_ehr_note.strip())
-
-    print("\nREDACTED OUTPUT (Safe for LLM Prompt):")
+    
+    print("\n🛡️ REDACTED OUTPUT (Safe for LLM Prompt):")
     safe_text = redactor.redact_clinical_context(simulated_ehr_note)
     print(safe_text.strip())
 ```
 
 How it actually works, in the order the class was walked through it:
 
-1. **`self.analyzer`** divides raw text into **intents** — spans tagged as
+1. **`self.analyzer`** divides raw text into **intents**: spans tagged as
    `PERSON`, `PHONE_NUMBER`, `EMAIL_ADDRESS`, and so on, each with a
    confidence score. This step *identifies*, it does not remove anything yet.
 2. **`self.anonymizer`** takes those tagged spans and actually strips or
@@ -1044,7 +1263,7 @@ How it actually works, in the order the class was walked through it:
      `PatternRecognizer` with a permissive regex (`\d{3}-\d{2}-\d{4}`) at a
      high confidence score (`0.9`), registered *in addition to* the default.
    - Presidio has no idea "Massachusetts General Hospital" is an
-     organization — it's not a name it has ever been trained to recognize.
+     organisation; it's not a name it has ever been trained to recognise.
      The fix is a **deny-list recognizer**: an explicit list of hospital
      names, tagged `ORGANIZATION` at `deny_list_score=1.0` (maximum
      confidence) whenever seen verbatim.
@@ -1052,20 +1271,51 @@ How it actually works, in the order the class was walked through it:
    detected entity gets redacted. Custom recognizers are scored high (`0.9`,
    `1.0`) specifically so they always clear that bar.
 
+*Redrawn from Monal's Presidio board, 2:37 to 2:47 (page 6).*
+
+```mermaid
+flowchart LR
+    T["Raw text from the database"] --> AN["AnalyzerEngine<br/>tags entities"]
+    DL["Deny list: hospital names<br/>tagged ORGANIZATION"] --> AN
+    RX["Regex per region: US SSN,<br/>India Aadhaar, Canada, EU ..."] --> AN
+    AN --> EN["PERSON · ORGANIZATION<br/>numbers · EMAIL_ADDRESS ..."]
+    EN --> ANON["AnonymizerEngine<br/>replaces the chosen types"]
+    ANON --> OUT["Redacted text, safe for the prompt"]
+```
+
+*Monal's worked example of per-entity scores, 2:46 (page 6).*
+
+```mermaid
+flowchart TB
+    S["'Hello, how are you. SSN: 111-22-3333, my name is John'"]
+    S --> W1["Hello · how · are · you<br/>scores 0.1 to 0.2"]
+    S --> W2["111-22-3333 → US_SSN<br/>score 0.9, from the custom pattern"]
+    S --> W3["my · name · is<br/>score 0.1"]
+    S --> W4["John → PERSON<br/>score 0.7"]
+    W1 --> K["Below the threshold: kept"]
+    W3 --> K
+    W2 --> X["Above the threshold: redacted"]
+    W4 --> X
+```
+
+On the board the cut-off is written as 0.45; the committed code uses
+`score_threshold=0.4`. Either way, the custom SSN pattern (0.9) and a
+detected name (0.7) clear it, and filler words don't.
+
 ### Doubts · Why not just redact every number? · 02:38:30
 
 **Monal (to the class):** "Not every number in our data should be redacted
 ... let's suppose someone's data has a bacteria count of 10,000. Do you
 think that number should also get redacted?"
 
-**Response:** No — a lab value is not PHI, a social security number is.
+**Response:** No. A lab value is not PHI; a social security number is.
 Blanket redaction of anything numeric would destroy the clinical content the
 whole system exists to answer questions about. This is also why the SSN
 regex fix is deliberately narrow (`\d{3}-\d{2}-\d{4}` specifically) rather
 than "redact all digit sequences," and why the session notes that in a real
 multi-region deployment, region-specific identifier formats (SSN in the US,
 Aadhaar in India) would need their **own** regex, applied only where
-relevant — "not every pattern can be recognized" out of the box, and you
+relevant. "Not every pattern can be recognized" out of the box, and you
 should not rely on a system that silently fails to redact a format it has
 never seen.
 
@@ -1077,14 +1327,14 @@ never seen.
   pattern) get closed with custom `PatternRecognizer`s, not by retraining
   the underlying model.
 - Redaction is targeted at *identifying* information, not at anything that
-  merely looks like structured data — clinical values must survive.
+  merely looks like structured data. Clinical values must survive.
 
 ## Phase 5 — Guardrails against clinical advice (NVIDIA NeMo)
 
 Redaction solves *who this data is about*. It does nothing about *what the
 doctor is allowed to ask the model to do*. A question like "should I
 prescribe a higher dose?" carries no PHI at all, and still must never reach
-the LLM — an AI system giving prescribing advice is a different, equally
+the LLM. An AI system giving prescribing advice is a different, equally
 serious compliance failure.
 
 ```mermaid
@@ -1120,44 +1370,55 @@ define flow prevent medical advice
   bot refuse medical advice
 ```
 
-This is a **Colang** file (NeMo Guardrails' own DSL — the file extension
-`.co` stands for Colang, which nobody in the live chat had heard of before
-this session). Reading it top to bottom the way it was taught:
+This is a **Colang** file, NeMo Guardrails' own language for describing
+conversations; `.co` is its extension. Nobody in the live chat had seen one
+before. Reading it top to bottom, the way it was taught:
 
 - **`define user ask for medical advice`** / **`define user ask about
   patient history`** each give the guardrail *example phrasings* of an
   intent. NeMo uses an LLM under the hood to classify an incoming message
-  against these examples — the examples don't have to be exhaustive, they
+  against these examples. The examples don't have to be exhaustive; they
   anchor a semantic match.
-- **`define bot refuse medical advice`** is the fixed refusal text — an
+- **`define bot refuse medical advice`** is the fixed refusal text: an
   explicit, auditable, non-generated string, not something the LLM
   freestyles.
 - **`define flow prevent medical advice`** wires the two together: *if* the
-  user intent matches "ask for medical advice," *then* the bot response is
-  the refusal, and — critically — **the flow stops there**. The underlying
-  LLM is never called for a blocked message.
+  message is classified as "ask for medical advice", *then* the bot replies
+  with the refusal, and the flow ends there. The model is never asked to
+  *answer* a blocked question. Anything that isn't refused carries on to
+  the model as normal.
 
 ### Getting and paying for the DeepSeek API key
 
-Guardrails still need an actual LLM behind them — to classify intents
+Guardrails still need an actual LLM behind them, to classify intents
 against the Colang examples, and to generate the final answer once a
 question is allowed through. That's a paid API call, and the session is
 explicit about which provider and why:
 
+*Redrawn from Monal's guardrails board, about 2:50 (page 7).*
+
+```mermaid
+flowchart LR
+    CO["rails.co"] --> FL["Create the flows"] --> NM["NeMo Guardrails"]
+    NM -->|"asks"| LLM["An LLM, through an API key:<br/>DeepSeek (cheap, powerful)"]
+    LLM --> RJ["Reject: fixed refusal"]
+    LLM --> AC["Accept: carry on,<br/>no error"]
+```
+
 1. **Provider: DeepSeek**, chosen for being "very cheap and very powerful."
    Monal topped up **\$2** total for this and a previous FDE session
-   combined — by the time of recording, that covered roughly **100 API
+   combined. By the time of recording, that covered roughly **100 API
    requests and ~418,000 tokens**, for a spend of **under \$0.10**.
 2. **Why not a free tier instead** (Google Gemini was named specifically)?
    Free-tier LLM APIs are typically rate-limited more aggressively, and
-   are more likely to throw an error under load — an acceptable risk for
+   are more likely to throw an error under load. That's an acceptable risk for
    personal experimentation, but not something you can afford live, on
    stream, in front of an audience. Paying a small, known amount buys
    reliability.
 3. **Create the key:** DeepSeek's platform console → **API keys** → create
    a new key (it starts with `sk-`) → copy it immediately, it's shown only
    once.
-4. **Two different environment variable names for the same URL** — this
+4. **Two different environment variable names for the same URL.** This
    trips people up, so it's worth stating explicitly. The Streamlit/FastAPI
    side and the NeMo Guardrails side each read their own variable name for
    what is, in this project, the *same* DeepSeek endpoint:
@@ -1170,7 +1431,7 @@ OPENAI_API_BASE=https://api.deepseek.com/v1
 ```
 
 `base_url` inside `config.yml` below is what actually points NeMo
-Guardrails' `engine: openai` at DeepSeek instead of OpenAI itself — NeMo
+Guardrails' `engine: openai` at DeepSeek instead of OpenAI itself. NeMo
 Guardrails (and most LLM tooling) speaks the OpenAI client protocol
 regardless of which provider actually answers, which is exactly what
 makes swapping DeepSeek in this straightforward.
@@ -1184,20 +1445,18 @@ models:
     model: deepseek-chat
     parameters:
       base_url: "https://api.deepseek.com/v1"
-
+    
   - type: embeddings
     engine: SentenceTransformers
     model: NeuML/bioclinical-modernbert-base-embeddings
 ```
 
-Two models are configured for two different jobs: `deepseek-chat` (via an
-OpenAI-compatible endpoint pointed at DeepSeek's API — NeMo Guardrails
-speaks the OpenAI client protocol regardless of which provider actually
-answers) is the **reasoning model**, used both for the final answer and for
-classifying intents against the Colang examples. The same
-`bioclinical-modernbert` embedding model from Phase 2 is reused here so that
-intent matching and clinical search are conceptually consistent — one
-embedding space for one domain.
+Two models, two jobs. `deepseek-chat` is the **main model**: it classifies
+each message against the Colang intents and writes the final answer. The
+**embeddings model** turns the incoming message into a vector, so NeMo can
+find which example phrasings in `rails.co` it is closest to. Reusing the
+Phase 2 clinical model keeps that matching in the same medical vocabulary as
+the search.
 
 ### Complete file: `scripts/06_test_guardrails.py`
 
@@ -1209,40 +1468,52 @@ from dotenv import load_dotenv
 
 async def test_guardrails():
     load_dotenv()
-
-    print("Initializing NeMo Guardrails Firewall...")
+    
+    print("⏳ Initializing NeMo Guardrails Firewall...")
+    # Point the config loader to our guardrails directory
     config = RailsConfig.from_path("./src/guardrails")
     rails = LLMRails(config)
-
+    
     # --- TEST 1: A Valid Retrieval Prompt ---
     valid_prompt = "What was the patient's last recorded dosage of Furosemide?"
-    print(f"\nValid Query: '{valid_prompt}'")
+    print(f"\n🟢 Valid Query: '{valid_prompt}'")
     res_valid = await rails.generate_async(messages=[{"role": "user", "content": valid_prompt}])
-    print(f"LLM Response: {res_valid['content']}")
-
+    print(f"🤖 LLM Response: {res_valid['content']}")
+    
     # --- TEST 2: An Illegal Medical Advice Prompt ---
     illegal_prompt = "Based on the fluid retention, should I prescribe a higher dose of Furosemide?"
-    print(f"\nIllegal Query: '{illegal_prompt}'")
+    print(f"\n🛑 Illegal Query: '{illegal_prompt}'")
     res_illegal = await rails.generate_async(messages=[{"role": "user", "content": illegal_prompt}])
-    print(f"Guardrail Intercept: {res_illegal['content']}")
+    print(f"🛡️ Guardrail Intercept: {res_illegal['content']}")
 
 if __name__ == "__main__":
     asyncio.run(test_guardrails())
 ```
 
-Run live, the two test cases behaved exactly as designed: the history
-question ("what was the last recorded dosage") came back asking for more
-identifying detail (the LLM answering normally — guardrails let it through),
-while the prescribing question ("should I prescribe a higher dose") was
-intercepted with the fixed refusal string, **never reaching DeepSeek at
-all**.
+Run live, both cases behaved as designed. The history question passed the
+guardrail and DeepSeek answered it; this test sends no patient records, so
+the answer asked for the patient's name and date of birth. The prescribing
+question came back with the fixed refusal string.
 
-:::note Not from the session — what "core file" actually stands for
-Monal tells the class "I will tell you the full form later" when asked what
-a `.co`/`core` file is, and the session moves on without circling back.
-Colang ("**Co**nversational **lang**uage") is NeMo Guardrails' own DSL for
-defining user/bot message canonical forms and flows; `.co` is simply its file
-extension, unrelated to any "core file" naming convention elsewhere.
+On the DeepSeek dashboard, the request count went from 100 to 138 during
+this test. Guardrails make several small model calls per message, first to
+classify it and then to answer, so they cost requests more than tokens.
+
+:::note A blocked question still reaches DeepSeek once
+Later, in the demo, Monal says of the blocked question that "our data never
+went to LLM, it got stopped before that." That holds for the *answer*, not
+for the *check*. NeMo decides whether a message is medical advice by asking
+the main model, DeepSeek, to classify it; Monal says as much when
+introducing the rails ("guardrail uses LLM to decide whether something is
+right or wrong"). And in `main.py` below, what goes through the guardrail is
+the whole augmented prompt: the redacted clinical context plus the question.
+
+So a blocked question sends the *redacted* context to DeepSeek once, for
+classification, and DeepSeek never gets to answer it. Raw PHI still never
+leaves, because redaction runs first. The whiteboard plan sent only the
+question to the guardrail, in parallel with retrieval; the code sends the
+full prompt. Classifying the bare question first, then retrieving only if
+it's allowed, would match the plan.
 :::
 
 **Summary**
@@ -1250,15 +1521,34 @@ extension, unrelated to any "core file" naming convention elsewhere.
 - Redaction and guardrails answer two different questions: *who is this
   about* versus *what is the model allowed to do*. HIPAA compliance in this
   system is the combination of both, not either alone.
-- A guardrail flow can stop a message before the underlying LLM is ever
-  called — the refusal is a fixed string, not a generated one, which makes
-  it auditable and impossible to jailbreak once the intent match fires.
+- A guardrail flow stops the model from *answering*: the refusal is a fixed
+  string, not generated text, so it is predictable and auditable.
+- The check itself is a model call. Whatever you pass through the guardrail
+  reaches the model provider, which is why redaction has to run first.
 
 ## Phase 6 — The FastAPI backend
 
 Three components now exist independently: vector search, redaction,
 guardrails. The API layer is where they compose into one request/response
 cycle.
+
+*Redrawn from Monal's board, 3:05 to 3:08 (page 7): one request end to end, then the three APIs that serve it.*
+
+```mermaid
+flowchart LR
+    U["User"] --> Q["Query"] --> E["Embedding"] -->|"cosine"| DB[("EC2 database")]
+    DB --> R["Records"] --> RED["Redaction"] --> GR["Guardrails"] --> D["Clean data"]
+    D --> LLM["LLM"]
+    Q -. "the question" .-> LLM
+    LLM --> A["Response"]
+```
+
+```mermaid
+flowchart LR
+    API["src/api/main.py"] --> A1["API 1 · /clinical-query<br/>trial: fixed text + question → response"]
+    API --> A2["API 2 · /chat<br/>question → DB → redact → guardrail → answer"]
+    API --> A3["API 3 · /patients<br/>every patient ID, for the drop-down"]
+```
 
 ### Complete file: `src/api/main.py`
 
@@ -1287,20 +1577,20 @@ middleware = {}
 
 @app.on_event("startup")
 async def startup_event():
-    print("Booting Enterprise AI Middlewares...")
-
+    print("⏳ Booting Enterprise AI Middlewares...")
+    
     # 1. Load Presidio (spaCy)
     middleware["redactor"] = ClinicalPIIRedactor()
-
+    
     # 2. Load NeMo Guardrails (ModernBERT + DeepSeek)
     config = RailsConfig.from_path("./src/guardrails")
     middleware["rails"] = LLMRails(config)
-
+    
     # 3. Load the local embedding model matching your embedding script
-    print("Loading local BioClinical ModernBERT embedding model...")
+    print("⏳ Loading local BioClinical ModernBERT embedding model...")
     middleware["embedder"] = SentenceTransformer('NeuML/bioclinical-modernbert-base-embeddings')
-
-    print("System Ready on port 8000.")
+    
+    print("✅ System Ready on port 8000.")
 
 
 # --- DATABASE CONNECTION HELPER ---
@@ -1310,12 +1600,12 @@ def get_db_engine():
     db_host = os.getenv("DB_HOST")
     db_port = os.getenv("DB_PORT")
     db_name = os.getenv("DB_NAME")
-
+    
     if db_host:
         DB_URL = f"postgresql+psycopg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
     else:
         DB_URL = os.getenv("POSTGRES_URL", "postgresql+psycopg://postgres:password@localhost:5432/clinical_db")
-
+    
     return create_engine(DB_URL)
 
 
@@ -1333,13 +1623,13 @@ class ClinicalQuery(BaseModel):
     prompt: str
 
 
-# --- ENDPOINT 1: TRIAL QUERY (MOCK DB) ---
+# --- ENDPOINT 1: HEALTH CHECK (MOCK DB) ---
 @app.post("/api/v1/clinical-query")
 async def process_clinical_query(query: ClinicalQuery):
     try:
         raw_db_context = f"""
         Patient John Doe (ID: {query.patient_id}) was admitted on March 15th.
-        Last recorded Furosemide dosage was 40mg IV.
+        Last recorded Furosemide dosage was 40mg IV. 
         Attending physician: Dr. Gregory House, ID: 20043.
         """
 
@@ -1347,7 +1637,7 @@ async def process_clinical_query(query: ClinicalQuery):
         safe_context = redactor.redact_clinical_context(raw_text=raw_db_context)
 
         augmented_prompt = f"Clinical Context:\n{safe_context}\n\nUser Question: {query.prompt}"
-
+        
         rails = middleware["rails"]
         response = await rails.generate_async(messages=[{"role": "user", "content": augmented_prompt}])
 
@@ -1366,27 +1656,27 @@ async def process_chat(request: ChatRequest):
     try:
         latest_question = request.messages[-1].content
         engine = get_db_engine()
-
+        
         # 1. Embed the user's question into a 768-dim vector
         embedder = middleware["embedder"]
         query_vector = embedder.encode(latest_question).tolist()
-
+        
         # 2. Native pgvector similarity search on patient_encounters table
         with engine.connect() as conn:
             query = text("""
-                SELECT drug, dose_val_rx, dose_unit_rx, route, eventtype, test_name, comments, description
-                FROM patient_encounters
+                SELECT drug, dose_val_rx, dose_unit_rx, route, eventtype, test_name, comments, description 
+                FROM patient_encounters 
                 WHERE subject_id = :subject_id AND clinical_embedding IS NOT NULL
                 ORDER BY clinical_embedding <=> CAST(:query_embedding AS vector)
                 LIMIT 5;
             """)
-
+            
             result = conn.execute(query, {
                 "subject_id": int(request.patient_id),
                 "query_embedding": str(query_vector)
             })
             rows = result.fetchall()
-
+            
             if not rows:
                 real_db_context = f"No historical records found for patient {request.patient_id}."
             else:
@@ -1401,18 +1691,18 @@ async def process_chat(request: ChatRequest):
         # 3. Redact the real context via Presidio
         redactor = middleware["redactor"]
         safe_context = redactor.redact_clinical_context(raw_text=real_db_context)
-
-        # 4. Assemble prompt
+        
+        # 4. Assemble Prompt
         augmented_prompt = f"Clinical Context:\n{safe_context}\n\nUser Question: {latest_question}"
-
-        # 5. Format history for Guardrails
+        
+        # 5. Format History for Guardrails
         nemo_history = [{"role": msg.role, "content": msg.content} for msg in request.messages[:-1]]
         nemo_history.append({"role": "user", "content": augmented_prompt})
-
+        
         # 6. Route through Guardrails
         rails = middleware["rails"]
         response = await rails.generate_async(messages=nemo_history)
-
+        
         return {"status": "success", "llm_response": response['content']}
 
     except Exception as e:
@@ -1427,56 +1717,56 @@ async def get_unique_patients():
         with engine.connect() as conn:
             # Only fetch patients who actually have generated embeddings
             query = text("""
-                SELECT DISTINCT subject_id
-                FROM patient_encounters
-                WHERE subject_id IS NOT NULL AND clinical_embedding IS NOT NULL
+                SELECT DISTINCT subject_id 
+                FROM patient_encounters 
+                WHERE subject_id IS NOT NULL AND clinical_embedding IS NOT NULL 
                 ORDER BY subject_id;
             """)
             result = conn.execute(query)
             patients = [str(row[0]) for row in result]
-
+            
             return {"patients": patients if patients else ["No embedded patients found"]}
-
+            
     except Exception as e:
         return {"patients": [], "error": str(e)}
 ```
 
 Three endpoints, three distinct jobs:
 
-- **`POST /api/v1/clinical-query`** is a **trial endpoint** — it builds a
-  hard-coded mock "database row" (John Doe, a dosage, an attending
-  physician) rather than querying Postgres, purely to prove the
-  redact-then-guardrail-then-LLM pipeline works before wiring in real
-  retrieval. It's never called by the Streamlit UI.
+- **`POST /api/v1/clinical-query`** is a **trial endpoint**. The code
+  comment calls it a health check; Monal calls it "a trial API". It builds a
+  hard-coded mock database row (John Doe, a dosage, an attending physician)
+  instead of querying Postgres, to prove the redact, guardrail and LLM steps
+  work before real retrieval is wired in. The Streamlit UI never calls it.
 - **`POST /api/v1/chat`** is the real endpoint. Note the order of
   operations: **embed → search (scoped to `subject_id`) → redact → guardrail
   → LLM.** Redaction happens *after* retrieval (there's no PHI to redact
   until rows come back) but strictly *before* anything is handed to
   guardrails or the model. `request.messages[:-1]` plus the freshly
   augmented latest message reconstructs conversation history with the
-  *redacted*, context-augmented version of only the newest turn — earlier
+  *redacted*, context-augmented version of only the newest turn; earlier
   turns are passed through as already-sent.
 - **`GET /api/v1/patients`** powers the dropdown. The `clinical_embedding IS
   NOT NULL` filter means only patients who've actually been vectorized show
-  up — a direct, visible consequence of the Phase 2 demo-limit decision:
+  up, a direct consequence of the Phase 2 demo-limit decision:
   with only ~11,000 of ~230,000 rows embedded, most `subject_id`s will
   simply never appear in this list.
 
 The `@app.on_event("startup")` hook loading Presidio, NeMo Guardrails and the
 sentence-transformer model **once**, into a shared `middleware` dict, rather
-than per-request, is what keeps latency reasonable — spaCy's pipeline and a
+than per-request, is what keeps latency reasonable: spaCy's pipeline and a
 transformer model are too expensive to reload on every single API call.
 
 ### Doubts · Why pass `patient_id` in every chat payload? · 03:27:22
 
 **Monal (to the class):** "When I was testing this application, when I was
 just passing the messages, AI in the next response was saying 'which patient
-you're talking about' — it means it forgot the patient."
+you're talking about'. It means it forgot the patient."
 
 **Response:** Conversation memory here is just replayed message history; it
 has no independent notion of "current patient" unless that fact is
 re-supplied. Sending `patient_id` alongside `messages` on *every* call, not
-just the first one, is the fix — an explicit piece of state the LLM would
+just the first one, is the fix: an explicit piece of state the LLM would
 otherwise have to (unreliably) re-infer from earlier turns.
 
 ## Phase 7 — The Streamlit frontend
@@ -1491,11 +1781,11 @@ API_CHAT_URL = "http://localhost:8000/api/v1/chat"
 API_PATIENTS_URL = "http://localhost:8000/api/v1/patients"
 
 st.set_page_config(page_title="Zero-Trust Clinical EHR", layout="centered")
-st.title("Enterprise EHR Chat")
+st.title("🏥 Enterprise EHR Chat")
 st.caption("Protected by Presidio Zero-Trust & NeMo Guardrails")
 
 # --- FETCH PATIENTS DYNAMICALLY ---
-@st.cache_data(ttl=300)  # Cache the list for 5 minutes to reduce database load
+@st.cache_data(ttl=300) # Cache the list for 5 minutes to reduce database load
 def fetch_patient_list():
     try:
         response = requests.get(API_PATIENTS_URL)
@@ -1509,7 +1799,7 @@ patient_list = fetch_patient_list()
 
 # Streamlit's selectbox is automatically searchable!
 patient_id = st.sidebar.selectbox("Select Patient File (Type to search)", patient_list)
-st.sidebar.info(f"Database explicitly locked to Patient: {patient_id}")
+st.sidebar.info(f"🔒 Database explicitly locked to Patient: {patient_id}")
 
 # --- CHAT MEMORY ---
 if "messages" not in st.session_state:
@@ -1533,12 +1823,12 @@ if prompt := st.chat_input(f"Ask about patient {patient_id}'s history..."):
             response = requests.post(API_CHAT_URL, json=payload)
             response.raise_for_status()
             bot_reply = response.json().get("llm_response")
-
+            
             # Enforce Output Disclaimer
-            bot_reply += "\n\n*AI generated summary. Do not use for diagnostic purposes.*"
-
+            bot_reply += "\n\n*⚠️ AI generated summary. Do not use for diagnostic purposes.*"
+            
         except requests.exceptions.RequestException as e:
-            bot_reply = f"API Error: {e}"
+            bot_reply = f"❌ API Error: {e}"
 
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
     st.chat_message("assistant").write(bot_reply)
@@ -1550,26 +1840,51 @@ Read top to bottom, this is deliberately small:
   minutes, so a database round-trip doesn't happen on every Streamlit
   script rerun (Streamlit reruns the entire script on every interaction).
 - **`st.session_state.messages`** is the same plain list-of-dicts memory
-  discussed earlier, this time on the client side — it survives Streamlit
+  discussed earlier, this time on the client side. It survives Streamlit
   reruns within one browser session but resets on a real page reload,
   because nothing persists it anywhere durable.
 - **The disclaimer is appended in code, unconditionally**, on every
-  successful response — "*AI generated summary. Do not use for diagnostic
+  successful response: "*AI generated summary. Do not use for diagnostic
   purposes.*" This isn't cosmetic: labelling AI-generated clinical content
   as such is treated in the session as part of HIPAA-adjacent duty of care,
   not just good UX.
 - **`patient_id` rides along in every `payload`**, exactly matching the
   `/api/v1/chat` contract discussed above.
 
-Rendered, this is what the UI actually looks like — a patient selected in
+*Redrawn from Monal's UI and memory boards, 3:08 to 3:26 (pages 8 and 9).*
+
+```mermaid
+flowchart TB
+    subgraph PAGE["The Streamlit page"]
+        direction LR
+        SB["Sidebar: drop-down,<br/>populated from /patients"] ~~~ CH["Chat: user and bot messages,<br/>input box at the bottom"]
+    end
+    CH -->|"messages[-1] is the new question"| PR["prompt = clinical context from the DB<br/>+ the user's question"]
+    PR --> GR["Guardrail"]
+```
+
+```mermaid
+flowchart LR
+    subgraph REACT["Not used: a ReAct agent in LangGraph"]
+        direction LR
+        RS["Reason"] --> AC["Act with tools"] --> RS
+    end
+    subgraph FLOW["Used: a plain workflow"]
+        direction TB
+        M1["role: user · content: question"] --> M2["role: assistant · content: answer"] --> M3["role: user · content: next question"]
+    end
+    FLOW -->|"whole list sent on every LLM call"| H["Conversation history,<br/>the only memory"]
+```
+
+Rendered, this is what the UI actually looks like: a patient selected in
 the sidebar, and one turn of the redacted, guardrail-checked answer with the
 mandatory AI disclaimer:
 
 ![Secure EHR Insight Streamlit UI, showing a selected patient and a redacted, guarded answer with the AI-disclaimer](/img/secure-ehr-insight-ui.png)
 
 :::note How this screenshot was produced
-Not a frame from the video — this repo's convention is to recreate visuals,
-never extract someone else's recording. This is the project's actual,
+This is not a frame from the video. This repo recreates visuals rather
+than extracting them from someone else's recording. This is the project's actual,
 unmodified `src/ui/app.py` running against a small local stub of the two
 FastAPI endpoints it calls (canned patient IDs and a canned answer, standing
 in for Postgres/Presidio/NeMo/DeepSeek), screenshotted with a real browser.
@@ -1579,35 +1894,71 @@ placeholder, not a real model response.
 
 ## Running it end to end
 
+The API and the UI are two separate processes, a deliberate design choice:
+if Streamlit fails, the API keeps running. Start them in two terminals, API
+first, from the project root with the environment activated in both:
+
 ```bash
+# terminal 1
 uvicorn src.api.main:app --reload
+
+# terminal 2, once terminal 1 prints "System Ready on port 8000."
 streamlit run src/ui/app.py
 ```
 
-Questions actually asked against the live system, and what happened:
+:::warning "Database Connection Error" in the patient dropdown
+Live, Streamlit was started before the API, and the dropdown showed
+"Database Connection Error". The database was fine; the API wasn't running
+yet. Starting the API alone doesn't clear the message.
+`fetch_patient_list()` catches the failure and *returns* the error text as
+a list, and `@st.cache_data(ttl=300)` caches that list for five minutes.
+Restart Streamlit, as Monal did, or clear its cache from the app menu.
+:::
+
+These are the questions asked against the running system, and what
+happened:
 
 | Question asked | What happened |
 | --------------- | -------------- |
 | *Select a patient* | Dropdown populated from `/api/v1/patients`; conversation scoped to that `subject_id`. |
-| "What medications were prescribed to this patient upon discharge?" | Answered from the retrieved, redacted rows — named the actual drug present in that patient's records. |
-| "Can you summarise the last few reports of this patient?" | Answered, noting it could only summarise the structured fields available, not narrative reports that weren't present in the retrieved context — it did **not** invent narrative content that wasn't there. |
-| "What liver-related diagnoses are noted in the patient's file?" | Correctly reported *no* liver-related diagnosis for a patient whose actual retrieved record was respiratory — a direct check for hallucination, and it passed. |
-| "Was the patient admitted urgently or routinely?" | Declined to answer confidently when that specific field wasn't clearly present in the retrieved context, rather than guessing. |
-| "Based on the positive peritoneal fluid culture, what broad-spectrum antibiotic should I start the patient on?" | **Blocked before the LLM was called.** Guardrails intercepted it as a request for treatment advice and returned the fixed refusal. |
-| "Can you write a Python script to plot this patient's heart rate over time?" | Also declined — an out-of-scope request the guardrail/prompt design doesn't support, demonstrated live as a check against people trying to get free coding help from a clinical assistant. |
+| "What medications were prescribed to this patient upon discharge?" | Answered from the retrieved, redacted rows, naming the actual drug present in that patient's records. |
+| "Can you summarise the last few reports of this patient?" | Said the context held no narrative reports, only structured medication records, instead of inventing any. After the follow-up "whatever reports are present, please summarise those", it summarised the structured records. The follow-up only works because the earlier turns are sent as history. |
+| "What liver-related diagnoses are noted in the patient's file?" | Correctly said there were none. This patient's retrieved record was a respiratory culture, so this was a direct hallucination check, and it passed. |
+| "Was the patient admitted urgently or routinely?" | Replied "I don't know the answer to that." Monal guessed the data wasn't included, and the code confirms it: `admission_type` goes into the embedding text, but `/api/v1/chat` never selects it into the context, so the model can't see it. Adding it to the `SELECT` would fix this. |
+| "Based on the positive peritoneal fluid culture, what broad-spectrum antibiotic should I start the patient on?" | **Refused with the fixed guardrail message.** The guardrail classified it as a request for treatment advice, and DeepSeek never answered it. |
+| "Can you write a Python script to plot this patient's heart rate over time?" | Also declined, with "I don't know the answer to that", not the EHR refusal text. There is no coding rule in `rails.co`, so this wasn't the refusal flow. Monal asks it to check that nobody can use the clinical assistant as a free coding chatbot. |
 
-The prescribing question never reaching DeepSeek at all — "our data never
-went to LLM, it got stopped before that" — is the single most important
-observed behaviour in the whole demo: it's proof the guardrail layer, not
-just careful prompting, is what enforces the "no clinical advice" rule.
+The prescribing refusal is the key result of the demo. The rule against
+clinical advice is enforced by the guardrail's fixed refusal, not by
+careful prompting. As the note in Phase 5 explains, the question was still
+*classified* by DeepSeek; it was never *answered*.
 
 ## Phase 8 — Productionising with Docker on AWS EC2
 
-The second half of the session (led by Bappy) takes the exact same
-repository from a developer's laptop to a public URL, using a **second,
-separate EC2 instance** standing in for a production application server
-(the database stays on its own instance from Phase 0 — application and
-data tier are not collapsed onto one box).
+In the second half of the session, Bappy takes the same repository from a
+developer's laptop to a public URL. He uses a **second, separate EC2
+instance** as the application server, while the database stays on its own
+instance from Phase 0, so the application and data tiers never share a box.
+
+The plan he sketches is short: clone the project onto the server, build a
+Docker image from it, and run that image as a container. CI/CD is
+deliberately left out (see the Doubts section at the end of this phase).
+
+*Redrawn from Bappy's Excalidraw sketch, 3:41 to 3:45.*
+
+```mermaid
+flowchart TB
+    GH["Project on GitHub"] --> DZ["Dockerise"] --> IMG["Docker image"] --> RUN["Run the image as a container"]
+    GH -->|"git clone"| EC2["AWS EC2<br/>with Docker installed"]
+    RUN --> EC2
+    subgraph WHY["Why Docker: the same box on every OS"]
+        direction LR
+        OS["Any operating system"] --> CT["Container"] --> APP["App"]
+    end
+    CI["CI/CD: named, not built"] -.-> EC2
+```
+
+The result, as deployed:
 
 ```mermaid
 flowchart TB
@@ -1627,39 +1978,19 @@ flowchart TB
 
 Monal built the project on Windows; it will run on an Ubuntu EC2 instance.
 "Maybe his configuration would be different, my configuration would be
-different" — Docker exists precisely to remove that variable: whatever runs
+different." Docker exists precisely to remove that variable: whatever runs
 inside the container behaves identically regardless of the host OS.
 
 ### AWS console walkthrough — the application server
-
-This is a **second, separate** EC2 instance from the database one in Phase 0
-— application and data tier stay on different boxes.
 
 **Step 1 — Launch the instance.**
 
 1. EC2 console → **Launch instance**.
 2. **Name:** e.g. `test-fde`.
-3. **AMI:** **Ubuntu**, version **24.04 LTS**.
-4. **Instance type:** what actually got picked live was a **T2 medium**
-   (2 vCPU / 4 GB RAM, ~\$0.045/hour) — the same size class as the database
-   instance from Phase 0, on the reasoning that this is "just a demo" and
-   the instance can always be resized later if it struggles.
-
-:::note The written deployment guide and the live pick disagree
-The project's own `instructor_notes/AWS_EC2_Docker_Deployment_Guide.md`
-recommends a **t3.large (2 vCPU / 8 GB RAM)** for this box — sized up
-specifically because it has to load PyTorch, Transformers and Hugging Face
-model weights into memory *alongside* FastAPI and Streamlit. What was
-actually launched on stream was the smaller **T2 medium**. Both are
-reproduced here because the discrepancy itself is the useful lesson: the
-Docker image build in this phase is heavy (~11 GB once PyTorch and
-Transformers are baked in) and noticeably slow on a 4 GB box, live viewers
-asked about it, and it is exactly the kind of gap between a written runbook
-and what got clicked through under time pressure that you should expect to
-hit yourself. **If you're following this chapter to actually deploy it,
-use the guide's t3.large recommendation, not the smaller instance shown
-live** — it's sized for what this specific image actually needs.
-:::
+3. **AMI:** **Ubuntu**. Bappy takes the console's default, **26.04 LTS**.
+4. **Instance type:** Bappy picks a **T2 medium** (2 vCPU, 4 GB RAM, about
+   \$0.046/hour), reasoning that this is a demo and the instance can be
+   resized later.
 5. **Key pair:** create a new one (e.g. `FDE-2-yt.pem`) or reuse an existing
    one you still have the private key file for.
 6. **Network settings → Edit:** check both **"Allow HTTPS traffic from the
@@ -1667,10 +1998,21 @@ live** — it's sized for what this specific image actually needs.
    then continue to configure the security group's own inbound rules in the
    next step (these two checkboxes alone are not sufficient for Streamlit's
    custom port).
-7. **Configure storage:** 30-40 GB gp3 — the Docker image itself, once built
-   with PyTorch and Transformers baked in, is large (~11 GB was observed
-   live).
+7. **Configure storage:** 30 GB, which is what Bappy uses. The guide says
+   30-40 GB gp3. The built image alone is about 11 GB, because PyTorch and
+   Transformers are baked into it.
 8. **Launch instance**, then wait for **Running** + passed status checks.
+
+:::note The written guide and the live choices differ
+The project's `instructor_notes/AWS_EC2_Docker_Deployment_Guide.md` asks for
+**Ubuntu 24.04 LTS** on a **t3.large (2 vCPU, 8 GB RAM)**. Live, Bappy used
+the 26.04 default on a **T2 medium (4 GB RAM)**. The Ubuntu version doesn't
+matter here, but the memory does: this one box loads PyTorch, the
+BioClinical ModernBERT model, spaCy's large English model, FastAPI and
+Streamlit together. Monal notes at the end that the public demo became
+unreachable when many viewers tried it at once, because "we only bought 4 GB
+RAM". **If you're deploying this for real, follow the guide's t3.large.**
+:::
 
 **Step 2 — Open the Streamlit port on the security group.**
 
@@ -1678,9 +2020,9 @@ live** — it's sized for what this specific image actually needs.
    **Security groups** entry.
 2. **Inbound rules → Edit inbound rules → Add rule.**
 3. Type: **Custom TCP**. Port range: **`8501`**. Source: **Anywhere-IPv4**
-   (`0.0.0.0/0`) — this is the port the public will actually use.
-4. Leave the existing **SSH (22) — My IP** rule as is. **Do not** add a rule
-   for port `8000` (FastAPI) — it is only ever reached from inside the same
+   (`0.0.0.0/0`). This is the port the public will use.
+4. Leave the existing **SSH (22), My IP** rule as it is. **Do not** add a rule
+   for port `8000` (FastAPI). It is only ever reached from inside the same
    Docker container, over `localhost`, and has no reason to be internet-
    facing.
 5. **Save rules.**
@@ -1689,7 +2031,7 @@ live** — it's sized for what this specific image actually needs.
 
 Either the AWS console's own browser-based terminal (select the instance →
 **Connect** → **EC2 Instance Connect** tab → **Connect**, which opens a
-terminal window directly in the browser with no local SSH client needed —
+terminal window directly in the browser with no local SSH client needed;
 this is what was used live), or from a local terminal:
 
 ```bash
@@ -1698,41 +2040,151 @@ ssh -i "FDE-2-yt.pem" ubuntu@<your-ec2-public-ip>
 
 All the remaining commands in this phase run **inside** that EC2 terminal.
 
-### Complete file: `Dockerfile`
+**Step 4 — Update Ubuntu and install Docker.**
 
-```dockerfile
-FROM python:3.12-slim
+A new instance has no Docker and stale packages, so update it first and
+install a few utilities:
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PIP_NO_CACHE_DIR=1
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-RUN chmod +x /app/start.sh
-
-EXPOSE 8000
-EXPOSE 8501
-
-CMD ["/app/start.sh"]
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y ca-certificates curl git nano
 ```
 
-`libpq-dev` and `build-essential` are there for `psycopg`'s native Postgres
-bindings; everything else is a standard slim Python image kept as small as
-the heavy ML dependencies (`torch`, `transformers`) allow.
+Then install Docker from its official package repository. These are the
+steps from Docker's own Ubuntu install guide, which is where Bappy took
+them from:
+
+```bash
+# Docker's signing key
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Docker's package repository
+sudo tee /etc/apt/sources.list.d/docker.sources > /dev/null <<EOF2
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF2
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Start Docker, let your user run it without `sudo`, and check it works:
+
+```bash
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+docker --version
+docker run --rm hello-world   # prints "Hello from Docker!"
+```
+
+**Step 5 — Clone the repository.**
+
+Clone into your home directory, not whatever folder you happen to be in:
+
+```bash
+cd ~
+git clone https://github.com/nimowhyca/Secure-EHR-Insight-Clinical-Validator.git FDE-Project-2
+cd FDE-Project-2
+ls   # data  instructor_notes  readme.md  requirements.txt  scripts  src ...
+```
+
+Live, Bappy cloned under the repository's default folder name. The guide
+uses `FDE-Project-2`, which the redeploy commands below assume.
+
+### Create the server-only files
+
+Four files are created by hand on the server rather than cloned: `.env`,
+because it holds secrets and is never in Git, and `.dockerignore`,
+`start.sh` and `Dockerfile`. Bappy writes the last three with shell
+heredocs (`cat > Dockerfile <<'EOF2' ... EOF2`) and says he hasn't pushed
+them yet. Create them in this order, the one used live, because the
+`Dockerfile` runs `start.sh`.
+
+### `.env` and `.dockerignore`
+
+Create `.env` with `nano .env`, paste the same values as your local one
+(the database settings from Phase 0 and the DeepSeek key from Phase 5), and
+save with `Ctrl+O`, `Enter`, `Ctrl+X`:
+
+```env
+DB_HOST=YOUR_DATABASE_HOST
+DB_PORT=5432
+DB_NAME=YOUR_DATABASE_NAME
+DB_USER=YOUR_DATABASE_USER
+DB_PASSWORD=YOUR_DATABASE_PASSWORD
+
+OPENAI_API_KEY=YOUR_DEEPSEEK_API_KEY
+OPENAI_BASE_URL=https://api.deepseek.com/v1
+OPENAI_API_BASE=https://api.deepseek.com/v1
+```
+
+Then restrict it to your own user and check what was saved:
+
+```bash
+chmod 600 .env
+cat .env
+```
+
+:::warning Let the application server reach the database
+In Phase 0, port 5432 on the database's security group was limited to
+**My IP**, your laptop. The application server is a different machine, so
+with those rules alone the deployed API can't reach Postgres, and the
+patient dropdown comes up empty. Add an inbound PostgreSQL (5432) rule to
+the **database's** security group, in one of two ways:
+
+- **Preferred:** in the server's `.env`, set `DB_HOST` to the database's
+  **private** IP (both instances sit in the same default VPC), and allow
+  5432 with the application server's **security group** as the source.
+  This is what the guide's database networking note recommends for RDS.
+- **Or** keep the public Elastic IP, and allow 5432 from the application
+  server's public IP.
+
+Don't mix the two. A security-group source only matches traffic arriving
+on the private IP, so it has no effect while `DB_HOST` is the public
+address. And don't open 5432 to `0.0.0.0/0`.
+:::
+
+`.dockerignore` works like `.gitignore` for the image: anything listed stays
+out of the build context, which keeps the image smaller and the build
+faster.
+
+```bash
+cat > .dockerignore <<'EOF2'
+.git
+.gitignore
+.env
+*.env
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+env
+data
+mentor-docs
+EOF2
+```
+
+`data/` (the ~373 MB CSV) and `.env` are the important exclusions. The raw
+dataset was only ever needed by the one-time ingestion scripts, not by the
+running application, and secrets should never be baked into an image layer;
+`docker run` passes them in with `--env-file` instead.
+
+:::note `mentor-docs` doesn't exist in this repository
+The guide's list excludes `mentor-docs`, but this project's notes folder is
+`instructor_notes/`, which still ends up in the image. Bappy leaves the list
+to you ("whatever folders and file you want to ignore, you can add"). Add
+`instructor_notes` and `uv_instructions.txt` to it.
+:::
 
 ### Complete file: `start.sh`
 
@@ -1776,57 +2228,69 @@ the API process didn't die while waiting, and only then `exec`s Streamlit
 into the foreground (so it becomes PID 1 and receives container signals
 correctly).
 
-### `.env` and `.dockerignore`
+### Complete file: `Dockerfile`
 
-```bash
-nano .env
+```dockerfile
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN chmod +x /app/start.sh
+
+EXPOSE 8000
+EXPOSE 8501
+
+CMD ["/app/start.sh"]
 ```
 
-```env
-DB_HOST=YOUR_DATABASE_HOST
-DB_PORT=5432
-DB_NAME=YOUR_DATABASE_NAME
-DB_USER=YOUR_DATABASE_USER
-DB_PASSWORD=YOUR_DATABASE_PASSWORD
+Read top to bottom, it matches Bappy's walkthrough: start from the slim
+Python 3.12 image, set a few environment flags, make `/app` the working
+directory, install system packages, install the Python requirements, copy
+the project in, and run `start.sh`. `build-essential` and `libpq-dev` are
+there for packages that compile native code, such as Postgres drivers.
 
-OPENAI_API_KEY=YOUR_DEEPSEEK_API_KEY
-OPENAI_BASE_URL=https://api.deepseek.com/v1
-OPENAI_API_BASE=https://api.deepseek.com/v1
-```
-
-```bash
-chmod 600 .env
-```
-
-`.env` is created **by hand on the server**, never cloned from GitHub — it's
-git-ignored from the start. `chmod 600` restricts it to the owning user only.
-
-```bash
-cat > .dockerignore <<'EOF2'
-.git
-.gitignore
-.env
-*.env
-__pycache__
-*.pyc
-*.pyo
-.venv
-venv
-env
-data
-mentor-docs
-EOF2
-```
-
-`data/` (the ~373 MB CSV) and `.env` are excluded from the build context —
-the raw dataset was only ever needed for the one-time ingestion scripts, not
-for the running application, and secrets should never be baked into an
-image layer.
+`requirements.txt` is copied and installed *before* the rest of the code.
+Docker caches each step, so after a code-only change the slow dependency
+layer is reused rather than reinstalled.
 
 ### Build, run, verify
 
+From the project folder, build the image. `-t` tags it with a name, and the
+final `.` means the `Dockerfile` is in the current directory:
+
 ```bash
 docker build --pull -t fde-project-2:latest .
+docker images
+```
+
+Expect the build to take a while. PyTorch, Transformers and the Hugging Face
+libraries are large, and `docker images` listed the finished image at about
+11 GB.
+
+Then run it as a container. The first line removes any previous container
+with the same name, a safe no-op the first time. `-d` runs it detached in
+the background, and `--restart unless-stopped` brings it back after a
+reboot:
+
+```bash
+docker rm -f fde-project-2 2>/dev/null || true
 
 docker run -d \
   --name fde-project-2 \
@@ -1836,9 +2300,12 @@ docker run -d \
   fde-project-2:latest
 ```
 
-Only `8501` is published (`-p 8501:8501`); `8000` stays internal to the
-container network namespace — the security-group decision from earlier is
-mirrored exactly in the Docker run command.
+Only `8501` is published (`-p 8501:8501`). Port `8000` stays inside the
+container, mirroring the security-group rule from Step 2.
+
+Check that the container is up and both services started. `docker logs -f`
+follows the log; `Ctrl+C` leaves the log view without stopping the
+container:
 
 ```bash
 docker ps
@@ -1851,11 +2318,16 @@ docker exec fde-project-2 curl -f http://127.0.0.1:8000/openapi.json \
 curl -s https://checkip.amazonaws.com         # your public IP
 ```
 
-Then, from any browser: `http://YOUR_EC2_PUBLIC_IP:8501` — the same
+Then open `http://YOUR_EC2_PUBLIC_IP:8501` in any browser. It's the same
 Streamlit app, now reachable by anyone, backed by the same Postgres instance
-from Phase 0.
+from Phase 0. Live, Bappy selected a patient, asked "What medications were
+prescribed to this patient upon discharge?", and got an answer from the
+public URL. You could point your own domain at this IP.
 
 ### Redeploying after a code change
+
+To ship a change: pull the latest code, rebuild the image, and replace the
+container.
 
 ```bash
 cd ~/FDE-Project-2
@@ -1870,12 +2342,11 @@ docker run -d \
   fde-project-2:latest
 ```
 
-Bappy names this limitation explicitly: this is a **manual** redeploy flow —
-"you have to again and again go to this and execute these commands." He
-flags CI/CD as the natural next step and out of scope for the session (see
-the improvements chapter for what that would look like).
+Bappy calls this the weak point of a manual deployment: "we have to again
+and again go to this [server] and execute these commands." CI/CD would
+remove it.
 
-### Doubts · What about CI/CD and fully-managed alternatives? · 03:44:16, 04:19:40, 04:21:26
+### Doubts · What about CI/CD and fully-managed alternatives? · 03:44:36, 04:19:40, 04:21:26
 
 **Live viewers asked, and Bappy fielded, three related questions:** why not
 set up CI/CD for this deployment; how do you scale it if load gets high; and
@@ -1896,8 +2367,8 @@ what's the fully-managed AWS option, landing on "Elastic Beanstalk."
   Docker image would actually be stored for a pipeline to pull from, and
   **Elastic Beanstalk** as the fully-managed compute option.
 - **Elastic Beanstalk specifically:** it removes almost all custom
-  configuration — AWS provisions and scales the underlying instances for
-  you — but that comes at a cost premium, because it over-provisions
+  configuration (AWS provisions and scales the underlying instances for
+  you), but that comes at a cost premium, because it over-provisions
   capacity for headroom you might not be using yet (his example:
   provisioning for 300 users when you currently have 100). A custom EC2 +
   Docker deployment costs less and gives full control over the instance, at
@@ -1906,13 +2377,13 @@ what's the fully-managed AWS option, landing on "Elastic Beanstalk."
   Describes it as "an AI-native cloud platform" with two toggles that
   together automate what AWS otherwise requires you to wire up by hand: an
   **auto-rescale** option, and an **auto-update** option that redeploys
-  automatically whenever new code is pushed to GitHub — in his words,
+  automatically whenever new code is pushed to GitHub. In his words,
   "they're automating the CI/CD process as well as the autoscaling part."
   He doesn't recommend switching to it, just names it as the point of
   comparison for how much manual work AWS's flexibility is trading away.
 
-None of these — CodePipeline, ECR-backed CI/CD, Beanstalk, or Digital
-Ocean's toggles — get implemented in this session. They're named as the
+None of these (CodePipeline, ECR-backed CI/CD, Beanstalk, or Digital
+Ocean's toggles) gets implemented in this session. They're named as the
 natural next steps, which is exactly the gap the
 [improvements chapter](/docs/projects/secure-ehr-insight/improvements)
 picks up.
@@ -1920,32 +2391,33 @@ picks up.
 **Summary**
 
 - Containerising isolates the app from host OS/config drift between dev and
-  prod machines — the actual reason Docker was chosen here, not just habit.
+  prod machines. That's the actual reason Docker was chosen here, not just habit.
 - Only the port that must be public (Streamlit) is exposed; the internal API
   port is deliberately not.
-- The redeploy flow is manual by design in this session — a named, called-out
+- The redeploy flow is manual by design in this session: a named, called-out
   gap, not an oversight.
 
 ## What this session intentionally leaves out
 
-Per this repo's own conventions, gaps are named rather than left implicit:
+What the live build leaves out, so nothing is implied that isn't there:
 
 :::warning Known gaps in the live build
 - **Only ~11,000 of ~230,000 rows are embedded.** The full backfill was
-  estimated at 6-7 hours on a CPU-only instance and was never run live; the
-  `patients` dropdown reflects this smaller set.
-- **No authentication.** Any browser reaching port 8501 can select any
-  patient and chat about them — there is no doctor login, role check, or
-  per-user audit trail. This is a serious real-world gap for a HIPAA-adjacent
-  system and is addressed in the next chapter.
-- **No CI/CD.** Deploying a change means SSHing in and manually rebuilding
-  the Docker image, by design, for time reasons.
-- **No test suite** beyond the six manual `scripts/0N_*.py` smoke checks —
-  there is no automated regression test for the guardrail flows or the
-  redaction recognizers.
-- **Single EC2 instance, no load balancer, no autoscaling, no managed
-  database** (RDS) — acceptable for a live demo, not for a production
-  hospital workload.
+  estimated at 6-7 hours on a CPU-only instance and never run live, so the
+  patient dropdown shows only this smaller set.
+- **No authentication.** Anyone who can reach port 8501 can select any
+  patient and chat about them. There is no doctor login, no role check and
+  no audit trail of who asked what, a serious gap for a HIPAA-adjacent
+  system. The [improvements chapter](/docs/projects/secure-ehr-insight/improvements)
+  starts there.
+- **No CI/CD.** Deploying a change means logging in to the server and
+  rebuilding the image by hand, chosen to save time.
+- **No automated tests.** The six `scripts/0N_*.py` files are manual smoke
+  checks. Nothing guards the guardrail flows or the redaction recognizers
+  against regressions.
+- **One small instance per tier.** No load balancer, no autoscaling and no
+  managed database such as RDS. The 4 GB application server already became
+  unreachable when many viewers tried it at once.
 :::
 
 ## Checklist
@@ -1965,8 +2437,11 @@ After working through this chapter, you should be able to:
 - [ ] Distinguish what Presidio's analyzer does from what its anonymizer
       does, and extend Presidio with a custom `PatternRecognizer` for a
       pattern it misses by default.
-- [ ] Write a Colang flow that blocks a class of request before it ever
-      reaches the underlying LLM.
+- [ ] Write a Colang flow that answers a class of request with a fixed
+      refusal, and explain why the guardrail check still sends the prompt
+      to the model provider.
+- [ ] Set up the `.env` file and Python drivers the setup scripts need, and
+      diagnose the three causes of a failed database connection in order.
 - [ ] Containerise a two-process (API + UI) Python app with a startup script
       that sequences readiness correctly, and explain why only one of the
       two ports is published.

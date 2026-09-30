@@ -55,11 +55,7 @@ export default function DocItemLayout({children}: Props): ReactNode {
         )}>
         <ContentVisibility metadata={metadata} />
         <DocVersionBanner />
-        <div
-          className={clsx(
-            styles.docItemContainer,
-            desktopTOC && tocCollapsed && styles.docItemContainerExpanded,
-          )}>
+        <div className={styles.docItemContainer}>
           <article>
             <DocBreadcrumbs />
             <DocVersionBadge />
