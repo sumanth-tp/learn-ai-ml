@@ -10,6 +10,8 @@ tags: [python, security, injection, secrets, supply-chain, cryptography, owasp]
 
 **In one line.** Treat every input as hostile, never build commands or queries by string concatenation, and keep secrets out of your code and your logs.
 
+For a complete first example, see [configuration and `.env` files](./00-project-workflow.md#configuration-and-env-files): create `.env.example`, load a local `.env`, parse string settings and check key presence without printing it. That walkthrough connects the video's secrets demonstration to the guidance here.
+
 ## The idea in plain words
 
 Most Python security incidents come from a short list, and every item has a boring, well-known fix.

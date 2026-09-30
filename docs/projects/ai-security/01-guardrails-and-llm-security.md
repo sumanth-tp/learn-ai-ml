@@ -29,14 +29,15 @@ to see, say and do, and this module builds that layer one rail at a time.
 
 ## The course at a glance
 
-Krish opens by laying out the four modules. Each one is a chapter here:
+Krish opens by laying out the four modules. Notes for the first two are
+available here; the remaining modules link to the source video:
 
 | Module | What it covers | Chapter |
 | ------ | -------------- | ------- |
 | 1. AI guardrails | Securing LLM apps: prompt injection, jailbreaks, PII, observability | This page |
 | 2. LLM evals | Measuring a RAG application with goldens, LLM-as-judge and Ragas metrics | [Module 2](/docs/projects/ai-security/evals) |
-| 3. Agentic memory | Thirteen memory techniques, from a plain buffer to forgetting curves | [Module 3](/docs/projects/ai-security/memory) |
-| 4. AgentOps | Taking an agentic RAG system to production on AWS and Kubernetes | [Module 4](/docs/projects/ai-security/agentops) |
+| 3. Agentic memory | Thirteen memory techniques, from a plain buffer to forgetting curves | [Module 3 in the source video](https://www.youtube.com/watch?v=rQE3w8Qjx98) (notes pending) |
+| 4. AgentOps | Taking an agentic RAG system to production on AWS and Kubernetes | [Module 4 in the source video](https://www.youtube.com/watch?v=rQE3w8Qjx98) (notes pending) |
 
 ## Why LLM security is a topic of its own
 
@@ -187,7 +188,7 @@ The repository's README adds a longer comparison that also covers Azure AI
 Content Safety, LlamaGuard and Lakera Guard. One line of it is out of date:
 it says Bedrock Guardrails works only with Bedrock models, but AWS's
 `ApplyGuardrail` API checks any text, so it can sit in front of a Groq or
-OpenAI model too. [Module 4](/docs/projects/ai-security/agentops) implements
+OpenAI model too. [Module 4 in the source video](https://www.youtube.com/watch?v=rQE3w8Qjx98) implements
 Bedrock Guardrails in the production stack.
 :::
 

@@ -10,6 +10,14 @@ tags: [python, packaging, virtualenv, uv, poetry, pyproject, dependencies, lockf
 
 **In one line.** One isolated environment per project, one declared dependency set, one lockfile — that is what makes a build reproducible.
 
+:::note Beginner route and packaging precision
+
+For a first project, complete [environment setup](../00-getting-started/02-setup-and-interactive-python.md) and the [Git/Ruff/uv workflow](./00-project-workflow.md). They explain the video's pip/venv commands before introducing uv.
+
+Read the general guidance below with these qualifications: `requires-python` is a compatibility constraint, not an exact interpreter pin; `requirements.txt` remains a supported installation input; a library may commit a lockfile for its own development while publishing dependency ranges for consumers. Use `uv sync --locked` to check lockfile freshness. `--frozen` skips that check, and is not equivalent to pip's `--require-hashes`. Dependency locking improves repeatability but cannot by itself guarantee identical operating systems, native libraries or runtime behaviour.
+
+:::
+
 ## The idea in plain words
 
 Python installs packages **per environment**. Installing into the system interpreter is how machines break, so every project gets its own virtual environment.

@@ -10,6 +10,135 @@ tags: [python, data-structures, list, dict, set, tuple, mutability]
 
 **In one line.** Five containers cover almost everything: list for order, dict for lookup, set for membership, tuple for fixed records, and str for text.
 
+## Start here: values, expressions and containers
+
+> **Video connection:** [numbers and strings, around 1:10](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=4212s), then [containers, around 1:48](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=6480s). These introductory examples prepare you for the deeper material below.
+
+### Numbers, conversion and arithmetic
+
+| Type | Example | Meaning |
+| --- | --- | --- |
+| `int` | `12` | Whole number |
+| `float` | `12.5` | Floating-point number, often an approximation |
+| `str` | `"12"` | Text, even when it contains digits |
+| `bool` | `True`, `False` | Boolean value; capitals matter |
+| `NoneType` | `None` | Absence of a value |
+
+```python
+pages = 7
+print(pages + 2)   # 9
+print(pages - 2)   # 5
+print(pages * 2)   # 14
+print(pages / 2)   # 3.5: division
+print(pages // 2)  # 3: floor division
+print(pages % 2)   # 1: remainder
+print(pages ** 2)  # 49: exponentiation
+print(2 + 3 * 4)   # 14
+print((2 + 3) * 4) # 20
+pages += 1
+print(pages)      # 8
+
+text = "12"
+print(int(text) + 3)  # 15
+print(float("2.5"))   # 2.5
+print(str(12))        # text suitable for string operations
+print(type(text))     # <class 'str'>
+```
+
+Floor division rounds down: `-7 // 2` is `-4`. `int("twelve")` raises `ValueError`; conversion can fail. `input()` returns a string, so convert numeric input before arithmetic. Floats cannot represent every decimal exactly; use `math.isclose` for approximate comparisons and consider integer minor units or `Decimal` for monetary calculations.
+
+### Text manipulation and f-strings
+
+```python
+raw_name = "  Maya Rao  "
+name = raw_name.strip()
+print(name.lower())          # maya rao
+print(name.upper())          # MAYA RAO
+print(name.replace("Rao", "Shah"))  # Maya Shah
+print(name.startswith("Maya"))     # True
+print(name.endswith("Rao"))        # True
+print(name.find("Rao"))      # 5; -1 means not found
+print(name.count("a"))       # 3
+print(name.split())          # ['Maya', 'Rao']
+print(" / ".join(name.split()))  # Maya / Rao
+print(name[0], name[-1])     # M o
+print(name[:4])              # Maya: stop index is excluded
+print(len(name))             # 8, including the space
+print("-" * 8)               # --------
+
+score = 0.875
+message = f"{name}: {score:.1%}"
+print(message)              # Maya Rao: 87.5%
+print(raw_name)             # still contains the original spaces
+```
+
+String methods return new strings; assign the result when you need to retain it. Without the leading `f`, braces and names inside a string are printed literally. F-strings are useful for readable output and building prompts, but do not make interpolated text trustworthy or validate it.
+
+### Booleans and comparisons
+
+```python
+score = 82
+submitted = True
+blocked = False
+
+passed = score >= 60 and submitted and not blocked
+print(passed)               # True
+print(score == 82)          # True
+print(score != 82)          # False
+print(60 <= score < 90)     # True
+print(bool("False"))        # True: it is a non-empty string
+```
+
+`=` assigns, `==` compares, and `!=` means unequal. `and` needs both conditions, `or` needs at least one, and `not` reverses truthiness. With arbitrary objects, `and` and `or` return an operand; they do not always return a `bool`. Use `is None` to check for a missing value. Do not confuse a zero score with a missing score.
+
+### Four containers you can create and change
+
+```python
+# List: ordered items, accessed by zero-based position.
+names = ["Maya", "Noor", "Leo"]
+print(names[0], names[-1])   # Maya Leo
+print(names[1:3])           # ['Noor', 'Leo']
+names[0] = "Asha"
+names.append("Maya")
+names.insert(1, "Kai")
+names.remove("Noor")
+last = names.pop()
+print(names, last)          # ['Asha', 'Kai', 'Leo'] Maya
+
+# Dict: associated values, accessed by key.
+person = {"name": "Maya", "age": 25}
+person["age"] = 26
+person["city"] = "Pune"
+print(person["name"])               # Maya
+print(person.get("language", "en")) # en
+del person["city"]
+print(list(person.items()))         # [('name', 'Maya'), ('age', 26)]
+
+# Tuple: a fixed sequence. The comma makes a one-item tuple.
+point = (3, 5)
+one_item = (3,)
+x, y = point
+print(x, y, len(one_item))  # 3 5 1
+
+# Set: unique hashable values, with no positional indexing.
+tags = set(["python", "ai", "python"])
+tags.add("data")
+tags.discard("missing")
+print(sorted(tags))         # ['ai', 'data', 'python']
+print("python" in tags)     # True
+empty_set = set()           # {} creates an empty dictionary
+```
+
+`names[99]` raises `IndexError`; `person["missing"]` raises `KeyError`. `list.remove` removes the first matching value and fails if none exists; `pop` removes and returns an item. In-place methods such as `append`, `sort` and `reverse` return `None`. Use `sorted(names)` when you want a separate sorted list.
+
+:::note Precision about hashability
+
+The shorthand “immutable means hashable” in the original discussion below needs a qualification. A tuple containing a list is immutable as a container but **unhashable**. Dictionary keys and set elements must be hashable, with stable hashes and compatible equality. `hash((1, 2))` works; `hash((1, []))` raises `TypeError`. See the [object model](../02-programs/05-object-model-and-copies.md) for the full contract.
+
+:::
+
+**Added practice:** create a list of three dictionaries containing `name` and `score`. Retrieve the second person's score, append a fourth person, and calculate the unique scores with a set. Explain why the set cannot be indexed by position.
+
 ## The idea in plain words
 
 Python gives you a small set of built-in types, and picking the right one is most of the performance work you will ever do at this level.

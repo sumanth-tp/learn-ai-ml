@@ -10,6 +10,36 @@ tags: [python, modules, packages, imports, project-layout, sys-path]
 
 **In one line.** A module is a file, a package is a directory with importable contents, and almost every import error is really a `sys.path` problem.
 
+## Start here: installing and importing are different steps
+
+> **Video connection:** [external tools, around 2:38](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=9495s) and [helper modules, 3:34:05](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=12845s).
+
+| Term | Beginner model | Example |
+| --- | --- | --- |
+| Built-in function | Available without an import | `len`, `print`, `sum` |
+| Standard-library module | Included with Python, imported when needed | `math`, `json`, `datetime`, `pathlib` |
+| Your module | A `.py` file with reusable definitions | `helpers.py` |
+| Import package | A collection of modules | `requests` |
+| Distribution package | What a package installer installs | `python-dotenv`, imported as `dotenv` |
+
+```python
+import math
+from datetime import date, timedelta
+from pathlib import Path
+
+print(math.sqrt(16))
+print(date(2026, 1, 10) - timedelta(days=7))
+print(Path.cwd())
+```
+
+`import math` binds the name `math`; use `math.sqrt`. `from math import sqrt` binds `sqrt`; call it directly. `import pandas as pd` binds the alias `pd` after pandas has been installed. These forms change the names available to your code, not which environment contains the package. Avoid wildcard imports because they obscure where names came from.
+
+In the terminal, `python -m pip install python-dotenv` installs a distribution. In Python, `from dotenv import load_dotenv` imports from it. The names are not always identical, so check a package's installation instructions.
+
+Do not name a script `requests.py`, `json.py` or `pandas.py` when you intend to import that library: your local file may shadow it. Check `module.__file__` to find what was actually imported. Assigning `math = 3` after `import math` also replaces that name's binding.
+
+For a complete first example with two files, follow the [sales analysis lab](./07-sales-analysis.md). The advanced import and packaging material below builds on that layout.
+
 ## The idea in plain words
 
 When you write `import app.services.billing`, Python:

@@ -10,6 +10,8 @@ tags: [python, ruff, mypy, pre-commit, ci, github-actions, code-quality]
 
 **In one line.** Automate everything a machine can check, so human review can spend its attention on design and correctness.
 
+For the video's first Ruff setup, see [formatting, linting and import sorting](./00-project-workflow.md#format-lint-and-sort-imports), including the VS Code settings and the corresponding terminal commands. Formatting alone does not sort imports or check program correctness. This chapter extends that local workflow into automated checks.
+
 ## The idea in plain words
 
 A professional Python repository runs the same four checks locally and in CI:

@@ -10,6 +10,80 @@ tags: [python, functions, closures, scope, args, kwargs, first-class-functions]
 
 **In one line.** Functions are ordinary objects: you can pass them, return them, and close over the variables they were created with.
 
+## Start here: input, work, result
+
+> **Video connection:** [functions, 2:05:51](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=7551s), [parameters, 2:15:02](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=8102s), and [returns, 2:28:50](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=8930s).
+
+Defining a function gives a block of work a name. Calling it runs the block:
+
+```python
+def greeting(name, punctuation="!"):
+    """Return a greeting that the caller can display or save."""
+    message = f"Hello, {name}{punctuation}"
+    return message
+
+first = greeting("Maya")
+second = greeting(punctuation=".", name="Noor")
+print(first)   # Hello, Maya!
+print(second)  # Hello, Noor.
+```
+
+`name` and `punctuation` are **parameters** in the definition. `"Maya"` is an **argument** supplied by a call. Positional arguments match by order; keyword arguments match by name. For ordinary positional-or-keyword parameters, required parameters go before those with defaults.
+
+`greeting` refers to the function object. `greeting("Maya")` calls it. The body is indented; the calls above are outside that body. `message` is local to each call. To use its result elsewhere, capture the returned value rather than trying to read the function's local name.
+
+### Printing and returning have different jobs
+
+```python
+def show_total(a, b):
+    print(a + b)
+
+def calculate_total(a, b):
+    return a + b
+
+shown = show_total(5, 10)      # displays 15
+saved = calculate_total(5, 10)
+print(shown is None)          # True
+print(saved + 2)              # 17
+```
+
+| Operation | Effect |
+| --- | --- |
+| `print(value)` | Writes a representation to output; its return value is `None` |
+| `return value` | Ends the current call and gives a value to its caller |
+| Reach the end without `return` | Returns `None` implicitly |
+| `pass` | Does nothing; useful as a placeholder for a syntactically required body |
+
+:::note Clarification to the video
+
+`pass` does not declare that a function returns nothing. It is a no-op and is unnecessary after a working function body. Jupyter may display a returned expression automatically, which can make a return look like a print. Compare the two functions in an ordinary script to see the difference.
+
+:::
+
+### Local names and multiple results
+
+```python
+discount = 20
+
+def final_price(price, discount=10):
+    return price - discount
+
+print(final_price(100))  # 90: uses the parameter's default
+print(discount)          # 20: the outer name is unchanged
+
+def endpoints(values):
+    if not values:
+        raise ValueError("At least one value is required")
+    return values[0], values[-1]
+
+first, last = endpoints([3, 8, 12])
+print(first, last)       # 3 12
+```
+
+`return a, b` returns one tuple that the caller can unpack into two names. Those names do not have to match the local names inside the function. Prefer explicit parameters to hidden dependencies on outer variables.
+
+**Added practice:** write `reading_time(pages, minutes_per_page=2)` that returns a number. Call it positionally and with keywords, then add five minutes of review at the call site. For 12 pages with the default rate, the final result should be 29. Test zero pages too.
+
 ## The idea in plain words
 
 A Python function signature can express more than most people use:

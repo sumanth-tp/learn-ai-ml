@@ -10,6 +10,59 @@ tags: [python, files, pathlib, context-manager, encoding, with-statement]
 
 **In one line.** `with` guarantees cleanup even when something raises — and any resource you acquire deserves one.
 
+## Start here: where is Python looking?
+
+> **Video connection:** [project structure and paths, around 3:20:30](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=12030s).
+
+Suppose the project looks like this:
+
+```text
+sales-analysis/
+├── analyzer.py
+├── data/
+│   └── sales.csv
+└── output/
+```
+
+`Path("data/sales.csv")` is relative to the **current working directory**, not automatically to `analyzer.py`. An absolute path starts from the filesystem root (or a drive on Windows). `..` means the parent of the path location where it appears.
+
+```python
+from pathlib import Path
+
+print("Working directory:", Path.cwd())
+print("Relative input resolves to:", Path("data/sales.csv").resolve())
+```
+
+For a saved script with this layout, anchor its data to the script:
+
+```python
+from pathlib import Path
+
+root = Path(__file__).resolve().parent
+input_file = root / "data" / "sales.csv"
+output_dir = root / "output"
+output_dir.mkdir(parents=True, exist_ok=True)
+print(input_file)
+```
+
+:::note Clarification to the video
+
+The video configures VS Code to execute terminal files from their containing folder. That can make relative paths appear script-relative, but it is an editor launch setting. Another terminal or notebook can start elsewhere. `__file__` is available in a normal script; it is usually absent in notebook cells. In a notebook, inspect `Path.cwd()` and explicitly set the project root you intend to use.
+
+:::
+
+### Choose a file mode deliberately
+
+| Mode | Behaviour |
+| --- | --- |
+| `r` | Read an existing file; fail if missing |
+| `w` | Create or truncate a file, replacing its contents |
+| `a` | Append at the end, creating the file if needed |
+| `x` | Create a new file; fail if it already exists |
+| `rb` / `wb` | Read/write bytes, for example image data |
+
+The [sales lab](./07-sales-analysis.md) demonstrates CSV, JSON and Excel reads and writes, with all input files supplied. The resource-handling patterns below explain how to clean up files even when work fails.
+
 ## The idea in plain words
 
 Two ideas, tightly linked.

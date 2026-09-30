@@ -10,6 +10,39 @@ tags: [python, exceptions, error-handling, eafp, custom-exceptions, logging]
 
 **In one line.** Catch the narrowest exception you can actually handle, and let everything else travel up to a layer that can decide.
 
+## Start here: classify the failure
+
+> **Video connection:** [error handling, 3:39:39](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=13179s).
+
+| Failure | Example | What to do |
+| --- | --- | --- |
+| Syntax error | Missing colon, quote or indentation | Repair the source so Python can parse it |
+| Runtime exception | `int("abc")`, missing file, failed request | Fix the bug or handle the expected failure |
+| Wrong result | Adding prices when the requirement says multiply | Check against known inputs and expected outputs |
+
+`try/except` lets you recover from a particular runtime failure:
+
+```python
+raw_quantities = ["3", "abc", "5"]
+quantities = []
+
+for raw in raw_quantities:
+    try:
+        quantity = int(raw)
+    except ValueError:
+        print(f"Skipping invalid quantity: {raw!r}")
+    else:
+        quantities.append(quantity)
+
+print(quantities)  # [3, 5]
+```
+
+This example deliberately allows valid rows to continue. For a financial import, rejecting the whole file may be the correct requirement instead. Do not silently turn failed input into zero or pretend a failed API request succeeded.
+
+Catch an exception only around the operation you expect to fail. A broad handler around an entire program can hide an unrelated `NameError` or `TypeError`. A `SyntaxError` in the same file prevents that file from starting, so surrounding it with `try` will not repair it.
+
+**Added practice:** change the input to include `"0"` and `"-2"`. Both parse successfully. Add a separate validation step if your application requires positive quantities. Parsing and business validation solve different problems.
+
 ## The idea in plain words
 
 Python prefers **EAFP** — easier to ask forgiveness than permission. Try the operation and handle failure, rather than checking every precondition first. It avoids race conditions (the file can vanish between your check and your open) and usually reads better.

@@ -1296,7 +1296,9 @@ for the ASCII diagram on screen, and he shares it with the class.
 ## What comes next
 
 With a way to measure answers in place, the course moves to how an agent
-remembers: [Module 3: Agentic Memory Techniques](/docs/projects/ai-security/memory).
+remembers: [Module 3: Agentic Memory Techniques in the source video](https://www.youtube.com/watch?v=rQE3w8Qjx98).
+Notes for that module are pending. For related material already available here,
+see [LLM memory](/docs/agentic-ai/llm-memory).
 
 ## Checklist
 

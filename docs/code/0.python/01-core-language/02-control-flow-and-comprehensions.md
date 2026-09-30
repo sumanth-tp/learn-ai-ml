@@ -10,6 +10,80 @@ tags: [python, control-flow, comprehensions, pattern-matching, loops, truthiness
 
 **In one line.** Python has few control structures, and idiomatic code leans on comprehensions and iteration protocols rather than index arithmetic.
 
+## Start here: choose a branch, then repeat an action
+
+> **Video connection:** [conditions near 1:36](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=5760s) and [loops near 1:43:30](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=6210s).
+
+An `if/elif/else` chain runs the first matching branch. It then continues after the chain:
+
+```python
+temperature = 31
+
+if temperature > 30:
+    print("Very hot")
+elif temperature > 25:
+    print("Warm")
+else:
+    print("Mild or cool")
+
+print("Check complete")
+```
+
+This prints `Very hot`, then `Check complete`. Put the narrower threshold first: checking `> 25` before `> 30` would capture 31 too early. Two separate `if` statements can both run; an `elif` chain chooses one branch. The chain does not stop the entire script.
+
+Nested indentation means another decision inside the first:
+
+```python
+has_ticket = True
+has_reserved_seat = False
+
+if has_ticket:
+    if has_reserved_seat:
+        print("Use your reserved seat")
+    else:
+        print("Choose an available seat")
+else:
+    print("A ticket is required")
+```
+
+### Repeat with `for` and `range`
+
+```python
+for attempt in range(3):
+    print(attempt)          # 0, 1, 2 on separate lines
+
+print(list(range(1, 6)))    # [1, 2, 3, 4, 5]
+print(list(range(0, 10, 2))) # [0, 2, 4, 6, 8]
+
+scores = [70, 82, 95]
+total = 0
+for score in scores:
+    total += score
+print(total)               # 247
+```
+
+`range(start, stop, step)` includes the start and excludes the stop. `range(5)` supplies a default start of zero. The loop variable receives each item; its name is your choice. For a collection, iterate over the items directly unless you need their positions.
+
+### Added practice: `while`, `break` and `continue`
+
+A `while` loop repeats while its condition remains true. Update the state so the loop can finish:
+
+```python
+remaining = 3
+while remaining > 0:
+    print(remaining)
+    remaining -= 1
+
+for value in [4, -1, 8, 0, 12]:
+    if value < 0:
+        continue  # skip this item
+    if value == 0:
+        break     # leave the loop
+    print(value)  # prints 4, then 8
+```
+
+**Check yourself:** predict the temperature example for 25, 26, 30 and 31. Expected labels: mild/cool, warm, warm, very hot. Then write a loop that collects scores of at least 80. Once it works, compare it with `[score for score in scores if score >= 80]`.
+
 ## The idea in plain words
 
 The building blocks are `if/elif/else`, `for`, `while`, and the jump statements `break`, `continue` and `return`.

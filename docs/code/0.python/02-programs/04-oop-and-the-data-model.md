@@ -10,6 +10,69 @@ tags: [python, oop, classes, dunder, inheritance, composition, properties]
 
 **In one line.** Python objects behave like built-ins because the built-in syntax is wired to dunder methods you can implement yourself.
 
+## Start here: one class, two independent objects
+
+> **Video connection:** [classes and objects, 3:45:31](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=13531s), with stateful validation around [4:00](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=14400s).
+
+The video's dog example separates a blueprint from the dogs created with it. This original example applies the same idea to validation: each validator remembers its own errors.
+
+```python
+class QuantityValidator:
+    def __init__(self):
+        self.errors = []
+
+    def validate(self, quantity):
+        if quantity <= 0:
+            self.errors.append("Quantity must be positive")
+            return False
+        return True
+
+    def reset(self):
+        self.errors.clear()
+
+first = QuantityValidator()
+second = QuantityValidator()
+print(first.validate(-2))   # False
+print(second.validate(3))   # True
+print(first.errors)         # ['Quantity must be positive']
+print(second.errors)        # []
+first.reset()
+print(first.errors)         # []
+```
+
+`QuantityValidator` is a class. Calling it creates an instance and runs `__init__` to initialise that instance. `self` is the instance received by an instance method. `first.validate(-2)` supplies `first` as `self` automatically. The `errors` attribute exists on the instance because the initialiser assigned `self.errors`; `QuantityValidator.errors` does not exist in this example.
+
+The validator expects a numeric quantity; convert and validate external input before calling it. Move `errors = []` to the class body and both objects would share the same list, which is wrong for independent validation runs.
+
+:::note Method terminology
+
+The video's “class methods” section demonstrates ordinary instance methods such as these. A Python `@classmethod` instead receives the class as `cls`. Also, a class does not always need its own `__init__`; this example needs one because every instance must start with a fresh error list.
+
+:::
+
+### Add behaviour with inheritance
+
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def describe(self):
+        return f"Animal: {self.name}"
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} says woof"
+
+dog = Dog("Buddy")
+print(dog.describe())  # Animal: Buddy
+print(dog.speak())     # Buddy says woof
+```
+
+`Dog` inherits the initialiser and `describe` method. If you add a child initialiser, use `super().__init__(...)` when the parent still needs to initialise its state. Start with a function for a simple calculation; use a class when several operations need the same stored state. The design guidance below develops that choice.
+
+**Added practice:** add a second failed validation, inspect the error count, then reset. Explain why keeping errors is helpful within one run but surprising if you accidentally reuse an object for another customer's run.
+
 ## The idea in plain words
 
 A class bundles state and behaviour. `__init__` initialises an instance; `self` is the instance, passed explicitly.
