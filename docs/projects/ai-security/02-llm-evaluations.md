@@ -13,6 +13,10 @@ tags: [projects, evals, ragas, llm-as-judge, goldens, rag, groq]
 ---
 
 import Infographic from '@site/src/components/Infographic';
+import FaithfulnessLab from '@site/src/components/viz/FaithfulnessLab';
+import ContextPrecisionLab from '@site/src/components/viz/ContextPrecisionLab';
+import ContextRecallLab from '@site/src/components/viz/ContextRecallLab';
+import AnswerCorrectnessLab from '@site/src/components/viz/AnswerCorrectnessLab';
 
 > **Module 2 of 4** ·
 > [Watch from 1:13:30](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=4410s) ·
@@ -310,6 +314,7 @@ from __future__ import annotations
 import numpy as np
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
+
 class Retriever:
     def __init__(self, catalog: list[dict], api_key: str):
         self.catalog = catalog
@@ -373,6 +378,7 @@ Answer the customer's question using ONLY the information provided in the contex
 If the context does not contain enough information to answer fully, say so honestly.
 Keep your answer concise, factual, and friendly. Do not invent any details not present in the context."""
 
+
 class Generator:
     def __init__(self, api_key: str, model: str = DEFAULT_MODEL):
         self._client = AsyncOpenAI(api_key=api_key, base_url=GROQ_BASE_URL)
@@ -411,6 +417,7 @@ from __future__ import annotations
 import asyncio
 from rag.retriever import Retriever
 from rag.generator import Generator
+
 
 async def run_phase1(
     goldens: list[dict],
@@ -582,11 +589,13 @@ RETRY_WAIT = 65           # seconds to wait after a 429 before retrying
 CONTEXT_CHARS = 400       # max chars per context chunk passed to metrics
 CONTEXT_LIMIT = 2         # max number of context chunks passed to metrics
 
+
 # ── Setup helpers ─────────────────────────────────────────────────────────────
 
 def build_judge(api_key: str) -> object:
     client = AsyncOpenAI(api_key=api_key, base_url=GROQ_BASE_URL)
     return llm_factory(JUDGE_MODEL, provider="openai", client=client)
+
 
 def build_embeddings() -> HuggingFaceEmbeddings:
     return HuggingFaceEmbeddings(
@@ -594,10 +603,12 @@ def build_embeddings() -> HuggingFaceEmbeddings:
         use_api=False,
     )
 
+
 # ── Input preparation ─────────────────────────────────────────────────────────
 
 def _truncate_contexts(contexts: list[str]) -> list[str]:
     return [c[:CONTEXT_CHARS] for c in contexts[:CONTEXT_LIMIT]]
+
 
 def prepare_inputs(enriched: list[dict], keys: list[str]) -> list[dict]:
     result = []
@@ -610,6 +621,7 @@ def prepare_inputs(enriched: list[dict], keys: list[str]) -> list[dict]:
                 d[k] = e.get(k, "")
         result.append(d)
     return result
+
 
 # ── Scoring ───────────────────────────────────────────────────────────────────
 
@@ -653,6 +665,7 @@ async def _score_one(
             error_collector.append({"sample": sample_idx + 1, "error": f"{type(e).__name__}: {err_str[:120]}"})
         return None
 
+
 async def score_experiment(
     metric,
     inputs: list[dict],
@@ -670,6 +683,7 @@ async def score_experiment(
         if i < len(inputs) - 1:
             await asyncio.sleep(SAMPLE_COOLDOWN)
     return scores
+
 
 # ── Experiment registry ───────────────────────────────────────────────────────
 # Each entry: (display_name, metric_factory(llm, emb), required_input_keys)
@@ -737,6 +751,10 @@ context, yes or no?*
   alt="Faithfulness worked example: four atomic claims from the answer checked against two chunks; three grounded, one hallucinated, score 0.75 against a 0.8 threshold."
   caption="Redrawn from the faithfulness infographic on the mentor's board, 2:05 to 2:08."
 />
+
+*Interactive exercise added to these notes.*
+
+<FaithfulnessLab />
 
 $$
 \text{Faithfulness} = \frac{\text{claims supported by the context}}{\text{total claims in the answer}}
@@ -848,6 +866,10 @@ only, skipping the noisy ones.
   caption="Redrawn from the context precision infographic on the mentor's board, 2:19 to 2:23."
 />
 
+*Interactive exercise added to these notes.*
+
+<ContextPrecisionLab />
+
 $$
 \text{Context precision} = \frac{1}{\lvert \text{relevant ranks} \rvert}\sum_{k \,\in\, \text{relevant ranks}} \text{P@}k
 $$
@@ -904,6 +926,10 @@ back.
   alt="Context recall worked example: four reference claims, three supported by retrieved chunks and the rural minimum missing, recall 0.75, with causes of low scores and score bands."
   caption="Redrawn from the context recall infographic on the mentor's board, 2:24 to 2:28."
 />
+
+*Interactive exercise added to these notes.*
+
+<ContextRecallLab />
 
 $$
 \text{Context recall} = \frac{\text{reference claims supported by the retrieved context}}{\text{total claims in the reference}}
@@ -970,6 +996,10 @@ It blends two components.
   caption="Redrawn from the answer correctness infographic on the mentor's board, 2:30 to 2:36."
 />
 
+*Interactive exercise added to these notes.*
+
+<AnswerCorrectnessLab />
+
 $$
 F_1 = \frac{TP}{TP + \tfrac{1}{2}(FP + FN)}
 \qquad
@@ -1029,9 +1059,11 @@ from __future__ import annotations
 import json
 from evals.metrics import METRIC_NAMES
 
+
 def _avg(scores: list) -> float | None:
     valid = [s for s in scores if s is not None]
     return round(sum(valid) / len(valid), 3) if valid else None
+
 
 def _badge(score) -> str:
     if score is None:
@@ -1041,6 +1073,7 @@ def _badge(score) -> str:
     if score >= 0.50:
         return "🟡"
     return "🔴"
+
 
 def build_results(enriched: list[dict], scores: dict) -> dict:
     """
@@ -1070,9 +1103,11 @@ def build_results(enriched: list[dict], scores: dict) -> dict:
     averages = {name: _avg(scores.get(name, [])) for name in METRIC_NAMES}
     return {"per_golden": per_golden, "averages": averages}
 
+
 def save_results(path: str, results: dict) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
+
 
 def print_summary(results: dict) -> None:
     print("\n" + "═" * 72)

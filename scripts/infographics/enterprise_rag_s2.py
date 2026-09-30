@@ -772,9 +772,357 @@ def s2_gateway_explorer_streaming():
     b.text(988, 490, "token chunks", 12, FAINT)
     b.arrow((845, 560), (560, 560), color="grey", dashed=True, width=1.6)
     b.text(700, 550, "chunks as they arrive · still logged", 12, FAINT)
-    b.pill(700, 600, "grey arrows: below the fold, from Portkey's docs, NOT from session", "grey", size=11,
+    b.pill(700, 600, "grey arrows: schematic continuation, NOT visible in the session", "grey", size=11,
            anchor="middle")
     return b
+
+# ------------------------------------------------------ Evaluation posters
+
+
+@board
+def s2_evaluation_approaches():
+    b = Board(1320, 760, 'Two approaches to AI evaluation', 'Evaluation measures performance against objectives, criteria and expected outcomes.')
+    b.card(120, 98, 1080, 68, 'Measure and assess', ['Quality · effectiveness · reliability'], 'yellow', size=15)
+    b.group(20, 200, 520, 530, 'LLM evals · model alone', 'purple')
+    brain(b, 280, 320, 'purple', 45)
+    b.card(40, 410, 230, 150, 'Response qualities', ['Correctness · hallucination', 'Reasoning · safety', 'Bias · coherence'], 'purple', size=13)
+    b.card(290, 410, 230, 150, 'Response qualities', ['Relevance · faithfulness', 'Toxicity · helpfulness', 'Consistency'], 'purple', size=13)
+    a = b.card(50, 615, 170, 60, 'Input / prompt', [], 'blue', size=13)
+    z = b.card(340, 615, 170, 60, 'Output / response', [], 'green', size=13)
+    b.arrow(a.right(), z.left(), label='LLM', color='purple')
+    b.group(570, 200, 730, 530, 'AI application evals · end to end', 'teal')
+    u = b.card(600, 280, 170, 80, 'User', ['Question / request'], 'blue', size=13)
+    r = b.card(820, 280, 190, 80, 'Retrieval (RAG)', [], 'teal', size=13)
+    l = b.card(1090, 280, 170, 80, 'LLM', [], 'purple', size=14)
+    b.arrow(u.right(), r.left()); b.arrow(r.right(), l.left())
+    k = b.cylinder(820, 405, 190, 90, 'Knowledge base', [], 'teal', size=12)
+    p = b.card(1080, 415, 190, 70, 'Prompt / instructions', [], 'purple', size=12)
+    b.arrow(k.top(), r.bottom(), color='teal'); b.arrow(p.top(), l.bottom(), color='purple')
+    t = b.card(610, 570, 200, 75, 'Tools / APIs / agents', [], 'orange', size=12)
+    o = b.card(850, 570, 180, 75, 'Response / answer', [], 'green', size=12)
+    g = b.card(1080, 570, 190, 110, 'User goal achieved?', ['Evaluate the whole path'], 'green', size=12)
+    b.arrow(l.right(), t.left(), via=[(1285,320),(1285,535),(590,535),(590,607)], color='purple')
+    b.arrow(t.right(), o.left()); b.arrow(o.right(), g.left())
+    return b
+
+
+@board
+def s2_exam_analogy():
+    b = Board(1320, 620, 'Evaluation analogy · examination', 'The student produces outputs; the teacher checks them using correct answers and scoring rules.', title_color='red')
+    b.group(20, 110, 385, 340, 'Student · RAG pipeline', 'blue')
+    b.person(82, 190, 'blue', scale=1.2)
+    b.card(150, 185, 230, 180, 'Writes the exam', ['Creates questions', 'Generates answers', 'Real outputs on real data'], 'blue', size=13, bullets=True)
+    b.text(212, 410, 'Exam paper / answers = RAG outputs', 12, 'blue', '700')
+    b.arrow((410,280),(460,280),color='red',width=3)
+    b.group(470, 110, 400, 340, 'Teacher · evaluation pipeline', 'green')
+    b.person(530, 190, 'green', scale=1.2)
+    b.card(600, 170, 245, 200, 'Evaluates the exam', ['Knows correct answers', '(ground truths)', 'Knows how to give marks', '(metrics)', 'Awards scores'], 'green', size=12)
+    b.text(670, 403, 'Score per answer → total score', 12, 'green', '700')
+    b.text(670, 425, '= RAG evaluation results', 12, 'green', '700')
+    b.table(900, 135, [170,205], [['Exam','RAG evaluation'],['Student','RAG pipeline'],['Answers','Real outputs'],['Correct answers','Ground truths'],['Teacher','Evaluation pipeline'],['Marks / scoring','Metrics'],['Total score','Overall evaluation']], header_color='red', size=11, row_h=40)
+    b.card(150, 500, 1020, 70, 'Generate → evaluate → aggregate', ['Keep application output separate from the expected answer and the marking rules.'], 'red', size=13)
+    return b
+
+
+@board
+def s2_exam_roles():
+    b = Board(1240, 830, 'Set up the exam, then write it', 'Side panels from the evaluation poster: teacher preparation and student execution.', title_color='orange')
+    b.group(20, 100, 570, 700, 'A · Teacher sets up the exam', 'orange')
+    setup=['Define syllabus / topics','Create questions','Prepare correct answers (ground truths)','Decide marks per question','Define rules / rubrics / metrics','Set total marks and grading criteria']
+    for i,t in enumerate(setup):
+        circled(b,65,195+i*89,str(i+1),'orange')
+        b.card(105,163+i*89,450,64,t,[],'orange',size=13)
+    b.group(620, 100, 600, 700, '2 · Student writes the exam', 'blue')
+    prev=None
+    for i,(t,s) in enumerate([('Read the question','Receive the user query'),('Think / retrieve information','Retrieve relevant context'),('Write the answer','Generate a response'),('Submit the paper','Real outputs to be evaluated')]):
+        c=b.card(670,160+i*125,500,85,t,[s],'blue',size=14)
+        if prev: b.arrow(prev.bottom(),c.top(),color='blue')
+        prev=c
+    b.card(670,695,500,70,'Real exam paper = RAG output',['These are the outputs evaluation will score.'],'green',size=13)
+    return b
+
+
+@board
+def s2_exam_marking():
+    b = Board(1100, 650, 'B · Evaluating the exam', 'The teacher’s five-step checklist becomes the evaluation loop.', title_color='green')
+    b.person(150, 220, 'green', scale=2.4, label='Teacher / evaluator')
+    doc_stack(b,210,360,'orange',n=1,w=80,h=90)
+    rows=['Compare student answer with the correct answer','Apply scoring rules (metrics)','Give marks for each question','Calculate the total score','Provide feedback']
+    for i,t in enumerate(rows):
+        y=130+i*92
+        mark(b,360,y+35,True,24)
+        b.card(400,y,650,72,t,[],'green',size=15)
+    return b
+
+
+@board
+def s2_dataset_flow():
+    b = Board(1300, 850, 'Build an evaluation dataset from real RAG runs', 'Golden inputs and expected answers are combined with actual output and actual retrieved context.')
+    g=b.card(45,140,310,160,'GOLDEN',['1 · Input: question / query','2 · Expected output:','ground-truth answer'],'yellow',size=14)
+    b.group(550,100,700,240,'RAG application','blue')
+    r=b.card(600,170,240,90,'Retriever',['Retrieved documents'],'teal',size=13)
+    l=b.card(960,170,240,90,'LLM',['Actual model answer'],'purple',size=13)
+    b.arrow(g.right(),r.left(),label='input',color='blue'); b.arrow(r.right(),l.left(),label='context',color='teal')
+    tc=b.card(800,445,450,170,'LLMTestCases',['Input · question','Expected output · ground truth','Actual output · model answer','Retrieved context · documents'],'purple',size=14)
+    b.arrow(g.bottom(),tc.left(.3),via=[(200,465)],label='question + expected output',color='yellow')
+    b.arrow(r.bottom(),tc.top(.15),via=[(720,390),(867,390)],label='retrieved context',color='teal')
+    b.arrow(l.bottom(),tc.top(.8),label='actual output',color='purple')
+    ds=b.cylinder(850,695,350,110,'DATASET',['Store the test cases','Evaluate different metrics'],'green',size=14)
+    b.arrow(tc.bottom(),ds.top(),label='store',color='green')
+    b.table(40,555,[210,290],[['What flows in?','Source'],['Input','Golden'],['Expected output','Golden'],['Actual output','RAG application'],['Retrieved context','Same RAG run']],header_color='teal',size=12,row_h=42)
+    return b
+
+
+@board
+def s2_judge_flow():
+    b = Board(1360, 650, 'Evaluation flow · LLM as judge', 'A test case is judged with each metric’s own criteria, prompts and rules.', title_color='purple')
+    b.group(20,120,330,380,'Test case from dataset','blue')
+    for i,(t,c) in enumerate([('Question / user query','blue'),('Actual output / model answer','purple'),('Expected output / ground truth','green'),('Context / retrieved documents','teal')]):
+        b.card(40,175+i*75,290,60,t,[],c,size=12)
+    b.text(185,535,'e.g. 1000 questions',16,'blue','700')
+    j=b.card(420,230,240,155,'LLM as judge',['Apply the evaluation','rules to this test case'],'purple',size=13)
+    brain(b,540,170,'purple',30)
+    b.card(420,450,240,90,'Human reviewer / expert',['Alternative shown at 3:21'],'orange',size=12)
+    m=b.card(730,165,330,290,'METRICS',['Answer relevancy','Faithfulness (groundedness)','Context relevancy','Context precision','Context recall','…'],'orange',size=14)
+    s=b.card(1130,195,210,240,'SCORE',['Metric-wise score','Overall score','Pass / fail','Feedback / reason'],'green',size=13)
+    b.arrow((350,310),j.left(),color='blue'); b.arrow(j.right(),m.left(),color='purple'); b.arrow(m.right(),s.left(),color='orange')
+    b.text(880,500,'Each metric has its own criteria.',12,'orange','700')
+    b.text(880,522,'Only then aggregate across cases.',12,FAINT)
+    b.card(80,580,1200,48,'Final evaluation result: scores plus reasons that can be inspected',[],'grey',size=13)
+    return b
+
+
+@board
+def s2_goldens_metrics():
+    b=Board(1140,460,'Goldens and metrics','The expected answer and the scoring rule play different roles in an evaluation.')
+    b.card(30,115,510,300,'Goldens',['Carefully curated test cases','with expected or correct information.','','Input / question','Expected output / ground truth','Optional reference context or metadata'],'blue',size=16)
+    b.card(600,115,510,300,'Metrics',['Predefined quality criteria','and scoring rules.','','Context relevancy · precision · recall','Answer relevancy','Faithfulness'],'purple',size=16)
+    return b
+
+
+@board
+def s2_evaluation_schedule():
+    b=Board(1400,930,'Where evaluation fits and when to run','Offline evaluation supports frequent checks, release checks and continuous improvement.',title_color='red')
+    b.group(20,105,265,405,'RAG application','blue')
+    b.person(65,210,'blue',scale=.8,label='User')
+    r=b.card(130,200,130,70,'RAG pipeline',[],'blue',size=11)
+    b.arrow((90,240),r.left(),color='blue')
+    kb=b.cylinder(110,355,150,90,'Knowledge base',[],'teal',size=10)
+    b.arrow(kb.top(),r.bottom(),both=True,color='teal')
+    b.text(194,310,'→ answer',13,'blue','700')
+    g=b.card(325,150,260,290,'Golden dataset',['Prepared in advance','','Input / question','Expected output','Optional context / reference','Metadata / tags'],'yellow',size=13)
+    e=b.card(630,150,290,290,'Offline evaluation',['1 · Run golden inputs','2 · Collect outputs and','    retrieved context','3 · Evaluate with metrics','    (LLM as judge)','4 · Scores and reports'],'red',size=13)
+    un=b.card(990,115,385,170,'Unit / nightly · frequent',['Small set · key metrics','Fast · low cost','Nightly / per commit'],'teal',size=14)
+    co=b.card(990,315,385,170,'Comprehensive · less frequent',['Large set · many metrics','Slower · higher cost','Before major releases'],'orange',size=14)
+    b.arrow((285,290),g.left(),color='blue'); b.arrow(g.right(),e.left(),color='yellow')
+    b.arrow(e.right(.25),un.left(),dashed=True,color='teal'); b.arrow(e.right(.75),co.left(),dashed=True,color='orange')
+    b.card(260,540,890,80,'Outcomes',['Track quality over time · detect regressions · compare versions · data for improvement'],'green',size=13)
+    b.arrow(un.right(),(1150,580),via=[(1385,200),(1385,580)],color='teal')
+    b.arrow(co.bottom(),(1080,540),color='orange')
+    ch=b.card(20,740,190,70,'Code / config changes',[],'blue',size=12)
+    ci=b.card(260,740,180,70,'CI / CD pipeline',[],'blue',size=13)
+    d=b.diamond(565,775,165,110,'Evaluation\ntype?',size=13)
+    small=b.card(730,675,275,65,'Unit / nightly',['Small change / daily'],'teal',size=12)
+    full=b.card(730,825,275,65,'Comprehensive',['Major release / milestone'],'orange',size=12)
+    res=b.card(1115,735,260,90,'Results stored',['Dashboard / alerts'],'green',size=13)
+    b.arrow(ch.right(),ci.left()); b.arrow(ci.right(),d.left()); b.arrow(d.right(),small.left(),color='teal'); b.arrow(d.right(),full.left(),color='orange')
+    b.arrow(small.right(),res.left(.3),color='teal'); b.arrow(full.right(),res.left(.7),color='orange')
+    b.arrow(full.bottom(),ci.bottom(),via=[(867,915),(350,915)],dashed=True,color='orange',label='feedback into CI / CD')
+    return b
+
+
+@board
+def s2_golden_synthesizer():
+    b=Board(1200,470,'Generate synthetic goldens','Two source figures shown in DeepEval’s Golden Synthesizer documentation.',title_color='teal')
+    for i,(name,col) in enumerate([('Documents','blue'),('Existing goldens','purple')]):
+        y=135+i*160
+        a=b.card(30,y,240,80,name,[],col,size=16)
+        c=b.card(390,y,260,80,'Contexts',[],col,size=16)
+        s=b.card(800,y,365,95,'Synthetic goldens',['Input + expected output'],col,size=15)
+        b.arrow(a.right(),c.left(),color=col); b.arrow(c.right(),s.left(),color=col)
+    b.text(600,435,'Four routes in the menu: documents · contexts · goldens · scratch',14,FAINT)
+    return b
+
+
+# ------------------------------------------------------ Retrieval and deployment
+
+@board
+def s2_jina_reranking():
+    b=Board(1280,650,'Retrieve broadly, then rerank','Jina’s three steps: initial retrieval → detailed query-document scoring → improved results.',title_color='teal')
+    q=b.card(420,115,230,65,'Query',[],'blue',size=15)
+    doc_stack(b,60,300,'grey',w=85,h=105,label='Full database')
+    se=b.card(310,300,260,95,'BM25 / vector search',['1 · Initial retrieval'],'blue',size=14)
+    top=b.card(665,280,245,95,'Relevant top-N docs',[],'orange',size=14)
+    rest=b.card(665,465,245,95,'Rest of documents',['Discarded from candidates'],'grey',size=12)
+    rr=b.card(1010,280,245,110,'Reranker',['2 · Query + document','interaction'],'green',size=14)
+    out=b.card(1010,480,245,95,'Sorted top-k docs',['3 · Improved results','k ≤ N'],'teal',size=14)
+    b.arrow((170,350),se.left()); b.arrow(q.bottom(),se.top(),color='blue'); b.arrow(se.right(.3),top.left(),color='orange')
+    b.arrow(se.right(.8),rest.left(),color='grey'); b.arrow(top.right(),rr.left(),color='orange'); b.arrow(rr.bottom(),out.top(),color='green')
+    b.arrow(q.right(),rr.top(),via=[(1132,147)],label='same query',color='green')
+    return b
+
+
+@board
+def s2_voyage_ecosystem():
+    b=Board(1200,580,'Search and retrieval ecosystem','Voyage AI’s visual pipeline connects embeddings, retrieval, reranking and generation.',title_color='purple')
+    labels=[('Unstructured data','blue'),('Embedding model','purple'),('Vector DB','teal'),('Reranker','purple'),('Relevant files','teal'),('LLM','orange')]
+    coords=[(40,150),(430,150),(820,150),(820,350),(430,350),(40,350)]
+    boxes=[]
+    for (name,col),(x,y) in zip(labels,coords): boxes.append(b.card(x,y,300,80,name,[],col,size=17))
+    for i in range(5):
+        a,z=boxes[i:i+2]
+        if i<2: b.arrow(a.right(),z.left(),color='purple')
+        elif i==2: b.arrow(a.bottom(),z.top(),color='purple')
+        else: b.arrow(a.left(),z.right(),color='purple')
+    b.card(220,490,760,60,'Factual responses with lower costs',[],'green',size=16)
+    b.arrow(boxes[-1].bottom(),(220,520),via=[(190,520)],color='orange')
+    return b
+
+
+@board
+def s2_aws_architecture():
+    b=Board(1600,1190,'Enterprise RAG on AWS · deployment board','Route split, dependency protocols, model fallback and the management plane shown in the session.',title_color='orange')
+    u=b.card(35,115,210,65,'User / browser',[],'blue',size=14)
+    b.group(295,95,1260,155,'AWS edge','orange')
+    dns=b.card(325,145,260,75,'Route 53 DNS',['optional'],'orange',size=13)
+    alb=b.card(805,145,500,75,'Application Load Balancer',['Public subnets · :80 / :443'],'orange',size=14)
+    b.arrow(u.right(),dns.left(),label='HTTPS',color='blue'); b.arrow(dns.right(),alb.left(),color='orange')
+    b.group(360,310,800,230,'AWS compute · ECS cluster on Fargate','pink')
+    api=b.card(400,405,340,85,'rag-api task',['uvicorn 0.0.0.0:8080'],'pink',size=13)
+    ui=b.card(800,405,320,85,'rag-ui task',['streamlit 0.0.0.0:8501'],'pink',size=13)
+    b.arrow(alb.bottom(.2),api.top(),via=[(905,278),(570,278)],label='/query /health /ready /metrics',color='orange')
+    b.arrow(alb.bottom(.7),ui.top(),via=[(1155,280),(960,280)],label='/ui*',color='orange')
+    b.arrow(ui.left(),api.right(),label='BACKEND_URL',color='pink')
+    b.group(25,575,725,280,'External LLM services','purple')
+    pk=b.card(45,655,270,80,'Portkey gateway',['routing + fallback'],'purple',size=13)
+    oa=b.card(400,620,320,70,'OpenAI primary',['gpt-5-mini'],'green',size=13)
+    an=b.card(400,745,320,70,'Anthropic fallback',['claude-haiku-4-5'],'orange',size=13)
+    b.arrow(pk.right(.25),oa.left(),label='primary',color='green'); b.arrow(pk.right(.75),an.left(),label='fallback',color='orange',dashed=True)
+    b.arrow(api.left(),pk.top(),via=[(180,447)],label='gateway request',color='purple')
+    ji=b.card(30,345,250,75,'Jina AI',['embeddings + reranker'],'teal',size=13)
+    b.arrow(api.left(.2),ji.right(),label='embedding / rerank',color='teal')
+    b.group(805,575,750,280,'Managed state','teal')
+    ne=b.card(830,650,210,160,'Neon PostgreSQL',['LangGraph','checkpointer','conversation memory'],'teal',size=12)
+    up=b.card(1070,650,210,160,'Upstash Redis',['rate-limiting store'],'teal',size=12)
+    qd=b.card(1310,650,220,160,'Qdrant Cloud',['vector DB','enterprise_rag','collection'],'teal',size=12)
+    b.arrow(api.bottom(.6),ne.top(),via=[(604,555),(935,555)],label='SQL over TLS',color='teal')
+    b.arrow(api.bottom(.75),up.top(),via=[(655,565),(1175,565)],color='teal')
+    b.text(1175,635,'REST API',11,'teal','700')
+    b.arrow(api.right(.2),qd.top(),via=[(770,422),(770,550),(1420,550)],color='teal')
+    b.text(1420,635,'gRPC / HTTP over TLS',10,'teal','700')
+    b.group(25,890,1530,270,'CI / CD and AWS management · both tasks share these connections','grey')
+    gh=b.card(45,955,220,80,'GitHub Actions',['ci.yml + cd.yml'],'blue',size=12)
+    ec=b.card(360,945,255,100,'ECR',['enterprise-rag:latest'],'orange',size=12)
+    tasks=b.card(715,940,300,55,'rag-api + rag-ui tasks',[],'pink',size=12)
+    b.arrow(gh.right(),ec.left(),label='build & push',color='blue'); b.arrow(ec.right(),tasks.left(),label='pull image',color='orange')
+    services=[('Secrets Manager',[], 'read secrets'),('IAM roles',['ecsTaskExecutionRole','rag-api-task-role','rag-ui-task-role'],'assume role'),('CloudWatch Logs',['/ecs/rag-api','/ecs/rag-ui'],'write logs'),('Prometheus /metrics',[], 'expose metrics')]
+    for i,(title,lines,label) in enumerate(services):
+        x=645+i*225
+        c=b.card(x,1045,210,95,title,lines,'grey',size=10)
+        b.arrow(tasks.bottom(.1+i*.26),c.top(),color='grey',width=1.2)
+        b.text(x+105,1030,label,10,'grey','700')
+    return b
+
+
+# ------------------------------------------------------ Document parsing
+
+@board
+def s2_parsing_paradigms():
+    b=Board(1440,1040,'Three paradigms for visual documents','One page image can enter layout + recognition, a single VLM, or visual retrieval.',title_color='pink')
+    root=b.card(440,105,560,75,'Document input · PDF / image',['Page image'],'pink',size=15)
+    specs=[(20,'1 · Dual-stage','blue'),(500,'2 · Single-stage VLM','green'),(980,'3 · Vision retrieval','orange')]
+    for x,t,c in specs: b.group(x,240,440,770,t,c)
+    a=b.card(45,300,390,145,'Stage 1 · layout detection',['PP-DocLayout-V3 / DocLayout-YOLO','23 region types','Bounding boxes + reading order'],'blue',size=14)
+    cr=b.card(60,505,360,80,'Region cropping + prompt routing',[],'blue',size=14)
+    rr=b.card(45,645,390,190,'Stage 2 · region recognition',['GLM-OCR 0.9B / PaddleOCR-VL / MinerU2.5','Text → Text Recognition:','Table → Table Recognition:','Formula → Formula Recognition:'],'blue',size=13)
+    out=b.card(55,910,370,70,'Structured output',['Markdown · LaTeX · HTML tables'],'blue',size=13)
+    v=b.card(525,330,390,260,'Single VLM forward pass',['Nemotron Parse 1.1 / dots.ocr','olmOCR-2 / Chandra-OCR','GOT-OCR 2.0 / Nougat','','Full page → structured output directly'],'green',size=14)
+    vo=b.card(545,740,350,150,'Output formats',['Markdown / JSON / LaTeX','Optional bounding boxes + classes'],'green',size=14)
+    e=b.card(1005,300,390,190,'Vision encoder',['ColPali / ColQwen2.5 / ColSmolVLM','Per-patch embeddings','from the raw page image'],'orange',size=14)
+    mv=b.card(1015,580,370,150,'Multi-vector embeddings',['Late interaction scoring','MaxSim / ColBERT-style'],'orange',size=14)
+    rp=b.card(1015,820,370,145,'Retrieved pages / patches',['Ranked by visual similarity','Feed to LLM for answer'],'orange',size=14)
+    for first,col in [(a,'blue'),(v,'green'),(e,'orange')]: b.arrow(root.bottom(),first.top(),color=col)
+    for x,y,col in [(a,cr,'blue'),(cr,rr,'blue'),(rr,out,'blue'),(v,vo,'green'),(e,mv,'orange'),(mv,rp,'orange')]: b.arrow(x.bottom(),y.top(),color=col)
+    return b
+
+
+@board
+def s2_colpali_architecture():
+    b=Board(1360,830,'ColPali architecture · late interaction','Offline page patch vectors meet online query token vectors at MaxSim.',title_color='purple')
+    b.group(20,105,650,440,'Offline · index document pages','blue')
+    doc_stack(b,70,195,'blue',w=75,h=95,label='Page image / patches')
+    ve=b.card(240,170,370,70,'Vision encoder',[],'blue',size=15)
+    ll=b.card(240,280,165,60,'LLM',[],'purple',size=15)
+    pr=b.card(445,280,165,60,'Projection',[],'purple',size=14)
+    dv=b.card(240,410,370,90,'Patch vectors 1 … N_d',['Multi-vector document representation'],'teal',size=13)
+    b.arrow((170,240),ve.left(),color='blue'); b.arrow(ve.bottom(.2),ll.top(),color='blue'); b.arrow(ll.right(),pr.left(),color='purple'); b.arrow(pr.bottom(),dv.top(.75),color='purple')
+    b.group(710,105,630,440,'Online · query','orange')
+    q=b.card(775,170,500,70,'Query tokens',['What · are · ViTs?'],'orange',size=14)
+    ql=b.card(800,280,180,60,'LLM',[],'purple',size=15)
+    qp=b.card(1070,280,180,60,'Projection',[],'purple',size=14)
+    qv=b.card(800,410,450,90,'Query token vectors',['One vector per query token'],'orange',size=14)
+    b.arrow(q.bottom(.25),ql.top(),color='orange'); b.arrow(ql.right(),qp.left(),color='purple'); b.arrow(qp.bottom(),qv.top(.8),color='purple')
+    ms=b.card(335,610,690,90,'For each query token: MaxSim over page patches',['Keep the best patch match for that query token.'],'green',size=15)
+    b.arrow(dv.bottom(),ms.top(.2),color='teal'); b.arrow(qv.bottom(),ms.top(.8),color='orange')
+    z=b.card(430,755,500,50,'Sum of MaxSims = page similarity score',[],'green',size=14)
+    b.arrow(ms.bottom(),z.top(),color='green')
+    return b
+
+
+@board
+def s2_layout_model():
+    b=Board(1450,680,'PP-DocLayoutV3 · model architecture','The legible upper row of the model-card figure shown in the session.',title_color='blue')
+    p=b.card(25,275,170,90,'Page image',[],'blue',size=14)
+    bb=b.card(245,275,220,90,'Backbone',['PP-HGNetV2'],'blue',size=14)
+    tr=b.card(515,250,245,140,'Encoder / decoder',['Transformer layers'],'purple',size=14)
+    b.arrow(p.right(),bb.left(),color='blue'); b.arrow(bb.right(),tr.left(),color='blue')
+    for i,(n,col) in enumerate([('Class','green'),('Box','orange'),('Mask','teal'),('Order','purple')]):
+        h=b.card(830,130+i*125,175,70,n+' head',[],col,size=13)
+        pp=b.card(1090,130+i*125,310,70,n+' post-process',['Raw prediction / logits'],col,size=12)
+        b.arrow(tr.right(),h.left(),color=col); b.arrow(h.right(),pp.left(),color=col)
+    b.card(890,600,505,55,'Filtering → final labelled regions + reading order',[],'green',size=13)
+    b.text(395,560,'Four prediction heads preserve different layout properties.',12,FAINT)
+    b.text(395,590,'The lower reading-order detail is too small to verify',12,FAINT)
+    b.text(395,612,'in the recording and is omitted here.',12,FAINT)
+    return b
+
+
+@board
+def s2_ocr_repository():
+    b=Board(1250,600,'Nemotron-Parse + Mistral OCR · repository architecture','The visible README tree starts with PDF parsing and names the separate ingestion pipeline.',title_color='teal')
+    pdf=b.card(30,230,180,90,'PDF',[],'blue',size=18)
+    np=b.card(335,120,550,180,'nemotron_parse_pipeline.py',['Rasterise each page to JPEG','Auto-zoom: 1024×1280 to 1648×2048 px','POST nvidia/nemotron-parse via NVIDIA NIM'],'teal',size=14)
+    out=b.card(980,150,240,135,'Results',['*_raw.json','*_parsed.md'],'green',size=14)
+    ing=b.card(335,395,865,140,'scripts/ingest.py · phases 1–5',['README overview: semantic chunks → figure captions →','NVIDIA NIM embeddings → Qdrant → grounded Q&A'],'purple',size=14)
+    b.arrow(pdf.right(),np.left(),color='teal'); b.arrow(pdf.bottom(),ing.left(),via=[(120,465)],color='purple'); b.arrow(np.right(),out.left(),color='green')
+    b.text(775,575,'The ingestion phase details were below the fold; this line summarises the visible README introduction.',11,FAINT)
+    return b
+
+
+@board
+def s2_multimodal_pipeline():
+    b=Board(1340,1100,'Multimodal RAG · four repository phases','Raw PDF → clean Markdown → hybrid vector search → reranked answers.',title_color='teal')
+    b.pill(670,100,'PDF / image','blue',size=15,anchor='middle')
+    b.group(30,165,1280,190,'Phase 1 · parse','blue')
+    l=b.card(65,225,325,90,'PP-DocLayout-V3',['23 element categories'],'blue',size=14)
+    o=b.card(495,225,325,90,'GLM-OCR 0.9B',['Text · tables · formulas'],'blue',size=14)
+    c=b.card(925,225,345,90,'Structure-aware chunker',['RAG-ready chunks'],'blue',size=14)
+    b.arrow((670,135),o.top(),color='blue'); b.arrow(l.right(),o.left(),color='blue'); b.arrow(o.right(),c.left(),color='blue')
+    b.group(30,410,1280,285,'Phase 2 · ingest','purple')
+    cap=b.card(65,475,320,110,'GPT-4o image captioner',['Enrich figure chunks'],'purple',size=14)
+    em=b.card(495,475,325,85,'Pluggable dense embeddings',['OpenAI · Gemini'],'purple',size=13)
+    bm=b.card(495,590,325,75,'BM25 sparse vectors',['Feature hashing'],'orange',size=13)
+    q=b.cylinder(940,500,320,140,'Qdrant hybrid store',['Dense + sparse','RRF fusion'],'teal',size=14)
+    b.arrow(c.bottom(),cap.top(),via=[(1097,380),(225,380)],color='blue'); b.arrow(cap.right(),em.left(),color='purple'); b.arrow(em.right(),q.left(.3),color='purple'); b.arrow(bm.right(),q.left(.75),color='orange')
+    b.group(30,750,1280,165,'Phase 3 · search and rerank','orange')
+    hs=b.card(95,800,450,80,'Hybrid Qdrant search',['Top-k candidates'],'orange',size=14)
+    rr=b.card(750,800,490,80,'Reranker',['OpenAI · Jina · BGE · Qwen'],'orange',size=14)
+    b.arrow(q.bottom(),hs.top(),via=[(1100,723),(320,723)],color='teal'); b.arrow(hs.right(),rr.left(),color='orange')
+    api=b.card(365,975,610,80,'Phase 4 · REST API',['FastAPI'],'green',size=16)
+    b.arrow(rr.bottom(),api.top(),color='green')
+    b.text(670,1080,'The live demo stops after parser inspection; later phases describe the repository.',12,FAINT)
+    return b
+
 
 
 def main(names):

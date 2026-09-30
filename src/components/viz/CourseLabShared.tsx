@@ -1,4 +1,4 @@
-import {useId} from 'react';
+import {useEffect, useId, useRef, useState} from 'react';
 import {seriesColor} from './palette';
 import {useDarkViz, vizStyles as s} from './VizPanel';
 import c from './CourseLab.module.css';
@@ -30,12 +30,21 @@ export function LinePlot({series, xValues, xLabel, yLabel, yMax, marker}: {
   series: Series[]; xValues: number[]; xLabel: string; yLabel: string; yMax: number; marker?: number;
 }) {
   const dark = useDarkViz();
-  const w = 660, h = 260, left = 52, right = 18, top = 30, bottom = 44;
+  const container = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(660);
+  useEffect(() => {
+    const element = container.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => setWidth(Math.max(280, Math.min(660, entry.contentRect.width))));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  const w = width, h = 260, left = 52, right = 18, top = 30, bottom = 44;
   const xMin = xValues[0], xMax = xValues[xValues.length - 1];
   const x = (v: number) => left + (v - xMin) / Math.max(1, xMax - xMin) * (w - left - right);
   const y = (v: number) => h - bottom - v / Math.max(0.001, yMax) * (h - top - bottom);
   const ticks = [...new Set([0, 1, 2, 3, 4].map(i => Math.round(i * (xValues.length - 1) / 4)))];
-  return <div className={c.chart}>
+  return <div className={c.chart} ref={container}>
     <svg className={s.svg} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`${yLabel} by ${xLabel}`}>
       <text className={s.axisLabel} x={left} y={15}>{yLabel}</text>
       {[0, 0.25, 0.5, 0.75, 1].map(f => <g key={f}>

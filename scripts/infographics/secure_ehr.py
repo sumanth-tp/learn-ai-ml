@@ -601,7 +601,7 @@ def ehr_presidio():
 
 @board
 def ehr_scores():
-    b = Board(1240, 780, "One score per piece of text",
+    b = Board(1240, 805, "One score per piece of text",
               "Page 6, bottom: how the analyzer decides what gets redacted (cut-off from page 7)")
 
     b.group(20, 90, 330, 280, "Each piece gets a slot", "grey")
@@ -631,18 +631,18 @@ def ehr_scores():
         b.text(cx, 322, f"{score:g}", 16, "red" if score > 0.45 else "grey", "700")
         x += w + 22
 
-    b.group(20, 400, 1200, 360, "Score against the cut-off: 0.45 > redaction", "purple")
+    b.group(20, 400, 1200, 385, "Redact when the entity score is above 0.45", "purple")
     bx, bw = 330, 640
     for i, (word, score, ent) in enumerate(toks):
-        y = 450 + i * 32
+        y = 475 + i * 32
         hit = score > 0.45
         b.text(310, y + 12, word, 13, INK, "700" if hit else "400", anchor="end")
         b.bar(bx, y, bw, score, None, "red" if hit else "grey", h=14)
         b.text(bx + bw + 16, y + 12, f"{score:g}  " + ("redacted" if hit else "kept"), 13,
                "red" if hit else "grey", "700", anchor="start")
     tx = bx + bw * 0.45
-    line(b, [(tx, 438), (tx, 742)], INK, 2, dashed=True)
-    b.text(tx, 434, "0.45", 13, INK, "700")
+    line(b, [(tx, 463), (tx, 767)], INK, 2, dashed=True)
+    b.text(tx, 457, "0.45", 13, INK, "700")
     return b
 
 

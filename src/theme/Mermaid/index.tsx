@@ -24,6 +24,7 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
   const dragOrigin = useRef<{pointer: Point; offset: Point} | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   // Move focus into the dialog, and give it back to whatever opened it.
   useEffect(() => {
@@ -44,7 +45,19 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
   // Escape to close, +/- to zoom, 0 to reset.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+      if (event.key === 'Tab') {
+        const controls = dialogRef.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)');
+        if (!controls?.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      } else if (event.key === 'Escape') {
         onClose();
       } else if (event.key === '+' || event.key === '=') {
         zoomBy(ZOOM_STEP);
@@ -110,6 +123,7 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
 
   return createPortal(
     <div
+      ref={dialogRef}
       className={styles.overlay}
       role="dialog"
       aria-modal="true"

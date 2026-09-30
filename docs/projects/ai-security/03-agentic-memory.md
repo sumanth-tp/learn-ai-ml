@@ -16,6 +16,8 @@ tags:
 ---
 
 import Infographic from '@site/src/components/Infographic';
+import MemoryWindowLab from '@site/src/components/viz/MemoryWindowLab';
+import ForgettingCurveLab from '@site/src/components/viz/ForgettingCurveLab';
 
 > **Module 3 of 4** ·
 > [Watch from 2:47:50](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=10070s) ·
@@ -186,18 +188,22 @@ SYSTEM_PROMPT = (
     "Answer in plain language, use rupees, and keep replies under 120 words."
 )
 
+
 def count_tokens(text: str) -> int:
     return len(ENCODING.encode(text))
+
 
 def message_tokens(messages: list[dict]) -> int:
     # Roughly 4 extra tokens per message for the role and separators.
     return sum(count_tokens(m["content"]) + 4 for m in messages)
+
 
 def chat(messages: list[dict], temperature: float = 0.7, max_tokens: int = 1024) -> str:
     response = client.chat.completions.create(
         model=MODEL, messages=messages, temperature=temperature, max_tokens=max_tokens
     )
     return response.choices[0].message.content
+
 
 def chat_json(system: str, user: str) -> dict:
     response = client.chat.completions.create(
@@ -208,13 +214,16 @@ def chat_json(system: str, user: str) -> dict:
     )
     return json.loads(response.choices[0].message.content)
 
+
 def transcript(messages: list[dict]) -> str:
     return "\n".join(f"{m['role']}: {m['content']}" for m in messages)
+
 
 _chroma = chromadb.PersistentClient(path="./memory_db")
 _embed = embedding_functions.OpenAIEmbeddingFunction(
     api_key=os.environ["OPENAI_API_KEY"], model_name="text-embedding-3-small"
 )
+
 
 def get_collection(name: str):
     return _chroma.get_or_create_collection(name, embedding_function=_embed)
@@ -289,6 +298,7 @@ which is the mentor's own verdict. And the growth is **linear** per call
 ```python
 from memory_common import SYSTEM_PROMPT, chat, message_tokens
 
+
 class ConversationBufferMemory:
     """Keep every message and re-send the whole list on every call."""
 
@@ -304,6 +314,7 @@ class ConversationBufferMemory:
         reply = chat(self.messages_for_api())
         self.buffer.append({"role": "assistant", "content": reply})
         return reply
+
 
 if __name__ == "__main__":
     memory = ConversationBufferMemory()
@@ -410,6 +421,7 @@ walk-through.
 from memory_common import SYSTEM_PROMPT, chat
 from t01_buffer import ConversationBufferMemory
 
+
 class SlidingWindowMemory(ConversationBufferMemory):
     """Send only the last k turns. A turn is one user message plus one reply."""
 
@@ -427,6 +439,7 @@ class SlidingWindowMemory(ConversationBufferMemory):
         reply = chat(self.messages_for_api())
         self.buffer.append({"role": "assistant", "content": reply})
         return reply
+
 
 if __name__ == "__main__":
     memory = SlidingWindowMemory(k_turns=3)
@@ -556,6 +569,7 @@ Merge the existing summary and the new messages into one short paragraph.
 Always keep the user's name, income, expenses, savings and investments,
 risk profile, goals, constraints (things they never want) and decisions made."""
 
+
 class SummaryMemory:
     """Compress old turns into a running summary written by a second LLM call."""
 
@@ -653,6 +667,7 @@ work on shrinking the KV cache as one research direction.
 from memory_common import SYSTEM_PROMPT, chat, message_tokens
 from t03_summary import SummaryMemory
 
+
 class SummaryBufferMemory(SummaryMemory):
     """Recent turns stay verbatim; turns pushed out of the buffer join the summary."""
 
@@ -747,6 +762,7 @@ concern above.
 from memory_common import SYSTEM_PROMPT, chat, message_tokens
 from t01_buffer import ConversationBufferMemory
 
+
 class TokenBufferMemory(ConversationBufferMemory):
     """Keep the history under a hard token budget by dropping the oldest messages."""
 
@@ -779,6 +795,10 @@ class TokenBufferMemory(ConversationBufferMemory):
 | Summary | Bounded, plus summariser calls | Detail, through lossy compression | Long sessions where facts matter more than wording |
 | Summary buffer | Bounded, plus summariser calls | Old detail only | The default for long chats and support agents |
 | Token buffer | Exact budget | Everything past the budget | Strict cost control, paired with retrieval |
+
+*Interactive exercise added to these notes. Change the strategy and conversation turn to compare token cost with retained facts.*
+
+<MemoryWindowLab />
 
 ## 6. Vector store memory
 
@@ -873,6 +893,7 @@ import uuid
 from memory_common import SYSTEM_PROMPT, chat, get_collection
 
 turns = get_collection("fincoach_turns")  # persists on disk across sessions
+
 
 class VectorStoreMemory:
     """Store every turn as a vector; before each call, retrieve the most similar past turns."""
@@ -1027,6 +1048,7 @@ Return a JSON object containing only fields that were explicitly mentioned, for 
 {"name": "Chiru", "monthly_salary_inr": 120000, "employer": "TCS", "risk_profile": "averse"}.
 Return {} if the message contains no facts about the user."""
 
+
 class EntityMemory:
     """One structured profile per user, updated in place on the hot path."""
 
@@ -1137,6 +1159,7 @@ EPISODE_PROMPT = """Turn this finished advice session into an episode record.
 Return JSON with the keys: title, topics (a list), summary (2-3 sentences),
 decisions (a list), advice_given (a list), emotional_context (one phrase)."""
 
+
 def close_session(user_id: str, session_id: str, messages: list[dict]) -> dict:
     """Run once, when the session ends: package the whole session as one episode."""
     episode = chat_json(EPISODE_PROMPT, transcript(messages))
@@ -1152,6 +1175,7 @@ def close_session(user_id: str, session_id: str, messages: list[dict]) -> dict:
         }],
     )
     return episode
+
 
 def recall_episodes(user_id: str, query: str, since_day: int | None = None, k: int = 2) -> list[str]:
     """Semantic match on the summary, optionally limited to a time range."""
@@ -1225,6 +1249,7 @@ JUDGE_PROMPT = """Compare a NEW fact with an EXISTING fact about the same user.
 Reply with exactly one word: DUPLICATE if they say the same thing,
 CONTRADICTION if they cannot both be true, or DIFFERENT otherwise."""
 
+
 def learn_facts(user_id: str, episode_summaries: list[str]) -> None:
     extracted = chat_json(FACTS_PROMPT, "\n".join(episode_summaries))["facts"]
     for fact in extracted:
@@ -1245,6 +1270,7 @@ def learn_facts(user_id: str, episode_summaries: list[str]) -> None:
                 facts.delete(ids=[old_id])
         facts.add(ids=[str(uuid.uuid4())], documents=[fact],
                   metadatas=[{"user_id": user_id, "confidence": 1, "ts": time.time()}])
+
 
 def known_facts(user_id: str, query: str, k: int = 5) -> str:
     """Top-k facts as bullets, ready to put inside the system prompt."""
@@ -1323,6 +1349,7 @@ RULE_PROMPT = """You improve an advisor agent's standing instructions.
 From the conversation and the user's feedback, write ONE short, general rule
 the agent must follow from now on, as an imperative sentence.
 If no new rule is needed, reply NONE."""
+
 
 class ProceduralMemory:
     """Learned rules live in the system prompt and are read as instructions."""
@@ -1426,6 +1453,7 @@ Return JSON: {"outcome": "success" or "partial" or "fail",
 "insight": "1-3 sentences you should remember next time",
 "severity": "high" or "low"}"""
 
+
 class ReflectionMemory:
     """After each task the agent critiques itself and stores a short, reusable insight."""
 
@@ -1517,6 +1545,7 @@ RULES = [
 ]
 FAN_OUT = {"entity.update": ["vector.write"]}  # a changed fact is also stored as history
 
+
 def route(message: str) -> list[tuple[str, float]]:
     text = message.lower()
     hits = [(name, conf) for name, pattern, conf in RULES if re.search(pattern, text)]
@@ -1524,6 +1553,7 @@ def route(message: str) -> list[tuple[str, float]]:
         return [("vector.read", 0.60)]  # general knowledge: semantic search
     extra = [(target, conf) for name, conf in hits for target in FAN_OUT.get(name, [])]
     return hits + extra
+
 
 if __name__ == "__main__":
     for q in [
@@ -1588,6 +1618,10 @@ memory at 0.5 to 0.8, the idea behind spaced repetition.
   caption="Redrawn from the mentor's architecture notes, 4:11, and the notebook's strategy table."
 />
 
+*Interactive exercise added to these notes.*
+
+<ForgettingCurveLab />
+
 The notes' caption says it well: every read is a vote to keep, silence is a
 vote to forget, and storage pressure speeds the process up.
 
@@ -1626,6 +1660,7 @@ HOUR = 3600.0
 # How much each kind of memory matters, whatever its age.
 CATEGORY_WEIGHT = {"constraint": 1.0, "profile": 0.8, "preference": 0.6, "chit_chat": 0.2}
 
+
 @dataclass
 class Memory:
     text: str
@@ -1653,28 +1688,34 @@ class Memory:
         self.last_access = now
         self.access_count += 1
 
+
 def importance(m: Memory, relevance: float = 0.5) -> float:
     frequency = min(m.access_count / 10, 1.0)
     strength = 1.0 if m.pinned else m.strength
     return 0.4 * strength + 0.2 * frequency + 0.2 * relevance + 0.2 * CATEGORY_WEIGHT[m.category]
 
+
 # Strategy 1: TTL. Everything older than the TTL goes, however important.
 def ttl_expired(memories, now, ttl_h=72):
     return [m for m in memories if not m.pinned and (now - m.created) / HOUR > ttl_h]
+
 
 # Strategy 2: LRU. When full, drop whatever was used least recently.
 def lru_evict(memories, capacity):
     oldest_first = sorted((m for m in memories if not m.pinned), key=lambda m: m.last_access)
     return oldest_first[: max(0, len(memories) - capacity)]
 
+
 # Strategy 3: importance-weighted eviction.
 def importance_evict(memories, threshold=0.35):
     return [m for m in memories if not m.pinned and importance(m) < threshold]
+
 
 # Strategy 4: budget-constrained pruning. Keep the N most important.
 def budget_prune(memories, max_items):
     ranked = sorted(memories, key=lambda m: (m.pinned, importance(m)), reverse=True)
     return ranked[max_items:]
+
 
 def run_pruning(memories, archive, now, threshold=0.10, capacity=None):
     """Decay engine + pruning engine. Storage pressure raises the threshold."""
@@ -1687,6 +1728,7 @@ def run_pruning(memories, archive, now, threshold=0.10, capacity=None):
         memories.remove(m)
         archive.append(m)  # soft delete; drop the archive later for a hard delete
     return weak
+
 
 if __name__ == "__main__":
     t0 = 1_800_000_000.0  # a fixed clock so the output is repeatable

@@ -929,6 +929,429 @@ def s1_prototype_to_cloud():
     return b
 
 
+# ----------------------------------------------------- 8–38: remaining boards
+
+def chain(b, specs, y=130, x=40, width=190, height=90, gap=45):
+    boxes = []
+    for i, spec in enumerate(specs):
+        title, lines, color = spec
+        box = b.card(x + i*(width+gap), y, width, height, title, lines, color)
+        if boxes:
+            b.arrow(boxes[-1].right(), box.left())
+        boxes.append(box)
+    return boxes
+
+
+@board
+def s1_build_plan():
+    b = Board(1100, 650, 'Build plan', 'Excalidraw checklist • 1:25–1:30')
+    chain(b, [('1 · Venv', ['Create environment'], 'blue'), ('2 · Requirements', ['Install dependencies'], 'blue'), ('3 · .env', ['Groq, Qdrant,', 'LangSmith API keys'], 'orange'), ('4 · Config', ['Shared settings'], 'purple')], width=215, gap=50)
+    root = b.card(405, 275, 290, 75, '5 · Data ingestion', [], 'teal')
+    b.arrow((960, 220), root.right(), via=[(960, 312)])
+    for x, title, lines, color in [(40,'Loading',['Document loaders'],'blue'),(395,'Chunking',['Split into retrievable text'],'orange'),(750,'Services',['Embedding: Gemini limits + fallback','Vector DB: Qdrant Cloud'],'purple')]:
+        box = b.card(x,405,310,95,title,lines,color)
+        b.arrow(root.bottom(),box.top(),via=[(550,375),(box.cx,375)])
+    out = b.card(290,555,520,65,'processor.py runs data ingestion',['Commands in the course command sheet'],'green')
+    for x in [195,550,905]:
+        b.arrow((x,500),out.top(),via=[(x,530),(550,530)])
+    return b
+
+
+@board
+def s1_data_ingestion():
+    b = Board(1200, 660, 'Data ingestion pipeline', 'The parser dispatches by document type • 1:31–1:33')
+    rawdata=b.card(35,265,150,85,'Raw data',[], 'blue')
+    parser=b.diamond(310,307,180,120,'Smart\nparser','orange')
+    b.arrow(rawdata.right(),parser.left())
+    targets=[]
+    for i,(title,body) in enumerate([('PDF',['pypdf / pdfplumber']),('HTML',['BeautifulSoup (BS4)']),('TXT',['Text loader']),('DOCX / PPTX',['python-docx / python-pptx'])]):
+        box=b.card(455,110+i*130,265,85,title,body,'teal'); targets.append(box)
+        b.arrow(parser.right(),box.left(),via=[(425,307),(425,box.cy)])
+    chunk=b.card(820,265,170,85,'Semantic chunker',[], 'purple')
+    for box in targets:b.arrow(box.right(),chunk.left(),via=[(780,box.cy),(780,307)])
+    emb=b.card(800,440,200,85,'Gemini embeddings',['gemini-embedding-2-preview'],'orange',size=10)
+    db=b.cylinder(1040,440,130,85,'Qdrant Cloud',[], 'blue')
+    b.arrow(chunk.bottom(),emb.top()); b.arrow(emb.right(),db.left())
+    b.text(600,625,'Source slide label: semantic chunker. The demonstrated code packs paragraphs by character count.',12,INK)
+    return b
+
+
+@board
+def s1_simple_llm():
+    b=Board(1000,300,'A simple LLM call','Excalidraw • 1:34')
+    chain(b,[('Input',['User question'],'blue'),('LLM',['Language model'],'purple'),('Output',['Generated response'],'green')],x=80,width=240,gap=60)
+    return b
+
+
+@board
+def s1_simple_rag():
+    b=Board(1100,540,'Simple RAG app','Context is added to the model call • 1:35–1:36')
+    ctx=b.card(315,105,470,170,'Context',['Internal company documentation','Meeting notes','Team knowledge base','Proprietary reports'],'teal')
+    boxes=chain(b,[('Input',['Tokens: 20K / 200K'],'blue'),('LLM',['Gemini 2'],'purple'),('Output',['Answer with context'],'green')],x=60,y=355,width=260,gap=100)
+    b.arrow(ctx.bottom(),boxes[1].top(),label='context')
+    b.text(550,505,'The token figures are illustrative labels from the session.',12,FAINT)
+    return b
+
+
+@board
+def s1_ingestion_retrieval():
+    b=Board(1400,900,'RAG: ingestion, retrieval and generation','Retrieval Augmented Generation • Excalidraw, 1:37–1:48')
+    b.group(20,100,1360,350,'DATA INGESTION IN VECTOR STORE','blue')
+    files=b.card(45,235,165,90,'PDF / TXT / Docs',[], 'blue')
+    extract=b.card(255,235,200,90,'Extract data',['PyPDFLoader','TEXT / Binary'],'orange')
+    b.arrow(files.right(),extract.left())
+    db=b.cylinder(1110,210,215,140,'Vector store',['vectors + text'], 'blue')
+    for i in range(4):
+        y=150+i*70
+        c=b.card(540,y,205,54,f'Chunk {i+1}',['Rhino'] if i==0 else [],'teal',size=11)
+        e=b.card(830,y,205,54,f'Embedding {i+1}',['[0.2, 0.4]'] if i==0 else [],'purple',size=11)
+        b.arrow(extract.right(),c.left(),via=[(495,280),(495,c.cy)],label=f't{i+1}')
+        b.arrow(c.right(),e.left()); b.arrow(e.right(),db.left(),via=[(1070,e.cy),(1070,280)])
+    b.group(20,480,1360,390,'RETRIEVAL → AUGMENTATION → GENERATION','green')
+    specs=[('User question',['Which is the best laptop?'],'blue'),('Question embedding',['[0.8, 0.4]'],'purple'),('Semantic search',['nearest vector: [0.5, 0.8]'],'orange'),('Top-k results',['MacBook, Lenovo','Claude, RAG'],'teal')]
+    boxes=chain(b,specs,y=555,x=50,width=275,gap=60)
+    b.arrow(db.bottom(),boxes[2].top(),via=[(1218,465),(858,465)],label='vector store',color='blue')
+    prompt=b.card(770,730,470,85,'User question + top-k results',['Which is the best laptop? + retrieved chunks'],'yellow')
+    llm=b.card(410,730,250,85,'LLM',['Example: Claude'],'purple')
+    ans=b.card(70,730,230,85,'Answer to user',[], 'green')
+    b.arrow(boxes[-1].bottom(),prompt.top(),label='data retrieval',color='blue')
+    b.arrow(prompt.left(),llm.right());b.arrow(llm.left(),ans.right(),label='data generation',color='blue')
+    b.arrow(ans.top(),boxes[0].bottom(),dashed=True)
+    return b
+
+
+@board
+def s1_word_embedding():
+    b=Board(1100,350,'Words become numeric representations','The two coordinates are an illustration • 1:41–1:43')
+    ellipse(b,180,190,100,65,'red')
+    b.text(180,195,'Dog',30,'red','700'); b.text(180,295,'Words',16,'blue')
+    b.arrow((300,190),(765,190),label='Embeddings',color='green')
+    b.text(530,255,'Semantic meaning is preserved',16,'green')
+    b.text(910,195,'[0.2, 0.4]',27,'purple','700')
+    b.text(875,140,'x',18,'orange');b.text(950,140,'y',18,'orange')
+    b.text(900,295,'Numeric representation',16,'blue')
+    return b
+
+
+@board
+def s1_vector_clusters():
+    b=Board(1150,740,'Vector store: semantic neighbourhoods','Illustrative 2-D sketch, not measured coordinates • 1:42–1:44')
+    b.arrow((80,630),(80,120),dashed=True,label='Y');b.arrow((80,630),(880,630),dashed=True,label='X')
+    for x,y,w,h,label,col in [(125,145,185,65,'Dieting','grey'),(410,150,250,110,'OpenAI   Claude','purple'),(120,300,240,155,'Dog · Cat\nTiger · Rhino','green'),(140,490,245,100,'Bike · Car · Cycle','teal'),(460,355,250,115,'MacBook · Lenovo','orange'),(700,260,180,90,'RAG · AI agent','purple')]:
+        b.group(x,y,w,h,'',col)
+        b.text(x+w/2,y+h/2+5,label,18,col,'700')
+    b.text(665,310,'Which is the best laptop?',18,'orange','700')
+    b.arrow((620,325),(600,380),color='orange')
+    b.arrow((365,415),(450,415),color='red',both=True,label='distance')
+    b.card(910,345,215,150,'Retrieved neighbours',['1. MacBook / Lenovo','Claude / RAG'],'blue')
+    b.arrow((715,415),(900,415),color='blue')
+    b.cylinder(450,655,250,65,'Vector store',[],'blue')
+    return b
+
+
+@board
+def s1_ingestion_code_flow():
+    b=Board(1250,920,'Ingestion: data flow and Python files','Code-flow boards shown at 4:13–4:15')
+    stages=[('Raw documents','DATA/true_data/*','app/ingestion/processor.py'),('Start ingestion CLI','python -m app.ingestion.processor','CLI arguments + app/config.py'),('Load and parse','PDF / HTML / TXT / DOCX / PPTX','app/ingestion/loaders/*.py'),('Chunk text','Paragraph-aware, 1500 chars','app/ingestion/chunking/splitter.py'),('Save processed JSON','processed_data/true/*.json','app/ingestion/processor.py'),('Generate embeddings','Gemini or local fallback','app/services/retrieval/embedding.py'),('Build points and upsert','Qdrant Cloud: enterprise_rag','processor.py + app/config.py')]
+    prev=None
+    for i,(title,body,path) in enumerate(stages):
+        box=b.card(55,110+i*108,485,75,title,[body],'blue' if i<4 else 'purple')
+        file=b.card(660,110+i*108,530,75,'Program / config',[path],'green')
+        b.arrow(box.right(),file.left(),dashed=True,color='green')
+        if prev:b.arrow(prev.bottom(),box.top())
+        prev=box
+    b.text(625,890,'Collection setup: reuse an existing collection; wipe only when requested; create it when missing.',12,INK)
+    return b
+
+
+@board
+def s1_reranking():
+    b=Board(1300,780,'ReRanking','Retrieve top_k = 25, then rerank to top_n = 3 • 4:26–4:32')
+    for x,col,title in [(25,'red','THE PROBLEM'),(665,'green','THE SOLUTION')]:
+        b.group(x,105,610,635,title,col)
+        q=b.card(x+25,165,165,70,'Query',['top_k = 25'],col)
+        db=b.cylinder(x+340,165,210,90,'Vector DB',['All documents'],'blue')
+        b.arrow(q.right(),db.left())
+        b.arrow(db.bottom(),(x+200,300),via=[(x+445,280),(x+200,280)])
+        b.text(x+190,325,'25 candidate records',14,INK,'700')
+        for i in range(25):
+            y=350+i*13; relevant=i in (2,12,22)
+            raw(b,f'<rect x="{x+60}" y="{y}" width="250" height="8" rx="3" fill="{PALETTE["green" if relevant else "grey"]["stroke"]}" opacity="{1 if relevant else .3}"/>')
+        if x==25:
+            b.card(x+340,405,240,170,'Relevant records',['Useful evidence is scattered','Some matches rank near the bottom'],'red')
+            for i in (2,12,22):b.arrow((x+335,485),(x+312,354+i*13),color='red',dashed=True)
+        else:
+            rr=b.diamond(x+440,415,200,110,'Reranker\ntop_n = 3','teal')
+            b.arrow((x+315,450),rr.left(),color='teal')
+            for i in range(3):
+                b.card(x+345,535+i*47,220,35,f'Relevant record {i+1}',[],'green',size=10)
+            b.arrow(rr.bottom(),(x+455,530),color='green')
+            b.text(x+455,710,'Other 22 discarded',12,FAINT)
+    return b
+
+
+@board
+def s1_encoders():
+    b=Board(1350,760,'Bi-encoders vs cross-encoders','The source compares independent embeddings with joint token interaction • 4:30–4:31')
+    b.group(20,105,640,610,'BI-ENCODERS','blue');b.group(690,105,640,610,'CROSS-ENCODERS','purple')
+    a=b.card(45,165,285,85,'Query text',["its raining cats and dogs here"],'green')
+    c=b.card(350,165,285,85,'Document chunk',['the weather is quite bad outside'],'blue')
+    for src,x,vec in [(a,45,'[0.3, 0.6, 0.8, …]'),(c,350,'[0.6, 0.9, 0.2, …]')]:
+        emb=b.card(x,295,285,65,'Embedding model',[],'orange');v=b.card(x,400,285,60,'',[vec],'purple')
+        b.arrow(src.bottom(),emb.top());b.arrow(emb.bottom(),v.top());b.arrow(v.bottom(),(340,520),via=[(v.cx,490),(340,490)])
+    cos=b.card(185,525,310,70,'Cosine similarity',['Score: 0.6'],'teal')
+    b.text(340,650,'No token-level interaction',16,'blue','700');b.text(340,680,'Queries and documents processed separately',13,INK)
+    pair=b.card(720,165,580,130,'Query + chunk as one pair',['[CLS] its raining cats and dogs here [SEP]','the weather is quite bad outside [SEP]'],'purple')
+    emb=b.card(830,345,360,90,'Embedding model',['Self-attention across both texts'],'orange');cl=b.card(860,490,300,75,'Classifier',['Relevance score'],'green')
+    b.arrow(pair.bottom(),emb.top());b.arrow(emb.bottom(),cl.top())
+    b.text(1010,625,'Token-level interactions across the pair',15,'purple','700')
+    b.text(1010,660,'Must process each query–chunk pair together',13,INK)
+    b.text(1010,690,'Rerank only the retrieved candidates',13,INK)
+    return b
+
+
+@board
+def s1_trace_tools():
+    b=Board(1150,490,'Trace execution of…','The application and the LLM have related tracing views • 5:03–5:05')
+    chain(b,[('App',['Application execution'],'blue'),('Logfire',['Distributed app tracing'],'red')],x=70,y=130,width=370,gap=180)
+    chain(b,[('LLM calls',['LangChain / LangGraph'],'purple'),('LangSmith',['LLM and agent-step traces'],'yellow'),('LangGraph Studio',['Graph view of runs'],'green')],x=40,y=310,width=290,gap=100)
+    return b
+
+
+@board
+def s1_tool_choices():
+    b=Board(1100,560,'Tool choices in the session','Reranking, embeddings, guardrails and model access • 5:05–5:06')
+    for i,(left,right,body,col) in enumerate([('Reranking','FlashRank','Runs locally','orange'),('Jina','Embeddings + reranker','Alternative discussed','blue'),('Guardrails','NeMo','Rules and safety controls','pink'),('LLM gateway','Portkey','Routing and access control','purple')]):
+        a=b.card(70,110+i*105,330,75,left,[],col);c=b.card(620,110+i*105,400,75,right,[body],col);b.arrow(a.right(),c.left(),color=col)
+    return b
+
+
+@board
+def s1_noisy_goal():
+    b=Board(1050,450,'Goal: an accurate RAG system','The source emphasises retrieval from a noisy document dump • 5:08–5:09')
+    goal=b.card(60,160,310,115,'Accurate RAG system',['Find the useful evidence'],'green')
+    db=b.cylinder(650,130,280,175,'Document dump',['Useful documents','+ noisy documents'],'orange')
+    b.arrow(db.left(),goal.right(),label='retrieve relevant evidence',color='blue')
+    b.text(525,380,'The demonstration deliberately mixes relevant and distracting data.',17,INK)
+    return b
+
+
+@board
+def s1_agentic_behaviour():
+    b=Board(1250,680,'Agentic behaviour: let the planner route','Coffee and Kubernetes illustrate the two branches • 5:19–5:22')
+    u=b.card(30,250,180,80,'User',['coffee / K8s'],'blue');p=b.card(280,250,240,80,'Planner',['LLM chooses the route'],'orange');b.arrow(u.right(),p.left())
+    resp=b.card(885,150,285,90,'Responder',['LLM answers'],'pink');b.arrow(p.top(),resp.left(),via=[(400,195)],label='C: coffee / conversation')
+    q=b.cylinder(580,355,230,95,'Qdrant',['T: technical query'],'blue');b.arrow(p.bottom(),q.left(),via=[(400,402)])
+    rr=b.card(885,385,285,95,'Reranker',['15 candidates → short list'],'teal');b.arrow(q.right(),rr.left());b.arrow(rr.top(),resp.bottom())
+    for i in range(15):
+        raw(b,f'<rect x="{580+i*17}" y="540" width="10" height="{45 if i in (2,8,13) else 22}" fill="{PALETTE["green" if i in (2,8,13) else "grey"]["stroke"]}"/>')
+    b.text(700,620,'Relevant candidates are scattered before reranking',13,INK)
+    b.arrow(resp.top(),u.top(),via=[(1027,110),(120,110)],label='answer',color='pink')
+    return b
+
+
+@board
+def s1_rules_vs_agent():
+    b=Board(1200,620,'Software → AI-enabled software','Fixed rules versus choosing functions at runtime • 5:22–5:24')
+    b.group(25,110,535,465,'RULES: FIXED ORDER','red');b.group(625,110,550,465,'AI AGENT: CHOOSE A FUNCTION','yellow')
+    for i in range(4):b.card(55+i*123,180,100,70,f'Step {i+1}',[],'red')
+    chain(b,[('Step 4',[],'red'),('Step 1',[],'red'),('Step 2',[],'red')],x=60,y=355,width=120,gap=60)
+    b.text(295,520,'The sequence is hard-coded: 4 → 1 → 2',15,INK)
+    agent=b.diamond(900,335,190,120,'AI agent\ndecides','orange')
+    for x,y,k in [(650,180,1),(985,180,2),(650,430,3),(985,430,4)]:
+        f=b.card(x,y,165,75,f'Function {k}',[],'yellow');b.arrow(agent.top() if y<300 else agent.bottom(),f.bottom() if y<300 else f.top(),dashed=True,color='orange')
+    return b
+
+
+@board
+def s1_memory():
+    b=Board(1200,690,'Conversational memory','The whiteboard taxonomy and turn-window sketch • 5:39–5:44')
+    a=b.card(45,135,330,100,'Conversational memory',['Buffer / token memory'],'yellow')
+    for y,title in [(105,'Episodic'),(245,'Semantic')]:
+        box=b.card(520,y,250,75,title,[],'purple');b.arrow(a.right(),box.left(),via=[(440,185),(440,box.cy)])
+    chain(b,[('User turns',['1 → 2 → 3 → …'],'blue'),('AI turns',['1 → 2 → 3 → …'],'pink'),('10–15 turns',['Window in the explanation'],'orange')],x=50,y=390,width=300,gap=90)
+    b.card(50,550,1100,75,'Production memory options',['mem0 · LangMem · Neo4j (graph DB)'],'green')
+    b.text(600,660,'Correction: MemorySaver has no built-in 10–15-turn limit. A window needs explicit trimming.',13,'red','700')
+    return b
+
+
+@board
+def s1_graph_loop():
+    b=Board(1100,610,'Entry point → planner','The responder closes both conversational and technical turns • 5:44–5:45')
+    entry=b.card(50,130,225,75,'Entry point',[],'blue');p=b.card(430,130,250,75,'Planner',[],'orange');b.arrow(entry.right(),p.left())
+    resp=b.card(780,310,250,80,'Responder',[],'pink');ret=b.card(280,310,250,80,'Retriever',[],'purple');db=b.cylinder(280,465,250,90,'Database',[],'blue')
+    b.arrow(p.bottom(),ret.top(),label='T: technical');b.arrow(p.right(),resp.top(),via=[(905,168)],label='C: conversation')
+    b.arrow(ret.bottom(),db.top(),both=True);b.arrow(ret.right(),resp.left(),label='retrieved evidence')
+    b.arrow(resp.top(),entry.top(),via=[(905,95),(162,95)],label='end of turn / next request',color='pink')
+    return b
+
+
+@board
+def s1_fastapi():
+    b=Board(1200,560,'main.py → FastAPI backend','Two route functions: run the graph or show the graph • 5:46–5:49')
+    b.group(335,110,400,405,'FASTAPI ROUTES','purple')
+    client=b.card(35,260,225,90,'Client / Streamlit',[],'blue')
+    q=b.card(385,185,300,100,'POST /query',['q + thread_id','query function'],'orange')
+    g=b.card(385,355,300,100,'GET /graph',['graph function'],'teal')
+    run=b.card(835,175,315,120,'Trigger graph',['rag_agent.invoke','JSON: answer, plan,','status, sources'],'orange')
+    img=b.card(835,360,315,90,'Show graph',['draw_mermaid_png'],'teal')
+    for box in [q,g]:b.arrow(client.right(),box.left(),via=[(300,305),(300,box.cy)])
+    b.arrow(q.right(),run.left());b.arrow(g.right(),img.left())
+    return b
+
+
+@board
+def s1_rendered_graph():
+    b=Board(900,640,'GET /graph: the compiled LangGraph','Conditional planner edges are dashed • browser render at 6:03')
+    start=b.card(325,105,250,65,'__start__',[],'grey');p=b.card(325,225,250,65,'planner',[],'purple');b.arrow(start.bottom(),p.top())
+    r=b.card(65,365,250,70,'retriever',[],'blue');s=b.card(575,365,250,70,'responder',[],'pink')
+    b.arrow(p.bottom(),r.top(),dashed=True);b.arrow(p.bottom(),s.top(),dashed=True);b.arrow(r.right(),s.left())
+    end=b.card(575,530,250,65,'__end__',[],'grey');b.arrow(s.bottom(),end.top())
+    return b
+
+
+@board
+def s1_observability():
+    b=Board(1200,510,'Observability: span, trace, waterfall','App execution becomes a record and a timeline • 6:12–6:16')
+    chain(b,[('1 · Span',['One unit of execution','LangSmith calls it a run'],'pink'),('2 · Trace',['All spans for one','application request'],'yellow'),('3 · Waterfall',['Spans placed on a timeline','to see where time went'],'blue')],x=40,y=145,width=320,gap=80,height=130)
+    for i,(x,w,col) in enumerate([(760,370,'blue'),(790,150,'purple'),(940,170,'orange')]):
+        raw(b,f'<rect x="{x}" y="{330+i*35}" width="{w}" height="20" rx="4" fill="{PALETTE[col]["stroke"]}"/>')
+    b.text(425,380,'Trace = the whole request record',18,INK)
+    return b
+
+
+@board
+def s1_hr_policy():
+    b=Board(1300,740,'HR Policy Assistant: NeMo + FAISS RAG','Acme Corp demo • two LLM calls for an allowed request • 6:38–6:42')
+    specs=[('Input rail · LLM 1',['Classify intent','Block off-topic, jailbreak,','confidential requests, PII'],'pink'),('FAISS RAG',['Retrieve top 3 chunks','bge-small-en-v1.5'],'blue'),('Answer · LLM 2',['Ground the answer only in','retrieved policy text'],'green'),('Output rail',['Regex scan','Check for sensitive data'],'orange')]
+    boxes=chain(b,specs,x=35,y=150,width=260,gap=60,height=160)
+    blocked=b.card(40,390,270,90,'Blocked reply',['Input rail stops the request'],'red');b.arrow(boxes[0].bottom(),blocked.top(),color='red')
+    out=b.card(980,390,270,90,'Reply to user',['Clean: return answer','Leak: withhold / sanitise'],'green');b.arrow(boxes[-1].bottom(),out.top())
+    b.card(355,385,540,120,'Knowledge base',['6 documents, approximately 500 characters per chunk','Leave, sick days, parental leave, remote work, benefits','401k, reviews, conduct, harassment, PIP, promotions'],'teal',size=11)
+    b.card(45,570,1205,105,'Bring your own key',['The demo states that keys are used only for the session and are never stored.','NeMo acts as a semantic gate in front of the retrieval pipeline.'],'purple')
+    return b
+
+
+@board
+def s1_security_guardrails():
+    b=Board(1000,410,'LLM security: guardrails enforce policy','Rules and regulations between the user and the LLM • 6:49–6:51')
+    chain(b,[('User',[],'blue'),('Guardrails',['Rules & regulations'],'pink'),('LLM',[],'purple')],x=50,y=165,width=250,gap=75,height=105)
+    return b
+
+
+@board
+def s1_input_output_rails():
+    b=Board(1300,530,'Input and output rails','The guardrail sandwich • 6:52–6:55')
+    chain(b,[('User',['Question may contain PII'],'blue'),('Input rail',['Check before generation'],'pink'),('LLM',['Generate response'],'purple'),('Output rail',['Check before delivery'],'orange'),('User',['Clean response'],'green')],x=30,y=150,width=215,gap=40,height=120)
+    b.card(55,345,555,125,'NeMo Guardrails',['The presenter describes it as still developing.','Input and output controls compose around the model.'],'pink')
+    b.card(680,345,555,125,'Managed option discussed: Bedrock',['The speaker mentions approximately 98% accuracy.','Unverified session claim; no benchmark is supplied.'],'grey')
+    return b
+
+
+@board
+def s1_progressive_rails():
+    b=Board(1400,1060,'NeMo Guardrails Classroom','Seven experiments stack controls progressively • 6:47–7:08')
+    b.group(25,100,1350,190,'BASELINE: RAW LLM, NO PROTECTION','red')
+    chain(b,[('User message',[],'blue'),('Raw LLM',['No filtering'],'red'),('Bot response',[],'green')],x=160,y=160,width=280,gap=120,height=80)
+    b.group(25,315,1350,230,'TOPIC GUARD','orange')
+    user=b.card(60,390,230,75,'User message',[],'blue');intent=b.card(350,390,275,75,'Intent check',['LLM call 1'],'orange');b.arrow(user.right(),intent.left())
+    refuse=b.card(735,360,250,60,'Refuse off-topic',[],'pink');answer=b.card(735,455,250,60,'Answer: LLM call 2',[],'green');response=b.card(1110,400,225,75,'Bot response',[],'blue')
+    for target in [refuse,answer]:
+        b.arrow(intent.right(),target.left(),via=[(675,intent.cy),(675,target.cy)]);b.arrow(target.right(),response.left(),via=[(1050,target.cy),(1050,response.cy)])
+    b.group(25,570,1350,400,'DIALOG RAILS: FULL INTENT ROUTING','purple')
+    u=b.card(50,745,205,80,'User message',[],'blue');ic=b.card(315,745,245,80,'Intent check',['LLM call 1'],'orange');b.arrow(u.right(),ic.left())
+    dest=b.card(1135,745,205,80,'Bot response',[],'blue')
+    for i,(title,body,col) in enumerate([('Off-topic','Refuse: off-topic','pink'),('Jailbreak','Refuse: jailbreak','pink'),('Sensitive','Refuse: sensitive topic','pink'),('Dialog intent','Scripted greeting / help / bye','purple'),('IT question','LLM answer: call 2','green')]):
+        box=b.card(680,620+i*64,355,52,title,[body],col,size=10,title_size=11)
+        b.arrow(ic.right(),box.left(),via=[(610,785),(610,box.cy)])
+        b.arrow(box.right(),dest.left(),via=[(1080,box.cy),(1080,785)])
+    b.text(700,1015,'Later experiments add custom actions for PII and an output rail that checks every bot response.',14,INK)
+    return b
+
+
+@board
+def s1_colang():
+    b=Board(1250,650,'Rails in Colang: define user, bot and flow','Off-topic example from the session • 7:09–7:16')
+    b.card(30,125,400,330,'define user ask off topic',['tell me a joke','what is the capital of france','write me a poem','what is 2 plus 2','what should I eat for dinner','who won the game yesterday','recommend a movie',"what’s the weather like"],'blue',align='left')
+    b.card(480,125,340,330,'define bot refuse off topic',["I’m an Enterprise IT Assistant",'focused on Kubernetes,','Intel hardware, and networking.'],'pink',align='left')
+    b.card(870,125,350,330,'define flow handle off topic',['user ask off topic','bot refuse off topic','stop'],'purple',align='left')
+    b.arrow((430,295),(480,295));b.arrow((820,295),(870,295))
+    b.card(180,515,890,80,'Rails match intent, then choose the response',['Example utterances represent an intent; the flow links that intent to a bot action.'],'green')
+    return b
+
+
+@board
+def s1_fastembed_llama_guard():
+    b=Board(1300,720,'Intent matching and safety classification','Two distinct models in the guardrail discussion • 7:16–7:19')
+    b.group(25,105,1250,250,'FASTEMBED: SENTENCE EMBEDDINGS RUN LOCALLY','blue')
+    user=b.card(50,160,270,65,'User message',[],'blue');ex=b.card(50,260,270,65,'Example utterances',[],'teal');f=b.card(455,205,320,85,'FastEmbed',['Local sentence embeddings'],'purple');sim=b.card(920,205,325,85,'Similarity → intent',['No separate DB, auth, endpoint'],'green',size=11)
+    b.arrow(user.right(),f.left(),via=[(385,user.cy),(385,f.cy)]);b.arrow(ex.right(),f.left(),via=[(385,ex.cy),(385,f.cy)]);b.arrow(f.right(),sim.left())
+    b.group(25,390,1250,285,'LLAMA GUARD: A SAFETY MODEL','pink')
+    model=b.card(65,500,285,80,'Llama Guard',['Model used inside rails'],'pink');v=b.diamond(600,540,230,125,'Binary\nverdict','orange');b.arrow(model.right(),v.left())
+    for y,title,col in [(445,'1 · Safe / allowed','green'),(575,'0 · Unsafe / blocked','red')]:
+        target=b.card(935,y,290,70,title,[],col);b.arrow(v.right(),target.left(),via=[(815,540),(815,target.cy)],color=col)
+    return b
+
+
+@board
+def s1_gateway_intro():
+    b=Board(1300,630,'What is an LLM gateway?','A backup and control layer in front of model APIs • 7:21 and 7:29')
+    b.group(30,110,540,320,'WITHOUT A GATEWAY: BLIND','red');b.group(610,110,660,320,'WITH A GATEWAY: FULL CONTROL','green')
+    a=b.card(60,210,170,85,'App',[],'blue');m=b.card(340,210,190,85,'Model API',[],'purple');b.arrow(a.right(),m.left())
+    b.text(300,375,'No central logs, retries or fallback',14,'red')
+    boxes=chain(b,[('App',[],'blue'),('Gateway',['Logs, retries','cache, fallback'],'green'),('Model APIs',[],'purple')],x=640,y=205,width=175,gap=35,height=105)
+    b.text(940,375,'Every experiment makes real calls and logs them',13,'green')
+    b.card(40,485,1220,105,'Gateway Explorer: experiments',['Routing, observability, metadata, retries, timeouts, fallback, load balancing, cache, rate limits, streaming.','The app advertises $0 extra cost on its free tier; this is a session-time vendor claim, not a pricing guarantee.'],'grey',size=12)
+    return b
+
+
+@board
+def s1_gateway_routing():
+    b=Board(1300,740,'Fault tolerant, robust: fallback and model routing','The UI or the planner chooses a model for the task • 7:35–7:38')
+    u=b.card(40,265,200,80,'User',[],'blue');g=b.card(345,265,285,80,'Gateway',['Fallback / model routing'],'pink');b.arrow(u.right(),g.left())
+    for i,title in enumerate(['OpenAI','Gemini','Anthropic','Open-source model']):
+        m=b.card(870,115+i*110,350,70,title,[],'yellow');b.arrow(g.right(),m.left(),via=[(755,g.cy),(755,m.cy)])
+    decision=b.card(80,545,320,95,'UI button or planner',['Who decides task difficulty?'],'purple')
+    for x,title,lines in [(510,'Deep research',['Reasoning model']),(910,'Write a mail',['Small open-source model'])]:
+        t=b.card(x,545,310,95,title,lines,'green');b.arrow(decision.right(),t.top(),via=[(450,592),(450,505),(t.cx,505)])
+    b.text(650,705,'The gateway itself needs a backup: its outage can interrupt model access.',14,'red')
+    return b
+
+
+@board
+def s1_gateway_options():
+    b=Board(1050,400,'LLM gateway options','Tools named on the whiteboard • 7:39–7:40')
+    g=b.card(360,100,330,70,'LLM gateway',[],'pink')
+    for x,name,col in [(40,'Portkey','yellow'),(390,'LiteLLM','blue'),(740,'Bifrost','purple')]:
+        n=b.card(x,270,270,80,name,[],col);b.arrow(g.bottom(),n.top(),via=[(525,220),(n.cx,220)])
+    return b
+
+
+@board
+def s1_caching():
+    b=Board(1300,650,'Simple cache vs semantic cache','The worked questions from the whiteboard • 7:40–7:43')
+    b.group(25,105,610,490,'SIMPLE CACHE: EXACT MATCH','blue');b.group(665,105,610,490,'SEMANTIC CACHE: SIMILAR MEANING','purple')
+    a=b.card(55,165,550,105,'Repeated question',['What is K8s?','NLP course'],'blue');db=b.cylinder(170,335,310,115,'Cache DB',['Exact lookup, like SQL'],'blue');b.arrow(a.bottom(),db.top(),label='same input')
+    b.text(330,525,'Hit → return stored answer',16,'green','700')
+    q=b.card(710,165,510,100,'Tell me about NLP',[],'orange');sem=b.cylinder(810,335,310,115,'Semantic cache',['Stored: What is NLP?'],'purple');b.arrow(q.bottom(),sem.top(),label='similar meaning')
+    b.text(970,525,'Hit → reuse the relevant stored answer',15,'green','700')
+    b.text(650,625,'The different wording does not match an ordinary exact-key cache.',14,INK)
+    return b
+
+
+@board
+def s1_virtual_keys():
+    b=Board(1300,680,'Virtual keys','Ten raw provider keys versus a gateway-held credential map • 7:45–7:53')
+    b.group(25,110,425,490,'BEFORE: RAW KEYS IN .env','red');b.group(500,110,775,490,'AFTER: ONE GATEWAY KEY IN THE APP','green')
+    env=b.card(75,200,325,125,'.env',['10 provider API keys'],'red');app=b.card(100,420,275,85,'App',[],'blue');b.arrow(env.bottom(),app.top())
+    a=b.card(535,280,180,100,'App',['One gateway key'],'blue');g=b.card(770,280,185,100,'Gateway',['Resolves virtual names'],'purple',size=11);b.arrow(a.right(),g.left())
+    for i,(name,llm) in enumerate([('xyz','LLM 1'),('abc','LLM 2'),('pqr','LLM 3')]):
+        n=b.card(1030,175+i*145,210,95,f'Virtual key: {name}',[f'Provider key → {llm}'],'orange',size=11)
+        b.arrow(g.right(),n.left(),via=[(990,330),(990,n.cy)])
+    b.text(650,645,'The gateway diverts each request to the provider represented by its configured virtual key.',14,INK)
+    return b
+
+
 def main(names):
     todo = names or list(BOARDS)
     for name in todo:

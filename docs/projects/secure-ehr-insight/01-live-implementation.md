@@ -25,6 +25,8 @@ tags:
   ]
 ---
 
+import Infographic from '@site/src/components/Infographic';
+
 > **Live session** ·
 > [Watch on YouTube](https://www.youtube.com/watch?v=-4BrD23fQvU) · 4 hours 42
 > minutes ·
@@ -62,26 +64,11 @@ The session opens by pressure-testing that obvious answer:
   API is exactly what HIPAA exists to prevent. If the data leaks, the
   hospital faces a legal hearing, not a bug ticket.
 
-*Redrawn from Monal's whiteboard, 0:13 to 0:25 (page 1 of the handwritten notes).*
-
-```mermaid
-flowchart TB
-    subgraph HAVE["What the hospital has"]
-        direction LR
-        H["Hospital"] --> E["EHR system<br/>millions of rows"]
-        E --> R["Admissions · prescriptions · lab results<br/>(relational data)"]
-    end
-    subgraph NAIVE["The obvious answer"]
-        direction LR
-        D["Raw patient data"] --> T["RAG · Text2SQL · vector DB"] -->|"extract"| L["LLM"]
-    end
-    subgraph NEED["What the solution needs"]
-        direction LR
-        S1["Privacy-first pipeline"] ~~~ S2["Guardrails"] ~~~ S3["Protected personal data"]
-    end
-    HAVE --> NAIVE
-    NAIVE -->|"raw PHI reaches the LLM:<br/>a HIPAA violation"| NEED
-```
+<Infographic
+  src="/img/secure-ehr/ehr-problem.svg"
+  alt="Hospital EHR data, the privacy risk of sending raw records to an LLM, and the privacy-first pipeline."
+  caption="Redrawn from Monal's whiteboard, 0:13 to 0:25 (page 1 of the handwritten notes)."
+/>
 
 :::note What HIPAA actually requires
 HIPAA (the US Health Insurance Portability and Accountability Act) protects
@@ -133,26 +120,11 @@ class is watching an FDE work, not a from-scratch tutorial:
 | Code review, checking for secrets      | You ask AI for a PR-style self-review: secrets, security flaws, regressions        |
 | Maintenance and hot fixes              | You keep a documented plan/log so a future AI session has full context for fixes   |
 
-*Redrawn from Monal's whiteboard, 0:29 to 0:37 (page 2).*
-
-```mermaid
-flowchart LR
-    subgraph OLD["Classic SDLC"]
-        direction TB
-        PM["Product manager"] --> TK["Work split into tickets<br/>and sprints"]
-        TK --> CD["Developer codes"]
-        CD --> QA["QA writes tests"]
-        QA --> CR["Code review"]
-    end
-    subgraph NEW["AI SDLC: 'vibe coding on steroids'"]
-        direction TB
-        PL["You write plan · steps.md<br/>tasks · edge cases"] --> BP["Boilerplate from plan.md:<br/>structure, system design, then execution"]
-        BP --> TS["AI writes unit tests and test cases,<br/>reports; you review"]
-        TS --> PR["AI drafts PRs; checks for secrets<br/>(security flaws), performance regressions"]
-        PR --> MT["Monitoring and updates:<br/>hot fixes, update the docs"]
-    end
-    OLD -->|"same stages, AI drafts each one"| NEW
-```
+<Infographic
+  src="/img/secure-ehr/ehr-ai-sdlc.svg"
+  alt="Classic SDLC beside the AI-assisted planning, coding, testing, review and maintenance process."
+  caption="Redrawn from Monal's whiteboard, 0:29 to 0:37 (page 2)."
+/>
 
 :::note Not "vibe coding"
 Monal is explicit that AI SDLC "does not mean asking ChatGPT to create a
@@ -168,23 +140,11 @@ This is the flow Monal draws on screen ("In-depth overview", 0:39 to 0:59;
 page 3 of the handwritten notes), redrawn here. Every phase in this chapter
 builds one part of it.
 
-```mermaid
-flowchart TB
-    D["Data"] --> ING["Ingest into Postgres 14 on EC2<br/>(the hospital DB)"]
-    ING -->|"① our work starts here"| PGV["pgvector: add a new column"]
-    EMB["Embedding of each note"] --> PGV
-    DOC["Doctor / healthcare professional"] --> DD["Drop-down: select patient by ID"]
-    DD -->|"~100 rows instead of 25 million"| Q["Query"]
-    PGV --> S["Similarity search on the DB"]
-    Q --> S
-    S --> RED["Redaction: remove PHI, mask personal data<br/>such as age and location (Microsoft Presidio)"]
-    RED --> EX["'My credit card info is: 345'<br/>becomes 'My credit card info is: [card-no]'"]
-    Q -->|"the question itself"| G{"Guardrail<br/>(NVIDIA NeMo)"}
-    EX --> G
-    G -->|"reject, e.g. 'What medicine should I prescribe?'"| REJ["Refused"]
-    G -->|"allowed"| CTX["Context: the ~100 redacted rows<br/>Query: the question"]
-    CTX --> LLM["LLM"] --> UI["Streamlit UI"]
-```
+<Infographic
+  src="/img/secure-ehr/ehr-overview.svg"
+  alt="The full EHR architecture: patient-scoped retrieval, Presidio redaction, NeMo guardrails, LLM and Streamlit."
+  caption="Redrawn from Monal's in-depth overview, 0:39 to 0:59 (page 3)."
+/>
 
 He labels redaction and the guardrail together as the two places HIPAA
 compliance lives in this system.
@@ -336,22 +296,11 @@ the dataset, build the database server on AWS, create the application's
 database user, point the project at it with a `.env` file, set up Python,
 and load the CSV.
 
-*Redrawn from Monal's Phase 0 board, 1:10 to 1:34 (page 4).*
-
-```mermaid
-flowchart TB
-    subgraph AWS["On AWS, in this order"]
-        direction LR
-        SG["① Security group"] --> EC2["② EC2 instance<br/>4 GB RAM · 20 GB storage"] --> EIP["③ Elastic IP"]
-    end
-    EIP --> LI["Launch the instance"] --> PG["Install Postgres<br/>and configure it"]
-    subgraph LOCAL["On your machine"]
-        direction LR
-        UV["uv: one global environment"] --> PY["Data ingestion in Python:<br/>schema · CSV into the EC2 database · test"]
-    end
-    PY -->|"connects to the Elastic IP"| PG
-    PG --> DONE["Data is ingested:<br/>the stand-in hospital database exists"]
-```
+<Infographic
+  src="/img/secure-ehr/ehr-phase0.svg"
+  alt="AWS security group, EC2, Elastic IP, PostgreSQL setup and local Python data ingestion."
+  caption="Redrawn from Monal's Phase 0 board, 1:10 to 1:34 (page 4)."
+/>
 
 ### Set up version control before touching AWS
 
@@ -821,14 +770,11 @@ what a dedicated vector database would?** Postgres can, once the `pgvector`
 extension is installed, so the plan is to install it, add an embedding
 column to the existing table, and fill it.
 
-*Redrawn from Monal's Phase 1 board, 1:54 to 2:02 (page 4).*
-
-```mermaid
-flowchart LR
-    EXT["Install pgvector"] --> DB["Database ehr_db"]
-    DB --> T["Table patient_encounters<br/>existing columns + clinical_embedding vector(768)"]
-    M["Embedding model"] -->|"768 numbers per row"| T
-```
+<Infographic
+  src="/img/secure-ehr/ehr-phase1.svg"
+  alt="A pgvector extension adds a clinical embedding column with 768 dimensions to the patient encounters table."
+  caption="Redrawn from Monal's Phase 1 board, 1:54 to 2:02 (page 4)."
+/>
 
 ```bash
 # On the EC2 instance
@@ -910,14 +856,11 @@ The table has a `clinical_embedding` column; every value in it is still
 `NULL`. Before writing the embedding script, the session asks: **which
 embedding model?**
 
-*Redrawn from Monal's Phase 2 board, 2:09 to 2:14 (page 5).*
-
-```mermaid
-flowchart LR
-    C["comments and other fields<br/>(text)"] --> E{"Which embedder?<br/>MiniLM, or a clinical model?"}
-    E -->|"must know medicines, drugs, diseases"| B["BioClinical ModernBERT<br/>768 dimensions"]
-    B --> COL["clinical_embedding column<br/>NULL becomes a vector"]
-```
+<Infographic
+  src="/img/secure-ehr/ehr-phase2.svg"
+  alt="Clinical text is embedded with a domain-aware model and fills the previously null vector column."
+  caption="Redrawn from Monal's Phase 2 board, 2:09 to 2:14 (page 5)."
+/>
 
 ### Doubts · Why not a general-purpose embedder? · 02:11:20
 
@@ -1070,17 +1013,11 @@ therefore ~11,000 rows, not the full 230,000. Remember this when the
 `patients` dropdown later looks smaller than expected.
 :::
 
-*Redrawn from Monal's recap board, 2:21 to 2:27 (page 5).*
-
-```mermaid
-flowchart LR
-    subgraph DONE["Done live, on the demo instance"]
-        direction TB
-        A["EC2 · Postgres · database · table"] --> B["Ingested data"] --> C["pgvector extension"] --> D2["New embedding column"] --> E["Embeddings from combined patient details"]
-    end
-    DONE -. "all 230k rows would take 6-7 hours" .-> PREP["Prepared instance:<br/>~11,000 rows embedded in 20 min"]
-    PREP -->|"select it in .env"| Q["query → embedding → cosine search → Postgres"]
-```
+<Infographic
+  src="/img/secure-ehr/ehr-recap.svg"
+  alt="The database and embedding work so far, the prepared 11000-row demo, and cosine similarity search."
+  caption="Redrawn from Monal's recap board, 2:21 to 2:27 (page 5)."
+/>
 
 ## Phase 3 — Semantic search, scoped to one patient
 
@@ -1271,32 +1208,17 @@ How it actually works, in the order the class was walked through it:
    detected entity gets redacted. Custom recognizers are scored high (`0.9`,
    `1.0`) specifically so they always clear that bar.
 
-*Redrawn from Monal's Presidio board, 2:37 to 2:47 (page 6).*
+<Infographic
+  src="/img/secure-ehr/ehr-presidio.svg"
+  alt="Presidio redaction in the request path, regional ID recognisers, and the analyzer and anonymizer engines."
+  caption="Redrawn from Monal's Presidio board, 2:37 to 2:47 (page 6)."
+/>
 
-```mermaid
-flowchart LR
-    T["Raw text from the database"] --> AN["AnalyzerEngine<br/>tags entities"]
-    DL["Deny list: hospital names<br/>tagged ORGANIZATION"] --> AN
-    RX["Regex per region: US SSN,<br/>India Aadhaar, Canada, EU ..."] --> AN
-    AN --> EN["PERSON · ORGANIZATION<br/>numbers · EMAIL_ADDRESS ..."]
-    EN --> ANON["AnonymizerEngine<br/>replaces the chosen types"]
-    ANON --> OUT["Redacted text, safe for the prompt"]
-```
-
-*Monal's worked example of per-entity scores, 2:46 (page 6).*
-
-```mermaid
-flowchart TB
-    S["'Hello, how are you. SSN: 111-22-3333, my name is John'"]
-    S --> W1["Hello · how · are · you<br/>scores 0.1 to 0.2"]
-    S --> W2["111-22-3333 → US_SSN<br/>score 0.9, from the custom pattern"]
-    S --> W3["my · name · is<br/>score 0.1"]
-    S --> W4["John → PERSON<br/>score 0.7"]
-    W1 --> K["Below the threshold: kept"]
-    W3 --> K
-    W2 --> X["Above the threshold: redacted"]
-    W4 --> X
-```
+<Infographic
+  src="/img/secure-ehr/ehr-scores.svg"
+  alt="Entity confidence scores for the sample sentence, with SSN and person spans above the redaction threshold."
+  caption="Redrawn from Monal's entity-score example, 2:46 (page 6), with the 0.45 cut-off from page 7."
+/>
 
 On the board the cut-off is written as 0.45; the committed code uses
 `score_threshold=0.4`. Either way, the custom SSN pattern (0.9) and a
@@ -1395,15 +1317,11 @@ against the Colang examples, and to generate the final answer once a
 question is allowed through. That's a paid API call, and the session is
 explicit about which provider and why:
 
-*Redrawn from Monal's guardrails board, about 2:50 (page 7).*
-
-```mermaid
-flowchart LR
-    CO["rails.co"] --> FL["Create the flows"] --> NM["NeMo Guardrails"]
-    NM -->|"asks"| LLM["An LLM, through an API key:<br/>DeepSeek (cheap, powerful)"]
-    LLM --> RJ["Reject: fixed refusal"]
-    LLM --> AC["Accept: carry on,<br/>no error"]
-```
+<Infographic
+  src="/img/secure-ehr/ehr-guardrails.svg"
+  alt="Colang flows and the DeepSeek-backed guardrail accept or reject a request."
+  caption="Redrawn from Monal's guardrails board, about 2:50 (page 7)."
+/>
 
 1. **Provider: DeepSeek**, chosen for being "very cheap and very powerful."
    Monal topped up **\$2** total for this and a previous FDE session
@@ -1532,23 +1450,11 @@ Three components now exist independently: vector search, redaction,
 guardrails. The API layer is where they compose into one request/response
 cycle.
 
-*Redrawn from Monal's board, 3:05 to 3:08 (page 7): one request end to end, then the three APIs that serve it.*
-
-```mermaid
-flowchart LR
-    U["User"] --> Q["Query"] --> E["Embedding"] -->|"cosine"| DB[("EC2 database")]
-    DB --> R["Records"] --> RED["Redaction"] --> GR["Guardrails"] --> D["Clean data"]
-    D --> LLM["LLM"]
-    Q -. "the question" .-> LLM
-    LLM --> A["Response"]
-```
-
-```mermaid
-flowchart LR
-    API["src/api/main.py"] --> A1["API 1 · /clinical-query<br/>trial: fixed text + question → response"]
-    API --> A2["API 2 · /chat<br/>question → DB → redact → guardrail → answer"]
-    API --> A3["API 3 · /patients<br/>every patient ID, for the drop-down"]
-```
+<Infographic
+  src="/img/secure-ehr/ehr-request-apis.svg"
+  alt="A query moves through retrieval, redaction, guardrails and generation; three APIs serve the demo, chat and patient list."
+  caption="Redrawn from Monal's board, 3:05 to 3:08 (page 7): one request end to end, then the three APIs that serve it."
+/>
 
 ### Complete file: `src/api/main.py`
 
@@ -1851,30 +1757,17 @@ Read top to bottom, this is deliberately small:
 - **`patient_id` rides along in every `payload`**, exactly matching the
   `/api/v1/chat` contract discussed above.
 
-*Redrawn from Monal's UI and memory boards, 3:08 to 3:26 (pages 8 and 9).*
+<Infographic
+  src="/img/secure-ehr/ehr-ui-prompt.svg"
+  alt="Streamlit patient selection and chat, with the newest question joined to clinical context before the guardrail."
+  caption="Redrawn from Monal's UI and prompt board, 3:08 to 3:26 (page 8)."
+/>
 
-```mermaid
-flowchart TB
-    subgraph PAGE["The Streamlit page"]
-        direction LR
-        SB["Sidebar: drop-down,<br/>populated from /patients"] ~~~ CH["Chat: user and bot messages,<br/>input box at the bottom"]
-    end
-    CH -->|"messages[-1] is the new question"| PR["prompt = clinical context from the DB<br/>+ the user's question"]
-    PR --> GR["Guardrail"]
-```
-
-```mermaid
-flowchart LR
-    subgraph REACT["Not used: a ReAct agent in LangGraph"]
-        direction LR
-        RS["Reason"] --> AC["Act with tools"] --> RS
-    end
-    subgraph FLOW["Used: a plain workflow"]
-        direction TB
-        M1["role: user · content: question"] --> M2["role: assistant · content: answer"] --> M3["role: user · content: next question"]
-    end
-    FLOW -->|"whole list sent on every LLM call"| H["Conversation history,<br/>the only memory"]
-```
+<Infographic
+  src="/img/secure-ehr/ehr-memory.svg"
+  alt="A plain workflow retains the conversation as a growing message list and sends the history to the LLM on each call."
+  caption="Redrawn from Monal's workflow and memory boards, 3:08 to 3:26 (pages 8 and 9)."
+/>
 
 Rendered, this is what the UI actually looks like: a patient selected in
 the sidebar, and one turn of the redacted, guardrail-checked answer with the
@@ -1944,19 +1837,11 @@ The plan he sketches is short: clone the project onto the server, build a
 Docker image from it, and run that image as a container. CI/CD is
 deliberately left out (see the Doubts section at the end of this phase).
 
-*Redrawn from Bappy's Excalidraw sketch, 3:41 to 3:45.*
-
-```mermaid
-flowchart TB
-    GH["Project on GitHub"] --> DZ["Dockerise"] --> IMG["Docker image"] --> RUN["Run the image as a container"]
-    GH -->|"git clone"| EC2["AWS EC2<br/>with Docker installed"]
-    RUN --> EC2
-    subgraph WHY["Why Docker: the same box on every OS"]
-        direction LR
-        OS["Any operating system"] --> CT["Container"] --> APP["App"]
-    end
-    CI["CI/CD: named, not built"] -.-> EC2
-```
+<Infographic
+  src="/img/secure-ehr/ehr-docker-plan.svg"
+  alt="GitHub project to Docker image and container on AWS EC2, with CI/CD named but left out of the session."
+  caption="Redrawn from Bappy's Excalidraw sketch, 3:41 to 3:45."
+/>
 
 The result, as deployed:
 

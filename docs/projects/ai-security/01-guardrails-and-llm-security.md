@@ -654,6 +654,7 @@ rails:
       - sanitize bot response
 """
 
+
 # ─────────────────────────────────────────────────────────────
 # COLANG BUILDING BLOCKS (each is additive / composable)
 # ─────────────────────────────────────────────────────────────
@@ -737,6 +738,7 @@ define flow greeting
   bot express greeting
   stop
 
+
 define user ask capabilities
   "what can you do"
   "what do you know"
@@ -753,6 +755,7 @@ define flow capabilities
   user ask capabilities
   bot explain capabilities
   stop
+
 
 define user express farewell
   "bye"
@@ -836,6 +839,7 @@ import re
 from typing import Optional
 from nemoguardrails.actions import action
 
+
 @action(is_system_action=True)
 async def detect_pii_in_input(context: Optional[dict] = None):
     """Returns list of PII type names found, or empty list (falsy) if clean."""
@@ -852,6 +856,7 @@ async def detect_pii_in_input(context: Optional[dict] = None):
              if re.search(pat, user_message, re.IGNORECASE)]
     return found
 
+
 @action(is_system_action=True)
 async def classify_urgency(context: Optional[dict] = None):
     """Returns True if the message signals a production emergency."""
@@ -861,6 +866,7 @@ async def classify_urgency(context: Optional[dict] = None):
         "emergency", "not working", "urgent", "p0", "p1",
     ]
     return any(kw in msg for kw in urgent_keywords)
+
 
 @action(is_system_action=True)
 async def sanitize_output(context: Optional[dict] = None):
@@ -970,21 +976,25 @@ _YAML_MAP = {
     7: _YAML_OUTPUT_RAILS,
 }
 
+
 def get_rails_config(exp_num: int) -> RailsConfig:
     return RailsConfig.from_content(
         colang_content=_COLANG_MAP[exp_num],
         yaml_content=_YAML_MAP[exp_num],
     )
 
+
 def register_actions(rails: LLMRails, exp_num: int) -> None:
     for action_fn in _ACTION_MAP.get(exp_num, []):
         rails.register_action(action_fn)
+
 
 def build_rails(exp_num: int, llm) -> LLMRails:
     config = get_rails_config(exp_num)
     rails  = LLMRails(config, llm=llm)
     register_actions(rails, exp_num)
     return rails
+
 
 COLANG_SNIPPETS = {
     1: "(No Colang — this is a raw LLM call with no NeMo rails)",

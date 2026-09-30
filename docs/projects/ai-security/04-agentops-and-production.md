@@ -15,6 +15,7 @@ tags:
 ---
 
 import Infographic from '@site/src/components/Infographic';
+import HPALab from '@site/src/components/viz/HPALab';
 
 > **Module 4 of 4** ·
 > [Watch from 5:50:47](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=21047s) ·
@@ -897,6 +898,7 @@ from src.schemas.api.ask import AskRequest, AskResponse
 
 logger = logging.getLogger(__name__)
 
+
 class CacheClient:
     """Redis-based exact match cache for RAG queries."""
 
@@ -1124,6 +1126,7 @@ mcp = FastMCP(
     ),
 )
 
+
 @dataclass
 class MCPContext:
     opensearch_client: OpenSearchClient
@@ -1133,17 +1136,21 @@ class MCPContext:
     agentic_rag_service: AgenticRAGService
     database: BaseDatabase
 
+
 _mcp_context: Optional[MCPContext] = None
+
 
 def set_mcp_context(ctx: MCPContext) -> None:
     global _mcp_context
     _mcp_context = ctx
     logger.info("MCP context initialized")
 
+
 def get_mcp_context() -> MCPContext:
     if _mcp_context is None:
         raise RuntimeError("MCP context not initialized — services must be started first")
     return _mcp_context
+
 
 # Import tool/resource modules to trigger @mcp.tool() / @mcp.resource() registration.
 # These imports MUST stay at the bottom — `mcp` must be defined first.
@@ -1168,6 +1175,7 @@ import logfire
 from src.mcp_server.server import get_mcp_context, mcp
 
 logger = logging.getLogger(__name__)
+
 
 @mcp.tool()
 async def ask_question(
@@ -1592,6 +1600,7 @@ Flags:
 """
 from locust import HttpUser, task, between
 
+
 class RAGApiUser(HttpUser):
     """Simulates a user asking questions to the RAG API."""
 
@@ -1653,6 +1662,10 @@ kubectl get pods -n production -w    # in a third
 | **50 users** | Failures started around **40%** and settled near **22%** as the HPA reached its six-pod maximum, with some pods stuck `Pending`. Namespace memory touched about 33 GB against the two nodes' 32 GB. No container was OOM-killed, thanks to the 6 GiB minimum. |
 
 He stops there because every request is costing real money in API calls.
+
+*Interactive exercise added to these notes. This is a simplified simulation; its outputs are not measurements from the video.*
+
+<HPALab />
 
 ### Doubts · Why not test with 10,000 users? · 7:32
 

@@ -36,6 +36,16 @@ class Doc:
         cap = f'\n  caption="{caption}"' if caption else ""
         return f'<Infographic\n  src="{src}"\n  alt="{alt}"{cap}\n/>'
 
+    def _splice(self, start: int, end: int, text: str):
+        """Replace s[start:end] with text, tidying blank lines only at the seam.
+
+        A global collapse would also shrink blank lines inside code blocks, so the
+        tidy is limited to a few characters either side of the edit.
+        """
+        self.s = self.s[:start] + text + self.s[end:]
+        a, b = max(0, start - 4), min(len(self.s), start + len(text) + 4)
+        self.s = self.s[:a] + re.sub(r"\n{3,}", "\n\n", self.s[a:b]) + self.s[b:]
+
     def _one(self, anchor: str) -> re.Match:
         matches = list(_flex(anchor).finditer(self.s))
         if len(matches) != 1:
@@ -52,9 +62,7 @@ class Doc:
         k = self.s.find("\n```", j + 10)
         k = self.s.find("\n", k + 4)
         end = k + 1 if k != -1 else len(self.s)
-        self.s = self.s[:start] + (replacement + "\n" if replacement else "") + self.s[end:]
-        # collapse the blank lines a removal can leave behind
-        self.s = re.sub(r"\n{3,}", "\n\n", self.s)
+        self._splice(start, end, replacement + "\n" if replacement else "")
         self.count += 1
 
     def replace_mermaid_containing(self, needle: str, replacement: str):
@@ -68,16 +76,14 @@ class Doc:
         last_line = before[before.rfind("\n") + 1:]
         if last_line.startswith("*") and last_line.endswith("*"):
             start = before.rfind("\n") + 1
-        self.s = self.s[:start] + replacement + "\n" + self.s[k + 1:]
-        self.s = re.sub(r"\n{3,}", "\n\n", self.s)
+        self._splice(start, k + 1, replacement + "\n")
         self.count += 1
 
     def insert_after(self, anchor: str, block: str):
         m = self._one(anchor)
         end = self.s.find("\n", m.end())
         end = len(self.s) if end == -1 else end + 1
-        self.s = self.s[:end] + "\n" + block + "\n" + self.s[end:]
-        self.s = re.sub(r"\n{3,}", "\n\n", self.s)
+        self._splice(end, end, "\n" + block + "\n")
         self.count += 1
 
     def ensure_import(self, line: str = IMPORT):
