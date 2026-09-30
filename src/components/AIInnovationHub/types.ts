@@ -7,6 +7,7 @@ export type RawDiscovery = {
   url: string;
   source: string;
   publishedAt: string;
+  sharedAt?: string;
   description: string;
   authors?: string[];
   image?: string;
@@ -34,7 +35,7 @@ export type Discovery = RawDiscovery & {
 
 export type SourceReport = {
   source: string;
-  status: 'ok' | 'skipped' | 'error';
+  status: 'ok' | 'partial' | 'skipped' | 'error';
   count: number;
   message?: string;
 };

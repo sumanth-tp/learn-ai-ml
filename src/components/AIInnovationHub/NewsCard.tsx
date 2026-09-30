@@ -4,7 +4,7 @@ import styles from './styles.module.css';
 const ICONS = {papers: '⌁', models: '◇', tools: '⌘', videos: '▶'};
 
 function formatDate(value: string) {
-  if (!value) return 'Recently published';
+  if (!value) return 'Date unavailable';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString(undefined, {day: 'numeric', month: 'short', year: 'numeric'});
@@ -17,7 +17,7 @@ export default function NewsCard({item}: {item: Discovery}) {
       <div className={styles.cardBody}>
         <div className={styles.cardMeta}>
           <span className={styles.categoryIcon} aria-hidden="true">{ICONS[item.category]}</span>
-          <span>{item.source}</span><span>·</span><time dateTime={item.publishedAt}>{formatDate(item.publishedAt)}</time>
+          <span>{item.source}</span><span>·</span><time dateTime={item.publishedAt || item.sharedAt}>{item.sharedAt && !item.publishedAt ? `Shared ${formatDate(item.sharedAt)}` : formatDate(item.publishedAt)}</time>
         </div>
         <h3><a href={item.url} target="_blank" rel="noreferrer">{item.title}</a></h3>
         {item.authors && item.authors.length > 0 && <p className={styles.authors}>{item.authors.join(', ')}</p>}

@@ -15,7 +15,7 @@ export default function AINewsPage(): ReactNode {
             <span className={styles.eyebrow}>AI Innovation Hub</span>
             <Heading as="h1">Fresh AI developments,<br /><span>when you ask for them.</span></Heading>
             <p>One click checks public research, model and developer sources. Gemini or Groq can turn the raw records into concise learning notes, while every claim stays linked to the original.</p>
-            <div className={styles.sourceLine}><span>OpenAlex</span><i /> <span>Hugging Face</span><i /> <span>GitHub</span><i /> <span>YouTube via community index</span></div>
+            <div className={styles.sourceLine}><span>OpenAlex / Hugging Face Papers</span><i /> <span>Hugging Face models</span><i /> <span>GitHub</span><i /> <span>YouTube / community video indexes</span></div>
           </header>
           <AIInnovationHub />
           <footer className={styles.disclaimer}>Results are generated on demand and may be incomplete. Treat summaries as a reading shortlist, then verify details in the linked source.</footer>

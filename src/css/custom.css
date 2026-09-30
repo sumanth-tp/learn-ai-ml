@@ -774,15 +774,16 @@ button[class*="copyButton_"] {
   backdrop-filter: blur(6px);
 }
 
-/* Tables: wrapped, rounded, scrollable on small screens */
+/* Wide tables scroll inside the article at every screen size. */
 .markdown table {
-  display: table;
+  display: block;
   width: 100%;
+  max-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: var(--shadow-xs);
   font-size: 0.92rem;
 }

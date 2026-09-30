@@ -144,6 +144,7 @@ const config: Config = {
         src: "img/logo.svg",
       },
       items: [
+        { to: "/docs/category/daily", label: "Daily", position: "left" },
         {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
@@ -177,6 +178,7 @@ const config: Config = {
           title: "Learn",
           items: [
             { label: "Roadmap", to: "/docs/intro" },
+            { label: "Daily notes", to: "/docs/category/daily" },
             { label: "Production LLM track", to: "/llm-roadmap" },
             { label: "Deep learning", to: "/docs/category/dnn" },
             { label: "Statistics", to: "/docs/category/statistics" },

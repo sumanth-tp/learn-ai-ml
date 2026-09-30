@@ -1,0 +1,10 @@
+{
+  "label": "Daily",
+  "position": 0,
+  "link": {
+    "type": "generated-index",
+    "slug": "/category/daily",
+    "title": "Daily",
+    "description": "Daily study notes and reference material, with the original documents available to read and download."
+  }
+}

@@ -3,6 +3,10 @@
   margin-top: 0;
 }
 
+.docItemCol {
+  min-width: 0;
+}
+
 @media (min-width: 997px) {
   .docItemCol {
     max-width: 75% !important;
@@ -33,6 +37,7 @@
 
 .tocHeader {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;

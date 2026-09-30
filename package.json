@@ -13,6 +13,7 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
+    "test:ai-updates": "node --test tests/ai-updates.test.cjs",
     "dev": "npm run build && docusaurus serve"
   },
   "dependencies": {
