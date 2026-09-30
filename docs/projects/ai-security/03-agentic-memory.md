@@ -659,6 +659,20 @@ but not how a bank with millions of customers should engineer memory. And
 the next problem remains: *how long* can the context be kept? He points to
 work on shrinking the KV cache as one research direction.
 
+<Infographic
+  src="/img/ai-security/m3-kv-cache.svg"
+  alt="KV cache growth with tokens and layers, followed by MHA separate keys and values, GQA shared groups, and MLA compressed latent storage."
+  caption="Redrawn from the web-page diagrams shown briefly at 4:19:00 to 4:19:55."
+/>
+
+:::note Correction to the visual aside
+The page shown in the video describes 32 query heads sharing 8 KV groups, then says
+the cache roughly halves. Holding head dimension, layers, sequence length and
+precision fixed, the K/V storage ratio for that example is 8/32, or one quarter
+of the equivalent MHA cache. Actual memory use depends on the model's architecture.
+:::
+
+
 ### Complete file: `t04_summary_buffer.py`
 
 *Not from the session.*
@@ -1584,6 +1598,20 @@ Rules are cheap, fast and predictable, but brittle: "What's my pay these
 days?" falls through to vector search. An LLM or a small trained classifier
 generalises better at the cost of a call per message; a common compromise
 is rules first, a model only when no rule fires.
+
+### Aside: temporal memory
+
+The architecture notebook briefly shows a temporal-memory board at 4:06 and
+4:11. It is not taught as a separate technique in the thirteen-part sequence.
+Timestamp filters narrow the candidate records, and the retrieval path combines
+semantic similarity with recency. A separate path groups records into an event
+timeline. This distinguishes time-aware retrieval from deleting old memories.
+
+<Infographic
+  src="/img/ai-security/m3-temporal.svg"
+  alt="Timestamped memory and a query feed a time filter, semantic and recency scorers, and combined top-k ranking; a separate branch builds an event timeline."
+  caption="Redrawn from the temporal-memory board shown at 4:06:04 to 4:06:10 and 4:11:17."
+/>
 
 ## 13. Forgetting and decay
 

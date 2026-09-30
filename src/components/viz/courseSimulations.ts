@@ -44,7 +44,8 @@ export function forgettingSeries(halfLife: number, boost: number, threshold: num
     if (prunedAt === null) {
       strength *= 0.5 ** (1 / halfLife);
       if (access) strength = Math.min(1, strength + boost);
-      if (strength < threshold) {prunedAt = hour; strength = 0;}
+      // Repeated decay can land a few ulps below an exactly equal threshold.
+      if (strength < threshold - 1e-12) {prunedAt = hour; strength = 0;}
     }
     points.push({hour, strength, access});
   }

@@ -8,6 +8,8 @@ description: "Complete the Enterprise RAG project with NeMo and Portkey integrat
 tags: [projects, rag, evaluation, guardrails, aws, multimodal]
 ---
 
+import Infographic from '@site/src/components/Infographic';
+
 > **Session 2 of 2** · [Session and transcript](https://www.youtube.com/watch?v=jOgqWdck7BU) · 9 hours 12 minutes · [Shared materials](https://docs.google.com/document/d/1wMPQL2NJTzT70GLBVYr3hKrObCmYrwhwvTgoEb0PLWk/edit?tab=t.0)
 
 Turn the working text assistant into a system whose controls, answer quality, deployment behaviour and document-parsing limits can be examined explicitly.
@@ -124,6 +126,12 @@ How to read it:
 
 ## 1. Revisit the application before changing it
 
+<Infographic
+  src="/img/enterprise-rag/s2-langgraph-graph.svg"
+  alt="The LangGraph the app renders"
+  caption="Redrawn from Session 2: 0:50:00–0:50:40 (again 2:01)."
+/>
+
 Start from `stage-3-rerank-memory`. The walkthrough revisits ingestion, the planner, 15-candidate retrieval, five-chunk reranking and the responder. A technical query about production container orchestration is rewritten to include useful Kubernetes terms, then searched against the corpus.
 
 ```mermaid
@@ -135,6 +143,24 @@ flowchart LR
 ```
 
 ### The recap boards · 0:17 to 0:31
+
+<Infographic
+  src="/img/enterprise-rag/s2-recap-advanced-rag.svg"
+  alt="Advanced RAG · what we already built"
+  caption="Redrawn from Session 2: 0:17:40–0:20:10."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-recap-scalability.svg"
+  alt="Scalability, K8s data and the goal"
+  caption="Redrawn from Session 2: 0:20:30–0:23:00."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-recap-rerank-observability.svg"
+  alt="Retrieval is math, reranking is meaning"
+  caption="Redrawn from Session 2: 0:28:00–0:31:00."
+/>
 
 Three whiteboard pages carry the recap before any new code is written.
 
@@ -207,6 +233,18 @@ flowchart LR
 
 ### Aside · API models versus LLM engineering · 1:04 to 1:11
 
+<Infographic
+  src="/img/enterprise-rag/s2-api-vs-llm-engineering.svg"
+  alt="API models vs LLM engineering"
+  caption="Redrawn from Session 2: ~1:04:00–1:08:10."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-knowledge-distillation.svg"
+  alt="Knowledge Distillation"
+  caption="Redrawn from Session 2: 1:08:30–1:11:30."
+/>
+
 The discussion then turns to provider dependency, fine-tuning and distillation. Calling a hosted model through an API is the fast route, but the board crosses out two things. The model is built for generic use cases, and the organisation's data leaves for a third party. The alternative the host calls "LLM engineering" starts from an open-source model trained on general data and fine-tunes it on the organisation's own data to build a private assistant. That route is costly.
 
 *Redrawn from the session's whiteboard, 1:04 to 1:08.*
@@ -242,6 +280,12 @@ These are model-strategy choices; the implemented work here remains RAG integrat
 
 ## 2. Integrate the NeMo gate
 
+<Infographic
+  src="/img/enterprise-rag/s2-llm-security.svg"
+  alt="LLM security"
+  caption="Redrawn from Session 2: 0:35:10–0:38:20."
+/>
+
 The host groups the next two integrations under one heading, LLM security (0:35). Guardrails decide what the assistant will talk about. Gateways control how each model call is made and which provider serves it. This section adds the first; section 3 adds the second.
 
 *Redrawn from the session's whiteboard, 0:35 to 0:36.*
@@ -255,6 +299,12 @@ flowchart LR
 The complete replacement files in sections 2–3 use teaching commit `52b771cbdea2e2215c823cc1ae522183b77a85b7`. Keep the Session 1 files that are not replaced. Save all replacement files before restarting the API; `main.py` imports the gateway-backed graph, so the whole integration is installed as one coherent checkpoint.
 
 ### 2.1 Define the intent and dialogue rules
+
+<Infographic
+  src="/img/enterprise-rag/s2-colang-define.svg"
+  alt="Guardrails → NeMo → Colang"
+  caption="Redrawn from Session 2: 0:38:20–0:40:50."
+/>
 
 On the board (0:38 to 0:41), guardrails are the rules and regulations of the conversation. NVIDIA's NeMo Guardrails writes them in Colang, in `.co` files, using three kinds of block. `define user` lists example messages for an intent, such as off-topic requests. `define bot` gives the canned reply, such as "I am an IT assistant". `define flow` joins the two: when the user's message matches that intent, the bot answers that way. The file below follows exactly this pattern, for off-topic, jailbreak, greeting and farewell intents.
 
@@ -520,6 +570,12 @@ The YAML contains an OpenAI model placeholder, but the explicit `llm=guard_llm` 
 
 ### Doubts · Why does a guardrail need an LLM? · 01:32
 
+<Infographic
+  src="/img/enterprise-rag/s2-guard-approaches.svg"
+  alt="Two ways to build a guard"
+  caption="Redrawn from Session 2: 1:22:50–1:24:30, revisited 1:33:00–1:34:00."
+/>
+
 **Mo:** If rules are defined, why is a language model used inside NeMo?
 
 **Response:** Free-form language needs to be mapped to canonical intents before a corresponding flow can run. Similar examples help that classification. Rules govern the subsequent dialogue behaviour, but user wording is not restricted to the exact examples.
@@ -708,6 +764,12 @@ This snippet exposes the gate branch; the repository's endpoint supplies the gra
 
 ## 3. Integrate Portkey into planner and responder
 
+<Infographic
+  src="/img/enterprise-rag/s2-gateway.svg"
+  alt="Gateways → Portkey"
+  caption="Redrawn from Session 2: 0:41:00–0:44:10."
+/>
+
 The gateway board (0:41 to 0:44) starts from the problem. With 100,000 users calling a provider's API directly, the provider's rate limits and slow responses become the user's problem. A gateway such as Portkey sits between the application and the providers. If OpenAI is unavailable, the request moves to Anthropic, and then to Gemini. The same layer can front MCP servers and their tools, and it hands out **virtual keys**, so the application refers to a key stored in the gateway instead of holding each provider's real key.
 
 *Redrawn from the session's whiteboard, 0:41 to 0:44.*
@@ -755,6 +817,12 @@ sequenceDiagram
 ```
 
 ### 3.1 Define the gateway policy
+
+<Infographic
+  src="/img/enterprise-rag/s2-gateway-keys.svg"
+  alt="10 LLMs, one API"
+  caption="Redrawn from Session 2: 0:44:10–0:45:00."
+/>
 
 #### Complete file: `requirements.txt`
 
@@ -975,6 +1043,12 @@ The integration slugs must exist in your Portkey workspace. The first target is 
 **`NOT from session`** The code uses `cache.mode = "simple"`. A comment describing semantic caching does not turn it into semantic caching. The cache is at the model-request boundary; upstream guardrails and retrieval can still execute.
 
 ### 3.2 Use an OpenAI-compatible interface
+
+<Infographic
+  src="/img/enterprise-rag/s2-gateway-explorer-streaming.svg"
+  alt="LLM Gateway Explorer · Streaming"
+  caption="Redrawn from Session 2: 1:48:05–1:48:40."
+/>
 
 #### Complete file: `app/agents/nodes/planner.py`
 
@@ -1220,6 +1294,24 @@ Use the same sequence as the demonstration: greeting, farewell, capabilities, an
 
 ## 4. Define what an evaluation measures
 
+<Infographic
+  src="/img/enterprise-rag/s2-why-evaluate.svg"
+  alt="Why a RAG system needs evals"
+  caption="Redrawn from Session 2: 0:35:10–0:38:20."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-evaluation-approaches.svg"
+  alt="Two approaches to AI evaluation"
+  caption="Redrawn from Session 2: 2:37:00–2:59:30."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-exam-analogy.svg"
+  alt="Evaluation analogy · examination"
+  caption="Redrawn from Session 2: 3:01:00–3:04:00 and 3:15:00–3:16:00."
+/>
+
 The need for evaluation is first raised much earlier, at 0:36 to 0:38. Classical ML and deep learning hold back a test split and score it with accuracy, precision and recall: deterministic arithmetic over labels. A chatbot's output is, in the host's words, "the most random thing", so a RAG system needs its own stage after ingestion and retrieval, with metrics built for generated text.
 
 *Redrawn from the session's whiteboard, 0:36 to 0:38.*
@@ -1315,6 +1407,18 @@ A model leaderboard evaluates a model on its benchmark. An application evaluatio
 
 ### The four fields that must stay separate
 
+<Infographic
+  src="/img/enterprise-rag/s2-exam-roles.svg"
+  alt="Set up the exam, then write it"
+  caption="Redrawn from Session 2: 3:05–3:16 (small side panels on the same board)."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-exam-marking.svg"
+  alt="B · Evaluating the exam"
+  caption="Redrawn from Session 2: 3:17:30–3:18:40."
+/>
+
 | Field | Where it comes from | What it is used for |
 |---|---|---|
 | Question | Golden dataset | Input to the application |
@@ -1331,6 +1435,18 @@ A reference is not an actual response. A manually chosen relevant paragraph is n
 - Preserve the question, reference, actual response and actual evidence as distinct fields.
 
 ## 5. Build the dataset by running the real application
+
+<Infographic
+  src="/img/enterprise-rag/s2-dataset-flow.svg"
+  alt="Build an evaluation dataset from real RAG runs"
+  caption="Redrawn from Session 2: 3:05:00–3:16:00 (revisited 4:32)."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-judge-flow.svg"
+  alt="Evaluation flow · LLM as judge"
+  caption="Redrawn from Session 2: 3:17:00–3:36:00 (revisited 4:36)."
+/>
 
 
 <figure style={{overflowX: "auto"}}>
@@ -1395,6 +1511,18 @@ A judge should receive the inputs required by the metric. Sending every availabl
 
 ### Doubts · Who creates the golden dataset? · 03:29
 
+<Infographic
+  src="/img/enterprise-rag/s2-goldens-metrics.svg"
+  alt="Goldens and metrics"
+  caption="Redrawn from Session 2: 3:14:00 and 3:29:00–3:33:30."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-golden-synthesizer.svg"
+  alt="Generate synthetic goldens"
+  caption="Redrawn from Session 2: 4:09:40–4:10:30 (again 4:28:20)."
+/>
+
 **Discussion:** Domain experts define what a correct answer means. Airline cancellation/refund tasks and LCEL documentation questions require different references and success criteria.
 
 DeepEval's [synthetic data generation](https://deepeval.com/docs/synthesizer-introduction) is introduced as a way to generate candidate goldens from documents or contexts. Those candidates still need review; a generated reference can contain the same mistakes the evaluation is meant to detect.
@@ -1419,6 +1547,12 @@ flowchart LR
 - Synthetic goldens accelerate preparation but do not remove domain review.
 
 ## 6. Decide when evaluations run
+
+<Infographic
+  src="/img/enterprise-rag/s2-evaluation-schedule.svg"
+  alt="Where evaluation fits and when to run"
+  caption="Redrawn from Session 2: 3:36:30–3:42:00."
+/>
 
 The annual-exam versus unit-test analogy leads to two evaluation sizes. Small suites give quick feedback on ordinary changes. Larger suites provide broader coverage before major releases or on a schedule.
 
@@ -3363,6 +3497,18 @@ Copy the generated value into `.env`; keep it outside source control. The extern
 **`NOT from session`** Upstash in this deployment is the shared store for request-rate counters. The repository does not implement a semantic answer cache in Redis. Portkey's configured response cache is a separate component.
 
 ### 9.2 Jina embeddings and reranking
+
+<Infographic
+  src="/img/enterprise-rag/s2-jina-reranking.svg"
+  alt="Retrieve broadly, then rerank"
+  caption="Redrawn from Session 2: 5:26:00–5:27:40."
+/>
+
+<Infographic
+  src="/img/enterprise-rag/s2-voyage-ecosystem.svg"
+  alt="Search and retrieval ecosystem"
+  caption="Redrawn from Session 2: 5:28:10–5:28:30."
+/>
 
 This changes the vector space and the ranking boundary at the same time. The ingestion and query paths both call `jina-embeddings-v3`; Qdrant stores its 1,024-coordinate document vectors and searches with a query vector from that same model. The reranker receives the candidate **texts**, sends query and texts to `jina-reranker-v3`, and returns an ordered subset. It does not create new Qdrant vectors.
 
@@ -5776,6 +5922,12 @@ Then verify memory with the same thread ID, restart only the API container, and 
 
 ## 11. Deploy the application on AWS
 
+<Infographic
+  src="/img/enterprise-rag/s2-aws-architecture.svg"
+  alt="Enterprise RAG on AWS · deployment board"
+  caption="Redrawn from Session 2: 6:33:00–6:38:30, 6:47:30–6:51:30, 7:14:00–7:15:30."
+/>
+
 
 <figure style={{overflowX: "auto"}}>
 <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAwIiBoZWlnaHQ9Ijc4MCIgdmlld0JveD0iMCAwIDE1MDAgNzgwIj48ZGVmcz48bWFya2VyIGlkPSJhcnJvdyIgdmlld0JveD0iMCAwIDEwIDEwIiByZWZYPSI5IiByZWZZPSI1IiBtYXJrZXJXaWR0aD0iNyIgbWFya2VySGVpZ2h0PSI3IiBvcmllbnQ9ImF1dG8tc3RhcnQtcmV2ZXJzZSI+PHBhdGggZD0iTTAgMEwxMCA1TDAgMTBaIiBmaWxsPSIjMzM0MTU1Ii8+PC9tYXJrZXI+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNmY2ZjZmEiLz48c3R5bGU+dGV4dHtmb250LWZhbWlseTpBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZjtmaWxsOiMxNzIwMzN9LnRpdGxle2ZvbnQtc2l6ZToyOHB4O2ZvbnQtd2VpZ2h0OjcwMH0uc3VidGl0bGV7Zm9udC1zaXplOjE4cHg7Zm9udC13ZWlnaHQ6NzAwfS5zbWFsbHtmb250LXNpemU6MTVweH0udGlueXtmb250LXNpemU6MTNweH0uYm94e3N0cm9rZTojNDc1NTY5O3N0cm9rZS13aWR0aDoyO3J4OjEyfS5hcnJvd3tzdHJva2U6IzMzNDE1NTtzdHJva2Utd2lkdGg6Mi41O2ZpbGw6bm9uZTttYXJrZXItZW5kOnVybCgjYXJyb3cpfTwvc3R5bGU+PHRleHQgeD0iNzUwLjAiIHk9IjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiPkFXUyBERVBMT1lNRU5UIMK3IEFQUExJQ0FUSU9OIEFORCBNQU5BR0VEIFNFUlZJQ0VTPC90ZXh0PjxyZWN0IHg9IjU3NSIgeT0iNzAiIHdpZHRoPSIzNTAiIGhlaWdodD0iNjAiIHJ4PSIxMCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI3NTAuMCIgeT0iMTA1LjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiPlVzZXIgLyBCcm93c2VyPC90ZXh0PjxyZWN0IHg9IjU3NSIgeT0iMTgwIiB3aWR0aD0iMzUwIiBoZWlnaHQ9IjY1IiByeD0iMTAiIGZpbGw9IiNmZmY3ZWQiIHN0cm9rZT0iIzQ3NTU2OSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iNzUwLjAiIHk9IjIxNy41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5Sb3V0ZSA1MyDCtyBETlMgKG9wdGlvbmFsKTwvdGV4dD48cmVjdCB4PSI1NzUiIHk9IjMwMCIgd2lkdGg9IjM1MCIgaGVpZ2h0PSI3NSIgcng9IjEwIiBmaWxsPSIjZWZmNmZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9Ijc1MC4wIiB5PSIzMzEuNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+QXBwbGljYXRpb24gTG9hZCBCYWxhbmNlcjwvdGV4dD48dGV4dCB4PSI3NTAuMCIgeT0iMzUzLjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPkFQSSBwYXRoIC8gVUkgcGF0aDwvdGV4dD48cGF0aCBkPSJNNzUwIDEzMEw3NTAgMTgwIiBjbGFzcz0iYXJyb3ciLz48cGF0aCBkPSJNNzUwIDI0NUw3NTAgMzAwIiBjbGFzcz0iYXJyb3ciLz48cmVjdCB4PSIzMCIgeT0iNDAwIiB3aWR0aD0iMTExMCIgaGVpZ2h0PSIzMjAiIHJ4PSIxMCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI1ODUuMCIgeT0iNDM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5BV1MgVlBDIMK3IDIgQXZhaWxhYmlsaXR5IFpvbmVzIMK3IFByaXZhdGUgRmFyZ2F0ZSB0YXNrczwvdGV4dD48cmVjdCB4PSIxMTUiIHk9IjQ4NSIgd2lkdGg9IjQyMCIgaGVpZ2h0PSIxMDUiIHJ4PSIxMCIgZmlsbD0iI2UwZjJmZSIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIzMjUuMCIgeT0iNTIyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5BUEkgdGFyZ2V0IGdyb3VwIOKGkiBFQ1MgQVBJIHRhc2tzPC90ZXh0Pjx0ZXh0IHg9IjMyNS4wIiB5PSI1NDQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPkZhc3RBUEkgOjgwODAgwrcgMiBpbml0aWFsIHJlcGxpY2FzPC90ZXh0PjxyZWN0IHg9IjY1MCIgeT0iNDg1IiB3aWR0aD0iNDIwIiBoZWlnaHQ9IjEwNSIgcng9IjEwIiBmaWxsPSIjZGNmY2U3IiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9Ijg2MC4wIiB5PSI1MjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlVJIHRhcmdldCBncm91cCDihpIgRUNTIFVJIHRhc2s8L3RleHQ+PHRleHQgeD0iODYwLjAiIHk9IjU0NCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+U3RyZWFtbGl0IDo4NTAxIMK3IDEgaW5pdGlhbCByZXBsaWNhPC90ZXh0PjxwYXRoIGQ9Ik02OTAgMzc1TDMyNSAzNzVMMzI1IDQ4NSIgY2xhc3M9ImFycm93Ii8+PHBhdGggZD0iTTgxMCAzNzVMODYwIDM3NUw4NjAgNDg1IiBjbGFzcz0iYXJyb3ciLz48cmVjdCB4PSIxMTUiIHk9IjYyNSIgd2lkdGg9Ijk1NSIgaGVpZ2h0PSI2MCIgcng9IjEwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjU5Mi41IiB5PSI2NjAuMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCI+Q2xvdWRXYXRjaCBsb2dzIMK3IEVDUiBpbWFnZSDCtyBTZWNyZXRzIE1hbmFnZXIgwrcgQ0kvQ0Q8L3RleHQ+PHJlY3QgeD0iMTE4MCIgeT0iMzAwIiB3aWR0aD0iMjg1IiBoZWlnaHQ9IjM5MCIgcng9IjEwIiBmaWxsPSIjZjVmM2ZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjEzMjIuNSIgeT0iMzM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIj5FWFRFUk5BTCBNQU5BR0VEIFNFUlZJQ0VTPC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjM3NSIgY2xhc3M9InNtYWxsIj7igKIgUWRyYW50IMK3IHZlY3RvcnM8L3RleHQ+PHRleHQgeD0iMTIwNSIgeT0iNDE5IiBjbGFzcz0ic21hbGwiPuKAoiBOZW9uIMK3IGNoZWNrcG9pbnRzPC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjQ2MyIgY2xhc3M9InNtYWxsIj7igKIgVXBzdGFzaCDCtyByYXRlIGxpbWl0czwvdGV4dD48dGV4dCB4PSIxMjA1IiB5PSI1MDciIGNsYXNzPSJzbWFsbCI+4oCiIEppbmEgwrcgZW1iZWQvcmVyYW5rPC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjU1MSIgY2xhc3M9InNtYWxsIj7igKIgUG9ydGtleSDCtyBtb2RlbCBnYXRld2F5PC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjU5NSIgY2xhc3M9InNtYWxsIj7igKIgTG9nZmlyZSAvIExhbmdTbWl0aDwvdGV4dD48cGF0aCBkPSJNMTE0MCA1NDBMMTE4MCA1NDAiIGNsYXNzPSJhcnJvdyIvPjwvc3ZnPg==" style={{maxWidth: "none", width: "1500px"}} alt="AWS architecture board redrawn with the ALB, ECS/Fargate targets, supporting AWS services and managed external dependencies." loading="lazy" />
@@ -7019,6 +7171,12 @@ Cleanup is a separate, deliberate action after you finish. Preserve any wanted d
 
 ## 12. Read complex documents before choosing a parser
 
+<Infographic
+  src="/img/enterprise-rag/s2-parsing-paradigms.svg"
+  alt="Three paradigms for visual documents"
+  caption="Redrawn from Session 2: 7:34:00–7:40:00, 7:49–7:50, 8:04–8:05, 8:11, 8:15–8:18."
+/>
+
 The text assistant from Session 1 works when extraction preserves the evidence. A research paper makes the weakness visible: a page can contain two columns, a figure, a table, equations and footnotes. Flattening the page into one string may put a table value next to the wrong heading. The session uses the [Docling Technical Report](https://arxiv.org/pdf/2408.09869) as the common comparison document. A separate exercise uses [*Attention Is All You Need*](https://arxiv.org/pdf/1706.03762) to retrieve a page containing BLEU results.
 
 Here, *parsing* means recovering document content and structure for later indexing. The session compares three approaches in this order:
@@ -7093,6 +7251,12 @@ Visual page retrieval can select a page without transcribing it. The OCR paths c
 - Choose by measuring missed fields and questions on your actual document set.
 
 ## 13. Retrieve a PDF page with ColQwen2.5
+
+<Infographic
+  src="/img/enterprise-rag/s2-colpali-architecture.svg"
+  alt="ColPali architecture · late interaction"
+  caption="Redrawn from Session 2: 7:40:50–7:41:30."
+/>
 
 The visual retrieval path rasterises each page, sends it through ColQwen2.5 and keeps a sequence of vectors for that page. The query is also represented by multiple vectors. **Late interaction** scores each query vector against the best matching page vector and sums those maxima. A single cosine similarity between one query vector and one page vector would discard this richer matching structure.
 
@@ -7237,6 +7401,12 @@ flowchart LR
 The inspection step matters more than a pleasing demo screenshot. On the shared paper, the live comparison exposes missed links, missed table regions and boxes that cover only part of a figure. When an element is missing, later chunking cannot make it reappear.
 
 ### 14.1 Set up the OCR repository and sample paper
+
+<Infographic
+  src="/img/enterprise-rag/s2-ocr-repository.svg"
+  alt="Nemotron-Parse + Mistral OCR · repository architecture"
+  caption="Redrawn from Session 2: 8:39:00–8:40:00."
+/>
 
 Use the exact companion repository at revision [`c8d91fe`](https://github.com/sourangshupal/nemotron-parse-mistral-ocr/tree/c8d91fe0f5d474aa331dcdcde03da930ce212a9b). It targets Python 3.12 and keeps this work separate from the Python 3.11 application environment. The source repository's `pyproject.toml` is included below so package requirements stay next to the commands.
 
@@ -9409,6 +9579,12 @@ The live review found a missed text region and a missed table region even when m
 
 ## 15. Separate layout detection from text recognition
 
+<Infographic
+  src="/img/enterprise-rag/s2-layout-model.svg"
+  alt="PP-DocLayoutV3 · model architecture"
+  caption="Redrawn from Session 2: 8:14:00–8:15:00."
+/>
+
 The final demonstration uses **PP-DocLayout-V3** to find and label page regions, then **GLM-OCR** to read those regions. The local route calls the GLM model through Ollama. The output contains both recognised Markdown and per-region JSON, allowing a reader to check whether a missed word came from region detection, recognition or final formatting.
 
 ```mermaid
@@ -9435,6 +9611,12 @@ flowchart LR
 ```
 
 ### 15.1 Set up the dual-stage repository
+
+<Infographic
+  src="/img/enterprise-rag/s2-multimodal-pipeline.svg"
+  alt="Multimodal RAG · four repository phases"
+  caption="Redrawn from Session 2: 8:59:50–9:00:20."
+/>
 
 Use the companion [`multi-modal-rag`](https://github.com/sourangshupal/multi-modal-rag/tree/2e004a1abdb60ff4b6b38ccf850ed032d7abfe8f) revision. This repo targets Python 3.12 and includes a local `ollama/` demonstration. The application may run slowly on CPU; a GPU or Apple Silicon acceleration can shorten processing. The video loads **saved JSON** for its visual comparison near the end, so seeing boxes in that demonstration does not mean a fresh OCR run occurred at that moment.
 

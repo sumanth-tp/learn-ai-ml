@@ -53,6 +53,14 @@ test('decay halves by the half-life and reinforcement improves retention', () =>
   assert.equal(early.points[24].strength, 0, 'an access must not revive deleted content');
 });
 
+test('a memory equal to the pruning threshold survives that sample', () => {
+  for (const halfLife of [6, 18, 24, 30, 42, 54]) {
+    const result = forgettingSeries(halfLife, 0, 0.25, false);
+    assert.equal(result.prunedAt, 2 * halfLife + 1);
+    assert(result.points[2 * halfLife].strength > 0);
+  }
+});
+
 test('HPA separates desired and running pods; scale down waits five minutes', () => {
   const low = hpaSimulation(10, 8);
   assert(low.every(row => row.desired === 2 && row.pending === 0));
