@@ -12,6 +12,8 @@ description:
 tags: [projects, security, guardrails, nemo-guardrails, colang, logfire, pii]
 ---
 
+import Infographic from '@site/src/components/Infographic';
+
 > **Module 1 of 4** ·
 > [Watch from 0:03:08](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=188s) ·
 > about 70 minutes of the 7h48m course ·
@@ -55,15 +57,11 @@ through it. The mentor names two threats and one cost:
 - **Cost.** Every off-topic answer burns tokens. A security layer that
   refuses early also saves money.
 
-*Redrawn from the mentor's whiteboard (0:03 to 0:06).*
-
-```mermaid
-flowchart TD
-    G["LLM guardrails"] --> S["LLM security"]
-    S --> P["Prompt injection"]
-    S --> J["Jailbreak"]
-    G --> C["Cost saving"]
-```
+<Infographic
+  src="/img/ai-security/m1-why-guardrails.svg"
+  alt="LLM guardrails lead to LLM security, which covers prompt injection, jailbreaks and cost saving."
+  caption="Redrawn from the mentor's whiteboard, 0:03 to 0:06."
+/>
 
 ### The two kinds of LLM application
 
@@ -71,17 +69,11 @@ Use cases fall into two groups, **agentic AI** and **RAG**. RAG is the
 common one: the user asks a question, the LLM looks up the company's own
 documents, and answers from them.
 
-*Redrawn from the mentor's whiteboard (0:06 to 0:07).*
-
-```mermaid
-flowchart LR
-    LL["LLM use cases"] --> AG["Agentic AI"]
-    LL --> RG["RAG"]
-    RG -.-> U
-    U["User"] -->|"question"| L["LLM"]
-    L <-->|"looks up"| D[("Company-specific<br/>documents")]
-    L -->|"answer"| U
-```
+<Infographic
+  src="/img/ai-security/m1-where-guardrail-sits.svg"
+  alt="LLMs power agentic AI and RAG; a RAG app without a guard, the same app with a guardrail around the LLM, and why outputs need checking on 50 GB of data."
+  caption="Redrawn from the mentor's whiteboard, 0:06 to 0:13."
+/>
 
 ### A chatbot that already has guardrails
 
@@ -118,18 +110,6 @@ flowchart LR
     BG -->|"only what the rules allow"| P["The person being protected<br/>(the LLM)"]
 ```
 
-*Redrawn from the mentor's whiteboard (0:11 to 0:12).*
-
-```mermaid
-flowchart LR
-    U["User"] -->|"message"| IG{"Guardrails<br/>(input)"}
-    IG -->|"secure"| L["LLM"]
-    IG -->|"not secure"| R["Refusal"]
-    L --> OG{"Guardrails<br/>(output)"}
-    OG -->|"clean"| U2["User"]
-    OG -->|"irrelevant or unsafe"| S["Sanitised or withheld"]
-```
-
 Output checks matter because of scale. Put a chatbot on 50 GB of enterprise
 data where maybe 500 MB is relevant, and you still want every answer to come
 from that 500 MB and nothing else leaking out.
@@ -140,17 +120,11 @@ The mentor lists what to check any LLM use case against. The first two
 are musts, and on the whiteboard they point to gateways; security points to
 guardrails:
 
-*Redrawn from the mentor's whiteboard (0:13 to 0:16).*
-
-```mermaid
-flowchart LR
-    R["Robust"] --> GW["Gateways<br/>(the previous class)"]
-    F["Fault tolerant"] --> GW
-    LF["Latency free"]
-    S["Secured"] --> GR["Guardrails<br/>(this class)"]
-    GR --> RU["Rules"]
-    GR --> RG["Regulatory requirements"]
-```
+<Infographic
+  src="/img/ai-security/m1-gateways-vs-guardrails.svg"
+  alt="Robust and fault tolerant point to LLM gateways; secured points to guardrails, which enforce rules and regulatory constraints against a user who turns malicious."
+  caption="Redrawn from the mentor's whiteboard, 0:13 to 0:16."
+/>
 
 | Property | How it's met, per the session |
 | -------- | ----------------------------- |
@@ -177,6 +151,12 @@ module surveys four and picks one:
 | Guardrails AI | Guardrails AI | Open source validators, strongest on structured output |
 | Llama Firewall | Meta | Open-source guard models and scanners |
 | AWS Bedrock Guardrails | Amazon | Managed, cloud-native service |
+
+<Infographic
+  src="/img/ai-security/m1-frameworks.svg"
+  alt="Guardrails fan out to four frameworks: NeMo Guardrails (used in the demo), Guardrails AI, Llama Firewall and AWS Bedrock Guardrails."
+  caption="Redrawn from the mentor's whiteboard, 0:16 to 0:20."
+/>
 
 The module uses **NeMo Guardrails**. The mentor is clear it's "what we
 chose", not a winner; pick by use case, open source or paid, and the
@@ -354,6 +334,12 @@ Dialog rails give each of these one scripted answer. That does two things:
 Dialog rails don't block anything; they guide. An ordinary IT question still
 goes to the model, and "tell me a joke" is still refused by the topic guard.
 
+<Infographic
+  src="/img/ai-security/m1-dialog-rails.svg"
+  alt="The Classroom app's message flow: an intent check sends a message to one of five branches (off-topic, jailbreak, sensitive refusals, scripted dialog, or the LLM answer), each added by one experiment."
+  caption="Redrawn from the NeMo Guardrails Classroom app's message-flow diagrams, 0:24 to 0:33."
+/>
+
 ```colang
 define user express greeting
   "hello"
@@ -400,6 +386,12 @@ regular expressions:
 
 Systematic rails are declared in the YAML under `rails.input.flows`, so they
 run on **every** message, before any intent check.
+
+<Infographic
+  src="/img/ai-security/m1-pii-urgency.svg"
+  alt="Experiment 6: every message passes a PII detector and an urgency detector, both Python actions, before the intent check; PII stops the request, urgency warns and continues."
+  caption="Redrawn from the Classroom app's Experiment 6 flow, 0:57 to 0:58."
+/>
 
 ### Experiment 7: output sanitiser
 
@@ -449,17 +441,11 @@ language and a programming language: "neither of those, a mixture of both".
 It isn't a programming language but an expression language, written in
 `.co` files that are handed to the framework and its LLM.
 
-*Redrawn from the mentor's whiteboard (0:38 to 0:41).*
-
-```mermaid
-flowchart LR
-    N["NVIDIA NeMo Guardrails"] --> R["Rails =<br/>rules and regulations"]
-    R --> C["Colang (.co files)"]
-    R --> PY["Python (.py)<br/>custom actions"]
-    C -->|"read by"| L["LLM"]
-    NL["Natural language"] -.- C
-    PL["Programming language"] -.- C
-```
+<Infographic
+  src="/img/ai-security/m1-colang.svg"
+  alt="NeMo Guardrails, rails and rules lead to Colang .co files; Colang sits between natural language and a programming language, with define user, define bot and define flow blocks."
+  caption="Redrawn from the mentor's whiteboard, 0:38 to 0:44."
+/>
 
 It has very few keywords:
 
@@ -475,14 +461,6 @@ It has very few keywords:
 The words after `define user` and `define bot` (`ask off topic`,
 `refuse off topic`) are just names, like variables. A flow reads like an if
 statement: if the user asks something off topic, the bot refuses, then stop.
-
-*Redrawn from the mentor's whiteboard (0:40 to 0:44).*
-
-```mermaid
-flowchart LR
-    DU["define user ask off topic<br/>'how to make a coffee'<br/>'tell me a joke'<br/>'tell me about this movie'"] --> F["define flow handle off topic<br/>user ask off topic → bot refuse off topic"]
-    DB["define bot refuse off topic<br/>'I can't help with that'"] --> F
-```
 
 One Colang file can hold any number of rails; each is its own
 user–bot–flow block. That is what makes stacking easy: each experiment is
@@ -501,20 +479,11 @@ library that does this is **FastEmbed**, from the Qdrant team, installed
 automatically with NeMo; you can see it download the model in the app's
 logs.
 
-*Redrawn from the mentor's whiteboard (0:47 to 0:48).*
-
-```mermaid
-flowchart LR
-    Q["New message<br/>'yo recommend a Netflix show'"] --> E["FastEmbed<br/>local CPU model"]
-    EX["Rail examples<br/>'recommend a movie', 'tell me a joke' ..."] --> E2["FastEmbed"]
-    E --> V["Message vector"]
-    E2 --> VS["Example vectors"]
-    V --> C{"Similarity"}
-    VS --> C
-    C --> K["Closest examples<br/>become candidate intents"]
-    K --> G["Guardrail LLM<br/>picks the intent"]
-    G --> I["ask off topic → refuse"]
-```
+<Infographic
+  src="/img/ai-security/m1-intent-matching.svg"
+  alt="The user's query is embedded with FastEmbed, compared with the example vectors from the .co file, and the guard LLM decides the intent from the closest match."
+  caption="Redrawn from the mentor's whiteboard, 0:46 to 0:50."
+/>
 
 :::note Correction to the session
 Live, the mentor explains that NeMo used on its own "is not using any LLM
@@ -560,15 +529,11 @@ the input rails.
 
 Rails are rules and regulations, and they can sit in three places:
 
-*Redrawn from the mentor's whiteboard (0:55 to 0:56).*
-
-```mermaid
-flowchart TD
-    R["Rails"] --> I["Input rails<br/>check the user's message<br/>before the model sees it"]
-    R --> O["Output rails<br/>check the answer, e.g. with regex"]
-    R --> C["Custom rails<br/>= systematic rails, Python logic"]
-    C --> PII["PII detection<br/>e.g. a phone number in the prompt"]
-```
+<Infographic
+  src="/img/ai-security/m1-three-rails.svg"
+  alt="Rails split into input rails, output rails and custom systematic rails; a phone number is the example of PII a custom regex rail catches."
+  caption="Redrawn from the mentor's whiteboard, 0:55 to 0:57."
+/>
 
 | Type | Where it runs | Written as | Example here |
 | ---- | ------------- | ---------- | ------------ |
@@ -689,7 +654,6 @@ rails:
       - sanitize bot response
 """
 
-
 # ─────────────────────────────────────────────────────────────
 # COLANG BUILDING BLOCKS (each is additive / composable)
 # ─────────────────────────────────────────────────────────────
@@ -773,7 +737,6 @@ define flow greeting
   bot express greeting
   stop
 
-
 define user ask capabilities
   "what can you do"
   "what do you know"
@@ -790,7 +753,6 @@ define flow capabilities
   user ask capabilities
   bot explain capabilities
   stop
-
 
 define user express farewell
   "bye"
@@ -874,7 +836,6 @@ import re
 from typing import Optional
 from nemoguardrails.actions import action
 
-
 @action(is_system_action=True)
 async def detect_pii_in_input(context: Optional[dict] = None):
     """Returns list of PII type names found, or empty list (falsy) if clean."""
@@ -891,7 +852,6 @@ async def detect_pii_in_input(context: Optional[dict] = None):
              if re.search(pat, user_message, re.IGNORECASE)]
     return found
 
-
 @action(is_system_action=True)
 async def classify_urgency(context: Optional[dict] = None):
     """Returns True if the message signals a production emergency."""
@@ -901,7 +861,6 @@ async def classify_urgency(context: Optional[dict] = None):
         "emergency", "not working", "urgent", "p0", "p1",
     ]
     return any(kw in msg for kw in urgent_keywords)
-
 
 @action(is_system_action=True)
 async def sanitize_output(context: Optional[dict] = None):
@@ -1011,25 +970,21 @@ _YAML_MAP = {
     7: _YAML_OUTPUT_RAILS,
 }
 
-
 def get_rails_config(exp_num: int) -> RailsConfig:
     return RailsConfig.from_content(
         colang_content=_COLANG_MAP[exp_num],
         yaml_content=_YAML_MAP[exp_num],
     )
 
-
 def register_actions(rails: LLMRails, exp_num: int) -> None:
     for action_fn in _ACTION_MAP.get(exp_num, []):
         rails.register_action(action_fn)
-
 
 def build_rails(exp_num: int, llm) -> LLMRails:
     config = get_rails_config(exp_num)
     rails  = LLMRails(config, llm=llm)
     register_actions(rails, exp_num)
     return rails
-
 
 COLANG_SNIPPETS = {
     1: "(No Colang — this is a raw LLM call with no NeMo rails)",
@@ -1080,7 +1035,6 @@ def infer_raw(message: str) -> tuple:
         {"role": "user",   "content": message},
     ])
     return resp.content, round((time.time() - t0) * 1000)
-
 
 def infer_guarded(exp_num: int, message: str) -> tuple:
     # NeMo uses asyncio internally. We run it in a worker thread so that
@@ -1179,19 +1133,11 @@ security layer** and **Pydantic Logfire as the observability layer**.
 
 ### The Pydantic ecosystem
 
-*Redrawn from the mentor's whiteboard (0:51 to 0:54).*
-
-```mermaid
-flowchart TB
-    subgraph LC["LangChain ecosystem"]
-        direction LR
-        L1["LangChain<br/>chain-based agents"] ~~~ L2["LangGraph<br/>multi-agent workflows"] ~~~ L3["LangSmith<br/>observability"]
-    end
-    subgraph PY["Pydantic ecosystem"]
-        direction LR
-        P1["Pydantic validation<br/>structured data"] ~~~ P2["Pydantic AI<br/>agentic workflows"] ~~~ P3["Pydantic Logfire<br/>observability"]
-    end
-```
+<Infographic
+  src="/img/ai-security/m1-observability.svg"
+  alt="NeMo Guardrails as the security layer and Pydantic Logfire as the observability layer, with the LangChain and Pydantic ecosystems they come from."
+  caption="Redrawn from the mentor's whiteboard, 0:51 to 0:55."
+/>
 
 The history explains it. LangChain, AutoGen, CrewAI and FastAPI all use
 Pydantic's validation internally (the check that stops you submitting an
@@ -1231,7 +1177,6 @@ def lf_span(name: str, **kw):
     """Returns a real logfire span when tracing is active, otherwise a no-op."""
     return logfire.span(name, **kw) if st.session_state.get("_lf_ready") else nullcontext()
 
-
 def _init_logfire(token: str) -> None:
     if st.session_state.get("_lf_token") == token:
         return  # already configured for this token
@@ -1263,6 +1208,12 @@ every rail check sends the message to the guardrail model on Groq.
 
 To run the demo yourself you need a Groq key and, for tracing, a Logfire
 token. The mentor walks the class through both.
+
+<Infographic
+  src="/img/ai-security/m1-keys.svg"
+  alt="The demo needs two keys: a Groq API key for the chat and guard models, and a Pydantic Logfire token for tracing."
+  caption="Redrawn from the mentor's whiteboard, 0:58 to 1:03."
+/>
 
 **Groq (free):**
 

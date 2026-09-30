@@ -12,6 +12,8 @@ description:
 tags: [projects, evals, ragas, llm-as-judge, goldens, rag, groq]
 ---
 
+import Infographic from '@site/src/components/Infographic';
+
 > **Module 2 of 4** ·
 > [Watch from 1:13:30](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=4410s) ·
 > about 95 minutes of the 7h48m course ·
@@ -95,17 +97,11 @@ run your own evaluation, and the practical way to do it at scale is an
 LLM judges an LLM. If the judge itself hallucinates, a human stays in the
 review loop to catch it.
 
-*Redrawn from the mentor's whiteboard (1:23 to 1:28).*
-
-```mermaid
-flowchart TD
-    C["Candidate applying to Google<br/>role: GenAI engineer"] --> S["Scores / metrics<br/>10th: 82%, 12th: 85%, CGPA: 9"]
-    C --> I["Interview<br/>1. test → score<br/>2. reasoning abilities<br/>3. one-on-one interview"]
-    E["LLM evaluation"] --> B["Benchmarks"]
-    E --> J["Human / LLM as judge"]
-    S -.->|"is like"| B
-    I -.->|"is like"| J
-```
+<Infographic
+  src="/img/ai-security/m2-hiring.svg"
+  alt="A candidate applying to Google has past scores and an interview; LLM evaluation likewise has benchmarks and a human or LLM judge."
+  caption="Redrawn from the mentor's whiteboard, 1:23 to 1:28."
+/>
 
 The same two layers show up in how you build an LLM application:
 
@@ -134,20 +130,11 @@ right-hand side, and so is the rest of this module.
 | Metrics | Reference-based: BLEU (precision, translation), ROUGE-N/L (recall, summarisation), METEOR (synonym-aware), exact match / token F1 (QA). Model-based: BERTScore, BLEURT. Perplexity (open weights only, for pre-training and fine-tuning). | A golden dataset, task-specific metrics, and an LLM judge (usually the main approach) |
 | Frameworks | | RAG triad, G-Eval, DeepEval, Ragas |
 
-*Redrawn from the slide on the mentor's board (1:28 to 1:30).*
-
-```mermaid
-flowchart TD
-    E["LLM evaluation"] --> A["A) Evaluate the model<br/>which model is better?"]
-    E --> B["B) Evaluate the application<br/>is my RAG / agent doing its job?"]
-    A --> A1["Benchmarks<br/>MMLU, GSM8K, HumanEval, GPQA…"]
-    A --> A2["Leaderboards<br/>LMArena, HF Open LLM, HELM"]
-    A --> A3["Reference metrics<br/>BLEU, ROUGE, BERTScore, perplexity"]
-    B --> B1["Golden dataset"]
-    B --> B2["Task-specific metrics"]
-    B --> B3["LLM-as-judge"]
-    B --> B4["Frameworks: RAG triad,<br/>G-Eval, DeepEval, Ragas"]
-```
+<Infographic
+  src="/img/ai-security/m2-two-things.svg"
+  alt="Two things you can evaluate: the model (benchmarks, leaderboards, reference metrics) or the application (golden dataset, task-specific metrics, LLM-as-judge, frameworks)."
+  caption="Redrawn from the slide on the mentor's board, 1:28 to 1:30."
+/>
 
 Building a custom evaluation needs three things from that right-hand
 column: a golden dataset, the metrics, and a judge. The module takes them
@@ -323,7 +310,6 @@ from __future__ import annotations
 import numpy as np
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-
 class Retriever:
     def __init__(self, catalog: list[dict], api_key: str):
         self.catalog = catalog
@@ -387,7 +373,6 @@ Answer the customer's question using ONLY the information provided in the contex
 If the context does not contain enough information to answer fully, say so honestly.
 Keep your answer concise, factual, and friendly. Do not invent any details not present in the context."""
 
-
 class Generator:
     def __init__(self, api_key: str, model: str = DEFAULT_MODEL):
         self._client = AsyncOpenAI(api_key=api_key, base_url=GROQ_BASE_URL)
@@ -426,7 +411,6 @@ from __future__ import annotations
 import asyncio
 from rag.retriever import Retriever
 from rag.generator import Generator
-
 
 async def run_phase1(
     goldens: list[dict],
@@ -475,15 +459,11 @@ impossible. So the check is handed to an **LLM as a judge**.
   embed both the actual and expected answer and compare them. That's fast
   but weak on complex queries, so the rest of the module uses an LLM.
 
-*Redrawn from the mentor's whiteboard (1:50 to 1:52).*
-
-```mermaid
-flowchart LR
-    G["Golden<br/>query · expected answer · expected context"] --> J["Judge LLM<br/>state-of-the-art model"]
-    R["RAG output<br/>actual answer · retrieved contexts"] --> J
-    J --> M["Metrics"]
-    EMB["Embedding comparison<br/>cheaper, weaker on complex queries"] -.->|"alternative for simple checks"| M
-```
+<Infographic
+  src="/img/ai-security/m2-goldens-judge.svg"
+  alt="Goldens (queries, expected answers, expected context) and the RAG pipeline's actual answers and retrieved contexts both go to a judge LLM, which scores five metrics."
+  caption="Redrawn from the mentor's whiteboard as it stood by 2:04, built up from 1:33."
+/>
 
 An LLM on its own is just a general intelligence that can read an expected
 answer and say whether an actual answer is close to it. What's missing is
@@ -602,13 +582,11 @@ RETRY_WAIT = 65           # seconds to wait after a 429 before retrying
 CONTEXT_CHARS = 400       # max chars per context chunk passed to metrics
 CONTEXT_LIMIT = 2         # max number of context chunks passed to metrics
 
-
 # ── Setup helpers ─────────────────────────────────────────────────────────────
 
 def build_judge(api_key: str) -> object:
     client = AsyncOpenAI(api_key=api_key, base_url=GROQ_BASE_URL)
     return llm_factory(JUDGE_MODEL, provider="openai", client=client)
-
 
 def build_embeddings() -> HuggingFaceEmbeddings:
     return HuggingFaceEmbeddings(
@@ -616,12 +594,10 @@ def build_embeddings() -> HuggingFaceEmbeddings:
         use_api=False,
     )
 
-
 # ── Input preparation ─────────────────────────────────────────────────────────
 
 def _truncate_contexts(contexts: list[str]) -> list[str]:
     return [c[:CONTEXT_CHARS] for c in contexts[:CONTEXT_LIMIT]]
-
 
 def prepare_inputs(enriched: list[dict], keys: list[str]) -> list[dict]:
     result = []
@@ -634,7 +610,6 @@ def prepare_inputs(enriched: list[dict], keys: list[str]) -> list[dict]:
                 d[k] = e.get(k, "")
         result.append(d)
     return result
-
 
 # ── Scoring ───────────────────────────────────────────────────────────────────
 
@@ -678,7 +653,6 @@ async def _score_one(
             error_collector.append({"sample": sample_idx + 1, "error": f"{type(e).__name__}: {err_str[:120]}"})
         return None
 
-
 async def score_experiment(
     metric,
     inputs: list[dict],
@@ -696,7 +670,6 @@ async def score_experiment(
         if i < len(inputs) - 1:
             await asyncio.sleep(SAMPLE_COOLDOWN)
     return scores
-
 
 # ── Experiment registry ───────────────────────────────────────────────────────
 # Each entry: (display_name, metric_factory(llm, emb), required_input_keys)
@@ -759,18 +732,11 @@ The judge first splits the answer into **atomic claims**, then asks one
 question of each: *can this claim be fully inferred from the retrieved
 context, yes or no?*
 
-*Redrawn from the faithfulness infographic on the mentor's board (2:05 to
-2:08).*
-
-```mermaid
-flowchart LR
-    R["LLM response"] --> X["Judge splits it into<br/>atomic claims"]
-    X --> C1["Min balance ₹10,000 urban<br/>grounded, chunk 1"]
-    X --> C2["Fee ₹350 + GST<br/>grounded, chunk 1"]
-    X --> C3["Online transfer at no extra charge<br/>HALLUCINATED, in no chunk"]
-    X --> C4["Rural minimum ₹2,500<br/>grounded, chunk 2"]
-    C1 & C2 & C3 & C4 --> S["Faithfulness = 3 / 4 = 0.75<br/>below threshold 0.8: fail"]
-```
+<Infographic
+  src="/img/ai-security/m2-faithfulness.svg"
+  alt="Faithfulness worked example: four atomic claims from the answer checked against two chunks; three grounded, one hallucinated, score 0.75 against a 0.8 threshold."
+  caption="Redrawn from the faithfulness infographic on the mentor's board, 2:05 to 2:08."
+/>
 
 $$
 \text{Faithfulness} = \frac{\text{claims supported by the context}}{\text{total claims in the answer}}
@@ -815,17 +781,11 @@ TechNest's return policy?", the Llama 3.1 8B judge reads the app's answer,
 writes the questions that answer would fit, and each is compared with the
 original.
 
-*Redrawn from the answer relevancy infographic on the mentor's board (2:12
-to 2:17).*
-
-```mermaid
-flowchart TD
-    IN["input<br/>user question"] --> S2
-    AO["actual_output<br/>LLM response"] --> S1["Step 1: judge LLM reads the answer<br/>and invents N questions it answers"]
-    S1 --> S2["Step 2: cosine similarity of each<br/>generated question vs the input"]
-    S2 --> SC["Score = average similarity<br/>0.0 to 1.0, 1.0 = fully on-topic"]
-    SC -.->|"low because"| L["off-topic answer · padded response · incomplete answer"]
-```
+<Infographic
+  src="/img/ai-security/m2-answer-relevancy.svg"
+  alt="Answer relevancy: the judge invents questions the answer would answer, compares them with the input by embedding similarity, and averages; off-topic, padded or incomplete answers score low."
+  caption="Redrawn from the answer relevancy infographic on the mentor's board, 2:12 to 2:17."
+/>
 
 Three things pull the score down.
 
@@ -853,14 +813,11 @@ two metrics so far judged the answer. A RAG system has three pieces, the
 query, the context and the response, and three relationships between them.
 Cover all three and every aspect is covered.
 
-*Redrawn from the RAG triad slide on the mentor's board (2:18 to 2:19).*
-
-```mermaid
-flowchart LR
-    Q["Query"] -->|"Context relevance:<br/>is the retrieved context<br/>relevant to the query?"| C["Context"]
-    C -->|"Groundedness:<br/>is the response supported<br/>by the context?"| R["Response"]
-    R -->|"Answer relevance:<br/>is the answer relevant<br/>to the query?"| Q
-```
+<Infographic
+  src="/img/ai-security/m2-rag-triad.svg"
+  alt="The RAG triad: query, context and response, linked by context relevance, groundedness and answer relevance."
+  caption="Redrawn from the RAG triad slide on the mentor's board, 2:18 to 2:19."
+/>
 
 | Edge | Metric in this module |
 | --- | --- |
@@ -885,18 +842,11 @@ At each relevant rank *k*, compute precision at *k*: the share of the top
 *k* chunks that are relevant. Average those values over the relevant ranks
 only, skipping the noisy ones.
 
-*Redrawn from the context precision infographic on the mentor's board (2:19
-to 2:23).*
-
-```mermaid
-flowchart LR
-    Q["Query: minimum balance<br/>for my savings account?"] --> R1["#1 relevant<br/>P@1 = 1.00"]
-    R1 --> R2["#2 relevant<br/>P@2 = 1.00"]
-    R2 --> R3["#3 NOISE: KYC every 8 years<br/>P@3 = 0.67, not counted"]
-    R3 --> R4["#4 relevant<br/>P@4 = 0.75"]
-    R4 --> R5["#5 relevant<br/>P@5 = 0.80"]
-    R5 --> S["Context precision = mean of P@k at relevant ranks<br/>(1 + 1 + 0.75 + 0.80) / 4 = 0.89, pass at 0.7"]
-```
+<Infographic
+  src="/img/ai-security/m2-context-precision.svg"
+  alt="Context precision worked example: five ranked chunks with one noisy chunk at rank 3; precision at each relevant rank averages to 0.89."
+  caption="Redrawn from the context precision infographic on the mentor's board, 2:19 to 2:23."
+/>
 
 $$
 \text{Context precision} = \frac{1}{\lvert \text{relevant ranks} \rvert}\sum_{k \,\in\, \text{relevant ranks}} \text{P@}k
@@ -949,19 +899,11 @@ fees. Chunks cover claims 1, 2 and 4, but no chunk mentions the rural
 ₹2,500 minimum, so claim 3 is missing: the retriever didn't bring that fact
 back.
 
-*Redrawn from the context recall infographic on the mentor's board (2:24 to
-2:28).*
-
-```mermaid
-flowchart TD
-    REF["reference<br/>ground-truth answer"] --> S1["Step 1: judge splits the reference<br/>into atomic claims"]
-    S1 --> S2{"Step 2: can each claim be<br/>attributed to a retrieved chunk?"}
-    RC["retrieved_contexts"] --> S2
-    S2 -->|"yes: claims 1, 2, 4"| OK["supported"]
-    S2 -->|"no: claim 3, rural ₹2,500"| MISS["missing"]
-    OK --> SC["Context recall = 3 / 4 = 0.75<br/>threshold 0.7"]
-    MISS --> SC
-```
+<Infographic
+  src="/img/ai-security/m2-context-recall.svg"
+  alt="Context recall worked example: four reference claims, three supported by retrieved chunks and the rural minimum missing, recall 0.75, with causes of low scores and score bands."
+  caption="Redrawn from the context recall infographic on the mentor's board, 2:24 to 2:28."
+/>
 
 $$
 \text{Context recall} = \frac{\text{reference claims supported by the retrieved context}}{\text{total claims in the reference}}
@@ -1022,23 +964,11 @@ It blends two components.
 2. **Semantic similarity.** The embedding cosine similarity between the
    response and the reference. This catches overall drift in meaning.
 
-*Redrawn from the answer correctness infographic on the mentor's board
-(2:30 to 2:36).*
-
-```mermaid
-flowchart TD
-    UI["user_input"] --> J
-    RS["response"] --> J["Judge LLM extracts claims<br/>and compares with reference"]
-    RF["reference"] --> J
-    J --> TP["TP = 2<br/>₹10,000 urban · 3.5% interest"]
-    J --> FP["FP = 2<br/>₹400 penalty · free internet banking"]
-    J --> FN["FN = 2<br/>₹350 + taxes fee · free passbook"]
-    TP & FP & FN --> F1["Factual F1 = TP / (TP + 0.5 × (FP + FN))<br/>= 2 / 4 = 0.50"]
-    RS --> EM["Embedding cosine similarity<br/>response vs reference = 0.72"]
-    RF --> EM
-    F1 --> FS["Answer correctness = 0.75 × 0.50 + 0.25 × 0.72 ≈ 0.55"]
-    EM --> FS
-```
+<Infographic
+  src="/img/ai-security/m2-answer-correctness.svg"
+  alt="Answer correctness: claims sorted into true positives, false positives and false negatives give a factual F1 of 0.50, blended with 0.72 semantic similarity for a score of about 0.55."
+  caption="Redrawn from the answer correctness infographic on the mentor's board, 2:30 to 2:36."
+/>
 
 $$
 F_1 = \frac{TP}{TP + \tfrac{1}{2}(FP + FN)}
@@ -1099,11 +1029,9 @@ from __future__ import annotations
 import json
 from evals.metrics import METRIC_NAMES
 
-
 def _avg(scores: list) -> float | None:
     valid = [s for s in scores if s is not None]
     return round(sum(valid) / len(valid), 3) if valid else None
-
 
 def _badge(score) -> str:
     if score is None:
@@ -1113,7 +1041,6 @@ def _badge(score) -> str:
     if score >= 0.50:
         return "🟡"
     return "🔴"
-
 
 def build_results(enriched: list[dict], scores: dict) -> dict:
     """
@@ -1143,11 +1070,9 @@ def build_results(enriched: list[dict], scores: dict) -> dict:
     averages = {name: _avg(scores.get(name, [])) for name in METRIC_NAMES}
     return {"per_golden": per_golden, "averages": averages}
 
-
 def save_results(path: str, results: dict) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
-
 
 def print_summary(results: dict) -> None:
     print("\n" + "═" * 72)
@@ -1216,7 +1141,6 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
-
 
 def run(coro):
     """Run async coro in an isolated worker thread — never touches Streamlit's anyio loop."""

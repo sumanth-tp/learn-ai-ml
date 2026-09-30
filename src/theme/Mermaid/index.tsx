@@ -18,11 +18,19 @@ function clamp(value: number, min: number, max: number) {
 
 type Point = {x: number; y: number};
 
-function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
+export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState<Point>({x: 0, y: 0});
   const dragOrigin = useRef<{pointer: Point; offset: Point} | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Move focus into the dialog, and give it back to whatever opened it.
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    return () => opener?.focus?.();
+  }, []);
 
   const reset = useCallback(() => {
     setZoom(1);
@@ -129,6 +137,7 @@ function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
           Reset
         </button>
         <button
+          ref={closeRef}
           type="button"
           className={`${styles.toolButton} ${styles.closeButton}`}
           onClick={onClose}

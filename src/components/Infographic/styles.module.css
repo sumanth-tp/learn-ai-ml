@@ -1,0 +1,28 @@
+.figure {
+  margin: 1.5rem 0;
+}
+
+.imageButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--border-subtle, var(--ifm-color-emphasis-300));
+  border-radius: var(--radius-lg, 12px);
+  background: #fffdf7;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.caption {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--text-faint, var(--ifm-color-emphasis-600));
+  text-align: center;
+}

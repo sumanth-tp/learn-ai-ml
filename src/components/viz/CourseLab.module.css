@@ -1,0 +1,20 @@
+.stack { display: grid; gap: 0.65rem; }
+.row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.claim { flex: 1; min-width: 0; text-align: left; white-space: normal; border-radius: 8px; padding: 0.65rem 0.75rem; }
+.claim strong, .claim small { display: block; }
+.claim small { margin-top: 0.3rem; color: var(--text-muted); font-weight: 400; }
+.score { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.6rem; margin: 0.25rem 0 0.75rem; color: var(--text-strong); }
+.score output { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.badge { border: 1px solid var(--border-strong); border-radius: 6px; padding: 0.15rem 0.5rem; font-size: 0.78rem; }
+.bar { height: 0.65rem; background: var(--surface-2, var(--ifm-color-emphasis-200)); border-radius: 6px; overflow: hidden; margin-bottom: 1rem; }
+.bar > span { display: block; height: 100%; transition: width 120ms; }
+.control { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; max-width: 100%; }
+.control input { width: 7rem; accent-color: var(--ifm-color-primary); }
+.control select { max-width: 100%; }
+.note { font-size: 0.8rem; line-height: 1.55; color: var(--text-muted); margin: 0.65rem 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+.chip { padding: 0.4rem 0.55rem; border: 1px solid var(--border-strong); border-radius: 7px; font-size: 0.75rem; color: var(--text-strong); }
+.chart { min-width: 0; margin: 0.5rem 0; }
+.rank { flex: none; width: 1.8rem; font-variant-numeric: tabular-nums; }
+.table { font-size: 0.8rem; margin-top: 0.7rem; }
+.table th, .table td { padding: 0.4rem 0.6rem; }

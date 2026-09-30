@@ -72,7 +72,78 @@ Now LangChain had support not only for talking to an LLM but for everything else
 
 As a developer you could pick up all these components, put them together, and create any type of LLM-based application.
 
-**Two code examples show how easy this made things:** a simple LLM application using just the LLM component and the prompt template component, and a full PDF reader — text loader, recursive character text splitter, vector store, retriever, LLM — built in roughly 36 lines of code. Such a complex application, that little code.
+**Two code examples show how easy this made things** (11:32 to 15:10). Both are deliberately old-style LangChain: this is a flashback to when completion-style LLM classes were used instead of chat models.
+
+**A simple LLM application.** Two components: the LLM component and the prompt template component. Create the LLM, create a prompt template, ask the user for a topic, format the prompt with it, send the formatted prompt to the LLM's `predict`, and print what comes back.
+
+```python title="simple_llm_app.py"
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+
+# 🔹 Initialize the LLM
+llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
+
+# 🔹 Create a Prompt Template
+prompt = PromptTemplate(
+    input_variables=["topic"],
+    template="Suggest a catchy blog title about {topic}."
+)
+
+# 🔹 Define the input
+topic = input('Enter a topic')
+
+# 🔹 Format the prompt manually using PromptTemplate
+formatted_prompt = prompt.format(topic=topic)
+
+# 🔹 Call the LLM directly
+blog_title = llm.predict(formatted_prompt)
+
+# 🔹 Print the output
+print("Generated Blog Title:", blog_title)
+```
+
+**A PDF reader.** The same steps as the list above, one component per step. A text file stands in for the PDF. `TextLoader` (a document loader) loads it, `RecursiveCharacterTextSplitter` cuts it into chunks, `FAISS.from_documents` embeds every chunk with `OpenAIEmbeddings` and stores the vectors, and `as_retriever()` turns the vector store into a retriever. Then the user's query arrives. The retriever embeds it and runs a semantic search, the retrieved chunks are joined into one block of text, and a prompt carrying both the query and that text goes to the LLM.
+
+```python title="pdf_reader.py"
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.llms import OpenAI
+
+# 🔹 Load the document
+loader = TextLoader("docs.txt")  # Ensure docs.txt exists
+documents = loader.load()
+
+# 🔹 Split the text into smaller chunks
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+docs = text_splitter.split_documents(documents)
+
+# 🔹 Convert text into embeddings & store in FAISS
+vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
+
+# 🔹 Create a retriever (fetches relevant documents)
+retriever = vectorstore.as_retriever()
+
+# 🔹 Manually Retrieve Relevant Documents
+query = "What are the key takeaways from the document?"
+retrieved_docs = retriever.get_relevant_documents(query)
+
+# 🔹 Combine Retrieved Text into a Single Prompt
+retrieved_text = "\n".join([doc.page_content for doc in retrieved_docs])
+
+# 🔹 Initialize the LLM
+llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
+
+# 🔹 Manually Pass Retrieved Text to LLM
+prompt = f"Based on the following text, answer the question: {query}\n\n{retrieved_text}"
+answer = llm.predict(prompt)
+
+# 🔹 Print the Answer
+print("Answer:", answer)
+```
+
+RAG hasn't been covered in code yet, so the details don't matter here. The point is the size: with these components in place, an application this involved takes about 36 lines.
 
 So far the story goes very smoothly. The LangChain team created individual components, and AI engineers connect them in different ways to build different applications.
 
@@ -88,6 +159,32 @@ And the idea came: **this is being done manually by AI engineers.** You create a
 
 That is where **chains** came from. You are connecting two or more components and giving them the form of a pipeline. The simplest of these was named **`LLMChain`** — you provide an LLM and a prompt, the prompt gets generated and sent to the LLM.
 
+Here is the simple LLM application again, rewritten with `LLMChain` (18:49). The LLM and the prompt template are created exactly as before. They go into `LLMChain`, and the chain runs with the topic.
+
+```python title="llmchain.py"
+from langchain.llms import OpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+
+# 🔹 Load the LLM (GPT-3.5)
+llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
+
+# 🔹 Create a Prompt Template
+prompt = PromptTemplate(
+    input_variables=["topic"],  # Defines what input is needed
+    template="Suggest a catchy blog title about {topic}."
+)
+
+# 🔹 Create an LLMChain
+chain = LLMChain(llm=llm, prompt=prompt)
+
+# 🔹 Run the chain with a specific topic
+topic = input('Enter a topic')
+output = chain.run(topic)
+
+print("Generated Blog Title:", output)
+```
+
 Using the chain, the manual work disappeared. You do not call `format` manually, you do not call `predict` manually. You simply run the chain, tell it your topic, and behind the scenes everything is generated and the result comes back.
 
 **And this was a big Eureka moment.** That is a very simple chain — but the team saw that much more complex tasks are also reused across different kinds of LLM application. What if those complex tasks also became built-in chain functions?
@@ -98,9 +195,56 @@ For example, an entire machine learning book covered page by page, with page emb
 
 That is retrieval. You have a query, you have a vector database with your documents, you extract relevant text, and then you combine the relevant text and the query into a new prompt saying *"from these relevant documents, answer this query"*, and send it to the LLM.
 
-**That task appears in every RAG application.** So the team made a chain for it too: **`RetrieverQAChain`**. You call the function and tell it just two things — your LLM and your retriever — and all the work happens automatically behind the scenes. Where you needed 36 lines, now you need 32.
+This is exactly what lines 21 to 33 of `pdf_reader.py` above do by hand (21:53): the query, `get_relevant_documents`, joining the retrieved text, the "Based on the following text, answer the question" prompt, and `llm.predict`.
 
-This idea made LangChain very popular. And the team did not stop at `LLMChain` and `RetrievalQAChain` — they analysed many more use cases, and wherever they felt a task was used everywhere, they built a chain function for it.
+**That task appears in every RAG application.** So the team made a chain for it too: **`RetrievalQA`**. You call the function and tell it just two things — your LLM and your retriever — and all the work happens automatically behind the scenes.
+
+Here is the same PDF reader built with it (23:04). Loading, splitting, the vector store, the retriever and the LLM are unchanged. The manual semantic search, the text joining and the hand-written prompt are gone. `RetrievalQA.from_chain_type` takes the LLM and the retriever, and `qa_chain.run(query)` returns the answer.
+
+```python title="retrievalQAchain.py"
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.llms import OpenAI
+from langchain.chains import RetrievalQA
+
+# 🔹 Load the document
+loader = TextLoader("docs.txt")  # Ensure docs.txt exists
+documents = loader.load()
+
+# 🔹 Split the text into smaller chunks
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+docs = text_splitter.split_documents(documents)
+
+# 🔹 Convert text into embeddings & store in FAISS (Vector DB)
+vectorstore = FAISS.from_documents(docs, OpenAIEmbeddings())
+
+# 🔹 Create a retriever (this fetches relevant documents)
+retriever = vectorstore.as_retriever()
+
+# 🔹 Initialize LLM
+llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
+
+# 🔹 Create RetrievalQAChain
+qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+
+# 🔹 Ask a question
+query = "What are the key takeaways from the document?"
+answer = qa_chain.run(query)
+
+print("Answer:", answer)
+```
+
+Where you needed 36 lines, now you need 32.
+
+:::note
+The first two import lines of `retrievalQAchain.py` never appear on screen. They are filled in here from the two classes the file uses, which are the same imports as in `pdf_reader.py`.
+
+All four files use the pre-2024 API on purpose, since this section is a flashback. On a current install, these imports come from `langchain_community` and `langchain_openai`. `predict`, `run` and `get_relevant_documents` have all been replaced by `invoke`, and `OpenAI` is a completion-model class, so a chat model such as `gpt-3.5-turbo` belongs in `ChatOpenAI`. The runnables built in the rest of this chapter are what replaced these chains.
+:::
+
+This idea made LangChain very popular. And the team did not stop at `LLMChain` and `RetrievalQA` — they analysed many more use cases, and wherever they felt a task was used everywhere, they built a chain function for it.
 
 Ten of the most-used chains, and this is not the complete list:
 
