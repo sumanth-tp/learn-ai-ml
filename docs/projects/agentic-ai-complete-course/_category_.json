@@ -1,0 +1,10 @@
+{
+  "label": "Complete Agentic AI Course (10 Hours)",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "slug": "/category/projects/agentic-ai-complete-course",
+    "title": "Complete Agentic AI Course in 10 Hours",
+    "description": "LangChain v1, LangGraph, RAG, vectorless RAG, Deep Agents, guardrails, LLM evaluation and LLM gateways, built step by step in notebooks with code, flowcharts and tables."
+  }
+}
