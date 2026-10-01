@@ -264,6 +264,39 @@ def s2_recap_scalability():
     return b
 
 
+@board
+def s2_recap_implementation():
+    b = Board(1100, 520, "Recap → implementation",
+              "Whiteboard page 11 (0:47 to 0:48): the project in one line before the code", title_color="yellow")
+
+    # Left: the recap, and the data split written under it
+    b.text(200, 128, "Recap", 30, "yellow", "700")
+    underline(b, 130, 270, 140, "yellow")
+    tr = b.card(60, 190, 150, 60, "True", ["useful K8s data"], "green", size=11)
+    five = b.card(250, 190, 130, 60, "5 %", ["true data"], "green", title_size=20, size=11)
+    nine = b.card(250, 300, 130, 60, "95 %", ["noisy data"], "red", title_size=20, size=11)
+    b.arrow(tr.right(), five.left(), color="green")
+    b.arrow(tr.bottom(), nine.left(), via=[(tr.cx, nine.cy)], color="red", curve=False)
+    b.card(40, 400, 360, 90, "Goal", ["pick the right information even in a", "highly noisy, inaccurate environment"],
+           "yellow", size=12)
+
+    # Right: what the implementation adds
+    b.text(760, 128, "implementation", 30, "yellow", "700")
+    underline(b, 630, 890, 140, "yellow")
+    b.arrow((420, 120), (610, 120), color="yellow")
+    agent = b.card(560, 180, 400, 70, "Advanced RAG agent", ["a chatbot built for the Kubernetes platform"],
+                   "blue", size=12)
+    props = b.card(560, 280, 400, 70, "Fault tolerant · robust · secure · reliable",
+                   ["what the project must also be"], "purple", size=12, title_size=13)
+    b.arrow(agent.bottom(), props.top())
+    for i, (t, sub, col) in enumerate([("Guardrails", "NeMo · section 2", "pink"),
+                                       ("Gateways", "Portkey · section 3", "teal"),
+                                       ("Vector DB", "Qdrant", "orange")]):
+        c = b.card(540 + i * 150, 400, 135, 70, t, [sub], col, size=11)
+        b.arrow(props.bottom(), c.top())
+    return b
+
+
 def mini_waterfall(b: Board, x, y, w):
     spans = [(0.0, 1.0, "request", "pink"), (0.05, 0.25, "guard", "teal"), (0.28, 0.55, "retrieve", "purple"),
              (0.55, 0.7, "rerank", "orange"), (0.7, 0.98, "respond", "blue")]
@@ -846,7 +879,7 @@ def s2_exam_roles():
 def s2_exam_marking():
     b = Board(1100, 650, 'B · Evaluating the exam', 'The teacher’s five-step checklist becomes the evaluation loop.', title_color='green')
     b.person(150, 220, 'green', scale=2.4, label='Teacher / evaluator')
-    doc_stack(b,210,360,'orange',n=1,w=80,h=90)
+    doc_stack(b,210,475,'orange',n=1,w=80,h=90)
     rows=['Compare student answer with the correct answer','Apply scoring rules (metrics)','Give marks for each question','Calculate the total score','Provide feedback']
     for i,t in enumerate(rows):
         y=130+i*92

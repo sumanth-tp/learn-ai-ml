@@ -139,3 +139,211 @@ I will test these behaviours and report concrete failures here.
 
 - [x] HANDED OVER. Claude stopped at the user's request (session limit). Codex owns all remaining work;
   read `.codex/claude-handoff.md` → "CURRENT STATE". Codex may now run `npm run build`.
+
+## Review of the handover (Claude → Codex), 2026-10-01: please complete these
+
+Checked: `npm run typecheck` and `npm run build` pass with 0 warnings. AI Security (51 boards + 7 labs) and
+Secure EHR (14 boards, 0 leftover redraws) are complete. Enterprise RAG is **not finished**:
+
+1. **Duplicate redraws left in place.** Images were inserted, but the Mermaid redraws of the same boards were
+   not removed, so these boards now appear twice. Remove each Mermaid block (and its italic
+   `*Redrawn …*` caption line) that duplicates an inserted image. Keep it only if it shows something the
+   image doesn't, and then drop its "Redrawn" caption so it reads as an explanatory diagram.
+   - `docs/projects/enterprise-rag/01-session-1.md`: Mermaid at lines 345, 475, 2061, 2238, 2700, 2738,
+     2955, 3021, 3266, 3296, 3331, 3402, 3483, 3506, 3558, 3605, 3657 (17 blocks).
+   - `docs/projects/enterprise-rag/02-session-2.md`: lines 171, 184, 199, 252, 266, 293, 313, 587, 777,
+     796, 1319, 1333, 1361, 1385, 1401, 1481, 1534, 1563, 3770, 5945, 7211, 7277, 7417, 9606, 9627
+     (25 blocks).
+2. **Empty alt text** in Session 1: `s1-security`, `s1-agentic-architecture`, `s1-production-goals` and
+   `s1-request-path`. Write a one-sentence description of what each board shows.
+3. **Captions.** Session 1 captions read "Redrawn from Session 1: 0:07–0:19." Match the chapter style:
+   "Redrawn from the session's whiteboard, 0:07 to 0:19." (no en-dash ranges).
+4. **Placement.** Near Session 1 line 219, three images (`s1-simple-llm`, `s1-simple-rag`,
+   `s1-agentic-architecture`) are stacked before the existing supplied-whiteboard figure. Move each to the
+   paragraph that discusses it, in the video's order, and avoid duplicating the supplied
+   "Simple LLM call" figure.
+5. **Session 2 coverage.** There are 30 images for the 31 catalogued boards. Confirm which one is missing
+   (or why it's intentionally omitted) and add it.
+6. Use the fixed `scripts/infographics/place.py`: it now tidies blank lines only at the edit seam, and no
+   longer collapses blank lines inside code blocks. After editing, confirm that no code block outside Mermaid
+   changed (`git diff` should touch only Mermaid, Infographic tags and captions).
+7. Re-run `npm run build`, then the browser check (images load, Expand works, Mermaid still renders) on
+   both Enterprise RAG pages. Report the final counts here.
+
+Also fixed by Claude: 26 "Complete file" listings in the AI Security docs had collapsed blank lines from the
+old `place.py`. They are now restored byte for byte from their sources (34/34 match).
+
+## Enterprise RAG audit (Claude session learn-ai-ml-b3 → Codex), 2026-10-01
+
+Codex owns the edits to both Enterprise RAG pages, so I have **not edited either one**. Below are the audit and
+one new asset. Line numbers refer to HEAD (b9605b7).
+
+**Item 5, the missing S2 board: whiteboard page 11 (0:47 to 0:48).** The S2 boards cite pages 1–10 and 12–15,
+and 11 is the only gap. Before the code review, the host recaps the project in one line:
+- a Kubernetes chatbot;
+- true data is 5%, noise is 95%;
+- the goal is to pick the right information anyway;
+- the project must be fault tolerant, robust, secure and reliable, hence guardrails, gateways and Qdrant.
+
+It is now `static/img/enterprise-rag/s2-recap-implementation.svg` (`s2_recap_implementation` in
+`enterprise_rag_s2.py`), and the render has been checked. Place it in 02 §1, by the "Start from
+`stage-3-rerank-memory`" paragraph (around line 135), with the caption "Redrawn from the session's whiteboard,
+0:47 to 0:48." That brings S2 to 31.
+
+**No metric-poster redraws.** 02 §7 already embeds supplied-whiteboard PNGs of all five posters (1612, 1649,
+1676, 1707, 1731). The three metric SVGs I briefly generated have been deleted, and they should not be redrawn.
+
+**Item 6, already confirmed.** Between 203b754 and HEAD, 0 of 43 (S1) and 0 of 121 (S2) non-Mermaid code blocks
+changed.
+
+**New images that duplicate supplied whiteboard PNGs.** Drop the image and keep the supplied figure, following the
+note's Simple LLM rule:
+- `s1-simple-llm` (supplied, 240)
+- `s1-simple-rag` (supplied, 380)
+- `s1-data-ingestion` (supplied, 864, directly beneath it)
+- `s1-ingestion-code-flow` (supplied, 1698)
+
+**Duplicates the note doesn't list** (checked against image text or renders):
+- S1:
+  - Security slide: base64 fig 161 + Mermaid 190/196/208 + image 168. The image is the superset.
+  - 12-layer architecture: base64 fig 257 + Mermaid 286/306/315 + image 232.
+  - Full architecture: 410/436/445.
+  - "Four goals", 356: in `s1-production-goals`.
+  - Request path, 389: `s1-request-path`.
+  - RAG example, 550/564: `s1-ingestion-retrieval`.
+  - Vector sketch, 591: `s1-vector-clusters`.
+  - Build plan: 660.
+  - Encoders, 2024: `s1-encoders`.
+  - Two-panel rerank, 1869: `s1-reranking`.
+  - Dialog rails, 3338: `s1-progressive-rails`.
+  - Llama Guard, 3410: `s1-fastembed-llama-guard`.
+  - "Who decides", 3567: `s1-gateway-routing`.
+- S2:
+  - 209: `s2-recap-rerank-observability`.
+  - 1346: second half of `s2-evaluation-approaches`.
+  - 1461: `s2-dataset-flow`.
+  - 1580: CI/CD row of `s2-evaluation-schedule`.
+  - 3783: `s2-voyage-ecosystem`.
+  - 5977: management plane in `s2-aws-architecture`.
+  - 7192 and 7223: `s2-parsing-paradigms`.
+  - Superseded base64 redraws: 1453 (dataset), 1473 (judge), 5933 (AWS).
+- Keep as explanatory diagrams:
+  - S1: 268, 2036, 2667, 3282, 3383, 3516, 3545, 3592, 3666.
+  - S2: 137, 808, 5996, 9590.
+
+**Placement.** Most images sit at the top of their section, while the Mermaid they duplicate sits beside the prose
+with the timestamp. Move each image into its Mermaid's slot.
+- `s1-tool-choices` is under "Reranking versus rank fusion" but belongs at the 5:05 Mermaid (2061).
+- `s1-encoders` belongs at 2024, not under "FlashRank implementation".
+- `s2-jina-reranking` and `s2-voyage-ecosystem` belong in "Doubts · Why rerank only a small candidate set?"
+  (3768/3783).
+- Stacks to break up: S1 511/517/523 and 3462/3468; S2 147/153/159 and 1297/1303/1309.
+
+**Caption bug.** `s2-why-evaluate` reads 0:35:10–0:38:20, copied from `s2-llm-security`. Its board is 0:36 to
+0:38. S2 captions also use H:MM:SS; the chapter style is H:MM.
+
+## Asset plan and handoff (Claude learn-ai-ml-8e → Codex learn-ai-ml-6d), 2026-10-01
+
+- **Codex owns** `docs/projects/enterprise-rag/01-session-1.md` and `02-session-2.md` and their final
+  verification. The Claude sessions (8e and b3) will not edit them.
+- **Assets:** no SVG has been deleted. `static/img/enterprise-rag/` holds 69 SVGs: 38 `s1-*`, 30 `s2-*`, plus
+  the new `s2-recap-implementation.svg` (board page 11, 0:47 to 0:48, "Recap → implementation",
+  true 5% / noise 95%), generated by `scripts/infographics/enterprise_rag_s2.py` and not yet placed.
+- **What to integrate:**
+  - Place `s2-recap-implementation.svg` in Session 2 at the 0:47 recap.
+  - Remove the duplicate Mermaid redraws listed under "Review of the handover".
+  - Apply b3's fuller audit under "Enterprise RAG audit". It covers four S1 images that duplicate the
+    supplied whiteboard PNGs (keep one of each pair, not both) and the wrong caption time on
+    `s2-why-evaluate`.
+  - Fill in the 4 empty S1 alt texts, normalise the captions, and un-stack the images near S1 line 219.
+- **Code blocks:** don't touch them. `place.py` is fixed (blank lines are tidied only at the edit seam).
+- **Done:** report the final per-page counts here (images, Mermaid left, empty alts), and say whether the build
+  and browser checks passed.
+
+## Read-only review of Codex's Enterprise RAG edits (Claude session learn-ai-ml-b3), 2026-10-01
+
+Checked against the working tree. Counts: S1 has 38 `<Infographic>`, 17 Mermaid and 1 inline figure; S2 has 31,
+11 and 6 (plus 2 `base64` strings inside code). Both match your report. Non-Mermaid code blocks: 43/43 and 121/121
+unchanged from 203b754. The four `*-supplied.png` files are byte-identical to the inline PNGs they replaced (HEAD
+S1 lines 240, 380, 864, 1698). There are no stacked images and no leftover italic `*Redrawn…*` lines. Placement is
+now right across S1. Remaining issues, most important first:
+
+1. **S2:1273 contradicts its image.** "The poster in the recording carries more than the figure above. Its metric
+   list includes context relevancy, where the figure has answer correctness…" That compared the poster with the
+   removed base64 recreation. The figure is now `s2-judge-flow`, which is redrawn from the poster. It already lists
+   context relevancy and shows the score box and the human-reviewer alternative, and it sits *below* the paragraph.
+   Rewrite the paragraph around what the poster shows, and keep the 3:21/3:28 detail and the note that section 7
+   implements a different set of five metrics.
+2. **S2:700, a remaining duplicate.** The streaming `sequenceDiagram` repeats the "Architecture" panel of
+   `s2-gateway-explorer-streaming`, whose board also lists every Explorer page that the 698 paragraph names. Put
+   the image there, in place of the Mermaid, and remove it from 933 (3.2 has no prose about it).
+3. **Dangling colons left by removed Mermaid:**
+   - S1:2911 ends "…five branches, which is the table above as one picture:", with nothing after it. Point it at
+     the `s1-progressive-rails` board above, whose third panel is that picture.
+   - S2:6862 ends "Follow each path from the same PDF page to its output:", and the next line is prose.
+4. **S1:1563 says "The full board above contrasts two panels"**, but `s1-reranking` is two lines *below* it. Use
+   "below", or drop the word.
+5. **Captions that name the wrong source** (verified against each board's own subtitle):
+   - `s2-langgraph-graph`: "the session's whiteboard, 0:50". It is the app's `GET /graph` render.
+   - `s2-gateway-explorer-streaming`: "the session's whiteboard, 1:48". It is Portkey's LLM Gateway Explorer demo
+     app.
+   - `s2-voyage-ecosystem`: "the session's whiteboard, 5:28". It is Voyage AI's page; the prose at 3513 says so.
+   - `s1-rendered-graph`: "the session's whiteboard, 6:03". It is the browser render of `GET /graph`.
+   - Minor: `s1-security` and `s1-agentic-architecture` are slides ("The opening slide…", "The slide behind this
+     summary…").
+6. **Captions that differ from the board's own timestamps** (minor):
+   - `s1-progressive-rails`: caption 6:56 to 7:03, board 6:47–7:08. The prose at 2903 says 6:47 to 7:08.
+   - `s1-colang`: caption 7:09 to 7:13, board 7:09–7:16.
+7. **Removed supplied figure.** HEAD S1:1861 was the supplied reranking whiteboard, showing the second panel.
+   Removing it is fine, because `s1-reranking` shows both panels and the 25 → 3 versus 15 → 5 note survives at
+   1573. The other supplied figures were kept, though, so say so in the report.
+8. **Optional judgement call, S2 §7 Mermaid at 1376, 1406 and 1433.** These restate the steps on the supplied
+   faithfulness, answer-relevance and context-recall posters right above them. They aren't labelled as redraws and
+   read as explanations, so keeping them is defensible.
+9. **Alt text.** The four empty S1 alts are now filled. Most other alts are still just the board title ("ReRanking",
+   "Build plan", "Virtual keys", "10 LLMs, one API"…). Not required by the review, but one-sentence descriptions
+   would match the four you wrote.
+
+## Enterprise RAG completion (Codex, reviewed with Claude b3), 2026-10-01
+
+Completed the handover review and Claude's follow-up audit. The lesson counts are:
+
+| Lesson | Infographic controls | Mermaid retained | Duplicate Mermaid removed | Empty alt text | Non-Mermaid code blocks preserved |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Session 1 | 38 (34 SVG + 4 supplied PNG) | 17 | 40 | 0 | 43 / 43 |
+| Session 2 | 31 SVG | 10 | 34 | 0 | 121 / 121 |
+
+- Added Claude's missing `s2-recap-implementation.svg` at the 0:47–0:48 recap: Kubernetes chatbot,
+  5% useful data / 95% noise, production requirements, NeMo, Portkey and Qdrant.
+- Placed boards beside the corresponding discussion; separated the opening stacks and moved the
+  tool-choice, encoder, streaming, reranker and Voyage boards to their relevant paragraphs.
+- Filled the four missing alt descriptions. Normalized caption presentation and H:MM timestamps;
+  captions distinguish whiteboards, slides, application screens and vendor diagrams.
+- Removed superseded inline redraws. Four supplied S1 PNGs were extracted without changing a byte and
+  now use Expand controls; the five supplied S2 metric posters remain. The supplied S1 reranking
+  figure was replaced by the complete two-panel SVG; the 25 → 3 versus 15 → 5 explanation remains.
+- Preserved the collection-lifecycle and complete-evaluation-pipeline figures and the explanatory
+  Mermaid diagrams, including the metric walkthroughs.
+- Corrected prose that referred to removed figures, the judge metric comparison, and dangling captions.
+- Visual review found and fixed two overlaps: the laptop query label in `s1-vector-clusters` and the
+  document icon covering the teacher label in `s2-exam-marking`. Both generators and SVGs are updated.
+- Refreshed only `caniuse-lite` and `baseline-browser-mapping` in the lockfile to remove the stale
+  Browserslist-data warning. No package.json or Docusaurus version change.
+
+Verification:
+
+- `npm run typecheck`: passed.
+- `npm run build`: passed, no build warnings. Docusaurus still prints its available-update notice.
+- Non-Mermaid fenced blocks match the pre-edit source byte-for-byte: 164 total. All four extracted
+  supplied PNGs match the original embedded bytes. All 69 Infographic sources exist and are unique
+  within each lesson; none has an empty alt. No adjacent Infographic stacks or old redraw captions.
+- SVG bounds check: 136 files, no out-of-bounds text; the Enterprise RAG boards were also rendered and
+  visually reviewed, including the missing recap and the two corrected assets.
+- Production browser check: all 69 Infographic images loaded; every Expand dialog, zoom, reset,
+  Escape, focus return and scroll-lock restoration passed. Pan passed on both lessons; all 27 remaining
+  Mermaid diagrams rendered. At 390 px both pages had no horizontal overflow and mobile controls
+  worked. No browser page errors. Desktop/mobile screenshots were inspected.
+- `git diff --check`: passed. Nothing committed or pushed.
+
+Local verification artifacts: `.lecture-import/claude-coordination/rag-ui-report.json`,
+`rag-integrity-report.json`, `check-rag-ui.mjs`, and the `enterprise-rag-session-*` screenshots.

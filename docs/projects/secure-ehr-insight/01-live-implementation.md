@@ -483,11 +483,12 @@ sudo -i -u postgres psql
 
 The first command may print a warning that it could not change directory.
 That's harmless: the database is still created. Inside `psql`, create the
-user and give it this database (use your own password; this one is
-published in the repository):
+user and give it this database. Set a unique password through the interactive
+`psql` prompt, which keeps it out of the command text and shell history:
 
 ```sql
-CREATE USER fde_admin WITH PASSWORD 'SecureEHR2026!';
+CREATE USER fde_admin;
+\password fde_admin
 ALTER ROLE fde_admin SET client_encoding TO 'utf8';
 ALTER ROLE fde_admin SET default_transaction_isolation TO 'read committed';
 ALTER ROLE fde_admin SET timezone TO 'UTC';

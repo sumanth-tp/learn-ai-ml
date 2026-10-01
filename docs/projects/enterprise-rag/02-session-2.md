@@ -119,20 +119,22 @@ The visual parsers have their own repositories and setup commands, introduced wh
 
 How to read it:
 
-- **Figures** come from the session's shared whiteboard, or redraw it, and sit next to the explanation they belong to. Use **Expand** on a Mermaid diagram to zoom into it.
+- **Figures** come from the session's shared whiteboard, or redraw it, and sit next to the explanation they belong to. Use **Expand** on an infographic or Mermaid diagram to zoom into it.
 - **Complete file** blocks are whole files. Save each one at the path in its heading. Lines beginning `# Reader note:` are comments added for these notes; they don't change what the code does.
 - **Doubts** sections paraphrase questions asked during the session.
 - **`NOT from session`** marks guidance or corrections added in these notes rather than said in the session.
 
 ## 1. Revisit the application before changing it
 
-<Infographic
-  src="/img/enterprise-rag/s2-langgraph-graph.svg"
-  alt="The LangGraph the app renders"
-  caption="Redrawn from Session 2: 0:50:00–0:50:40 (again 2:01)."
-/>
-
 Start from `stage-3-rerank-memory`. The walkthrough revisits ingestion, the planner, 15-candidate retrieval, five-chunk reranking and the responder. A technical query about production container orchestration is rewritten to include useful Kubernetes terms, then searched against the corpus.
+
+
+
+<Infographic
+  src="/img/enterprise-rag/s2-recap-implementation.svg"
+  alt="The Kubernetes chatbot must find useful evidence among 95% noisy data and use guardrails, a gateway and Qdrant to become fault tolerant, robust, secure and reliable."
+  caption="Redrawn from the session's whiteboard, 0:47 to 0:48."
+/>
 
 ```mermaid
 flowchart LR
@@ -142,76 +144,43 @@ flowchart LR
     A --> T["Answer + trace + stored conversation"]
 ```
 
+At 0:50, the application renders the compiled LangGraph:
+
+<Infographic
+  src="/img/enterprise-rag/s2-langgraph-graph.svg"
+  alt="The LangGraph the app renders"
+  caption="Redrawn from the app's GET /graph browser render, 0:50 (revisited 2:01)."
+/>
+
 ### The recap boards · 0:17 to 0:31
-
-<Infographic
-  src="/img/enterprise-rag/s2-recap-advanced-rag.svg"
-  alt="Advanced RAG · what we already built"
-  caption="Redrawn from Session 2: 0:17:40–0:20:10."
-/>
-
-<Infographic
-  src="/img/enterprise-rag/s2-recap-scalability.svg"
-  alt="Scalability, K8s data and the goal"
-  caption="Redrawn from Session 2: 0:20:30–0:23:00."
-/>
-
-<Infographic
-  src="/img/enterprise-rag/s2-recap-rerank-observability.svg"
-  alt="Retrieval is math, reranking is meaning"
-  caption="Redrawn from Session 2: 0:28:00–0:31:00."
-/>
 
 Three whiteboard pages carry the recap before any new code is written.
 
 **What the project already is.** "Advanced RAG" on the board means a LangGraph agent graph that retrieves and then reranks with FlashRank. It runs as a production system, so every request is traced and sent to Logfire. The tech stack page names just two pieces: LangGraph for the graph and Qdrant as the vector database.
 
-*Redrawn from the session's whiteboard, 0:17 to 0:20 and 0:23 to 0:24.*
-
-```mermaid
-flowchart LR
-    AR["<b>Advanced RAG</b>"] --> G["LangGraph agent graph"]
-    G --> RET["Retrieval<br/>Qdrant vector DB"] --> RR["Reranking<br/>FlashRank"]
-    AR --> PS["<b>Production system</b>"]
-    PS --> TR["Trace the app"]
-    PS --> LF["Logfire<br/>observability"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-recap-advanced-rag.svg"
+  alt="Advanced RAG · what we already built"
+  caption="Redrawn from the session's whiteboard, 0:17 to 0:20 and 0:23 to 0:24."
+/>
 
 **What "scalable" means.** The board splits scale into two axes. Users grow from ten to a hundred thousand, and a million users should see the same latency as ten. Data grows from megabytes to gigabytes, at which point ingestion becomes a big-data ETL or ELT job. The Kubernetes corpus is scraped web content, so part of it is clean and part is noise. The target is written underneath: an accurate system in a highly noisy environment.
 
-*Redrawn from the session's whiteboard, 0:20 to 0:23.*
-
-```mermaid
-flowchart LR
-    SC["<b>Scalability</b>"] --> U["Users<br/>10 → 100,000"]
-    SC --> D["Data<br/>10 MB → 10 GB"]
-    D --> ETL["ETL / ELT<br/>when data grows"]
-    K8S["<b>Kubernetes chatbot</b>"] --> DATA["Scraped data"]
-    DATA --> TRUE["True / clean"]
-    DATA --> NOISY["Noisy"]
-    TRUE & NOISY --> GOAL["Goal: accurate system<br/>in a highly noisy environment"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-recap-scalability.svg"
+  alt="Scalability, K8s data and the goal"
+  caption="Redrawn from the session's whiteboard, 0:20 to 0:23."
+/>
 
 **Why the reranker exists.** Qdrant scores chunks by cosine similarity, which the board labels "maths": it measures how close two vectors are, not whether a chunk answers the question. The 15 candidates it returns go to FlashRank, a cross-encoder that reads the query and a chunk together through attention, so it scores meaning. Five chunks survive to the responder.
 
-*Redrawn from the session's whiteboard, 0:28 to 0:31.*
-
-```mermaid
-flowchart LR
-    Q["Technical query"] --> V["Vector DB<br/>cosine similarity = maths"]
-    V --> C15["15 candidate chunks"]
-    C15 --> FR["FlashRank cross-encoder<br/>attention over query + chunk<br/>= meaning"]
-    FR --> T5["Top 5 chunks"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-recap-rerank-observability.svg"
+  alt="Retrieval is math, reranking is meaning"
+  caption="Redrawn from the session's whiteboard, 0:28 to 0:31."
+/>
 
 The same page closes the recap with the three observability terms used for the rest of the day. A **span** is one timed operation, such as a Qdrant search. A **trace** groups every span of one request. The **waterfall** view lays the spans out on a timeline, so the slow step is visible at a glance.
-
-```mermaid
-flowchart LR
-    OBS["<b>Observability</b>"] --> SP["Span<br/>one timed operation"]
-    OBS --> TR["Trace<br/>all spans of one request"]
-    OBS --> WF["Waterfall view<br/>spans on a timeline"]
-```
 
 ### Doubts · Should a repeated question use memory? · 00:56
 
@@ -233,41 +202,21 @@ flowchart LR
 
 ### Aside · API models versus LLM engineering · 1:04 to 1:11
 
+The discussion then turns to provider dependency, fine-tuning and distillation. Calling a hosted model through an API is the fast route, but the board crosses out two things. The model is built for generic use cases, and the organisation's data leaves for a third party. The alternative the host calls "LLM engineering" starts from an open-source model trained on general data and fine-tunes it on the organisation's own data to build a private assistant. That route is costly.
+
 <Infographic
   src="/img/enterprise-rag/s2-api-vs-llm-engineering.svg"
   alt="API models vs LLM engineering"
-  caption="Redrawn from Session 2: ~1:04:00–1:08:10."
+  caption="Redrawn from the session's whiteboard, 1:04 to 1:08."
 />
+
+Knowledge distillation is the second idea on the board. A huge teacher model produces predictions, and a small student model is trained to reproduce them. The host's analogy: what the teacher needed fifteen days, or a month, to learn, the student picks up in a day, or sixteen hours, because it learns from the teacher's answers instead of from scratch.
 
 <Infographic
   src="/img/enterprise-rag/s2-knowledge-distillation.svg"
   alt="Knowledge Distillation"
-  caption="Redrawn from Session 2: 1:08:30–1:11:30."
+  caption="Redrawn from the session's whiteboard, 1:08 to 1:11."
 />
-
-The discussion then turns to provider dependency, fine-tuning and distillation. Calling a hosted model through an API is the fast route, but the board crosses out two things. The model is built for generic use cases, and the organisation's data leaves for a third party. The alternative the host calls "LLM engineering" starts from an open-source model trained on general data and fine-tunes it on the organisation's own data to build a private assistant. That route is costly.
-
-*Redrawn from the session's whiteboard, 1:04 to 1:08.*
-
-```mermaid
-flowchart LR
-    API["LLM via a third-party API"] --> UC["Generic use case ✗"]
-    API --> SEC["Organisation data leaves ✗"]
-    OS["Open-source model<br/>trained on general data"] --> ENG["LLM engineering"]
-    OWN["Organisation's own data"] --> ENG
-    ENG --> FT["Fine-tuning"] --> PA["Private assistant"]
-    ENG --> COST["Costly"]
-```
-
-Knowledge distillation is the second idea on the board. A huge teacher model produces predictions, and a small student model is trained to reproduce them. The host's analogy: what the teacher needed fifteen days, or a month, to learn, the student picks up in a day, or sixteen hours, because it learns from the teacher's answers instead of from scratch.
-
-*Redrawn from the session's whiteboard, 1:08 to 1:11.*
-
-```mermaid
-flowchart LR
-    T["<b>Huge teacher model</b><br/>learnt over 15 days"] --> P["Teacher predictions"]
-    P --> S["<b>Small student model</b><br/>trained to match them<br/>learns in 1 day"]
-```
 
 These are model-strategy choices; the implemented work here remains RAG integration. Distillation transfers behaviour from a teacher model through a training procedure; it is not inherently reinforcement learning.
 
@@ -280,45 +229,25 @@ These are model-strategy choices; the implemented work here remains RAG integrat
 
 ## 2. Integrate the NeMo gate
 
+The host groups the next two integrations under one heading, LLM security (0:35). Guardrails decide what the assistant will talk about. Gateways control how each model call is made and which provider serves it. This section adds the first; section 3 adds the second.
+
 <Infographic
   src="/img/enterprise-rag/s2-llm-security.svg"
   alt="LLM security"
-  caption="Redrawn from Session 2: 0:35:10–0:38:20."
+  caption="Redrawn from the session's whiteboard, 0:35 to 0:36."
 />
-
-The host groups the next two integrations under one heading, LLM security (0:35). Guardrails decide what the assistant will talk about. Gateways control how each model call is made and which provider serves it. This section adds the first; section 3 adds the second.
-
-*Redrawn from the session's whiteboard, 0:35 to 0:36.*
-
-```mermaid
-flowchart LR
-    SEC["<b>LLM security</b>"] --> GR["Guardrails<br/>what may be discussed<br/>section 2"]
-    SEC --> GW["Gateways<br/>how each model call is made<br/>section 3"]
-```
 
 The complete replacement files in sections 2–3 use teaching commit `52b771cbdea2e2215c823cc1ae522183b77a85b7`. Keep the Session 1 files that are not replaced. Save all replacement files before restarting the API; `main.py` imports the gateway-backed graph, so the whole integration is installed as one coherent checkpoint.
 
 ### 2.1 Define the intent and dialogue rules
 
+On the board (0:38 to 0:41), guardrails are the rules and regulations of the conversation. NVIDIA's NeMo Guardrails writes them in Colang, in `.co` files, using three kinds of block. `define user` lists example messages for an intent, such as off-topic requests. `define bot` gives the canned reply, such as "I am an IT assistant". `define flow` joins the two: when the user's message matches that intent, the bot answers that way. The file below follows exactly this pattern, for off-topic, jailbreak, greeting and farewell intents.
+
 <Infographic
   src="/img/enterprise-rag/s2-colang-define.svg"
   alt="Guardrails → NeMo → Colang"
-  caption="Redrawn from Session 2: 0:38:20–0:40:50."
+  caption="Redrawn from the session's whiteboard, 0:38 to 0:41."
 />
-
-On the board (0:38 to 0:41), guardrails are the rules and regulations of the conversation. NVIDIA's NeMo Guardrails writes them in Colang, in `.co` files, using three kinds of block. `define user` lists example messages for an intent, such as off-topic requests. `define bot` gives the canned reply, such as "I am an IT assistant". `define flow` joins the two: when the user's message matches that intent, the bot answers that way. The file below follows exactly this pattern, for off-topic, jailbreak, greeting and farewell intents.
-
-*Redrawn from the session's whiteboard, 0:38 to 0:41.*
-
-```mermaid
-flowchart LR
-    GR["Guardrails"] --> NEMO["NeMo Guardrails<br/>by NVIDIA"]
-    GR --> RR["Rules and regulations"] --> CO["Colang<br/>.co files"]
-    CO --> DU["define user<br/>e.g. off-topic examples"]
-    CO --> DB["define bot<br/>e.g. 'I am an IT assistant'"]
-    DU --> DF["define flow<br/>user intent → bot response"]
-    DB --> DF
-```
 
 #### Complete file: `app/guardrails/colang_rules.py`
 
@@ -570,31 +499,17 @@ The YAML contains an OpenAI model placeholder, but the explicit `llm=guard_llm` 
 
 ### Doubts · Why does a guardrail need an LLM? · 01:32
 
-<Infographic
-  src="/img/enterprise-rag/s2-guard-approaches.svg"
-  alt="Two ways to build a guard"
-  caption="Redrawn from Session 2: 1:22:50–1:24:30, revisited 1:33:00–1:34:00."
-/>
-
 **Mo:** If rules are defined, why is a language model used inside NeMo?
 
 **Response:** Free-form language needs to be mapped to canonical intents before a corresponding flow can run. Similar examples help that classification. Rules govern the subsequent dialogue behaviour, but user wording is not restricted to the exact examples.
 
 The board used for this answer (1:22 to 1:24, extended at 1:33) contrasts two ways to build a guard. **Llama Guard** has been fine-tuned to recognise unsafe and off-topic input, so its knowledge lives in its weights. **NeMo Guardrails** is open source and is not trained on your rules. It uses FastEmbed to find the defined example scenarios closest to the message, then asks an LLM to decide the intent. If the LLM decides the message matches a rail, the rail's reply is returned; otherwise the message goes on to the RAG graph. The crosses on the board mark the weak spot: phrasings unlike any of your examples.
 
-*Redrawn from the session's whiteboard, 1:22 to 1:24 and 1:33.*
-
-```mermaid
-flowchart LR
-    subgraph A["Fine-tuned guard"]
-      FT["Fine-tuning"] --> LG["Llama Guard"] --> OT["Detects off-topic / unsafe<br/>from its training"]
-    end
-    subgraph B["NeMo Guardrails · open source"]
-      MSG["User message"] --> FE["FastEmbed similarity<br/>to defined scenarios"] --> LLM["LLM decides intent"]
-      LLM -->|matches a rail| BLOCK["Rail reply returned"]
-      LLM -->|no match| PASS["Passed to the RAG graph"]
-    end
-```
+<Infographic
+  src="/img/enterprise-rag/s2-guard-approaches.svg"
+  alt="Two ways to build a guard"
+  caption="Redrawn from the session's whiteboard, 1:22 to 1:24 and 1:33."
+/>
 
 ### 2.3 Understand what `guard()` returns
 
@@ -764,65 +679,31 @@ This snippet exposes the gate branch; the repository's endpoint supplies the gra
 
 ## 3. Integrate Portkey into planner and responder
 
+The gateway board (0:41 to 0:44) starts from the problem. With 100,000 users calling a provider's API directly, the provider's rate limits and slow responses become the user's problem. A gateway such as Portkey sits between the application and the providers. If OpenAI is unavailable, the request moves to Anthropic, and then to Gemini. The same layer can front MCP servers and their tools, and it hands out **virtual keys**, so the application refers to a key stored in the gateway instead of holding each provider's real key.
+
 <Infographic
   src="/img/enterprise-rag/s2-gateway.svg"
   alt="Gateways → Portkey"
-  caption="Redrawn from Session 2: 0:41:00–0:44:10."
+  caption="Redrawn from the session's whiteboard, 0:41 to 0:44."
 />
 
-The gateway board (0:41 to 0:44) starts from the problem. With 100,000 users calling a provider's API directly, the provider's rate limits and slow responses become the user's problem. A gateway such as Portkey sits between the application and the providers. If OpenAI is unavailable, the request moves to Anthropic, and then to Gemini. The same layer can front MCP servers and their tools, and it hands out **virtual keys**, so the application refers to a key stored in the gateway instead of holding each provider's real key.
-
-*Redrawn from the session's whiteboard, 0:41 to 0:44.*
-
-```mermaid
-flowchart LR
-    subgraph PROB["Without a gateway"]
-      U["100,000 users"] --> API["Direct provider API"] --> LATE["Rate limits /<br/>late responses"]
-    end
-    subgraph SOL["With a gateway"]
-      USER["User request"] --> GW["<b>Gateway</b><br/>Portkey"]
-      GW --> OP["OpenAI"]
-      OP -.->|unavailable| AN["Anthropic"]
-      AN -.->|unavailable| GE["Gemini"]
-      GW --> MCP["MCPs"] --> TOOL["Tools"]
-      GW --- VK["Virtual keys"]
-    end
-```
-
 The next page (0:44 to 0:45) makes the key-management point on its own. Without a gateway, ten models mean ten API keys to store and rotate inside the application. With one, the application holds a single key and endpoint, and the gateway maps it to all ten.
-
-*Redrawn from the session's whiteboard, 0:44 to 0:45.*
-
-```mermaid
-flowchart LR
-    subgraph NO["Without a gateway"]
-      A1["App"] --> K["10 API keys"] --> M1["10 LLMs"]
-    end
-    subgraph YES["With a gateway"]
-      A2["App"] --> ONE["1 gateway key"] --> G["Gateway"] --> M2["10 LLMs"]
-    end
-```
-
-Before writing the integration (1:48), the host opens Portkey's demo app, *LLM Gateway Explorer*, which has one page per gateway feature: a baseline with no gateway, routing and observability, metadata and tracking, automatic retries, request timeouts, fallback routing, retry plus timeout plus fallback, load balancing, response caching, rate limiting, streaming, and a production config. Its streaming page shows the request path. Only the first two arrows are on screen; the return arrows below follow Portkey's documented behaviour (**`NOT from session`**).
-
-```mermaid
-sequenceDiagram
-    participant App
-    participant Portkey
-    participant LLM
-    App->>Portkey: Chat request (stream = true)
-    Portkey->>LLM: Forward streaming request
-    LLM-->>Portkey: Token chunks
-    Portkey-->>App: Chunks as they arrive, request still logged
-```
-
-### 3.1 Define the gateway policy
 
 <Infographic
   src="/img/enterprise-rag/s2-gateway-keys.svg"
   alt="10 LLMs, one API"
-  caption="Redrawn from Session 2: 0:44:10–0:45:00."
+  caption="Redrawn from the session's whiteboard, 0:44 to 0:45."
 />
+
+Before writing the integration (1:48), the host opens Portkey's demo app, *LLM Gateway Explorer*, which has one page per gateway feature: a baseline with no gateway, routing and observability, metadata and tracking, automatic retries, request timeouts, fallback routing, retry plus timeout plus fallback, load balancing, response caching, rate limiting, streaming, and a production config. Its streaming page shows the request path. Only the first two arrows are on screen; the return arrows below follow Portkey's documented behaviour (**`NOT from session`**).
+
+<Infographic
+  src="/img/enterprise-rag/s2-gateway-explorer-streaming.svg"
+  alt="LLM Gateway Explorer · Streaming"
+  caption="Redrawn from Portkey's LLM Gateway Explorer demo app, 1:48. Grey return arrows are an explanatory addition, not shown in the recording."
+/>
+
+### 3.1 Define the gateway policy
 
 #### Complete file: `requirements.txt`
 
@@ -1044,11 +925,7 @@ The integration slugs must exist in your Portkey workspace. The first target is 
 
 ### 3.2 Use an OpenAI-compatible interface
 
-<Infographic
-  src="/img/enterprise-rag/s2-gateway-explorer-streaming.svg"
-  alt="LLM Gateway Explorer · Streaming"
-  caption="Redrawn from Session 2: 1:48:05–1:48:40."
-/>
+
 
 #### Complete file: `app/agents/nodes/planner.py`
 
@@ -1294,61 +1171,25 @@ Use the same sequence as the demonstration: greeting, farewell, capabilities, an
 
 ## 4. Define what an evaluation measures
 
+The need for evaluation is first raised much earlier, at 0:36 to 0:38. Classical ML and deep learning hold back a test split and score it with accuracy, precision and recall: deterministic arithmetic over labels. A chatbot's output is, in the host's words, "the most random thing", so a RAG system needs its own stage after ingestion and retrieval, with metrics built for generated text.
+
 <Infographic
   src="/img/enterprise-rag/s2-why-evaluate.svg"
   alt="Why a RAG system needs evals"
-  caption="Redrawn from Session 2: 0:35:10–0:38:20."
+  caption="Redrawn from the session's whiteboard, 0:36 to 0:38."
 />
-
-<Infographic
-  src="/img/enterprise-rag/s2-evaluation-approaches.svg"
-  alt="Two approaches to AI evaluation"
-  caption="Redrawn from Session 2: 2:37:00–2:59:30."
-/>
-
-<Infographic
-  src="/img/enterprise-rag/s2-exam-analogy.svg"
-  alt="Evaluation analogy · examination"
-  caption="Redrawn from Session 2: 3:01:00–3:04:00 and 3:15:00–3:16:00."
-/>
-
-The need for evaluation is first raised much earlier, at 0:36 to 0:38. Classical ML and deep learning hold back a test split and score it with accuracy, precision and recall: deterministic arithmetic over labels. A chatbot's output is, in the host's words, "the most random thing", so a RAG system needs its own stage after ingestion and retrieval, with metrics built for generated text.
-
-*Redrawn from the session's whiteboard, 0:36 to 0:38.*
-
-```mermaid
-flowchart LR
-    ML["Classic ML / DL"] --> SPLIT["Train · test · validation split"] --> ACC["Accuracy · precision · recall<br/>deterministic maths"]
-    RAG["RAG system"] --> I["Data ingestion"] --> R["Data retrieval"] --> E["LLM evaluation"]
-    CB["Chatbot output<br/>is non-deterministic"] --> E
-    E --> MET["Dedicated metrics / evals"]
-```
 
 The evaluation board proper (2:37 onwards) opens with a definition. Evaluation is the systematic process of **measuring and assessing** how well a system performs against predefined objectives, criteria or expected outcomes, to judge its quality, effectiveness and reliability. It then splits the subject into two approaches.
 
 **LLM evals** test the model alone: a prompt goes in, a response comes out, and the response is scored on qualities such as correctness, hallucination, reasoning, safety, bias, coherence, relevance, faithfulness, toxicity, helpfulness and consistency.
 
-*Redrawn from the session's evaluation board, 2:37 to 2:59.*
-
-```mermaid
-flowchart LR
-    subgraph LLME["LLM evals · the model alone"]
-      IP["Input / prompt"] --> LM["LLM"] --> OR["Output / response"]
-      LM -.- C1["Correctness · hallucination · reasoning<br/>safety · bias · coherence"]
-      LM -.- C2["Relevance · faithfulness · toxicity<br/>helpfulness · consistency"]
-    end
-```
+<Infographic
+  src="/img/enterprise-rag/s2-evaluation-approaches.svg"
+  alt="Two approaches to AI evaluation"
+  caption="Redrawn from the session's evaluation board, 2:37 to 2:59."
+/>
 
 **AI application evals** test the whole path a user experiences: the question, retrieval from the knowledge base, the prompt, the LLM, any tools or agents, and the answer. They end with one question the model-only view cannot ask: was the user's goal achieved? This project needs the second kind.
-
-```mermaid
-flowchart LR
-    subgraph APP["AI application evals · end to end"]
-      U["User<br/>question / request"] --> R["Retrieval (RAG)"] --> L["LLM"] --> T["Tools / APIs / agents"] --> A["Response / answer"] --> G{"User goal achieved?"}
-      KB[("Knowledge base")] --> R
-      P["Prompt / instructions"] --> L
-    end
-```
 
 An answer can be fluent yet irrelevant, correct yet unsupported by the retrieved evidence, or grounded yet incomplete. A single “looks good” judgement hides those differences.
 
@@ -1356,16 +1197,11 @@ The examples move from documentation assistants and travel-booking questions to 
 
 The examination analogy explains the parts (3:01 to 3:04, revisited at 3:15). The student is the RAG pipeline: it writes the exam, producing real answers on real data. The teacher is the evaluation pipeline: it knows the correct answers and how to award marks, scores each answer, and adds the marks up into the evaluation result.
 
-*Redrawn from the session's evaluation board, 3:01 to 3:04.*
-
-```mermaid
-flowchart LR
-    S["<b>Student</b><br/>RAG pipeline"] -->|writes the exam| AP["Exam paper / answers<br/>= RAG outputs on real data"]
-    AP --> T["<b>Teacher</b><br/>evaluation pipeline"]
-    GT["Correct answers<br/>= ground truths"] --> T
-    MK["How to give marks<br/>= metrics"] --> T
-    T --> PS["Score for each answer"] --> TS["Total score<br/>= RAG evaluation results"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-exam-analogy.svg"
+  alt="Evaluation analogy · examination"
+  caption="Redrawn from the session's evaluation board, 3:01 to 3:04."
+/>
 
 | In the exam | In RAG evaluation |
 |---|---|
@@ -1380,44 +1216,23 @@ The board's footer sums it up: the student generates outputs, and the teacher ev
 
 Two side panels break each role into steps. Before the exam, the teacher sets it up, which is the work of building the golden dataset and choosing metrics. During the exam, the student reads the question, retrieves what it knows and writes an answer, which is exactly one run of the RAG pipeline.
 
-*Redrawn from the side panels of the session's evaluation board, 3:05 to 3:16.*
-
-```mermaid
-flowchart TB
-    subgraph SETUP["A · Teacher sets up the exam = golden dataset + metrics"]
-      S1["Define syllabus / topics"] --> S2["Create questions"] --> S3["Prepare correct answers<br/>ground truths"]
-      S3 --> S4["Decide marks per question"] --> S5["Define rules / rubrics / metrics"] --> S6["Total marks and grading criteria"]
-    end
-    subgraph WRITE["2 · Student writes the exam = RAG pipeline"]
-      W1["Reads the question<br/>gets the user query"] --> W2["Thinks / retrieves info<br/>retrieves context"] --> W3["Writes the answer<br/>generates the answer"] --> W4["Submits the paper<br/>response to be evaluated"]
-    end
-    SETUP --> WRITE
-```
-
-After the exam (3:17 to 3:18), the teacher's checklist is the evaluation loop in miniature.
-
-*Redrawn from the session's evaluation board, 3:17 to 3:18.*
-
-```mermaid
-flowchart LR
-    A["Compare the answer<br/>with the correct answer"] --> B["Apply scoring rules<br/>metrics"] --> C["Give marks<br/>for each question"] --> D["Calculate the total score"] --> E["Provide feedback"]
-```
-
-A model leaderboard evaluates a model on its benchmark. An application evaluation also depends on your corpus, parsers, chunks, prompts, routing, tool results and user tasks. The session mentions [Artificial Analysis](https://artificialanalysis.ai/) in the benchmark discussion; its model comparisons do not replace application-specific evaluation.
-
-### The four fields that must stay separate
-
 <Infographic
   src="/img/enterprise-rag/s2-exam-roles.svg"
   alt="Set up the exam, then write it"
-  caption="Redrawn from Session 2: 3:05–3:16 (small side panels on the same board)."
+  caption="Redrawn from the side panels of the session's evaluation board, 3:05 to 3:16."
 />
+
+After the exam (3:17 to 3:18), the teacher's checklist is the evaluation loop in miniature.
 
 <Infographic
   src="/img/enterprise-rag/s2-exam-marking.svg"
   alt="B · Evaluating the exam"
-  caption="Redrawn from Session 2: 3:17:30–3:18:40."
+  caption="Redrawn from the session's evaluation board, 3:17 to 3:18."
 />
+
+A model leaderboard evaluates a model on its benchmark. An application evaluation also depends on your corpus, parsers, chunks, prompts, routing, tool results and user tasks. The session mentions [Artificial Analysis](https://artificialanalysis.ai/) in the benchmark discussion; its model comparisons do not replace application-specific evaluation.
+
+### The four fields that must stay separate
 
 | Field | Where it comes from | What it is used for |
 |---|---|---|
@@ -1436,60 +1251,23 @@ A reference is not an actual response. A manually chosen relevant paragraph is n
 
 ## 5. Build the dataset by running the real application
 
+The first evaluation diagram shows dataset construction. Golden questions enter the RAG application. Its retrieved contexts and answer are combined with the original question and reference to form a test case. Repeating that process yields the dataset used for scoring.
+
 <Infographic
   src="/img/enterprise-rag/s2-dataset-flow.svg"
   alt="Build an evaluation dataset from real RAG runs"
-  caption="Redrawn from Session 2: 3:05:00–3:16:00 (revisited 4:32)."
+  caption="Redrawn from the session's whiteboard, 3:05 to 3:16 (revisited 4:32)."
 />
+
+The second diagram evaluates those records (3:17 to 3:36, revisited at 4:36). The judge reads one test case at a time and applies each metric's own criteria. Only after many cases does an aggregate score mean anything, which is why the presenter writes "1000 questions" under the test-case box.
+
+The evaluation poster lists **context relevancy** alongside answer relevancy, faithfulness, context precision and context recall. Section 7 implements a different set of five metrics, replacing context relevancy with answer correctness. Its score box lists metric-wise score, overall score, pass or fail, and feedback with a reason. At about 3:21 the presenter covers the judge box with "Human Reviewer Expert" to show that the grader can be a person; at 3:28 the LLM judge is circled again.
 
 <Infographic
   src="/img/enterprise-rag/s2-judge-flow.svg"
   alt="Evaluation flow · LLM as judge"
-  caption="Redrawn from Session 2: 3:17:00–3:36:00 (revisited 4:36)."
+  caption="Redrawn from the session's evaluation board, 3:17 to 3:36."
 />
-
-
-<figure style={{overflowX: "auto"}}>
-<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUwIiBoZWlnaHQ9IjU5NSIgdmlld0JveD0iMCAwIDEzNTAgNTk1Ij48ZGVmcz48bWFya2VyIGlkPSJhcnJvdyIgdmlld0JveD0iMCAwIDEwIDEwIiByZWZYPSI5IiByZWZZPSI1IiBtYXJrZXJXaWR0aD0iNyIgbWFya2VySGVpZ2h0PSI3IiBvcmllbnQ9ImF1dG8tc3RhcnQtcmV2ZXJzZSI+PHBhdGggZD0iTTAgMEwxMCA1TDAgMTBaIiBmaWxsPSIjMzM0MTU1Ii8+PC9tYXJrZXI+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNmY2ZjZmEiLz48c3R5bGU+dGV4dHtmb250LWZhbWlseTpBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZjtmaWxsOiMxNzIwMzN9LnRpdGxle2ZvbnQtc2l6ZToyOHB4O2ZvbnQtd2VpZ2h0OjcwMH0uc3VidGl0bGV7Zm9udC1zaXplOjE4cHg7Zm9udC13ZWlnaHQ6NzAwfS5zbWFsbHtmb250LXNpemU6MTVweH0udGlueXtmb250LXNpemU6MTNweH0uYm94e3N0cm9rZTojNDc1NTY5O3N0cm9rZS13aWR0aDoyO3J4OjEyfS5hcnJvd3tzdHJva2U6IzMzNDE1NTtzdHJva2Utd2lkdGg6Mi41O2ZpbGw6bm9uZTttYXJrZXItZW5kOnVybCgjYXJyb3cpfTwvc3R5bGU+PHRleHQgeD0iNjc1LjAiIHk9IjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiPkZMT1cgwrcgQlVJTERJTkcgRVZBTFVBVElPTiBEQVRBU0VUIEZPUiBSQUcgQVBQTElDQVRJT05TPC90ZXh0PjxyZWN0IHg9IjI1IiB5PSIxMjAiIHdpZHRoPSIyNjAiIGhlaWdodD0iMTcwIiByeD0iMTAiIGZpbGw9IiNmZmY3ZWQiIHN0cm9rZT0iIzQ3NTU2OSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTU1LjAiIHk9IjE1NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCI+R09MREVOPC90ZXh0Pjx0ZXh0IHg9IjUwIiB5PSIxOTAiIGNsYXNzPSJzbWFsbCI+MS4gSW5wdXQ6IHF1ZXN0aW9ucyAvIHF1ZXJpZXM8L3RleHQ+PHRleHQgeD0iNTAiIHk9IjIyMCIgY2xhc3M9InNtYWxsIj4yLiBFeHBlY3RlZCBvdXRwdXQ6IGdyb3VuZCB0cnV0aDwvdGV4dD48cmVjdCB4PSIzNDUiIHk9IjEyMCIgd2lkdGg9IjMzMCIgaGVpZ2h0PSIxNzAiIHJ4PSIxMCIgZmlsbD0iI2VmZjZmZiIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI1MTAuMCIgeT0iMTU3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNzAwIj5SQUcgQVBQTElDQVRJT048L3RleHQ+PHRleHQgeD0iMzc1IiB5PSIxOTAiIGNsYXNzPSJzbWFsbCI+UmV0cmlldmVyIOKGkiBjb250ZXh0PC90ZXh0Pjx0ZXh0IHg9IjM3NSIgeT0iMjIwIiBjbGFzcz0ic21hbGwiPkxMTSDihpIgYWN0dWFsIG91dHB1dDwvdGV4dD48cGF0aCBkPSJNMjg1IDIwNUwzNDUgMjA1IiBjbGFzcz0iYXJyb3ciLz48cmVjdCB4PSI3NDAiIHk9IjEyMCIgd2lkdGg9IjU3MCIgaGVpZ2h0PSIxOTUiIHJ4PSIxMCIgZmlsbD0iI2Y1ZjNmZiIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIxMDI1LjAiIHk9IjE1NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCI+TExNVGVzdENhc2U8L3RleHQ+PHRleHQgeD0iNzY1IiB5PSIxODUiIGNsYXNzPSJzbWFsbCI+4oCiIElucHV0OiBxdWVzdGlvbjwvdGV4dD48dGV4dCB4PSI3NjUiIHk9IjIxMiIgY2xhc3M9InNtYWxsIj7igKIgRXhwZWN0ZWQgb3V0cHV0OiBncm91bmQgdHJ1dGg8L3RleHQ+PHRleHQgeD0iNzY1IiB5PSIyMzkiIGNsYXNzPSJzbWFsbCI+4oCiIEFjdHVhbCBvdXRwdXQ6IG1vZGVsIGFuc3dlcjwvdGV4dD48dGV4dCB4PSI3NjUiIHk9IjI2NiIgY2xhc3M9InNtYWxsIj7igKIgUmV0cmlldmFsIGNvbnRleHQ6IHJldHVybmVkIGRvY3VtZW50czwvdGV4dD48cGF0aCBkPSJNNjc1IDIxMEw3NDAgMjEwIiBjbGFzcz0iYXJyb3ciLz48cmVjdCB4PSI3NDAiIHk9IjM3NSIgd2lkdGg9IjU3MCIgaGVpZ2h0PSIxMjUiIHJ4PSIxMCIgZmlsbD0iI2YwZmRmNCIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIxMDI1LjAiIHk9IjQxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCI+REFUQVNFVCDCtyBzYXZlZCB0ZXN0IGNhc2VzPC90ZXh0Pjx0ZXh0IHg9Ijc2NSIgeT0iNDQ1IiBjbGFzcz0ic21hbGwiPkZlZWRzIGZhaXRoZnVsbmVzcywgcmVsZXZhbmNlLCByZWNhbGwgYW5kIHRvb2wgdGVzdHM8L3RleHQ+PHBhdGggZD0iTTEwMjUgMzE1TDEwMjUgMzc1IiBjbGFzcz0iYXJyb3ciLz48cmVjdCB4PSIyNSIgeT0iMzYwIiB3aWR0aD0iNjUwIiBoZWlnaHQ9IjE0MCIgcng9IjEwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjM1MC4wIiB5PSIzOTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPldIQVQgQ09NRVMgRlJPTSBXSEVSRT88L3RleHQ+PHRleHQgeD0iNTAiIHk9IjQyMiIgY2xhc3M9InNtYWxsIj5Hb2xkZW46IHF1ZXN0aW9uICsgcmVmZXJlbmNlIGFuc3dlcjwvdGV4dD48dGV4dCB4PSI1MCIgeT0iNDUyIiBjbGFzcz0ic21hbGwiPkxpdmUgYXBwOiBhY3R1YWwgYW5zd2VyICsgcmV0cmlldmVkIGNvbnRleHQ8L3RleHQ+PC9zdmc+" style={{maxWidth: "none", width: "1350px"}} alt="Evaluation dataset board recreated: golden inputs and expected answers, live RAG output/context, LLM test case and stored dataset." loading="lazy" />
-<figcaption>Evaluation dataset board recreated: golden inputs and expected answers, live RAG output/context, LLM test case and stored dataset.</figcaption>
-</figure>
-
-The first evaluation diagram shows dataset construction. Golden questions enter the RAG application. Its retrieved contexts and answer are combined with the original question and reference to form a test case. Repeating that process yields the dataset used for scoring.
-
-```mermaid
-flowchart LR
-    GOLD["Golden dataset<br/>Question + expected answer"] -->|question| RAG["RAG application<br/>Retriever → LLM"]
-    RAG --> ACT["Actual response"]
-    RAG --> CTX["Retrieved contexts"]
-    GOLD -->|question and reference| CASE["Evaluation test case"]
-    ACT --> CASE
-    CTX --> CASE
-    CASE --> DS["Enriched dataset<br/>Store for evaluation"]
-```
-
-The second diagram evaluates those records (3:17 to 3:36, revisited at 4:36). The judge reads one test case at a time and applies each metric's own criteria. Only after many cases does an aggregate score mean anything, which is why the presenter writes "1000 questions" under the test-case box.
-
-<figure style={{overflowX: "auto"}}>
-<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUwIiBoZWlnaHQ9IjU1MCIgdmlld0JveD0iMCAwIDEzNTAgNTUwIj48ZGVmcz48bWFya2VyIGlkPSJhcnJvdyIgdmlld0JveD0iMCAwIDEwIDEwIiByZWZYPSI5IiByZWZZPSI1IiBtYXJrZXJXaWR0aD0iNyIgbWFya2VySGVpZ2h0PSI3IiBvcmllbnQ9ImF1dG8tc3RhcnQtcmV2ZXJzZSI+PHBhdGggZD0iTTAgMEwxMCA1TDAgMTBaIiBmaWxsPSIjMzM0MTU1Ii8+PC9tYXJrZXI+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNmY2ZjZmEiLz48c3R5bGU+dGV4dHtmb250LWZhbWlseTpBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZjtmaWxsOiMxNzIwMzN9LnRpdGxle2ZvbnQtc2l6ZToyOHB4O2ZvbnQtd2VpZ2h0OjcwMH0uc3VidGl0bGV7Zm9udC1zaXplOjE4cHg7Zm9udC13ZWlnaHQ6NzAwfS5zbWFsbHtmb250LXNpemU6MTVweH0udGlueXtmb250LXNpemU6MTNweH0uYm94e3N0cm9rZTojNDc1NTY5O3N0cm9rZS13aWR0aDoyO3J4OjEyfS5hcnJvd3tzdHJva2U6IzMzNDE1NTtzdHJva2Utd2lkdGg6Mi41O2ZpbGw6bm9uZTttYXJrZXItZW5kOnVybCgjYXJyb3cpfTwvc3R5bGU+PHRleHQgeD0iNjc1LjAiIHk9IjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiPkVWQUxVQVRJT04gRkxPVyDCtyBMTE0gQVMgSlVER0U8L3RleHQ+PHJlY3QgeD0iMzAiIHk9IjEzMCIgd2lkdGg9IjM0MCIgaGVpZ2h0PSIyNDUiIHJ4PSIxMCIgZmlsbD0iI2ZmZjdlZCIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIyMDAuMCIgeT0iMTY3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5URVNUIENBU0UgwrcgRlJPTSBEQVRBU0VUPC90ZXh0Pjx0ZXh0IHg9IjUzIiB5PSIyMDMiIGNsYXNzPSJzbWFsbCI+4oCiIFF1ZXN0aW9uPC90ZXh0Pjx0ZXh0IHg9IjUzIiB5PSIyMzYiIGNsYXNzPSJzbWFsbCI+4oCiIEFjdHVhbCBhbnN3ZXI8L3RleHQ+PHRleHQgeD0iNTMiIHk9IjI2OSIgY2xhc3M9InNtYWxsIj7igKIgRXhwZWN0ZWQgYW5zd2VyPC90ZXh0Pjx0ZXh0IHg9IjUzIiB5PSIzMDIiIGNsYXNzPSJzbWFsbCI+4oCiIFJldHJpZXZlZCBjb250ZXh0PC90ZXh0PjxyZWN0IHg9IjQ0MCIgeT0iMTYwIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjE4MCIgcng9IjEwIiBmaWxsPSIjZWZmNmZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjU1MC4wIiB5PSIxOTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiPkxMTSBBUyBKVURHRTwvdGV4dD48dGV4dCB4PSI0NjQiIHk9IjI0NSIgY2xhc3M9InNtYWxsIj5Qcm9tcHQgKyBydWJyaWMgKyBmaWVsZHM8L3RleHQ+PHJlY3QgeD0iNzMwIiB5PSIxMjUiIHdpZHRoPSIzNDAiIGhlaWdodD0iMjU1IiByeD0iMTAiIGZpbGw9IiNmNWYzZmYiIHN0cm9rZT0iIzQ3NTU2OSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iOTAwLjAiIHk9IjE2MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjcwMCI+TUVUUklDUzwvdGV4dD48dGV4dCB4PSI3NTUiIHk9IjE5MyIgY2xhc3M9InNtYWxsIj7igKIgQW5zd2VyIHJlbGV2YW5jeTwvdGV4dD48dGV4dCB4PSI3NTUiIHk9IjIyNyIgY2xhc3M9InNtYWxsIj7igKIgRmFpdGhmdWxuZXNzPC90ZXh0Pjx0ZXh0IHg9Ijc1NSIgeT0iMjYxIiBjbGFzcz0ic21hbGwiPuKAoiBDb250ZXh0IHByZWNpc2lvbjwvdGV4dD48dGV4dCB4PSI3NTUiIHk9IjI5NSIgY2xhc3M9InNtYWxsIj7igKIgQ29udGV4dCByZWNhbGw8L3RleHQ+PHRleHQgeD0iNzU1IiB5PSIzMjkiIGNsYXNzPSJzbWFsbCI+4oCiIEFuc3dlciBjb3JyZWN0bmVzczwvdGV4dD48cmVjdCB4PSIxMTQwIiB5PSIxNjUiIHdpZHRoPSIxODAiIGhlaWdodD0iMTcwIiByeD0iMTAiIGZpbGw9IiNmMGZkZjQiIHN0cm9rZT0iIzQ3NTU2OSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTIzMC4wIiB5PSIyMDIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiPlNDT1JFPC90ZXh0Pjx0ZXh0IHg9IjExNjUiIHk9IjI1MCIgY2xhc3M9InNtYWxsIj4w4oCTMSArIHJlYXNvbjwvdGV4dD48cGF0aCBkPSJNMzcwIDI1MEw0NDAgMjUwIiBjbGFzcz0iYXJyb3ciLz48cGF0aCBkPSJNNjYwIDI1MEw3MzAgMjUwIiBjbGFzcz0iYXJyb3ciLz48cGF0aCBkPSJNMTA3MCAyNTBMMTE0MCAyNTAiIGNsYXNzPSJhcnJvdyIvPjx0ZXh0IHg9IjM1IiB5PSI0NTUiIGNsYXNzPSJzbWFsbCI+QSBqdWRnZSBncmFkZXMgb25lIHRlc3QgY2FzZSBhZ2FpbnN0IGFuIGV4cGxpY2l0IHJ1YnJpYzsgYWdncmVnYXRlIHNjb3JlcyBjb21lIG9ubHkgYWZ0ZXIgbWFueSBjYXNlcy48L3RleHQ+PC9zdmc+" style={{maxWidth: "none", width: "1350px"}} alt="LLM-as-judge board recreated with test-case inputs, judge, five metrics and score." loading="lazy" />
-<figcaption>LLM-as-judge board recreated with test-case inputs, judge, five metrics and score.</figcaption>
-</figure>
-
-The poster in the recording carries more than the figure above. Its metric list includes **context relevancy**, where the figure has answer correctness; section 7 implements the figure's five. Its score box lists metric-wise score, overall score, pass or fail, and feedback with a reason. At about 3:21 the presenter covers the judge box with "Human Reviewer Expert" to show that the grader can be a person; at 3:28 the LLM judge is circled again.
-
-*Redrawn from the session's evaluation board, 3:17 to 3:36.*
-
-```mermaid
-flowchart LR
-    subgraph TC["Test case from the dataset · e.g. 1000 questions"]
-      Q["Question<br/>user query"]
-      AO["Actual output<br/>model answer"]
-      EO["Expected output<br/>ground truth"]
-      CX["Context<br/>retrieved documents"]
-    end
-    TC --> J["LLM as judge<br/>or human reviewer / expert"]
-    J --> MT["Metrics · each with its own criteria, prompt and rules<br/>answer relevancy · faithfulness (groundedness)<br/>context relevancy · context precision · context recall"]
-    MT --> S["Score<br/>metric-wise · overall · pass / fail · feedback and reason"]
-```
 
 A judge should receive the inputs required by the metric. Sending every available field to every metric can accidentally change what is being judged. For example, faithfulness checks response claims against retrieved context; it does not need the reference answer to decide whether those claims were supported.
 
@@ -1514,13 +1292,7 @@ A judge should receive the inputs required by the metric. Sending every availabl
 <Infographic
   src="/img/enterprise-rag/s2-goldens-metrics.svg"
   alt="Goldens and metrics"
-  caption="Redrawn from Session 2: 3:14:00 and 3:29:00–3:33:30."
-/>
-
-<Infographic
-  src="/img/enterprise-rag/s2-golden-synthesizer.svg"
-  alt="Generate synthetic goldens"
-  caption="Redrawn from Session 2: 4:09:40–4:10:30 (again 4:28:20)."
+  caption="Redrawn from the session's whiteboard, 3:14 and 3:29 to 3:33."
 />
 
 **Discussion:** Domain experts define what a correct answer means. Airline cancellation/refund tasks and LCEL documentation questions require different references and success criteria.
@@ -1529,15 +1301,11 @@ DeepEval's [synthetic data generation](https://deepeval.com/docs/synthesizer-int
 
 The DeepEval pages shown (4:09 to 4:10, again at 4:28) list four routes: generate goldens from documents, from contexts, from existing goldens, or from scratch. The first two share one path.
 
-*Redrawn from DeepEval's Golden Synthesizer documentation as shown in the session, 4:09 to 4:10.*
-
-```mermaid
-flowchart LR
-    D["Documents<br/>knowledge base"] --> C["Contexts<br/>extracted by the synthesizer"]
-    EG["Existing goldens"] --> C
-    C --> SG["Synthetic goldens<br/>input + expected output"]
-    SG --> REV["Domain review<br/>before use"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-golden-synthesizer.svg"
+  alt="Generate synthetic goldens"
+  caption="Redrawn from DeepEval's Golden Synthesizer documentation as shown in the session, 4:09 to 4:10."
+/>
 
 **Summary**
 
@@ -1548,43 +1316,17 @@ flowchart LR
 
 ## 6. Decide when evaluations run
 
-<Infographic
-  src="/img/enterprise-rag/s2-evaluation-schedule.svg"
-  alt="Where evaluation fits and when to run"
-  caption="Redrawn from Session 2: 3:36:30–3:42:00."
-/>
-
 The annual-exam versus unit-test analogy leads to two evaluation sizes. Small suites give quick feedback on ordinary changes. Larger suites provide broader coverage before major releases or on a schedule.
 
 The board for this (3:36 to 3:42) has two rows. The top row places evaluation beside the running application. The RAG application answers users. A golden dataset is prepared in advance, carrying tags and metadata as well as questions and expected answers. An **offline** evaluation pipeline runs the application on the golden inputs, collects outputs and retrieved context, scores them with an LLM judge and reports. Two kinds of run come out of it, and both feed the same outcomes.
 
-*Redrawn from the session's evaluation board, 3:36 to 3:42.*
-
-```mermaid
-flowchart LR
-    subgraph APP["RAG application"]
-      U["User"] --> P["RAG pipeline"] --> A["Answer"]
-      KB[("Knowledge base")] <--> P
-    end
-    APP --> GD["Golden dataset · prepared in advance<br/>input / question · expected output<br/>optional context / reference · metadata / tags"]
-    GD --> EP["Evaluation pipeline · offline<br/>1 run RAG on golden inputs<br/>2 collect outputs + retrieved context<br/>3 evaluate with metrics, LLM as judge<br/>4 scores and reports"]
-    EP -.-> UN["Unit / nightly · frequent<br/>small set · key metrics<br/>fast, low cost · nightly / per commit"]
-    EP -.-> CO["Comprehensive · less frequent<br/>large set · many metrics<br/>slower, higher cost · before major releases"]
-    UN & CO --> OUT["Outcomes<br/>track quality over time · detect regressions<br/>compare versions · data for improvement"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-evaluation-schedule.svg"
+  alt="Where evaluation fits and when to run"
+  caption="Redrawn from the session's evaluation board, 3:36 to 3:42."
+/>
 
 The bottom row puts the same decision into CI/CD. The type of change picks the suite, results land on a dashboard with alerts, and a comprehensive run feeds back into the pipeline.
-
-```mermaid
-flowchart LR
-    CHANGE["Code / prompt / config change"] --> CI["CI/CD pipeline"] --> KIND{"What type of evaluation?"}
-    KIND -->|small change / daily| SMALL["Unit / nightly suite<br/>essential cases"]
-    KIND -->|major release / milestone| FULL["Comprehensive suite<br/>broader golden dataset"]
-    SMALL & FULL --> RUN["Run application<br/>collect actual evidence and answers"]
-    RUN --> JUDGE["Score with metric rules"] --> STORE["Store versioned results<br/>dashboard / alerts"]
-    STORE --> FEED["Track regressions<br/>compare versions<br/>guide improvements"]
-    FULL -.->|feeds back| CI
-```
 
 The session gives an illustrative small suite of about 50 essential cases. That number is not a universal threshold. A new retrieval filter should include cases that would reveal incorrect filtering; a new refusal rule should include both attacks and legitimate questions that might be blocked.
 
@@ -3498,18 +3240,6 @@ Copy the generated value into `.env`; keep it outside source control. The extern
 
 ### 9.2 Jina embeddings and reranking
 
-<Infographic
-  src="/img/enterprise-rag/s2-jina-reranking.svg"
-  alt="Retrieve broadly, then rerank"
-  caption="Redrawn from Session 2: 5:26:00–5:27:40."
-/>
-
-<Infographic
-  src="/img/enterprise-rag/s2-voyage-ecosystem.svg"
-  alt="Search and retrieval ecosystem"
-  caption="Redrawn from Session 2: 5:28:10–5:28:30."
-/>
-
 This changes the vector space and the ranking boundary at the same time. The ingestion and query paths both call `jina-embeddings-v3`; Qdrant stores its 1,024-coordinate document vectors and searches with a query vector from that same model. The reranker receives the candidate **texts**, sends query and texts to `jina-reranker-v3`, and returns an ordered subset. It does not create new Qdrant vectors.
 
 Trace a failed query at these boundaries. A Jina authentication error during ingestion means there are no new points to search. A collection-size error means the point or query vector does not match the collection. An empty Qdrant result means reranking has no candidates, so changing the reranker cannot recover the missing passage. A reranker response containing only indexes must be mapped back to the original strings before the responder builds its prompt.
@@ -3765,25 +3495,19 @@ Document batches use `retrieval.passage`; queries use `retrieval.query`. The emb
 
 Jina's reranker page, shown at 5:26, draws this in three steps. First-stage search, BM25 or vector, cuts the full database down to a relevant top N and discards the rest. The reranker then reads the query against each of those N documents, looking at how the query terms interact with each document's content. It returns them re-sorted, keeping a top k no larger than N.
 
-*Redrawn from Jina AI's reranker page as shown in the session, 5:26 to 5:27.*
-
-```mermaid
-flowchart LR
-    Q["Query"] --> S["BM25 / vector search"]
-    DB[("Full database<br/>documents")] --> S
-    S --> TOPN["Relevant top-N docs"]
-    S --> REST["Rest: irrelevant docs<br/>dropped"]
-    TOPN --> RR["Reranker<br/>query-document interaction"]
-    Q --> RR
-    RR --> TOPK["Sorted top-k docs<br/>k ≤ N"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-jina-reranking.svg"
+  alt="Retrieve broadly, then rerank"
+  caption="Redrawn from Jina AI's reranker page as shown in the session, 5:26 to 5:27."
+/>
 
 Voyage AI's page (5:28) draws the same pipeline as a loop. The host's point is that every production retrieval system has a reranker stage, and switching ecosystem, from Jina to MongoDB's Voyage for example, changes the vendor but not the shape.
 
-```mermaid
-flowchart LR
-    UD["Unstructured data"] --> EM["Embedding model"] --> VDB[("Vector DB")] --> RR["Reranker"] --> RF["Relevant files"] --> LLM["LLM"] --> OUT["Factual responses<br/>at lower cost"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-voyage-ecosystem.svg"
+  alt="Search and retrieval ecosystem"
+  caption="Redrawn from the Voyage AI page shown in the session, 5:28."
+/>
 
 **Naveen's question:** Should the most-downloaded model be selected?
 
@@ -5922,74 +5646,19 @@ Then verify memory with the same thread ID, restart only the API container, and 
 
 ## 11. Deploy the application on AWS
 
-<Infographic
-  src="/img/enterprise-rag/s2-aws-architecture.svg"
-  alt="Enterprise RAG on AWS · deployment board"
-  caption="Redrawn from Session 2: 6:33:00–6:38:30, 6:47:30–6:51:30, 7:14:00–7:15:30."
-/>
-
-
-<figure style={{overflowX: "auto"}}>
-<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAwIiBoZWlnaHQ9Ijc4MCIgdmlld0JveD0iMCAwIDE1MDAgNzgwIj48ZGVmcz48bWFya2VyIGlkPSJhcnJvdyIgdmlld0JveD0iMCAwIDEwIDEwIiByZWZYPSI5IiByZWZZPSI1IiBtYXJrZXJXaWR0aD0iNyIgbWFya2VySGVpZ2h0PSI3IiBvcmllbnQ9ImF1dG8tc3RhcnQtcmV2ZXJzZSI+PHBhdGggZD0iTTAgMEwxMCA1TDAgMTBaIiBmaWxsPSIjMzM0MTU1Ii8+PC9tYXJrZXI+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNmY2ZjZmEiLz48c3R5bGU+dGV4dHtmb250LWZhbWlseTpBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZjtmaWxsOiMxNzIwMzN9LnRpdGxle2ZvbnQtc2l6ZToyOHB4O2ZvbnQtd2VpZ2h0OjcwMH0uc3VidGl0bGV7Zm9udC1zaXplOjE4cHg7Zm9udC13ZWlnaHQ6NzAwfS5zbWFsbHtmb250LXNpemU6MTVweH0udGlueXtmb250LXNpemU6MTNweH0uYm94e3N0cm9rZTojNDc1NTY5O3N0cm9rZS13aWR0aDoyO3J4OjEyfS5hcnJvd3tzdHJva2U6IzMzNDE1NTtzdHJva2Utd2lkdGg6Mi41O2ZpbGw6bm9uZTttYXJrZXItZW5kOnVybCgjYXJyb3cpfTwvc3R5bGU+PHRleHQgeD0iNzUwLjAiIHk9IjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGl0bGUiPkFXUyBERVBMT1lNRU5UIMK3IEFQUExJQ0FUSU9OIEFORCBNQU5BR0VEIFNFUlZJQ0VTPC90ZXh0PjxyZWN0IHg9IjU3NSIgeT0iNzAiIHdpZHRoPSIzNTAiIGhlaWdodD0iNjAiIHJ4PSIxMCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI3NTAuMCIgeT0iMTA1LjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI3MDAiPlVzZXIgLyBCcm93c2VyPC90ZXh0PjxyZWN0IHg9IjU3NSIgeT0iMTgwIiB3aWR0aD0iMzUwIiBoZWlnaHQ9IjY1IiByeD0iMTAiIGZpbGw9IiNmZmY3ZWQiIHN0cm9rZT0iIzQ3NTU2OSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iNzUwLjAiIHk9IjIxNy41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5Sb3V0ZSA1MyDCtyBETlMgKG9wdGlvbmFsKTwvdGV4dD48cmVjdCB4PSI1NzUiIHk9IjMwMCIgd2lkdGg9IjM1MCIgaGVpZ2h0PSI3NSIgcng9IjEwIiBmaWxsPSIjZWZmNmZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9Ijc1MC4wIiB5PSIzMzEuNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+QXBwbGljYXRpb24gTG9hZCBCYWxhbmNlcjwvdGV4dD48dGV4dCB4PSI3NTAuMCIgeT0iMzUzLjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPkFQSSBwYXRoIC8gVUkgcGF0aDwvdGV4dD48cGF0aCBkPSJNNzUwIDEzMEw3NTAgMTgwIiBjbGFzcz0iYXJyb3ciLz48cGF0aCBkPSJNNzUwIDI0NUw3NTAgMzAwIiBjbGFzcz0iYXJyb3ciLz48cmVjdCB4PSIzMCIgeT0iNDAwIiB3aWR0aD0iMTExMCIgaGVpZ2h0PSIzMjAiIHJ4PSIxMCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI1ODUuMCIgeT0iNDM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5BV1MgVlBDIMK3IDIgQXZhaWxhYmlsaXR5IFpvbmVzIMK3IFByaXZhdGUgRmFyZ2F0ZSB0YXNrczwvdGV4dD48cmVjdCB4PSIxMTUiIHk9IjQ4NSIgd2lkdGg9IjQyMCIgaGVpZ2h0PSIxMDUiIHJ4PSIxMCIgZmlsbD0iI2UwZjJmZSIgc3Ryb2tlPSIjNDc1NTY5IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIzMjUuMCIgeT0iNTIyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5BUEkgdGFyZ2V0IGdyb3VwIOKGkiBFQ1MgQVBJIHRhc2tzPC90ZXh0Pjx0ZXh0IHg9IjMyNS4wIiB5PSI1NDQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPkZhc3RBUEkgOjgwODAgwrcgMiBpbml0aWFsIHJlcGxpY2FzPC90ZXh0PjxyZWN0IHg9IjY1MCIgeT0iNDg1IiB3aWR0aD0iNDIwIiBoZWlnaHQ9IjEwNSIgcng9IjEwIiBmaWxsPSIjZGNmY2U3IiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9Ijg2MC4wIiB5PSI1MjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlVJIHRhcmdldCBncm91cCDihpIgRUNTIFVJIHRhc2s8L3RleHQ+PHRleHQgeD0iODYwLjAiIHk9IjU0NCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+U3RyZWFtbGl0IDo4NTAxIMK3IDEgaW5pdGlhbCByZXBsaWNhPC90ZXh0PjxwYXRoIGQ9Ik02OTAgMzc1TDMyNSAzNzVMMzI1IDQ4NSIgY2xhc3M9ImFycm93Ii8+PHBhdGggZD0iTTgxMCAzNzVMODYwIDM3NUw4NjAgNDg1IiBjbGFzcz0iYXJyb3ciLz48cmVjdCB4PSIxMTUiIHk9IjYyNSIgd2lkdGg9Ijk1NSIgaGVpZ2h0PSI2MCIgcng9IjEwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjU5Mi41IiB5PSI2NjAuMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCI+Q2xvdWRXYXRjaCBsb2dzIMK3IEVDUiBpbWFnZSDCtyBTZWNyZXRzIE1hbmFnZXIgwrcgQ0kvQ0Q8L3RleHQ+PHJlY3QgeD0iMTE4MCIgeT0iMzAwIiB3aWR0aD0iMjg1IiBoZWlnaHQ9IjM5MCIgcng9IjEwIiBmaWxsPSIjZjVmM2ZmIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjEzMjIuNSIgeT0iMzM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIj5FWFRFUk5BTCBNQU5BR0VEIFNFUlZJQ0VTPC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjM3NSIgY2xhc3M9InNtYWxsIj7igKIgUWRyYW50IMK3IHZlY3RvcnM8L3RleHQ+PHRleHQgeD0iMTIwNSIgeT0iNDE5IiBjbGFzcz0ic21hbGwiPuKAoiBOZW9uIMK3IGNoZWNrcG9pbnRzPC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjQ2MyIgY2xhc3M9InNtYWxsIj7igKIgVXBzdGFzaCDCtyByYXRlIGxpbWl0czwvdGV4dD48dGV4dCB4PSIxMjA1IiB5PSI1MDciIGNsYXNzPSJzbWFsbCI+4oCiIEppbmEgwrcgZW1iZWQvcmVyYW5rPC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjU1MSIgY2xhc3M9InNtYWxsIj7igKIgUG9ydGtleSDCtyBtb2RlbCBnYXRld2F5PC90ZXh0Pjx0ZXh0IHg9IjEyMDUiIHk9IjU5NSIgY2xhc3M9InNtYWxsIj7igKIgTG9nZmlyZSAvIExhbmdTbWl0aDwvdGV4dD48cGF0aCBkPSJNMTE0MCA1NDBMMTE4MCA1NDAiIGNsYXNzPSJhcnJvdyIvPjwvc3ZnPg==" style={{maxWidth: "none", width: "1500px"}} alt="AWS architecture board redrawn with the ALB, ECS/Fargate targets, supporting AWS services and managed external dependencies." loading="lazy" />
-<figcaption>AWS architecture board redrawn with the ALB, ECS/Fargate targets, supporting AWS services and managed external dependencies.</figcaption>
-</figure>
-
 The deployed unit is the same image already exercised with Docker. ECS runs it with two commands: Uvicorn for the API and Streamlit for the UI. An Application Load Balancer sends requests to the appropriate service. The application continues to use Qdrant Cloud, Neon, Upstash, Jina and Portkey outside the VPC.
 
 A successful deployment has three independent proofs: containers remain healthy, requests reach the application, and a real query retrieves the intended collection. A green ECS service alone proves none of the answer-quality requirements.
 
 The board (6:33 to 6:38, revisited at 6:47 and 7:14) labels every connection. The load balancer splits on path: `/query`, `/health`, `/ready` and `/metrics` go to the API task, and `/ui*` goes to the Streamlit task, which reaches the API through `BACKEND_URL`. Each outbound dependency has its protocol written on the edge. Portkey routes to OpenAI `gpt-5-mini` first and falls back to Anthropic `claude-haiku-4-5`. At 7:14 the presenter shades the compute group to make the security point: all traffic reaches the Fargate cluster through the load balancer.
 
-*Redrawn from the session's deployment board, 6:33 to 6:38 and 6:47 to 6:51.*
-
-```mermaid
-flowchart TB
-    U["User / browser"] -->|HTTPS| R53["Route 53 DNS<br/>optional"]
-    subgraph EDGE["AWS edge"]
-      R53 --> ALB["Application Load Balancer<br/>public subnets :80 / :443"]
-    end
-    subgraph COMPUTE["AWS compute · ECS cluster on Fargate"]
-      API["rag-api task<br/>uvicorn 0.0.0.0:8080"]
-      UI["rag-ui task<br/>streamlit 0.0.0.0:8501"]
-    end
-    ALB -->|"/query /health /ready /metrics"| API
-    ALB -->|"/ui*"| UI
-    UI -->|BACKEND_URL| API
-    subgraph LLMX["External LLM services"]
-      PK["Portkey gateway<br/>routing + fallback"] -->|primary| OA["OpenAI<br/>gpt-5-mini"]
-      PK -.->|fallback| AN["Anthropic<br/>claude-haiku-4-5"]
-      JI["Jina AI<br/>embeddings + reranker"]
-    end
-    subgraph STATE["Managed state"]
-      NE[("Neon PostgreSQL<br/>LangGraph checkpointer<br/>conversation memory")]
-      UP[("Upstash Redis<br/>rate-limiting store")]
-      QD[("Qdrant Cloud<br/>enterprise_rag collection")]
-    end
-    API -->|gateway request| PK
-    API -->|embedding / rerank| JI
-    API -->|SQL over TLS| NE
-    API -->|REST API| UP
-    API -->|gRPC / HTTP over TLS| QD
-```
+<Infographic
+  src="/img/enterprise-rag/s2-aws-architecture.svg"
+  alt="Enterprise RAG on AWS · deployment board"
+  caption="Redrawn from the session's deployment board, 6:33 to 6:38 and 6:47 to 6:51."
+/>
 
 The lower half of the board is the AWS management plane. GitHub Actions builds the image and pushes it to ECR, both tasks pull it, and each task reads its secrets, assumes an IAM role, writes logs and exposes metrics.
-
-```mermaid
-flowchart LR
-    GH["GitHub Actions<br/>ci.yml + cd.yml"] -->|build and push| ECR
-    subgraph MGMT["AWS management"]
-      ECR["ECR<br/>enterprise-rag:latest"]
-      SM["Secrets Manager"]
-      IAM["IAM roles<br/>ecsTaskExecutionRole<br/>rag-api-task-role · rag-ui-task-role"]
-      CW["CloudWatch Logs<br/>/ecs/rag-api · /ecs/rag-ui"]
-      PR["Prometheus /metrics"]
-    end
-    ECR -->|pull image| TASKS["rag-api and rag-ui tasks"]
-    TASKS -->|read secrets| SM
-    TASKS -->|assume role| IAM
-    TASKS -->|write logs| CW
-    TASKS -->|expose metrics| PR
-```
 
 The board leaves out the network layer. The next diagram adds it, because the commands in this section create it: a VPC across two Availability Zones, private subnets for the tasks and a NAT gateway for their outbound calls.
 
@@ -7171,12 +6840,6 @@ Cleanup is a separate, deliberate action after you finish. Preserve any wanted d
 
 ## 12. Read complex documents before choosing a parser
 
-<Infographic
-  src="/img/enterprise-rag/s2-parsing-paradigms.svg"
-  alt="Three paradigms for visual documents"
-  caption="Redrawn from Session 2: 7:34:00–7:40:00, 7:49–7:50, 8:04–8:05, 8:11, 8:15–8:18."
-/>
-
 The text assistant from Session 1 works when extraction preserves the evidence. A research paper makes the weakness visible: a page can contain two columns, a figure, a table, equations and footnotes. Flattening the page into one string may put a table value next to the wrong heading. The session uses the [Docling Technical Report](https://arxiv.org/pdf/2408.09869) as the common comparison document. A separate exercise uses [*Attention Is All You Need*](https://arxiv.org/pdf/1706.03762) to retrieve a page containing BLEU results.
 
 Here, *parsing* means recovering document content and structure for later indexing. The session compares three approaches in this order:
@@ -7187,49 +6850,17 @@ Here, *parsing* means recovering document content and structure for later indexi
 | Single-stage OCR with Nemotron-Parse or Unlimited-OCR | Text/Markdown plus layout labels and boxes from one model | Convenient single-call extraction, but errors inside the model are harder to isolate |
 | Two-stage layout plus OCR with PP-DocLayout-V3 and GLM-OCR | Region boxes/labels first, recognised content for each region second | More configurable and easier to inspect at each stage; extra components to operate |
 
-The figure in the source separates these into three coloured vertical paths. Follow each path from the same PDF page to its output:
-
-```mermaid
-flowchart LR
-    PDF["Same PDF page<br/>columns · figures · tables"]
-    subgraph A["1 · Visual retrieval"]
-      A1["Render whole page"] --> A2["ColQwen2.5 visual encoder"] --> A3["Page multi-vectors"] --> A4["MaxSim search"] --> A5["Retrieved page image"]
-    end
-    subgraph B["2 · Single-stage parsing"]
-      B1["Render page"] --> B2["Nemotron-Parse / Unlimited-OCR<br/>one unified model"] --> B3["Markdown + labels + boxes"]
-    end
-    subgraph C["3 · Two-stage parsing"]
-      C1["Render page"] --> C2["PP-DocLayout-V3<br/>region detection"] --> C3["GLM-OCR<br/>region recognition"] --> C4["Markdown + labels + boxes"]
-    end
-    PDF --> A1 & B1 & C1
-```
+The figure below separates these into three coloured vertical paths, each running from the same PDF page to its output.
 
 The board itself (7:34 to 7:40, reused at 8:04, 8:11 and 8:15 to 8:18) names alternatives at every stage, not only the models demonstrated. All three paradigms start from the same page image rendered from the PDF.
 
-*Redrawn from the session's parsing board, 7:34 to 7:40.*
-
-```mermaid
-flowchart TB
-    PG["Document input · PDF / image<br/>→ page image"] --> L
-    subgraph P1["Paradigm 1 · dual-stage: layout → recognition"]
-      L["Stage 1 · layout detection<br/>PP-DocLayout-V3 / DocLayout-YOLO<br/>23 region types · boxes + reading order"] --> CR["Region cropping + prompt routing"]
-      CR --> RR["Stage 2 · region recognition<br/>GLM-OCR 0.9B / PaddleOCR-VL / MinerU2.5<br/>text → 'Text Recognition:'<br/>table → 'Table Recognition:'<br/>formula → 'Formula Recognition:'"]
-      RR --> O1["Structured Markdown + LaTeX + HTML tables"]
-    end
-```
+<Infographic
+  src="/img/enterprise-rag/s2-parsing-paradigms.svg"
+  alt="Three paradigms for visual documents"
+  caption="Redrawn from the session's parsing board, 7:34 to 7:40."
+/>
 
 Paradigm 1's key step is the routing in the middle: each cropped region is sent to the recogniser with a prompt chosen by its type. Paradigm 2 does everything in one forward pass. Paradigm 3 does not produce text at all; it embeds the page image and retrieves pages.
-
-```mermaid
-flowchart TB
-    subgraph P2["Paradigm 2 · single-stage end-to-end VLM"]
-      V["Single VLM forward pass<br/>Nemotron Parse 1.1 / dots.ocr / olmOCR-2<br/>Chandra-OCR / GOT-OCR 2.0 / Nougat<br/>full page → structured output"] --> O2["Markdown / JSON / LaTeX<br/>+ optional boxes and classes"]
-    end
-    subgraph P3["Paradigm 3 · ColPali-based vision retrieval"]
-      VE["Vision encoder<br/>ColPali / ColQwen2.5 / ColSmolVLM<br/>per-patch embeddings from raw page"] --> MV["Multi-vector embeddings<br/>late interaction · MaxSim, ColBERT-style"]
-      MV --> RP["Retrieved pages / patches<br/>ranked by visual similarity"] --> LLM["Feed to LLM for the answer"]
-    end
-```
 
 Visual page retrieval can select a page without transcribing it. The OCR paths create content that can be chunked and sent to the existing text retrieval stack. These are demonstrations in separate repositories; the class does not replace the deployed Jina/Qdrant ingestion pipeline with a complete multimodal service.
 
@@ -7252,12 +6883,6 @@ Visual page retrieval can select a page without transcribing it. The OCR paths c
 
 ## 13. Retrieve a PDF page with ColQwen2.5
 
-<Infographic
-  src="/img/enterprise-rag/s2-colpali-architecture.svg"
-  alt="ColPali architecture · late interaction"
-  caption="Redrawn from Session 2: 7:40:50–7:41:30."
-/>
-
 The visual retrieval path rasterises each page, sends it through ColQwen2.5 and keeps a sequence of vectors for that page. The query is also represented by multiple vectors. **Late interaction** scores each query vector against the best matching page vector and sums those maxima. A single cosine similarity between one query vector and one page vector would discard this richer matching structure.
 
 ```text
@@ -7272,20 +6897,11 @@ The session first surveys [ColPali](https://arxiv.org/abs/2407.01449), [ColBERT]
 
 The ColPali README's architecture figure (7:40 to 7:41) splits the work in two. **Offline**, each page image is cut into patches and passed through a vision encoder and a language model; a projection layer turns each patch's output into a vector, giving one multi-vector per page. **Online**, the query's tokens go through the same language model and projection. The score is late interaction: for each query token, take its best match (MaxSim) over the page's patch vectors, then add those maxima up. A student asks what "projection" means here: a learned linear layer that maps each hidden state to a smaller vector in the shared scoring space.
 
-*Redrawn from the ColPali repository's README as shown in the session, 7:40 to 7:41.*
-
-```mermaid
-flowchart LR
-    subgraph OFF["Offline · index pages"]
-      D["Page image<br/>cut into patches"] --> VE["Vision encoder"] --> L1["LLM"] --> P1["Projection"] --> DV["Patch vectors 1…N<br/>one multi-vector per page"]
-    end
-    subgraph ON["Online · query"]
-      Q["Query tokens<br/>e.g. 'What are ViTs?'"] --> L2["LLM"] --> P2["Projection"] --> QV["Query token vectors"]
-    end
-    DV --> MS["For each query token:<br/>MaxSim over page patches"]
-    QV --> MS
-    MS --> SUM["Sum of MaxSims<br/>= page similarity score"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-colpali-architecture.svg"
+  alt="ColPali architecture · late interaction"
+  caption="Redrawn from the ColPali repository's README as shown in the session, 7:40 to 7:41."
+/>
 
 ### 13.1 Reproduce the page-level experiment
 
@@ -7402,24 +7018,15 @@ The inspection step matters more than a pleasing demo screenshot. On the shared 
 
 ### 14.1 Set up the OCR repository and sample paper
 
-<Infographic
-  src="/img/enterprise-rag/s2-ocr-repository.svg"
-  alt="Nemotron-Parse + Mistral OCR · repository architecture"
-  caption="Redrawn from Session 2: 8:39:00–8:40:00."
-/>
-
 Use the exact companion repository at revision [`c8d91fe`](https://github.com/sourangshupal/nemotron-parse-mistral-ocr/tree/c8d91fe0f5d474aa331dcdcde03da930ce212a9b). It targets Python 3.12 and keeps this work separate from the Python 3.11 application environment. The source repository's `pyproject.toml` is included below so package requirements stay next to the commands.
 
 The README's architecture tree (8:39 to 8:40) describes the pipeline this repository implements. A parse script rasterises each PDF page to a JPEG, sends it to `nvidia/nemotron-parse` through NVIDIA NIM and saves raw JSON and Markdown. An ingest script then chunks by semantic type, captions figures with a vision model, embeds everything through NIM and indexes it into Qdrant. Only the top of the tree is on screen; the ingest phases are summarised from the README's opening description.
 
-*Redrawn from the repository README as shown in the session, 8:39 to 8:40.*
-
-```mermaid
-flowchart LR
-    PDF["PDF"] --> NP["nemotron_parse_pipeline.py<br/>rasterise pages to JPEG<br/>POST to nvidia/nemotron-parse via NIM"]
-    NP --> RES["results/*_raw.json<br/>results/*_parsed.md"]
-    RES --> ING["scripts/ingest.py · phases 1–5<br/>chunk by type · caption figures<br/>embed with NIM · index in Qdrant"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-ocr-repository.svg"
+  alt="Nemotron-Parse + Mistral OCR · repository architecture"
+  caption="Redrawn from the repository README as shown in the session, 8:39 to 8:40."
+/>
 
 ```bash
 # Reader note: Pin the reviewed OCR repository revision before installing its dependencies.
@@ -9579,12 +9186,6 @@ The live review found a missed text region and a missed table region even when m
 
 ## 15. Separate layout detection from text recognition
 
-<Infographic
-  src="/img/enterprise-rag/s2-layout-model.svg"
-  alt="PP-DocLayoutV3 · model architecture"
-  caption="Redrawn from Session 2: 8:14:00–8:15:00."
-/>
-
 The final demonstration uses **PP-DocLayout-V3** to find and label page regions, then **GLM-OCR** to read those regions. The local route calls the GLM model through Ollama. The output contains both recognised Markdown and per-region JSON, allowing a reader to check whether a missed word came from region detection, recognition or final formatting.
 
 ```mermaid
@@ -9601,47 +9202,23 @@ This structure matches the local viewer: a saved or live parser result supplies 
 
 The PP-DocLayoutV3 model card (8:14 to 8:15) shows why the layout model can output reading order as well as boxes. A PP-HGNetV2 backbone and transformer layers feed four heads: class, box, mask and order. Each head's raw logits are post-processed, filtered and merged into the final layout. The figure's lower row, which details the order head, is too small to read in the recording and is left out here.
 
-*Redrawn from the PP-DocLayoutV3 model card as shown in the session, 8:14 to 8:15.*
-
-```mermaid
-flowchart LR
-    IMG["Page image"] --> BB["Backbone<br/>PP-HGNetV2"] --> TR["Transformer<br/>encoder / decoder"]
-    TR --> CH["Class head"] & BH["Box head"] & MH["Mask head"] & OH["Order head"]
-    CH & BH & MH & OH --> PP["Post-processing<br/>class · box · mask · order"] --> FI["Filtering"] --> OUT["Layout result<br/>labelled regions + reading order"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-layout-model.svg"
+  alt="PP-DocLayoutV3 · model architecture"
+  caption="Redrawn from the PP-DocLayoutV3 model card as shown in the session, 8:14 to 8:15."
+/>
 
 ### 15.1 Set up the dual-stage repository
-
-<Infographic
-  src="/img/enterprise-rag/s2-multimodal-pipeline.svg"
-  alt="Multimodal RAG · four repository phases"
-  caption="Redrawn from Session 2: 8:59:50–9:00:20."
-/>
 
 Use the companion [`multi-modal-rag`](https://github.com/sourangshupal/multi-modal-rag/tree/2e004a1abdb60ff4b6b38ccf850ed032d7abfe8f) revision. This repo targets Python 3.12 and includes a local `ollama/` demonstration. The application may run slowly on CPU; a GPU or Apple Silicon acceleration can shorten processing. The video loads **saved JSON** for its visual comparison near the end, so seeing boxes in that demonstration does not mean a fresh OCR run occurred at that moment.
 
 The README (8:59 to 9:00) sums the repository up as "raw PDF → clean Markdown → hybrid vector search → re-ranked answers", in four phases. It also claims first place on OmniDocBench V1.5; that is the repository's own claim, not something the session measures. Phases 2 to 4 go further than the live demonstration, which stops after parsing.
 
-*Redrawn from the repository README as shown in the session, 8:59 to 9:00.*
-
-```mermaid
-flowchart TB
-    IN["PDF / image"] --> P1
-    subgraph P1["Phase 1 · parse"]
-      L["PP-DocLayout-V3<br/>23 element categories"] --> O["GLM-OCR 0.9B<br/>text · tables · formulas"] --> C["Structure-aware chunker<br/>RAG-ready chunks"]
-    end
-    P1 --> P2
-    subgraph P2["Phase 2 · ingest"]
-      CAP["GPT-4o image captioner<br/>enriches figure chunks"] --> EMB["Pluggable dense embeddings<br/>OpenAI · Gemini"]
-      EMB --> QH[("Qdrant hybrid store<br/>dense + sparse + RRF")]
-      BM["BM25 sparse vectors<br/>feature hashing"] --> QH
-    end
-    P2 --> P3
-    subgraph P3["Phase 3 · search and re-rank"]
-      HS["Hybrid Qdrant search<br/>top-k candidates"] --> RR["Reranker<br/>OpenAI · Jina · BGE · Qwen"]
-    end
-    P3 --> P4["Phase 4 · REST API<br/>FastAPI"]
-```
+<Infographic
+  src="/img/enterprise-rag/s2-multimodal-pipeline.svg"
+  alt="Multimodal RAG · four repository phases"
+  caption="Redrawn from the repository README as shown in the session, 8:59 to 9:00."
+/>
 
 ```bash
 git clone https://github.com/sourangshupal/multi-modal-rag.git

@@ -1,6 +1,15 @@
 # Handoff: Claude → Codex. Project infographics, interactive labs, AI Security chapters
 
-## ⚑ CURRENT STATE: Claude has handed over (user: "You reached 90%, handover now")
+## Enterprise RAG review update · 2026-10-01
+
+The Enterprise RAG rows in the original handoff below are historical. The current lessons contain
+38 Infographic controls in Session 1 (34 SVGs and four preserved supplied PNGs) and 31 in Session 2.
+All catalogue boards are placed, including the Session 2 recap-to-implementation board. Duplicate
+Mermaid redraws have been removed; 17 and 10 explanatory Mermaid diagrams remain. All 43 and 121
+non-Mermaid code listings are byte-for-byte unchanged. Final verification is recorded under
+“Enterprise RAG completion” in `.codex/claude-coordination.md`.
+
+## ⚑ ORIGINAL HANDOFF STATE: Claude has handed over (user: "You reached 90%, handover now")
 
 Codex now owns everything below. Claude's three drawing sub-agents were **stopped**, so nobody else is
 editing these files.

@@ -1040,8 +1040,8 @@ def s1_vector_clusters():
     for x,y,w,h,label,col in [(125,145,185,65,'Dieting','grey'),(410,150,250,110,'OpenAI   Claude','purple'),(120,300,240,155,'Dog · Cat\nTiger · Rhino','green'),(140,490,245,100,'Bike · Car · Cycle','teal'),(460,355,250,115,'MacBook · Lenovo','orange'),(700,260,180,90,'RAG · AI agent','purple')]:
         b.group(x,y,w,h,'',col)
         b.text(x+w/2,y+h/2+5,label,18,col,'700')
-    b.text(665,310,'Which is the best laptop?',18,'orange','700')
-    b.arrow((620,325),(600,380),color='orange')
+    b.text(545,310,'Which is the best laptop?',18,'orange','700')
+    b.arrow((545,325),(580,355),color='orange')
     b.arrow((365,415),(450,415),color='red',both=True,label='distance')
     b.card(910,345,215,150,'Retrieved neighbours',['1. MacBook / Lenovo','Claude / RAG'],'blue')
     b.arrow((715,415),(900,415),color='blue')
