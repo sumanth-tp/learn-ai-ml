@@ -453,3 +453,17 @@ That last row matters most. **Knowing where your system fails is more valuable t
 - [ ] Agent capped with `max_iterations`
 - [ ] Cost per query measured
 - [ ] Remaining failure modes written down
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Build | Create a document-grounded assistant with ingestion, indexing, retrieval, structured answers and tools. |
+| Verify | Use citations, refusals and a golden evaluation set to test the complete workflow. |
+| Operate | Add routing, guardrails, caching, tracing, cost measurement and a documented failure analysis. |
+| Sources | Ingest at least two content types and preserve source references. |
+| Retrieval | Build a baseline index, then compare better search methods against it. |
+| Answers | Return structured, cited responses and refuse unsupported requests. |
+| Actions | Add bounded tools, an agent and request routing only where they help. |
+| Evaluation | Use a golden set with unanswerable cases and record before-and-after metrics. |
+| Release | Expose an interface, log cost and latency, gather feedback and document remaining failures. |

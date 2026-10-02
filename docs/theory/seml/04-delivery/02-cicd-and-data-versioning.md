@@ -305,7 +305,7 @@ MLflow tracks **experiments, params, metrics and the model registry** — but no
 - [DVC documentation](https://dvc.org/doc) — data versioning and pipeline stages.
 - [CML (continuous machine learning)](https://cml.dev/doc) — posting metric comparisons into pull requests.
 - [GitHub Actions for ML](https://docs.github.com/en/actions) — matrices, caching, artefacts and scheduled runs.
-- [Source lecture: seml-w2-cicd-dvc](https://learning.bansal-ai.in/seml-w2-cicd-dvc/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-w2-cicd-dvc" (Lecture Library series).
 
 - **[Machine Learning in Production — Automating the Pipeline / MLOps](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — Versioning, continuous integration and automated pipelines for ML — the concepts behind GitHub Actions + DVC.

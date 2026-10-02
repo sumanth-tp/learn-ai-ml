@@ -609,3 +609,17 @@ Ask it anything and it answers. You can also use cloud models **through the Pyth
 - [ ] I can hit an Ollama endpoint directly with `requests`
 - [ ] I can use Ollama in LangChain three ways, and say why LangChain is worth it
 - [ ] I can explain what Ollama Cloud solves and how to sign in and use it
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Ollama runs supported models locally through a CLI, Python library, REST API or LangChain. |
+| Model selection | Match model capabilities such as vision and tool calling to the task and available hardware. |
+| Customisation | Use parameters and Modelfiles to package repeatable local behaviour. |
+| Model access | Compare proprietary API access with downloadable models that can run under local control. |
+| Ollama service | Ollama packages model download, runtime and a local interface. |
+| Hardware fit | Check memory, model size and feature support before choosing a local model. |
+| CLI and Python | Pull, inspect and run a model from a terminal or application code. |
+| REST and LangChain | Call the local service directly or through a framework adapter. |
+| Modelfiles | Package a base model with system instructions and parameters for reuse. |

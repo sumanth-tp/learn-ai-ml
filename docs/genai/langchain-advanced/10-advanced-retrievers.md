@@ -113,3 +113,15 @@ These compose with the retrievers already covered — an `EnsembleRetriever` can
 - [ ] I can explain the small-chunk-search / large-chunk-context trade-off `ParentDocumentRetriever` solves
 - [ ] I can set up hybrid search with `EnsembleRetriever` and explain what BM25 catches that embeddings miss
 - [ ] I know these three now live in `langchain_classic`, not `langchain`
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Self-query | Translate natural language constraints into search and metadata filters. |
+| Parent document | Search small chunks while returning larger context to the model. |
+| Ensemble | Combine lexical and semantic retrieval when either method alone misses useful results. |
+| Metadata | Self-query needs declared metadata fields to turn natural-language filters into structured search. |
+| Context size | Parent-document retrieval searches precise small chunks but returns a wider parent passage. |
+| Hybrid | An ensemble blends lexical matches with semantic matches for better coverage. |
+| Selection | Choose the method according to whether the miss is filtering, lost context or vocabulary mismatch. |

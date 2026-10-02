@@ -350,8 +350,8 @@ UAS = 8/10 = 0.80; LAS = 7/10 = 0.70. LAS is never higher than UAS because a cor
 - [Universal Dependencies](https://universaldependencies.org/) — the cross-lingual annotation standard and treebanks.
 - [spaCy dependency parser](https://spacy.io/usage/linguistic-features#dependency-parse) — the production implementation.
 - [Outlines: structured generation](https://dottxt-ai.github.io/outlines/) — grammars applied to LLM decoding.
-- [Source lecture: nlp-s9-parsing](https://learning.bansal-ai.in/nlp-s9-parsing/lecture.html) — the original interactive lecture these notes were built from.
-- [Source lecture: nlp-s10-dependency](https://learning.bansal-ai.in/nlp-s10-dependency/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s9-parsing" (Lecture Library series).
+- Built from the course lecture "nlp-s10-dependency" (Lecture Library series).
 
 - **[Speech and Language Processing (3rd ed. draft)](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The definitive NLP textbook; chapters posted free as they are revised.

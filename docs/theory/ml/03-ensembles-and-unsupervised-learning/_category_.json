@@ -1,0 +1,8 @@
+{
+  "label": "Ensembles and unsupervised learning",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Bagging, boosting and gradient boosting in practice, then clustering and dimensionality reduction."
+  }
+}

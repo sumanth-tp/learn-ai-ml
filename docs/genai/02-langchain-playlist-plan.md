@@ -133,3 +133,16 @@ It will not be faster than that, because the PyTorch playlist continues on the c
 - [ ] I can explain why LangChain is a good first topic
 - [ ] I know the three parts of the playlist and what each covers
 - [ ] I know the playlist targets LangChain v0.3
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| LangChain | A framework for combining models, prompts, retrieval and tools into LLM applications. |
+| Course sequence | Learn core components first, then RAG, tools and agents. |
+| Learning goal | Understand what each abstraction does and when it helps an application. |
+| Placement | LangChain belongs on the application-building side of the curriculum. |
+| Core features | Its model access, prompting, chaining, retrieval and agent capabilities cover common LLM application needs. |
+| Starting point | Begin with one framework to learn recurring design patterns before comparing alternatives. |
+| Playlist parts | The plan moves from basics through RAG to tool use and agent workflows. |
+| Version context | Examples target the LangChain version named in the chapter; check API changes when running them later. |

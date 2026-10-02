@@ -526,4 +526,4 @@ Once an agent reads untrusted content — a web page, a PDF, a user's email — 
 - [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/) — prompt injection and the rest of the threat model.
 - [Anthropic: building effective agents](https://www.anthropic.com/research/building-effective-agents) — when an agent is the wrong answer, and what to build instead.
 - [LangGraph documentation](https://langchain-ai.github.io/langgraph/) — a production-shaped agent runtime with state and checkpoints.
-- [Source lecture: nlp-s9-llm-agentic](https://learning.bansal-ai.in/nlp-s9-llm-agentic/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s9-llm-agentic" (Lecture Library series).

@@ -380,3 +380,17 @@ In fact, all the document loaders that exist in LangChain are there **because** 
 - [ ] I can explain glob patterns
 - [ ] I can explain when `lazy_load` is required rather than preferred
 - [ ] I know how to write a custom loader
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Load source files and pages into Document objects with content and metadata. |
+| Loader choice | Text, PDF, directory, web and CSV loaders produce different document boundaries. |
+| Scale | Use lazy loading when materialising all documents at once would be costly. |
+| Document shape | A loaded Document carries page content and metadata such as a source or page number. |
+| Text and PDF | A text file and a PDF can produce different numbers and boundaries of documents. |
+| Directories | Glob patterns select files for batch loading. |
+| Web and CSV | Web pages and CSV rows need source-specific parsing and metadata decisions. |
+| load versus lazy_load | Lazy iteration limits peak memory when a large collection is ingested. |
+| Custom loader | Implement a loader when the source format or metadata contract needs special handling. |

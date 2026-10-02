@@ -1,0 +1,8 @@
+{
+  "label": "Federated and special topics",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Federated learning and special topics in distributed machine learning."
+  }
+}

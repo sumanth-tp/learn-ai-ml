@@ -511,3 +511,17 @@ flowchart LR
 - [ ] I can explain why caching is scoped to the FAQ lookup and not the supervisor's own answers
 - [ ] I could extend this project with a new subagent without restructuring the supervisor
 - [ ] I can explain what changes (and what doesn't) between running this locally and running it in `docker compose`
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Architecture | Build a support copilot with retrieval, specialist agents and a supervisor. |
+| Control | Gate sensitive refund actions with human review and protect context with middleware and memory. |
+| Operations | Stream replies, trace runs, use bounded fallbacks and cache suitable FAQ lookups. |
+| Knowledge base | Index support material for both lexical and semantic retrieval. |
+| Specialists | Give research and account tasks to focused subagents under a supervisor. |
+| Human review | Pause refund actions that exceed a stated threshold. |
+| State and middleware | Redact PII, bound the thread and retain customer context where needed. |
+| Reliability | Add retries, a fallback model, streaming, tracing and a scoped FAQ cache. |
+| Deployment | Run and assess the composed system with explicit service and review boundaries. |

@@ -1,0 +1,8 @@
+{
+  "label": "CV features and geometry",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Edges, line votes, local descriptors and robust geometry for classical vision."
+  }
+}

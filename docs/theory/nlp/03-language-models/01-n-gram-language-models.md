@@ -920,4 +920,4 @@ One unseen bigram makes the whole test set infinitely surprising. That single fa
 - [Jurafsky & Martin, chapter 3 — N-gram Language Models](https://web.stanford.edu/~jurafsky/slp3/3.pdf) — including Kneser-Ney, worked out.
 - [KenLM](https://kheafield.com/code/kenlm/) — the production n-gram toolkit used in speech and translation pipelines.
 - [Perplexity of fixed-length models (Hugging Face)](https://huggingface.co/docs/transformers/perplexity) — how the same metric is computed for a neural LM.
-- [Source lecture: nlp-s5-language-modelling](https://learning.bansal-ai.in/nlp-s5-language-modelling/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s5-language-modelling" (Lecture Library series).

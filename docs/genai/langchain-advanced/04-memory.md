@@ -209,3 +209,15 @@ results = store.search(("users", "user_123"), query="what language does this use
 - [ ] I can extend agent state with a custom `state_schema` and read/write it from a tool
 - [ ] I can trim, summarize, or clear a growing message history with middleware
 - [ ] I can tell short-term (checkpointer) and long-term (store) memory apart, and pick the right one
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Conversation | A checkpointer and thread ID retain short-term conversation state. |
+| Long-term data | A store keeps information across threads or sessions. |
+| Boundaries | Trim, summarise or clear growing history to control context size. |
+| Short-term state | A checkpointer and thread ID preserve messages across turns in one conversation. |
+| Custom state | A state schema can hold application fields beyond messages. |
+| Long-term store | A store keeps selected facts across threads and sessions. |
+| Growth control | Trim, summarise or clear history to keep model context bounded. |

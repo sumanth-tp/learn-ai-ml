@@ -605,3 +605,16 @@ The next video explores runnables a bit more — the actual runnable classes and
 - [ ] I can implement a `Runnable` abstract class and a connector from scratch
 - [ ] I can explain why a hand-written `LLMChain` class is not flexible
 - [ ] I can trace the `ChatOpenAI` inheritance down to `Runnable`
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Motivation | Runnables provide a common interface across application components. |
+| Interface | Invoke, batch, stream and compose operations through the same abstraction. |
+| Benefit | A shared interface makes complex pipelines easier to assemble than many specialised chain classes. |
+| Historical problem | Prompt, model, parser and retriever components originally exposed different calling methods. |
+| Standardisation | The runnable interface supplies a shared invocation contract. |
+| Composition | Runnables connect as reusable steps without a separate class for every chain shape. |
+| Built-from-scratch demo | A small abstract runnable and connector illustrate how inputs and outputs flow. |
+| Inheritance | A model or prompt can be task-specific while still supporting the common runnable methods. |

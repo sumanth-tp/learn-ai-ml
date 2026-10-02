@@ -256,7 +256,7 @@ GRPO drops the separate value model: it samples a group of G responses per promp
 - [Trust Region Policy Optimization (Schulman et al.)](https://arxiv.org/abs/1502.05477) — the theory PPO approximates.
 - [Hugging Face TRL documentation](https://huggingface.co/docs/trl/index) — production implementations of PPO, GRPO, DPO and reward modelling.
 - [The 37 Implementation Details of PPO](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/) — why your PPO does not match the paper.
-- [Source lecture: drl-s13-modern-policy-optimization](https://learning.bansal-ai.in/drl-s13-modern-policy-optimization/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s13-modern-policy-optimization" (Lecture Library series).
 
 - **[Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html)** `book`
   Sutton & Barto — The RL book — the reference for everything in this course.

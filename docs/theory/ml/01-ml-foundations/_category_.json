@@ -1,0 +1,8 @@
+{
+  "label": "ML foundations",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "What machine learning is, how to prepare data, and the features, leakage and imbalance problems that decide most real projects."
+  }
+}

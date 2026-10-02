@@ -221,7 +221,7 @@ The combination of function approximation, bootstrapping and off-policy learning
 
 - [Sutton & Barto, chapters 9–11](http://incompleteideas.net/book/the-book-2nd.html) — on-policy approximation, off-policy approximation and the deadly triad.
 - [Deep Reinforcement Learning and the Deadly Triad (van Hasselt et al.)](https://arxiv.org/abs/1812.02648) — measures when the triad actually diverges in practice.
-- [Source lecture: drl-s7-value-approximation](https://learning.bansal-ai.in/drl-s7-value-approximation/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s7-value-approximation" (Lecture Library series).
 
 - **[Lecture 6 slides — Value Function Approximation (PDF)](https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-6-value-function-approximation-.pdf)** `course`
   David Silver — Linear approximation, feature construction and the convergence issues in one place.

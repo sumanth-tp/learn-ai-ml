@@ -540,3 +540,16 @@ Prompting techniques are a large topic, and a dedicated **prompt engineering pla
 - [ ] I can build a chatbot that answers follow-up questions correctly
 - [ ] I know when to use `ChatPromptTemplate` vs `PromptTemplate`
 - [ ] I can explain what `MessagesPlaceholder` is for
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Prompt templates | Dynamic templates separate reusable instructions from input values. |
+| Chat messages | System, human and AI messages preserve roles and conversation context. |
+| History | A messages placeholder inserts prior turns so follow-up questions make sense. |
+| Static versus dynamic | A fixed prompt is hard to reuse; a template fills validated user or application variables. |
+| PromptTemplate | Template inputs can be inspected, saved and composed with later steps. |
+| Roles | System instructions, user requests and assistant messages have distinct positions in a chat prompt. |
+| ChatPromptTemplate | Use message templates when a model needs explicit role and turn structure. |
+| MessagesPlaceholder | Insert prior turns to make follow-up questions refer to the right context. |

@@ -352,7 +352,7 @@ EU: risk-based and legally enforceable (bans unacceptable-risk systems; strict r
 - [Model Cards for Model Reporting](https://arxiv.org/abs/1810.03993) and [Datasheets for Datasets](https://arxiv.org/abs/1803.09010).
 - [Fairlearn](https://fairlearn.org/) — metrics and mitigation algorithms in code.
 - [EU AI Act](https://artificialintelligenceact.eu/) — obligations by risk tier.
-- [Source lecture: seml-s15-responsible-ml](https://learning.bansal-ai.in/seml-s15-responsible-ml/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s15-responsible-ml" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
   Goku Mohandas — Design, test, deploy and monitor ML systems — the practical MLOps path.

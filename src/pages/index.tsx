@@ -4,6 +4,7 @@ import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
 import type {ComponentType, ReactNode} from 'react';
 
+import {MAIN_STAGES, PATH_ROUTE} from '@site/src/data/learningPath';
 import {useDocsIndex, useSectionCounts} from '@site/src/lib/docsIndex';
 import {
   ArrowIcon,
@@ -108,33 +109,6 @@ function useStats(): {value: string; label: string}[] {
   ];
 }
 
-const PATH: {step: string; title: string; body: string; to: string}[] = [
-  {
-    step: '01',
-    title: 'Foundations',
-    body: 'Linear algebra, probability, calculus for ML and the Python stack you will actually type every day.',
-    to: '/docs/category/statistics',
-  },
-  {
-    step: '02',
-    title: 'Core ML',
-    body: 'Regression to ensembles with scikit-learn: features, validation, metrics and the failure modes behind each.',
-    to: '/docs/category/cheetsheet',
-  },
-  {
-    step: '03',
-    title: 'Deep Learning',
-    body: 'Backpropagation by hand, then CNNs, sequence models, attention and transformers in PyTorch.',
-    to: '/docs/category/dnn',
-  },
-  {
-    step: '04',
-    title: 'Ship It',
-    body: 'FastAPI services, Docker, experiment tracking and the system-design questions that follow in interviews.',
-    to: '/docs/category/coding',
-  },
-];
-
 const CODE_SAMPLE = `class TinyMLP(nn.Module):
     def __init__(self, d_in, d_hidden, d_out):
         super().__init__()
@@ -179,8 +153,8 @@ function Hero() {
           </p>
 
           <div className={styles.heroActions}>
-            <Link className={styles.primaryCta} to="/docs/intro">
-              Start the roadmap
+            <Link className={styles.primaryCta} to={PATH_ROUTE}>
+              Start the learning path
               <ArrowIcon className={styles.ctaIcon} />
             </Link>
             <Link className={styles.secondaryCta} to="/docs/category/cheetsheet">
@@ -283,18 +257,18 @@ function LearningPath() {
             A path, not a pile
           </Heading>
           <p className={styles.sectionSubtitle}>
-            Four stages, in order. Each one assumes only what the stage before it
-            taught you.
+            {MAIN_STAGES.length} stages, in order, each ending in a milestone project. Each one
+            assumes only what the stage before it taught you.
           </p>
         </div>
 
         <ol className={styles.path}>
-          {PATH.map(({step, title, body, to}) => (
-            <li key={step} className={styles.pathItem}>
-              <Link to={to} className={styles.pathCard}>
-                <span className={styles.pathStep}>{step}</span>
-                <h3 className={styles.pathTitle}>{title}</h3>
-                <p className={styles.pathBody}>{body}</p>
+          {MAIN_STAGES.map((stage) => (
+            <li key={stage.id} className={styles.pathItem}>
+              <Link to={`${PATH_ROUTE}#${stage.id}`} className={styles.pathCard}>
+                <span className={styles.pathStep}>{String(stage.number).padStart(2, '0')}</span>
+                <h3 className={styles.pathTitle}>{stage.title}</h3>
+                <p className={styles.pathBody}>{stage.kicker}</p>
               </Link>
             </li>
           ))}
@@ -314,13 +288,13 @@ function ClosingCta() {
               Start where you are
             </Heading>
             <p className={styles.ctaText}>
-              New to the field? Take the roadmap. Prepping for interviews? Jump
-              straight to the question banks.
+              New to the field? Follow the learning path from stage 1. Prepping
+              for interviews? Jump straight to the question banks.
             </p>
           </div>
           <div className={styles.ctaActions}>
-            <Link className={styles.primaryCta} to="/docs/intro">
-              Open the roadmap
+            <Link className={styles.primaryCta} to={PATH_ROUTE}>
+              Open the learning path
               <ArrowIcon className={styles.ctaIcon} />
             </Link>
             <Link className={styles.secondaryCta} to="/docs/category/interview">

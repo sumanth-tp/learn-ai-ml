@@ -222,7 +222,7 @@ Serving: QPS/replica = 1000/latency(ms). Caching: avg = hit·ℓ_hit + miss·ℓ
 - [The ML Test Score (Breck et al.)](https://research.google/pubs/pub46555/) — 28 actionable tests across data, model, infrastructure and monitoring.
 - [Machine Learning in Production (CMU)](https://mlip-cmu.github.io/book/) — the full treatment of everything summarised here.
 - [Google SRE workbook](https://sre.google/workbook/table-of-contents/) — production readiness reviews, runbooks and on-call.
-- [Source lecture: seml-s16-course-review](https://learning.bansal-ai.in/seml-s16-course-review/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s16-course-review" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
   Goku Mohandas — Design, test, deploy and monitor ML systems — the practical MLOps path.

@@ -140,3 +140,15 @@ Every later chapter in this subfolder builds on the agent object created here â€
 - [ ] I can build an agent with tools and a system prompt
 - [ ] I can tell `with_structured_output` (model-level) apart from `response_format` (agent-level)
 - [ ] I know which parameter each later chapter (middleware, memory, multi-agent) plugs into
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Agent API | create_agent builds a tool-using agent backed by a state graph. |
+| Inputs | Configure the model, tools, system prompt and optional structured response format. |
+| Result | Inspect messages and structured_response in the final state. |
+| Minimal setup | Create an agent with a model, tools and a system prompt. |
+| Graph runtime | The newer API runs an agent as a state graph rather than a hand-built executor loop. |
+| Structured final answer | response_format validates the agentâ€™s final answer; model-level structured output serves a different boundary. |
+| State | The result includes a message history and, when configured, a structured response. |

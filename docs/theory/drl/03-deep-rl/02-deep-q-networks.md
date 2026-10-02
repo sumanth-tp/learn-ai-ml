@@ -210,7 +210,7 @@ Experience replay — store transitions and sample random mini-batches, which br
 - [Deep RL with Double Q-learning (van Hasselt et al.)](https://arxiv.org/abs/1509.06461) — the bias demonstrated above, and the fix.
 - [Rainbow: Combining Improvements in Deep RL](https://arxiv.org/abs/1710.02298) — which of the six additions actually matter.
 - [CleanRL DQN implementation](https://docs.cleanrl.dev/rl-algorithms/dqn/) — single-file, readable, benchmarked reference code.
-- [Source lecture: drl-s8-dqn](https://learning.bansal-ai.in/drl-s8-dqn/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s8-dqn" (Lecture Library series).
 
 - **[Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461)** `paper`
   van Hasselt et al., 2015 — The paper behind this session: shows DQN really does overestimate, and that decoupling selection from evaluation fixes it.

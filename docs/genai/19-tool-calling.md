@@ -408,3 +408,17 @@ flowchart TB
 - [ ] I can spot and fix the dependent-argument bug with `InjectedToolArg`
 - [ ] I know `ToolMessage.content` needs `json.loads`
 - [ ] I can explain why this is not yet an agent
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Loop | Create tools, bind schemas, inspect model tool calls, execute them and return ToolMessages. |
+| Boundary | The application executes the function; a model proposes a call and its arguments. |
+| Correctness | Validate arguments and feed the matching tool result back into the conversation. |
+| Create and bind | Define tools, then send their schemas to the model with a request. |
+| Model decision | Read returned tool names, IDs and proposed arguments. |
+| Execute | Validate and call the matching function in application code. |
+| Return | Send a ToolMessage linked to the original call so the model can use the result. |
+| Dependent data | Keep trusted or derived arguments outside unconstrained model control where needed. |
+| Agent distinction | One tool exchange is not yet an autonomous multi-step planning loop. |

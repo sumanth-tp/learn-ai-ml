@@ -219,7 +219,7 @@ SARSA is on-policy, so it accounts for its own ε-greedy exploration (occasional
 
 - [Sutton & Barto, chapter 6](http://incompleteideas.net/book/the-book-2nd.html) — TD(0), SARSA, Q-learning and the cliff-walking example reproduced above.
 - [Spinning Up — Q-learning family](https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html) — how tabular TD scales into DQN and friends.
-- [Source lecture: drl-s6-td-learning](https://learning.bansal-ai.in/drl-s6-td-learning/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s6-td-learning" (Lecture Library series).
 
 - **[Lecture 4 slides — Model-Free Prediction (PDF)](https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-4-model-free-prediction-.pdf)** `course`
   David Silver — TD(0), n-step TD and TD(λ) — the natural next step after this session.

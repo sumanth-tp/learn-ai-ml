@@ -1,0 +1,8 @@
+{
+  "label": "Training at scale",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Data, tensor and pipeline parallelism, FSDP and ZeRO, mixed precision and mixture-of-experts models."
+  }
+}

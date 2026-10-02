@@ -444,3 +444,17 @@ You may feel a bit incomplete — we have learned to make tools but not how to *
 - [ ] I can name all three creation approaches and when each applies
 - [ ] I know which approach supports async
 - [ ] I can bundle related tools into a toolkit
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Tools let an LLM application request actions or information beyond text generation. |
+| Definition | A tool exposes a name, description and argument schema to the model. |
+| Construction | Use a decorator, StructuredTool or BaseTool according to validation and execution needs. |
+| Model limit | A language model needs an external function to fetch live information or act on a system. |
+| Built-in tools | Ready-made integrations provide common actions but need appropriate access boundaries. |
+| Custom decorator | A function, type hints and docstring can define a tool visible to the model. |
+| StructuredTool | A Pydantic argument schema gives stronger input structure and validation. |
+| BaseTool and toolkit | A class handles specialised behaviour; a toolkit groups related tools. |
+| Execution boundary | The model sees a schema and proposes inputs; application code runs the tool. |

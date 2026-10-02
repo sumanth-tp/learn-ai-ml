@@ -1,0 +1,8 @@
+{
+  "label": "Distributed machine learning",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Frameworks, data and model parallelism, challenges, core algorithms, distributed deep learning and federated learning."
+  }
+}

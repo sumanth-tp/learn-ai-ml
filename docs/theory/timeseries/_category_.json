@@ -1,0 +1,10 @@
+{
+  "label": "Time series forecasting",
+  "position": 10,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Patterns, classical and learned forecasts, evaluation and production."
+  }
+}

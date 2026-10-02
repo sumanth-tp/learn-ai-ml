@@ -1,0 +1,8 @@
+{
+  "label": "IR modern retrieval",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Multimodal retrieval, recommendations and neural reranking from Sessions 13 to 15. Session 16's full-course review is integrated into the neural retrieval chapter."
+  }
+}

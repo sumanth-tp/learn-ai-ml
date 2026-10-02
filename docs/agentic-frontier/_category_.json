@@ -1,0 +1,8 @@
+{
+  "label": "Agent Frontier",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Context engineering, agent interoperability, computer-use and voice agents, and automatic prompt optimisation."
+  }
+}

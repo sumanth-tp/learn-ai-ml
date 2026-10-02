@@ -100,3 +100,15 @@ model.invoke("What time is it right now?", config={"cache": False})  # always li
 - [ ] I can explain why exact-match caching misses two differently-worded versions of the same question
 - [ ] I can set up a semantic cache and explain what `score_threshold` trades off
 - [ ] I can identify which of my own use cases should never be cached
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Exact cache | Reuse a response for the same prompt and model configuration. |
+| Semantic cache | Match similar queries using embeddings and a chosen similarity threshold. |
+| Policy | Cache only where staleness, privacy and context rules permit reuse. |
+| Exact key | An exact cache reuses a result when the prompt and relevant model settings match. |
+| Semantic match | A semantic cache embeds a query and searches for close earlier requests. |
+| Threshold | A strict similarity threshold reduces false reuse but lowers the cache hit rate. |
+| Scope | Keep personalised, time-sensitive or sensitive answers out of shared caches. |

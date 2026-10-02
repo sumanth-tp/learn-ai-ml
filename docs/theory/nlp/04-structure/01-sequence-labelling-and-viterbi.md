@@ -758,8 +758,8 @@ Forward sums over predecessors instead of taking the max, giving total likelihoo
 - [Jurafsky & Martin, chapter 8 — Sequence Labeling](https://web.stanford.edu/~jurafsky/slp3/8.pdf) — POS tagging and NER, classical through neural.
 - [spaCy: linguistic features](https://spacy.io/usage/linguistic-features) — the production tagger/NER API.
 - [Hugging Face token classification](https://huggingface.co/docs/transformers/tasks/token_classification) — fine-tuning an encoder for this task.
-- [Source lecture: nlp-s7-pos-tagging](https://learning.bansal-ai.in/nlp-s7-pos-tagging/lecture.html) — the original interactive lecture these notes were built from.
-- [Source lecture: nlp-s8-viterbi](https://learning.bansal-ai.in/nlp-s8-viterbi/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s7-pos-tagging" (Lecture Library series).
+- Built from the course lecture "nlp-s8-viterbi" (Lecture Library series).
 
 - **[Speech and Language Processing — Appendix A, Hidden Markov Models](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — Appendix A is the one place where Viterbi AND forward-backward (Baum-Welch) are both derived properly, with worked trellis examples.

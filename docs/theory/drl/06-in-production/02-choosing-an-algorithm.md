@@ -230,7 +230,7 @@ Because the interface, data source and constraints — not the action space — 
 - [Spinning Up — algorithm taxonomy](https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html) — the standard family tree with trade-offs.
 - [CleanRL](https://docs.cleanrl.dev/) — single-file, benchmarked implementations of most algorithms above.
 - [Stable-Baselines3 documentation](https://stable-baselines3.readthedocs.io/) — the library you will most likely use in production.
-- [Source lecture: drl-s16-course-review](https://learning.bansal-ai.in/drl-s16-course-review/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s16-course-review" (Lecture Library series).
 
 - **[Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html)** `book`
   Sutton & Barto — The RL book — the reference for everything in this course.

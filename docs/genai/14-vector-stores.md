@@ -430,3 +430,16 @@ Go and re-implement this same code for **another vector store** — say FAISS or
 - [ ] I can draw Chroma's tenant → database → collection → document hierarchy
 - [ ] I can create a Chroma store and add, view, search, filter, update and delete
 - [ ] I know which direction Chroma's score runs
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Store embeddings with documents so similarity search can find semantically related content. |
+| Design | Indexing, metadata and persistence affect search quality and operational scale. |
+| Movie example | Embedding search can find related plots even when titles and descriptions use different words. |
+| Stored record | A vector store links an embedding with source text, an ID and metadata. |
+| Search | Similarity indexing narrows candidate vectors before optional filtering or reranking. |
+| Chroma hierarchy | Tenants contain databases, which contain collections of records. |
+| Operations | Create a collection, add documents and embeddings, search, filter, update and delete. |
+| Store versus database | A vector store is the retrieval component; a vector database adds broader persistence and operations. |

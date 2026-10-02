@@ -414,7 +414,7 @@ Because $\alpha=0.5$, the latest reward $r$ accounts for **half** of $Q(M)$ (coe
 - [Sutton & Barto, chapter 2](http://incompleteideas.net/book/the-book-2nd.html) — the canonical treatment of the 10-armed testbed used above.
 - [A Tutorial on Thompson Sampling (Russo et al.)](https://arxiv.org/abs/1707.02038) — practical, with worked industrial examples.
 - [Vowpal Wabbit contextual bandits](https://vowpalwabbit.org/docs/vowpal_wabbit/python/latest/tutorials/python_Contextual_bandits_and_Vowpal_Wabbit.html) — a production-grade implementation to read.
-- [Source lecture: drl-s2-bandits](https://learning.bansal-ai.in/drl-s2-bandits/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s2-bandits" (Lecture Library series).
 
 - **[Lecture 9 slides — Exploration and Exploitation (PDF)](https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf)** `course`
   David Silver — Bandits, regret, UCB and the exploration/exploitation trade-off in depth.

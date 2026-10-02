@@ -391,3 +391,17 @@ These techniques are not covered in the LangChain playlist — the plan is a **s
 - [ ] I can name the four RAGAS metrics
 - [ ] I can name at least one improvement for each RAG stage
 - [ ] I know what multimodal, agentic and memory-based RAG are
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Indexing | Load a video transcript, split it, embed chunks and store them for search. |
+| Question answering | Retrieve relevant chunks and pass them with the question to the model. |
+| Improvement | Evaluate retrieval and answer quality before adding more advanced RAG features. |
+| Transcript source | Fetch the selected video transcript and preserve language and source identity. |
+| Index | Split transcript text, embed chunks and place them in a vector store. |
+| Retrieval | Turn a user question into relevant transcript chunks. |
+| Chain | Parallel runnable branches combine the question and retrieved context for prompting. |
+| Evaluation | Use answer and retrieval metrics to find which stage needs improvement. |
+| Extensions | Multimodal, agentic and memory-based approaches address different limitations. |

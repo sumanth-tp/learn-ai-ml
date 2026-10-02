@@ -1,0 +1,8 @@
+{
+  "label": "DM data foundations",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "The foundations of useful representations, quality rules and storage architecture."
+  }
+}

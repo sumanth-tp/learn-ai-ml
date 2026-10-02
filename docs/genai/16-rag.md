@@ -322,3 +322,17 @@ It is also **less complex**. In fine-tuning you are providing proper training to
 - [ ] I can name the four RAG stages and everything inside indexing
 - [ ] I can explain how RAG solves each of the three problems
 - [ ] I can say when RAG is cheaper and simpler than fine-tuning
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Retrieval-augmented generation supplies relevant external context at answer time. |
+| Pipeline | Index source material, retrieve passages, add them to the prompt and generate an answer. |
+| Choice | Use retrieval for changing or source-specific knowledge; fine-tuning changes model behaviour and weights. |
+| Problem | A plain model may lack fresh, private or source-specific facts and may invent unsupported answers. |
+| Fine-tuning contrast | Weight updates adapt behaviour but are costly for frequently changing factual material. |
+| In-context learning | A model can use examples or evidence supplied in its prompt without changing weights. |
+| Indexing | Prepare external information by loading, splitting, embedding and storing it. |
+| Answer path | Retrieve relevant chunks, augment the prompt and generate a grounded answer. |
+| Limits | Poor retrieval, stale sources and unsupported synthesis still require evaluation. |

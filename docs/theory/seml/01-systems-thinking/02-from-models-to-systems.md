@@ -373,7 +373,7 @@ ML adds stages traditional SE lacks — **data management**, **model training/ev
 - [Feature Stores for ML (Feast docs)](https://docs.feast.dev/) — the shared-definition problem and one solution.
 - [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html) — versioned artefacts with lineage.
 - [Designing Machine Learning Systems (Chip Huyen)](https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/) — the standard book on this pipeline.
-- [Source lecture: seml-s2-models-to-systems](https://learning.bansal-ai.in/seml-s2-models-to-systems/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s2-models-to-systems" (Lecture Library series).
 
 - **[Machine Learning in Production — From Models to Systems](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — Why the model is a small part of the system, and what surrounds it in production.

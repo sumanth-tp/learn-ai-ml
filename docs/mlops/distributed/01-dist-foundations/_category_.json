@@ -1,0 +1,8 @@
+{
+  "label": "Distributed ML foundations",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Why and how machine learning is distributed, scalable frameworks, and data and model parallelism."
+  }
+}

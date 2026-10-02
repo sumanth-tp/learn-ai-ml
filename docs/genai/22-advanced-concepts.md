@@ -222,3 +222,17 @@ This chapter stays conceptual on purpose. [LangChain Advanced Topics](/docs/gena
 - [ ] I can explain prompt injection and why it is not solved
 - [ ] I can list three ways to cut cost without hurting quality
 - [ ] I can place my own project on the maturity ladder
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Quality | Advanced RAG and evaluation improve retrieval relevance and answer faithfulness. |
+| Control | Graphs, memory, agents, MCP and guardrails manage state, actions and safety. |
+| Operations | Measure latency, cost and failures before deploying a more complex system. |
+| Advanced retrieval | Hybrid search, reranking and query rewriting address common RAG misses. |
+| RAG evaluation | Faithfulness, answer relevance, context precision and recall diagnose different stages. |
+| Agents and memory | State graphs, conversation memory and specialist agents support longer workflows. |
+| Protocol and safety | MCP standardises tool exposure; guardrails and prompt-injection defences limit unsafe actions. |
+| Efficiency | Caching, routing and model choice manage latency and cost. |
+| Maturity ladder | Move from a prompt to retrieval, evaluation, agents and operations with evidence at each stage. |

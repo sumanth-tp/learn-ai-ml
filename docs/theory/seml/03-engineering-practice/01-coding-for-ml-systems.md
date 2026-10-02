@@ -327,8 +327,8 @@ OOP bundles data with the methods that act on it (objects, classes, inheritance)
 - [jupytext](https://jupytext.readthedocs.io/) and [nbmake](https://github.com/treebeardtech/nbmake) — reviewable, testable notebooks.
 - [Python TimeComplexity](https://wiki.python.org/moin/TimeComplexity) — the cost table behind the fixes above.
 - [Cookiecutter Data Science](https://cookiecutter-data-science.drivendata.org/) — a project layout that separates notebooks, source and data.
-- [Source lecture: seml-s9-coding-practices](https://learning.bansal-ai.in/seml-s9-coding-practices/lecture.html) — the original interactive lecture these notes were built from.
-- [Source lecture: seml-s10-complexity-datastructures](https://learning.bansal-ai.in/seml-s10-complexity-datastructures/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s9-coding-practices" (Lecture Library series).
+- Built from the course lecture "seml-s10-complexity-datastructures" (Lecture Library series).
 
 - **[Machine Learning in Production — Infrastructure Quality & Code Quality](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — Testing, reproducibility and code quality for ML pipelines — the engineering discipline behind this session.

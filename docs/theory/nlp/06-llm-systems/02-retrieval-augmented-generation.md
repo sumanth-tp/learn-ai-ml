@@ -349,7 +349,7 @@ Agentic RAG: an agent decides what to retrieve, calls tools, and re-retrieves ac
 - [Sentence-Transformers: cross-encoder re-ranking](https://www.sbert.net/examples/applications/retrieve_rerank/README.html) — the retrieve-then-rerank pattern with code.
 - [Ragas](https://docs.ragas.io/) — the standard library for faithfulness and retrieval metrics.
 - [LlamaIndex documentation](https://docs.llamaindex.ai/) — a production-shaped RAG framework worth reading even if you build your own.
-- [Source lecture: nlp-s15-rag](https://learning.bansal-ai.in/nlp-s15-rag/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s15-rag" (Lecture Library series).
 
 - **[Speech and Language Processing (3rd ed. draft)](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The definitive NLP textbook; chapters posted free as they are revised.

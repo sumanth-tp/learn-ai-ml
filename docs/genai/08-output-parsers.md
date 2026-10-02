@@ -498,3 +498,16 @@ self-study fills in the rest.
 - [ ] I know why `StructuredOutputParser` lives in `langchain` and not
       `langchain_core`
 - [ ] I can print the assembled prompt and explain what the parser injected
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Role | Output parsers turn a model response into the string, JSON or typed object a later step needs. |
+| Parser choice | Choose string, JSON, structured or Pydantic parsing according to the required output contract. |
+| Reliability | Format instructions help the model, while parsing and validation still need failure handling. |
+| String parser | Convert a model message to plain text before passing it to another step. |
+| JSON parser | Parse a JSON-shaped response into data that code can inspect. |
+| Structured parser | Describe named fields and inject formatting instructions into the prompt. |
+| Pydantic parser | Validate parsed fields against a model with declared types. |
+| Limits | A requested format is not a guarantee; handle malformed outputs and parser errors. |

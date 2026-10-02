@@ -382,3 +382,16 @@ The one thing that must be bothering you is the concept of **runnables** — wha
 - [ ] I can build a conditional chain with `RunnableBranch` and a default
 - [ ] I know why the default needs `RunnableLambda`
 - [ ] I can visualise any chain with `get_graph().print_ascii()`
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Composition | Chains connect prompts, models and parsers with runnable operations. |
+| Patterns | Use sequential steps for dependencies, parallel branches for independent work and conditional routes for choices. |
+| Inspection | View the chain graph to understand the data flow and branch inputs. |
+| Manual workflow | Hand-writing every call and intermediate variable becomes hard to reuse as a flow grows. |
+| Simple chain | The pipe operator passes prompt output to a model and then a parser. |
+| Sequential chain | Later calls receive the results of earlier calls. |
+| Parallel chain | Independent branches run from the same input and their outputs can be merged. |
+| Conditional chain | A classifier or structured result chooses a branch, with a default path for unmatched cases. |

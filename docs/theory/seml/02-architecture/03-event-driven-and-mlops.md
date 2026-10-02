@@ -295,7 +295,7 @@ Real-time (online). The decision must be made in milliseconds while the customer
 - [Designing Data-Intensive Applications (Kleppmann)](https://dataintensive.net/) — chapter 11 on streams is the reference for this material.
 - [Kafka documentation: delivery semantics](https://kafka.apache.org/documentation/#semantics) — at-least-once, exactly-once and what they cost.
 - [MLOps: continuous delivery and automation pipelines (Google)](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) — the maturity levels above.
-- [Source lecture: seml-s6-events-mlops](https://learning.bansal-ai.in/seml-s6-events-mlops/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s6-events-mlops" (Lecture Library series).
 
 - **[Machine Learning in Production — MLOps, Pipelines & Automation](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — Pipeline quality, automation and MLOps as the ML-specific form of DevOps.

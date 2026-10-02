@@ -361,3 +361,17 @@ Of the four options, **the best one is the recursive character text splitter, an
 - [ ] I know when to use document-structure-based splitting
 - [ ] I can explain what semantic chunking fixes and why it is not the default
 - [ ] I know the difference between `split_text` and `split_documents`
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Split long documents into chunks that retrieval and model context can handle. |
+| Methods | Choose length, text structure, document structure or semantic boundaries. |
+| Trade-off | Chunk size and overlap balance context, retrieval precision, duplication and cost. |
+| Why split | Long texts exceed model context, reduce retrieval focus and can hide the relevant passage. |
+| Length-based | Fixed-size chunks are simple but may cut sentences or ideas in half. |
+| Recursive text | Try larger separators first, then smaller ones when a section is still too long. |
+| Overlap | Repeat boundary text to preserve context, while accepting more storage and token use. |
+| Structure-aware | Headings, pages or document elements can keep related content together. |
+| Semantic | Embedding-based boundaries group meaning but cost more and need evaluation. |

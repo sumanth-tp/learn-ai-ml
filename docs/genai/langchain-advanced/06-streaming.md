@@ -179,3 +179,15 @@ As [advanced concepts](/docs/genai/advanced-concepts) notes under cost and laten
 - [ ] I can pick the right `stream_mode` for an agent: tokens, step updates, or custom
 - [ ] I can push custom progress from inside a tool with `get_stream_writer`
 - [ ] I know why a parser like `PydanticOutputParser` cannot stream partial output the way `StrOutputParser` can
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Streaming exposes tokens, agent steps or custom progress before a complete result arrives. |
+| Modes | Choose the stream mode that matches the user interface and data needs. |
+| LCEL | A plain runnable chain can emit response chunks as they are generated. |
+| Agent modes | Stream token messages, step updates or custom progress according to the interface. |
+| Custom updates | A tool can send progress before its final result is ready. |
+| Async | Use asynchronous iteration in an async service and handle cancellation. |
+| Parser limits | A parser needing a complete object may not emit useful partial results. |

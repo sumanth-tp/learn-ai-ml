@@ -270,7 +270,7 @@ Sparse vectors are long (|V|) and treat car/automobile as unrelated dimensions. 
 - [Jurafsky & Martin, chapter 6 — Vector Semantics](https://web.stanford.edu/~jurafsky/slp3/6.pdf) — the source treatment of TF-IDF, PPMI and cosine.
 - [Elasticsearch: practical BM25](https://www.elastic.co/blog/practical-bm25-part-2-the-bm25-algorithm-and-its-variables) — how the production ranker differs from textbook TF-IDF.
 - [scikit-learn: text feature extraction](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction) — the batteries-included implementation.
-- [Source lecture: nlp-s2-vector-semantics](https://learning.bansal-ai.in/nlp-s2-vector-semantics/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s2-vector-semantics" (Lecture Library series).
 
 - **[Speech and Language Processing — Ch. 5, Embeddings](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The full treatment of vector semantics: term-document matrices, cosine similarity and dense embeddings. Appendix J covers PPMI in detail.

@@ -1,0 +1,8 @@
+{
+  "label": "IR foundations",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "The first principles of information retrieval: search goals, Boolean postings, tolerant terms and index compression."
+  }
+}

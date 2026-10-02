@@ -481,8 +481,8 @@ First visit to $s_0$ is at $t=0$; discount the whole reward stream.G = 2 + 0.8·
 
 - [Sutton & Barto, chapter 5](http://incompleteideas.net/book/the-book-2nd.html) — Monte Carlo prediction and control, including exploring starts.
 - [Gymnasium Blackjack tutorial](https://gymnasium.farama.org/introduction/train_agent/) — a complete MC control implementation you can run.
-- [Source lecture: drl-s5-mc-methods](https://learning.bansal-ai.in/drl-s5-mc-methods/lecture.html) — the original interactive lecture these notes were built from.
-- [Source lecture: drl-s4-racecar](https://learning.bansal-ai.in/drl-s4-racecar/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s5-mc-methods" (Lecture Library series).
+- Built from the course lecture "drl-s4-racecar" (Lecture Library series).
 
 - **[Lecture 4 slides — Model-Free Prediction (PDF)](https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-4-model-free-prediction-.pdf)** `course`
   David Silver — Monte Carlo prediction and the first-visit/every-visit distinction.

@@ -564,6 +564,34 @@ html.plugin-docs .footer {
   letter-spacing: -0.01em;
 }
 
+.theme-doc-sidebar-menu > .sidebar-stage + .sidebar-stage {
+  margin-top: 0.3rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.theme-doc-sidebar-menu > .sidebar-stage > .menu__list-item-collapsible > .menu__link {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.theme-doc-sidebar-menu > .sidebar-stage > .menu__list-item-collapsible > .menu__link[aria-expanded="true"] {
+  color: var(--ifm-color-primary);
+}
+
+.theme-doc-sidebar-menu > .sidebar-stage--optional > .menu__list-item-collapsible > .menu__link {
+  color: var(--text-faint);
+}
+
+.theme-doc-sidebar-menu > .sidebar-stage > .menu__list {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+
 /* Table of contents */
 .table-of-contents {
   font-size: 0.82rem;
@@ -814,6 +842,18 @@ button[class*="copyButton_"] {
 
 .markdown table tbody tr:hover {
   background: var(--brand-tint);
+}
+
+.markdown h2#summary-table + table {
+  display: table;
+  table-layout: fixed;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.markdown h2#summary-table + table th:first-child,
+.markdown h2#summary-table + table td:first-child {
+  width: 28%;
 }
 
 /* Admonitions */

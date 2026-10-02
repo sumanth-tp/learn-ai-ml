@@ -273,7 +273,7 @@ A large graph of real-world entities and their relations (e.g. Wikidata, DBpedia
 - [SPARQL 1.1 Query Language](https://www.w3.org/TR/sparql11-query/) — the query language for RDF.
 - [From Local to Global: A GraphRAG Approach (Microsoft Research)](https://arxiv.org/abs/2404.16130) — the paper behind the current GraphRAG wave.
 - [Neo4j Cypher manual](https://neo4j.com/docs/cypher-manual/current/) — the property-graph alternative most teams actually deploy.
-- [Source lecture: nlp-s14-semantic-web](https://learning.bansal-ai.in/nlp-s14-semantic-web/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s14-semantic-web" (Lecture Library series).
 
 - **[Speech and Language Processing (3rd ed. draft)](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The definitive NLP textbook; chapters posted free as they are revised.

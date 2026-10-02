@@ -235,7 +235,7 @@ word2vec gives each word one static vector; a contextual embedding gives each oc
 - [BERT: Pre-training of Deep Bidirectional Transformers](https://arxiv.org/abs/1810.04805) — the encoder side and contextual embeddings.
 - [FlashAttention](https://arxiv.org/abs/2205.14135) — why the same maths runs several times faster.
 - [vLLM documentation](https://docs.vllm.ai/en/latest/) — paged attention and production LLM serving.
-- [Source lecture: nlp-s11-contextual-embeddings](https://learning.bansal-ai.in/nlp-s11-contextual-embeddings/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s11-contextual-embeddings" (Lecture Library series).
 
 - **[Speech and Language Processing (3rd ed. draft)](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The definitive NLP textbook; chapters posted free as they are revised.

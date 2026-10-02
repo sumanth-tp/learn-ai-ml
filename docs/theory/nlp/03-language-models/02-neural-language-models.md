@@ -819,4 +819,4 @@ Note what the embedding layer buys you: "cat" and "dog" end up with similar vect
 - [The Unreasonable Effectiveness of Recurrent Neural Networks (Karpathy)](https://karpathy.github.io/2015/05/21/rnn-effectiveness/) — the classic intuition piece.
 - [Understanding LSTM Networks (Olah)](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) — the best explanation of the gates.
 - [PyTorch language modelling tutorial](https://pytorch.org/tutorials/beginner/transformer_tutorial.html) — the same model, in a framework.
-- [Source lecture: nlp-s6-neural-lm](https://learning.bansal-ai.in/nlp-s6-neural-lm/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s6-neural-lm" (Lecture Library series).

@@ -389,7 +389,7 @@ A measurable requirement specifies a **metric**, a **target**, a **dataset/condi
 - [Model Cards for Model Reporting (Mitchell et al.)](https://arxiv.org/abs/1810.03993) — the documentation standard for intended use and limitations.
 - [Machine Learning in Production — requirements chapters](https://mlip-cmu.github.io/book/) — goals, risks and quality attributes for ML systems.
 - [EU AI Act overview](https://artificialintelligenceact.eu/) — what "high-risk" obliges you to document.
-- [Source lecture: seml-s3-requirements](https://learning.bansal-ai.in/seml-s3-requirements/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s3-requirements" (Lecture Library series).
 
 - **[Machine Learning in Production — Requirements & Risk](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — Requirements engineering for ML, and framing the system around what can go wrong.

@@ -273,7 +273,7 @@ Because E[∇log π(a|s) · b(s)] = 0 for any action-independent b(s), so it cha
 - [Spinning Up — Intro to Policy Optimization](https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html) — derivation plus working code.
 - [High-Dimensional Continuous Control Using GAE (Schulman et al.)](https://arxiv.org/abs/1506.02438) — the advantage estimator everyone uses.
 - [Lil'Log — Policy Gradient Algorithms](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/) — the best single map of the whole family.
-- [Source lecture: drl-s9-policy-gradients](https://learning.bansal-ai.in/drl-s9-policy-gradients/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s9-policy-gradients" (Lecture Library series).
 
 - **[Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html)** `book`
   Sutton & Barto — The RL book — the reference for everything in this course.

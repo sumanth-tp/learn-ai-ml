@@ -157,3 +157,14 @@ Read a `middleware=[...]` list the way you'd read a request pipeline: the first 
 - [ ] I can attach a built-in middleware (PII, retry, summarization) to an agent
 - [ ] I can write a custom `@before_model` or `@after_model` function
 - [ ] I understand why hook order in the `middleware=[...]` list matters
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Middleware adds cross-cutting behaviour around model and tool calls. |
+| Order | The middleware list order affects how hooks compose. |
+| Hooks | Before-model, after-model and wrapper hooks intercept different points in an agent run. |
+| Built-ins | Ready-made middleware supports tasks such as PII handling, summarisation and retries. |
+| Custom policy | A custom hook can change prompts or validate responses with application context. |
+| Composition | Ordering middleware determines what each hook sees and what it can modify. |

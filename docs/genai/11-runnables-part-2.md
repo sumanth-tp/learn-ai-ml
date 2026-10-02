@@ -438,3 +438,17 @@ You can go back to the `RunnableBranch` code and replace the `RunnableSequence` 
 - [ ] I can convert any Python function into a runnable
 - [ ] I can build a conditional chain and explain the tuple syntax
 - [ ] I know what LCEL is and what it currently covers
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Primitives | Sequence, parallel, passthrough, lambda and branch cover common composition patterns. |
+| Data flow | Each runnable receives an input and passes its output to the next step or branch. |
+| Task-specific versus primitive | Models and prompts perform domain work; primitives arrange how those tasks run. |
+| RunnableSequence | Pass one step’s output into the next step in order. |
+| RunnableParallel | Apply named branches to a shared input and collect their outputs. |
+| RunnablePassThrough | Keep an input available while other branches derive additional values. |
+| RunnableLambda | Wrap a Python function so it composes with other runnables. |
+| RunnableBranch | Choose the first matching conditional path and retain a default. |
+| LCEL | Use expression syntax to write these compositions compactly. |

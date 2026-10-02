@@ -306,7 +306,7 @@ production).<br /><em>Session 11 · conceptual</em>
   validation in pipelines.
 - [Google SRE: monitoring distributed systems](https://sre.google/sre-book/monitoring-distributed-systems/)
   — the four golden signals, which still apply underneath.
-- [Source lecture: seml-s11-debugging](https://learning.bansal-ai.in/seml-s11-debugging/lecture.html)
+- Built from the course lecture "seml-s11-debugging" (Lecture Library series).
   — the original interactive lecture these notes were built from.
 
 - **[Made With ML](https://madewithml.com/)** `course` Goku Mohandas — Design,

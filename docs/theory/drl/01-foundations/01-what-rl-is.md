@@ -337,7 +337,7 @@ If we also back up exploratory moves, the values converge to those of the **$\va
 - [Sutton & Barto, *Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book-2nd.html) — chapter 1 covers this loop; free PDF from the authors.
 - [OpenAI Spinning Up — Key Concepts in RL](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html) — the clearest short introduction with the maths spelled out.
 - [Gymnasium documentation](https://gymnasium.farama.org/) — the standard environment API you will code against.
-- [Source lecture: drl-s1-intro](https://learning.bansal-ai.in/drl-s1-intro/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s1-intro" (Lecture Library series).
 
 - **[Lecture 1 — Introduction to Reinforcement Learning (video)](https://www.youtube.com/watch?v=2pWv7GOvuf0)** `▶ video`
   David Silver, UCL/DeepMind — The classic first lecture of the 10-part RL course. Start here if the whole idea of RL hasn't clicked yet.

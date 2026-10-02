@@ -116,3 +116,15 @@ set_verbose(True)   # just the high-level steps
 - [ ] I can name three `on_*` hooks and what triggers them
 - [ ] I can turn on LangSmith tracing with three environment variables, no code changes
 - [ ] I can turn on local `set_debug`/`set_verbose` output, and know why to turn it back off
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Callbacks | Handlers observe model, chain, tool and agent events. |
+| Tracing | Trace runs to inspect execution paths and latency. |
+| Debugging | Use local verbose output during investigation and turn it off afterward. |
+| Custom handler | BaseCallbackHandler receives selected chain, model, tool and agent lifecycle events. |
+| Event hooks | Start, end and error callbacks support logging and timing. |
+| LangSmith | Environment configuration can record traces without adding a custom handler. |
+| Local debug | Verbose and debug output help inspection but should be bounded in production. |

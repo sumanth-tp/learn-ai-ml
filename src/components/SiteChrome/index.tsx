@@ -3,7 +3,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import {useCallback, useEffect, useRef, useState} from 'react';
 
 import {recordVisit} from '@site/src/lib/progress';
-import AIChatbot from '@site/src/components/AIChatbot';
+import AIChatbot, {ASK_AI_EVENT} from '@site/src/components/AIChatbot';
 
 import styles from './styles.module.css';
 
@@ -140,6 +140,7 @@ const SHORTCUTS: {group: string; items: Shortcut[]}[] = [
     items: [
       {keys: ['g', 'h'], label: 'Home'},
       {keys: ['g', 'e'], label: 'Explore all notes'},
+      {keys: ['g', 'p'], label: 'Learning path'},
       {keys: ['g', 'r'], label: 'Roadmap'},
       {keys: ['g', 'c'], label: 'Cheatsheets'},
       {keys: ['g', 'i'], label: 'Interview prep'},
@@ -148,6 +149,7 @@ const SHORTCUTS: {group: string; items: Shortcut[]}[] = [
   {
     group: 'View',
     items: [
+      {keys: ['a'], label: 'Ask AI about this page'},
       {keys: ['t'], label: 'Toggle light / dark'},
       {keys: ['?'], label: 'Show this dialog'},
       {keys: ['Esc'], label: 'Close'},
@@ -293,6 +295,7 @@ export default function SiteChrome() {
           h: '/',
           e: '/explore',
           r: '/docs/intro',
+          p: '/path',
           c: '/docs/category/cheetsheet',
           i: '/docs/category/interview',
         };
@@ -314,6 +317,11 @@ export default function SiteChrome() {
         case '?':
           event.preventDefault();
           setHelpOpen((open) => !open);
+          break;
+        case 'a':
+        case 'A':
+          event.preventDefault();
+          window.dispatchEvent(new CustomEvent(ASK_AI_EVENT, {detail: {toggle: true}}));
           break;
         case 't':
         case 'T':

@@ -360,7 +360,7 @@ It's a **distributed transaction** across agents → use a **SAGA** (orchestrati
 - [ReAct: reasoning and acting](https://arxiv.org/abs/2210.03629) — the plan/act/observe loop.
 - [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/) — injection, excessive agency and insecure tool use.
 - [LangGraph](https://langchain-ai.github.io/langgraph/) — a runtime with explicit state, checkpoints and human-in-the-loop interrupts.
-- [Source lecture: seml-s7-agentic-ai](https://learning.bansal-ai.in/seml-s7-agentic-ai/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s7-agentic-ai" (Lecture Library series).
 
 - **[Machine Learning in Production — LLMs and AI Agents](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — The book explicitly spans classic ML, LLMs and AI agents, including how to engineer around their failure modes.

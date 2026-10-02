@@ -533,3 +533,17 @@ Every time you run it, the document embeddings are generated again by asking the
 - [ ] I can generate embeddings for a query and for documents
 - [ ] I can write the document similarity app and explain `enumerate` and the 2-D requirement
 - [ ] I can say why re-embedding documents on every run is wrong
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Model interfaces | Use chat models for role-based conversations and embedding models for vector representations. |
+| Configuration | Temperature and output limits affect sampling, length and cost. |
+| Deployment choice | Compare hosted APIs with locally run models by capability, control and operational needs. |
+| LLMs versus chat models | Completion models take text; chat models exchange role-labelled messages and conversation history. |
+| Providers | The chapter calls OpenAI, Anthropic and Gemini through similar LangChain interfaces. |
+| Sampling and limits | Temperature changes sampling randomness; token limits constrain output length and cost. |
+| Local and hosted | Hosted models simplify access; downloaded models require local resources and give more deployment control. |
+| Embeddings | Embed both query and documents, then compare vectors to find similar material. |
+| Example | The document-similarity application uses vectors rather than exact word overlap. |

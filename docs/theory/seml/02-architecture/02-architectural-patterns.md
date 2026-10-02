@@ -294,7 +294,7 @@ They let an app be built as independently developed, deployed and **scaled** ser
 - [Designing Machine Learning Systems (Chip Huyen)](https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/) — deployment patterns with real trade-offs.
 - [Ray Serve documentation](https://docs.ray.io/en/latest/serve/index.html) — a common model-serving runtime.
 - [Google Cloud: MLOps architecture levels](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) — the maturity model most teams map themselves against.
-- [Source lecture: seml-s5-arch-patterns](https://learning.bansal-ai.in/seml-s5-arch-patterns/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s5-arch-patterns" (Lecture Library series).
 
 - **[Machine Learning in Production — Deploying a Model / Design Patterns](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — Deployment architectures and the patterns for serving models in real systems.

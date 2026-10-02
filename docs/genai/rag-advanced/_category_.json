@@ -1,0 +1,8 @@
+{
+  "label": "Advanced RAG",
+  "position": 25,
+  "link": {
+    "type": "generated-index",
+    "description": "GraphRAG, long context versus retrieval, text-to-SQL and structured-data RAG, and contextual retrieval."
+  }
+}

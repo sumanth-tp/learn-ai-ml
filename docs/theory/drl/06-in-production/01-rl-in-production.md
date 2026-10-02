@@ -254,7 +254,7 @@ Because the policy can obtain a high score by exploiting flaws in the reward/ver
 - [Offline RL: Tutorial, Review, and Perspectives (Levine et al.)](https://arxiv.org/abs/2005.01643) — the reference for learning from logs.
 - [Concrete Problems in AI Safety (Amodei et al.)](https://arxiv.org/abs/1606.06565) — reward hacking, safe exploration and distributional shift, stated precisely.
 - [Magnetic control of tokamak plasmas through deep RL](https://www.nature.com/articles/s41586-021-04301-9) — a full sim-to-real deployment write-up.
-- [Source lecture: drl-s15-selected-topics-applications](https://learning.bansal-ai.in/drl-s15-selected-topics-applications/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s15-selected-topics-applications" (Lecture Library series).
 
 - **[Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html)** `book`
   Sutton & Barto — The RL book — the reference for everything in this course.

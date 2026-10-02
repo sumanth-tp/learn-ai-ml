@@ -1,0 +1,8 @@
+{
+  "label": "Computer vision",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "From image formation and classical features to recognition, detection, tracking and vision deployment."
+  }
+}

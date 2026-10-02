@@ -283,7 +283,7 @@ MLOps: predictive models on structured data (drift, retraining; F1/latency). LLM
 - [Practical Lessons on Model Deployment (Google SRE workbook: canarying releases)](https://sre.google/workbook/canarying-releases/) — the general theory, directly applicable.
 - [NVIDIA Triton: dynamic batching](https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/model_configuration.html#dynamic-batcher) — how batching is configured in practice.
 - [Trustworthy Online Controlled Experiments (Kohavi et al.)](https://experimentguide.com/) — the standard reference for A/B testing done properly.
-- [Source lecture: seml-s14-deployment-serving](https://learning.bansal-ai.in/seml-s14-deployment-serving/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s14-deployment-serving" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
   Goku Mohandas — Design, test, deploy and monitor ML systems — the practical MLOps path.

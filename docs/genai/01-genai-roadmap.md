@@ -361,3 +361,16 @@ A rough timeline for the entire curriculum, both sides: **about a year**. That i
 - [ ] I can sort a new term into builder side or user side
 - [ ] I can list the seven builder-side modules and the five user-side modules
 - [ ] I know which side I am optimising for, and the prerequisites for it
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Core idea | Generative AI creates new content with foundation models; it sits within the broader AI, ML and deep learning landscape. |
+| Builder path | Study model architecture, pre-training, adaptation, evaluation and deployment. |
+| User path | Build applications with prompts, retrieval, tools and agents while learning the underlying models. |
+| Impact | The roadmap considers effects on productivity, creativity, education and software work. |
+| Technology test | Assess usefulness through capability, access, cost, ease of use and adoption rather than hype alone. |
+| Foundation models | Large pre-trained models provide a reusable base that builders adapt and application developers call. |
+| Career choice | A research-focused builder needs deep model training knowledge; an AI engineer combines model understanding with application work. |
+| Sequence | Builder and user skills develop in parallel through smaller modules rather than one monolithic course. |

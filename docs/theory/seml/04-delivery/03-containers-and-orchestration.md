@@ -299,7 +299,7 @@ A Service is a stable network endpoint / load balancer in front of the pods, so 
 - [Docker: build best practices](https://docs.docker.com/build/building/best-practices/) — layer caching, multi-stage, slim images.
 - [Kubernetes: configure liveness, readiness and startup probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) — the exact semantics.
 - [KServe](https://kserve.github.io/website/) — model serving as a Kubernetes-native abstraction.
-- [Source lecture: seml-s13-deployment](https://learning.bansal-ai.in/seml-s13-deployment/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s13-deployment" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
   Goku Mohandas — Design, test, deploy and monitor ML systems — the practical MLOps path.

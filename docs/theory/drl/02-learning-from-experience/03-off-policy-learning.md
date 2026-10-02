@@ -263,7 +263,7 @@ The estimate's expectation is correct but its second moment is unbounded (e.g. t
 - [Sutton & Barto, chapter 5.5–5.7](http://incompleteideas.net/book/the-book-2nd.html) — ordinary vs weighted importance sampling, with the variance analysis.
 - [Doubly Robust Policy Evaluation and Learning (Dudík et al.)](https://arxiv.org/abs/1103.4601) — the estimator most production systems use.
 - [Offline Reinforcement Learning: Tutorial, Review and Perspectives (Levine et al.)](https://arxiv.org/abs/2005.01643) — the reference survey for learning from logged data.
-- [Source lecture: drl-s8-off-policy-mc](https://learning.bansal-ai.in/drl-s8-off-policy-mc/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s8-off-policy-mc" (Lecture Library series).
 
 - **[Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html)** `book`
   Sutton & Barto — The RL book — the reference for everything in this course.

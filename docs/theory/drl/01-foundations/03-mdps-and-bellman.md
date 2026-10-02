@@ -364,7 +364,7 @@ Value iteration takes the max over actions of the expected backup.Q(H,Continue) 
 - [Sutton & Barto, chapters 3–4](http://incompleteideas.net/book/the-book-2nd.html) — MDPs, Bellman equations and DP, with the same notation used here.
 - [David Silver's RL lectures 2–3](https://www.davidsilver.uk/teaching/) — the clearest blackboard derivation of both Bellman forms.
 - [Spinning Up — Key equations](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html#value-functions) — value functions and the optimality equations in compact form.
-- [Source lecture: drl-s3-mdp-dp](https://learning.bansal-ai.in/drl-s3-mdp-dp/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s3-mdp-dp" (Lecture Library series).
 
 - **[Lecture 2 slides — Markov Decision Processes (PDF)](https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-2-mdp.pdf)** `course`
   David Silver — MDPs, returns, value functions and the Bellman equations.

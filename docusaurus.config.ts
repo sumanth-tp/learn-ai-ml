@@ -2,6 +2,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
 
+import { groupIntoStages } from "./src/lib/stageSidebar";
+
 const path = require("path");
 const math = require("remark-math");
 const katex = require("rehype-katex");
@@ -33,6 +35,10 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
+          async sidebarItemsGenerator({ defaultSidebarItemsGenerator, ...args }) {
+            const items = await defaultSidebarItemsGenerator(args);
+            return args.item.dirName === "." ? (groupIntoStages(items as never) as never) : items;
+          },
           remarkPlugins: [math],
           rehypePlugins: [[katex, { output: "html" }]],
         },
@@ -151,7 +157,7 @@ const config: Config = {
           position: "left",
           label: "All notes",
         },
-        { to: "/docs/intro", label: "Roadmap", position: "left" },
+        { to: "/path", label: "Learning path", position: "left" },
         { to: "/llm-roadmap", label: "LLM track", position: "left" },
         {
           label: "Theory",

@@ -1,0 +1,8 @@
+{
+  "label": "DM getting data ready",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Collect, profile, model and prepare data and features for reliable ML."
+  }
+}

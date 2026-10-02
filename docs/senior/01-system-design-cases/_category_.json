@@ -1,0 +1,8 @@
+{
+  "label": "ML system-design cases",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Six whole-system designs, each with requirements, architecture, trade-offs and failure modes."
+  }
+}

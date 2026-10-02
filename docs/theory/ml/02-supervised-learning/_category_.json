@@ -1,0 +1,8 @@
+{
+  "label": "Supervised learning",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Regression, logistic classification, decision trees, nearest neighbours, support vector machines and Bayesian classifiers."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Evaluation and practice",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Model evaluation, calibration, explaining predictions, an end-to-end capstone and the full question bank."
+  }
+}

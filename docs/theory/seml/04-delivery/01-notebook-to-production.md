@@ -321,7 +321,7 @@ By **quality attribute**: `TestRobustness` (schema rejects −500), `TestReliabi
 - [MLflow Models](https://mlflow.org/docs/latest/models.html) — artefact packaging with environment and signature metadata.
 - [ONNX](https://onnx.ai/) — portable model format across frameworks and runtimes.
 - [Google: MLOps continuous delivery](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) — the pipeline this note describes.
-- [Source lecture: seml-w1-ml-system](https://learning.bansal-ai.in/seml-w1-ml-system/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-w1-ml-system" (Lecture Library series).
 
 - **[Machine Learning in Production — the whole book](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — The single best free reference for taking a notebook model to a production system.

@@ -225,7 +225,7 @@ Train a classifier on sense-labelled data, typically feeding contextual embeddin
 - [Jurafsky & Martin, chapter 23 — Word Senses and WordNet](https://web.stanford.edu/~jurafsky/slp3/) — senses, relations and WSD algorithms.
 - [WordNet](https://wordnet.princeton.edu/) — the resource itself, still freely available.
 - [spaCy EntityLinker](https://spacy.io/api/entitylinker) — a production-shaped linking component.
-- [Source lecture: nlp-s12-word-senses](https://learning.bansal-ai.in/nlp-s12-word-senses/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s12-word-senses" (Lecture Library series).
 
 - **[Speech and Language Processing (3rd ed. draft)](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The definitive NLP textbook; chapters posted free as they are revised.

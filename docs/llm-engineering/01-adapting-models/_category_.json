@@ -1,0 +1,8 @@
+{
+  "label": "Adapting models",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "When to prompt, retrieve or fine-tune, and how to prepare data, run supervised and preference tuning, distil models and tune embedding models."
+  }
+}

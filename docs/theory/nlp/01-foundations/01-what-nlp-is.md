@@ -277,7 +277,7 @@ NLU maps text → meaning (climbing the levels of analysis); NLG maps meaning �
 - [Jurafsky & Martin, *Speech and Language Processing* (3rd ed. draft)](https://web.stanford.edu/~jurafsky/slp3/) — the standard textbook, free from the authors.
 - [Hugging Face NLP Course, chapter 2 (tokenisers)](https://huggingface.co/learn/nlp-course/chapter2/4) — how subword tokenisation actually works in practice.
 - [spaCy 101](https://spacy.io/usage/spacy-101) — the production-grade classical pipeline, still the fastest way to do rule-plus-statistics NLP.
-- [Source lecture: nlp-s1-intro](https://learning.bansal-ai.in/nlp-s1-intro/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s1-intro" (Lecture Library series).
 
 - **[Speech and Language Processing — Ch. 1-2](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The standard NLP textbook, free from the authors. Chapter 1 introduces the field; Chapter 2 covers words, tokens and edit distance.

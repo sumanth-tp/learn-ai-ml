@@ -84,6 +84,30 @@ export default function MarkdownLite({children}: {children: string}) {
         ?.replace('language-', '');
       if (language && code.parentElement) code.parentElement.dataset.language = language;
     });
+    root?.querySelectorAll<HTMLPreElement>('pre').forEach((pre) => {
+      if (pre.parentElement?.classList.contains(styles.codeWrap)) return;
+      const wrapper = document.createElement('div');
+      wrapper.className = styles.codeWrap;
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = styles.codeCopy;
+      button.textContent = 'Copy';
+      button.setAttribute('aria-label', 'Copy code');
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? pre.textContent ?? '');
+          button.textContent = 'Copied';
+          window.setTimeout(() => {
+            button.textContent = 'Copy';
+          }, 1500);
+        } catch {
+          button.textContent = 'Copy failed';
+        }
+      });
+      wrapper.appendChild(button);
+    });
   }, [html]);
 
   return (

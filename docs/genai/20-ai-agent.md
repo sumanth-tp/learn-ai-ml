@@ -414,3 +414,17 @@ Going forward, discussions around AI agents will use libraries that really help 
 - [ ] I can read the ReAct prompt and map it to the loop
 - [ ] I can build a ReAct agent with multiple tools
 - [ ] I know why LangGraph is recommended for production agents
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Agent | A model chooses steps and uses tools to pursue a goal rather than following one fixed chain. |
+| Reasoning loop | ReAct alternates tool decisions and observations until the agent finishes. |
+| Implementation | Understand the legacy AgentExecutor pattern and use graph-based orchestration for production control. |
+| Trip example | An agent can choose flights and other actions as a request unfolds. |
+| Definition | An agent combines an LLM that selects steps with tools that observe or act. |
+| Characteristics | It works toward a goal, chooses actions, uses observations and can revise a plan. |
+| ReAct | Interleave reasoning, action requests and tool observations until a final response. |
+| AgentExecutor | The legacy split separates action selection from the loop that executes tools. |
+| State graph | LangGraph provides explicit state and control for more robust agent workflows. |

@@ -326,3 +326,16 @@ Right now it seems all the big companies and all the good research in the AI wor
 - [ ] I can list the four sub-components of indexes in order
 - [ ] I can explain statelessness and name the four memory types
 - [ ] I can trace the temperature-times-3 example through an agent
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Core components | Models, prompts, chains, indexes, memory and agents cover the main application roles. |
+| Data flow | Indexes load, split, embed and retrieve information for a model. |
+| Action | An agent uses model reasoning and tools to choose and perform steps. |
+| Models | Language, chat and embedding models produce text, conversation responses and vectors. |
+| Prompts | Templates add dynamic fields, role messages and examples to a model request. |
+| Chains | Sequential, parallel and conditional compositions connect processing steps. |
+| Indexes | Loaders, splitters, embeddings and vector stores prepare documents for retrieval. |
+| Memory | History supplies prior conversation context to otherwise stateless model calls. |

@@ -1,0 +1,8 @@
+{
+  "label": "Senior Engineering Craft",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "System-design case studies and the engineering craft that makes an engineer senior: build vs buy, cost, estimation, design docs, leadership and postmortems."
+  }
+}

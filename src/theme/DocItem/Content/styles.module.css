@@ -137,7 +137,64 @@
     gap: 0.6rem;
   }
 
+  .metaActions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .controlGroup {
     display: none;
   }
+}
+
+.stageChip[data-tone='indigo'] { --tone: #656ec4; }
+.stageChip[data-tone='teal'] { --tone: #2f9b8d; }
+.stageChip[data-tone='violet'] { --tone: #8f7cc0; }
+.stageChip[data-tone='amber'] { --tone: #c08a45; }
+.stageChip[data-tone='rose'] { --tone: #c47380; }
+.stageChip[data-tone='sky'] { --tone: #4e8cb5; }
+.stageChip[data-tone='slate'] { --tone: #6b7280; }
+
+.stageChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.18rem 0.6rem 0.18rem 0.2rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-1);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.stageChip:hover {
+  border-color: var(--tone);
+  color: var(--text-strong);
+}
+
+.stageNumber {
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: var(--tone);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.stageName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stageCount {
+  color: var(--text-faint);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }

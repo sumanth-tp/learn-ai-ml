@@ -402,7 +402,7 @@ Like Maslow's pyramid, each layer must exist before the next is useful:**Collect
 - [Hidden Technical Debt in Machine Learning Systems (Sculley et al., NeurIPS 2015)](https://papers.nips.cc/paper_files/paper/2015/hash/86df7dcfd896fcaf2674f757a2463eba-Abstract.html) — the paper this whole subject grew out of.
 - [Machine Learning in Production (CMU course book, Kaestner)](https://mlip-cmu.github.io/book/) — the closest thing to a textbook for this material.
 - [Rules of Machine Learning (Google)](https://developers.google.com/machine-learning/guides/rules-of-ml) — 43 rules from teams who learned them expensively.
-- [Source lecture: seml-s1-foundations](https://learning.bansal-ai.in/seml-s1-foundations/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s1-foundations" (Lecture Library series).
 
 - **[Machine Learning in Production — Introduction](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — The open-access MIT Press book this whole subject mirrors: building, deploying and maintaining AI-powered products rather than chasing a benchmark.

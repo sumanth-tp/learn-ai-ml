@@ -285,7 +285,7 @@ AlphaGo used a supervised policy net trained on human games plus an RL policy ne
 - [Mastering the game of Go without human knowledge (AlphaGo Zero)](https://www.nature.com/articles/nature24270) — search plus self-play, no human games.
 - [A Survey of Monte Carlo Tree Search Methods (Browne et al.)](https://ieeexplore.ieee.org/document/6145622) — the canonical MCTS reference.
 - [MuZero: Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model](https://arxiv.org/abs/1911.08265) — planning without being given the rules.
-- [Source lecture: drl-s10-model-based](https://learning.bansal-ai.in/drl-s10-model-based/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "drl-s10-model-based" (Lecture Library series).
 
 - **[Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html)** `book`
   Sutton & Barto — The RL book — the reference for everything in this course.

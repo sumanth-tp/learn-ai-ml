@@ -1,0 +1,8 @@
+{
+  "label": "IR ranking and evaluation",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Term weighting, document groups and ranked retrieval evaluation from Sessions 5 to 7. Session 8 review ideas are carried into these chapters."
+  }
+}

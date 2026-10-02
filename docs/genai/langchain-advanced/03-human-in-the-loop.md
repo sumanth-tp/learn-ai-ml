@@ -154,3 +154,15 @@ Gate anything that is expensive, irreversible, or externally visible: destructiv
 - [ ] I can explain why a `checkpointer` is required for interrupts to work
 - [ ] I can resume a paused agent with each of the four decisions
 - [ ] I can write a `when` predicate to interrupt only on risky arguments
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Approval | Pause selected tool calls for a human decision before an action runs. |
+| State | A checkpointer preserves the interrupted agent state for resumption. |
+| Control | Approve, edit, reject or respond according to the configured review policy. |
+| Selective pause | Gate a sensitive tool or only calls whose arguments meet a risk condition. |
+| Interrupt | Save the agent state, expose the pending action and wait for a reviewer. |
+| Decisions | A reviewer may approve, edit, reject or provide a response to the pending call. |
+| Resume | Continue the same thread with the stored checkpoint and review decision. |

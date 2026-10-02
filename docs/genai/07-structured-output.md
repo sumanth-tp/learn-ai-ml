@@ -437,3 +437,16 @@ The reason: TinyLlama does not support structured output — neither JSON mode n
 - [ ] I know the difference between accessing a Pydantic result and a dict result
 - [ ] I can pick the right approach for a given project
 - [ ] I know what happens when a model cannot produce structured output
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Purpose | Structured output makes model responses usable by code, databases and tools. |
+| Schema choices | TypedDict describes shape, Pydantic validates data and JSON Schema offers a portable contract. |
+| Model support | Use native structured-output methods when available and handle unsupported models explicitly. |
+| Use cases | Typed responses support storage, API contracts and reliable tool arguments. |
+| TypedDict | Defines expected keys and types for the caller but does not validate a returned value at runtime. |
+| Pydantic | Validates fields and can express constraints, optional values and allowed choices. |
+| JSON Schema | Defines a portable shape for cross-language integrations. |
+| Method selection | Choose native structured-output support when the model offers it; plan for failures or unsupported methods. |

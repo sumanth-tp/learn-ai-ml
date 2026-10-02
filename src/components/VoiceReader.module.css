@@ -1,0 +1,53 @@
+.reader {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.button,
+.select {
+  min-height: 1.85rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--surface-1);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.button {
+  padding: 0.25rem 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  color: var(--ifm-color-primary);
+  border-color: var(--brand-400);
+  background: var(--brand-tint);
+}
+
+.button:disabled,
+.select:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.select {
+  max-width: 8rem;
+  padding: 0.2rem 0.35rem;
+  cursor: pointer;
+}
+
+.status {
+  color: var(--text-faint);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .reader {
+    width: 100%;
+  }
+}

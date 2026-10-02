@@ -302,7 +302,7 @@ GloVe factorises the global co-occurrence matrix (ratios of probabilities) rathe
 - [Distributed Representations of Words and Phrases (Mikolov et al.)](https://arxiv.org/abs/1310.4546) — negative sampling and subsampling, the parts that made it fast.
 - [Sentence-Transformers documentation](https://www.sbert.net/) — the practical library for modern contrastive text embeddings.
 - [Text Embeddings by Weakly-Supervised Contrastive Pre-training (E5)](https://arxiv.org/abs/2212.03533) — how current retrieval encoders are trained.
-- [Source lecture: nlp-s3-word2vec](https://learning.bansal-ai.in/nlp-s3-word2vec/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s3-word2vec" (Lecture Library series).
 
 - **[Speech and Language Processing — Ch. 5, Embeddings](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — Skip-gram with negative sampling is derived here in full, including the training objective the companion only sketches.

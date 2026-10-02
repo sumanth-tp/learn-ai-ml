@@ -1,11 +1,15 @@
+import Link from '@docusaurus/Link';
 import {useDoc} from '@docusaurus/plugin-content-docs/client';
 import Content from '@theme-original/DocItem/Content';
 import type ContentType from '@theme/DocItem/Content';
 import type {WrapperProps} from '@docusaurus/types';
-import {JSX, useEffect, useRef, useState} from 'react';
+import {JSX, useEffect, useMemo, useRef, useState} from 'react';
 
-import {useIsRead, useToggleRead} from '@site/src/lib/progress';
+import {PATH_ROUTE, stageById} from '@site/src/data/learningPath';
+import {useDocsIndex} from '@site/src/lib/docsIndex';
+import {useIsRead, useReadDocs, useToggleRead} from '@site/src/lib/progress';
 import {useReadingPrefs, type ReadingSize} from '@site/src/lib/readingPrefs';
+import VoiceReader from '@site/src/components/VoiceReader';
 
 import styles from './styles.module.css';
 
@@ -139,6 +143,44 @@ function CopyLinkButton() {
   );
 }
 
+function StageChip({permalink}: {permalink: string}) {
+  const docs = useDocsIndex();
+  const read = useReadDocs();
+
+  const info = useMemo(() => {
+    const stageId = docs.find((doc) => doc.permalink === permalink)?.stage;
+    const stage = stageById(stageId ?? undefined);
+    if (!stage) {
+      return null;
+    }
+    const inStage = docs.filter((doc) => doc.stage === stage.id);
+    return {
+      stage,
+      total: inStage.length,
+      read: inStage.filter((doc) => read[doc.permalink]).length,
+    };
+  }, [docs, read, permalink]);
+
+  if (!info) {
+    return null;
+  }
+
+  const {stage} = info;
+  return (
+    <Link
+      to={`${PATH_ROUTE}#${stage.id}`}
+      className={styles.stageChip}
+      data-tone={stage.tone}
+      title={`${info.read} of ${info.total} notes in this stage read — open the learning path`}>
+      <span className={styles.stageNumber}>{stage.number ?? '·'}</span>
+      <span className={styles.stageName}>{stage.title}</span>
+      <span className={styles.stageCount}>
+        {info.read}/{info.total}
+      </span>
+    </Link>
+  );
+}
+
 export default function ContentWrapper(props: Props): JSX.Element {
   const {metadata} = useDoc();
   const articleRef = useRef<HTMLDivElement>(null);
@@ -149,6 +191,7 @@ export default function ContentWrapper(props: Props): JSX.Element {
     <>
       <div className={styles.metaBar}>
         <div className={styles.metaGroup}>
+          <StageChip permalink={metadata.permalink} />
           <ReadingTime articleRef={articleRef} />
           {metadata.lastUpdatedAt && (
             <span className={styles.metaItem}>
@@ -163,6 +206,7 @@ export default function ContentWrapper(props: Props): JSX.Element {
         </div>
 
         <div className={styles.metaActions}>
+          <VoiceReader articleRef={articleRef} permalink={metadata.permalink} />
           <ReadingControls />
           <CopyLinkButton />
           <button

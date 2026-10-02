@@ -272,7 +272,7 @@ Model quality (metrics, fairness, robustness), data quality (schema, missing/ran
 - [Beyond Accuracy: Behavioral Testing of NLP Models with CheckList (Ribeiro et al.)](https://arxiv.org/abs/2005.04118) — invariance, directional and MFT tests.
 - [The ML Test Score (Breck et al., Google)](https://research.google/pubs/pub46555/) — a rubric for how well-tested an ML system actually is.
 - [Great Expectations](https://docs.greatexpectations.io/) and [Pandera](https://pandera.readthedocs.io/) — data contracts in code.
-- [Source lecture: seml-s12-testing-qa](https://learning.bansal-ai.in/seml-s12-testing-qa/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s12-testing-qa" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
   Goku Mohandas — Design, test, deploy and monitor ML systems — the practical MLOps path.

@@ -195,3 +195,16 @@ Multiple distinct domains (calendar, email, CRM, database), subagents that never
 - [ ] I can choose between tool-per-agent and single-dispatch based on subagent count
 - [ ] I can explain isolated vs forked context passing, and when each is right
 - [ ] I can justify — or refuse — a multi-agent design against a single agent with more tools
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Pattern | A supervisor can call specialist agents as tools. |
+| Routing | Use one tool per specialist or a dispatch tool according to the number of roles. |
+| Context | Choose isolated or shared context and return structured state when the supervisor needs it. |
+| Supervisor | A primary agent routes bounded tasks to specialist agents exposed as tools. |
+| Tool-per-agent | Separate tool names make a small specialist set easy to route. |
+| Dispatch | A single dispatch tool can handle a larger or dynamic specialist set. |
+| Context transfer | Choose isolated input, a context fork or returned state according to the collaboration need. |
+| Design test | Use multiple agents only when specialist boundaries improve the workflow. |

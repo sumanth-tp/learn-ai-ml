@@ -277,7 +277,7 @@ An **architectural pattern** is a reusable solution to a recurring problem in a 
 - [Software Architecture in Practice (Bass, Clements, Kazman)](https://www.oreilly.com/library/view/software-architecture-in/9780136885979/) — the canonical treatment of quality attributes and tactics.
 - [Architecture decision records (Nygard)](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions.html) — the one-page format most teams use.
 - [Machine Learning in Production — architecture chapters](https://mlip-cmu.github.io/book/) — quality attributes applied to ML specifically.
-- [Source lecture: seml-s4-quality-architecture](https://learning.bansal-ai.in/seml-s4-quality-architecture/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "seml-s4-quality-architecture" (Lecture Library series).
 
 - **[Machine Learning in Production — Quality Attributes & Architecture](https://mlip-cmu.github.io/book/)** `book`
   Kaestner, CMU (MIT Press, open access) — Architectural design for ML systems and the trade-offs between quality attributes.

@@ -1,0 +1,8 @@
+{
+  "label": "Inference and serving",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Why decoding is memory-bound, KV caches, batching, quantisation, speculative decoding, serving engines, caching and routing, and sizing GPUs."
+  }
+}

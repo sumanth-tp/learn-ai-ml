@@ -1,0 +1,8 @@
+{
+  "label": "Safety and Governance",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Red-teaming, fairness testing, privacy, regulation and incident response for AI systems."
+  }
+}

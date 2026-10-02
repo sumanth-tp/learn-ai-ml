@@ -294,7 +294,7 @@ Candidate bigrams \{the-cat, cat-sat\} (2); reference bigrams \{the-cat, cat-sat
 - [ROUGE: A Package for Automatic Evaluation of Summaries (Lin, 2004)](https://aclanthology.org/W04-1013/) — the metric, and what it actually measures.
 - [SummEval: Re-evaluating Summarization Evaluation](https://arxiv.org/abs/2007.12626) — evidence that overlap metrics correlate poorly with human judgement.
 - [BERTScore](https://arxiv.org/abs/1904.09675) — embedding-based scoring, a better default than ROUGE alone.
-- [Source lecture: nlp-s16-summarization](https://learning.bansal-ai.in/nlp-s16-summarization/lecture.html) — the original interactive lecture these notes were built from.
+- Built from the course lecture "nlp-s16-summarization" (Lecture Library series).
 
 - **[Speech and Language Processing (3rd ed. draft)](https://web.stanford.edu/~jurafsky/slp3/)** `book`
   Jurafsky & Martin — The definitive NLP textbook; chapters posted free as they are revised.

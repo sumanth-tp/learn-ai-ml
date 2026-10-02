@@ -445,3 +445,17 @@ If you ever see someone teaching a topic called **Advanced RAG**, understand tha
 - [ ] I can explain the exact failure MMR, MultiQuery and compression each fix
 - [ ] I can tune `lambda_mult` deliberately
 - [ ] I know retrieval is the first place to look when RAG answers are poor
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Interface | A retriever turns a query into relevant documents for downstream generation. |
+| Strategies | Similarity, MMR, multi-query and compression address different retrieval failures. |
+| Diagnosis | Inspect retrieved passages before changing a generator when RAG answers are poor. |
+| Retriever interface | A query in and Documents out let retrieval plug into a runnable chain. |
+| Source choice | A retriever can query a vector store, Wikipedia or another search source. |
+| MMR | Maximum marginal relevance trades some similarity for less duplicate context. |
+| Multi-query | Generate alternative query phrasings to recover passages one wording misses. |
+| Compression | Reduce or select retrieved text so the model sees the useful parts. |
+| Tuning | Inspect returned passages and adjust search strategy before blaming answer generation. |

@@ -265,3 +265,16 @@ Both are quite popular and many companies use them. The decision usually comes d
 - [ ] I can name the four benefits of LangChain
 - [ ] I can name five things people build with LangChain
 - [ ] I know the two main alternatives
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Problem | A question-answering app needs document retrieval, model access and orchestration. |
+| Retrieval | Embeddings and similarity search find relevant passages without sending every document to the model. |
+| Framework role | LangChain connects the application components; LlamaIndex and Haystack are alternatives. |
+| Chat-with-PDF design | Load and split a document, embed its chunks, search by a question embedding and pass selected text to an LLM. |
+| Keyword versus semantic | Keyword matching uses shared words; embedding search can retrieve similar meaning with different wording. |
+| Application challenges | The chapter separates the document brain, model execution and orchestration problems. |
+| Benefits | Standardised components speed iteration and let an application swap model or storage choices. |
+| Use cases | Document chat, assistants, agents, workflow automation and summarisation reuse the same building blocks. |

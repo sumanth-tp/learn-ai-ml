@@ -134,3 +134,15 @@ chain = prompt | model | StrOutputParser()
 - [ ] I can add a backup provider with `.with_fallbacks()`, and explain why retry alone doesn't cover a provider outage
 - [ ] I can make one parameter (like temperature) overridable per call with `configurable_fields`
 - [ ] I can swap the entire model per call with `configurable_alternatives`, and see how it relates to model routing
+
+## Summary table
+
+| Topic | Summary |
+| --- | --- |
+| Retry | Back off and retry transient failures within a bounded policy. |
+| Fallback | Switch to a backup runnable when the primary path fails. |
+| Configuration | Expose selected parameters or model alternatives per call. |
+| Retry policy | Use backoff for transient faults and bound the number of attempts. |
+| Fallback model | Route to another provider or runnable when the primary remains unavailable. |
+| Configurable field | Allow a selected value such as temperature to change per call. |
+| Alternative | Swap the whole model or runnable while keeping the surrounding chain. |

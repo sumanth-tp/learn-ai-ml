@@ -1,0 +1,8 @@
+{
+  "label": "DM pipelines and infrastructure",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Build reliable pipelines, run data infrastructure and connect data to the ML lifecycle."
+  }
+}
