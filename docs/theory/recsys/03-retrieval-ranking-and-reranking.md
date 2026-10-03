@@ -18,7 +18,7 @@ A large catalogue cannot always be scored item by item with an expensive model f
 
 If retrieval drops a useful item, the ranker cannot restore it. If retrieval returns relevant items but ranking puts them below weak ones, candidate recall is not the problem. If ranking is good but the final slate repeats the same topic or includes an unavailable item, the reranker or policy layer needs work. Trace a request through all stages, preserving candidate IDs, source names and scores so that an offline investigation can identify which stage lost an item.
 
-<Infographic src="/img/recsys/retrieval-ranking.svg" alt="A query tower produces a user embedding; precomputed item embeddings in a retrieval index yield candidates, which a richer ranker and eligibility-aware reranker turn into a slate." caption="Candidate recall limits every later stage's ability to select a relevant item." />
+<Infographic src="/img/recsys/retrieval-ranking.svg" alt="Four cards summarise a query tower, precomputed item embeddings and index, ranking and reranking, and toy top-two candidate recall of 0.5." caption="Candidate recall limits every later stage's ability to select a relevant item." />
 
 ## How it works
 
@@ -83,6 +83,30 @@ print('top two:', sorted(scores, key=scores.get, reverse=True)[:2])
 This exact dot-product scan returns A and B. At catalogue scale, an index may approximate the same search; any quality or speed claim needs a measured comparison.
 
 ## Designing with it
+
+### Trace one request across stages
+
+Suppose a learner opens a page after finishing a basic statistics lesson. The request contains the current lesson, language, completed prerequisites and a recent interaction sequence. A content source nominates related probability lessons, a collaborative source nominates lessons often completed next, and a popularity fallback adds broadly useful material. Candidate IDs are merged and deduplicated. A hard filter removes lessons already completed or inaccessible to the learner. A ranker then scores the remaining pairs using short-term context and lesson quality. The reranker limits repeated topics and selects the final few tiles. A request trace should record enough detail to answer whether a missing lesson was never retrieved, filtered, ranked low or displaced by a slate rule.
+
+Each stage has a different denominator. Candidate recall asks whether relevant labelled items appeared in a broad shortlist. Ranker quality asks whether useful candidates were ordered well within the pool it received. Final-slate metrics ask what the user actually saw. A system can improve ranker AUC while reducing user outcomes if retrieval changed, a filter removed more items or a new layout shifted attention. Compare stage metrics on matched request cohorts and inspect sample traces. When training a ranker, include source and eligibility conditions that match serving; otherwise its input distribution shifts when candidate sources change.
+
+### Train and test the towers as a pair
+
+The query tower can use user history and current context; the item tower can use ID, text or metadata. If both are pure IDs, a new item still needs an embedding learned from interactions. Content inputs can help it enter the index sooner, but only if the item encoder was trained to use those features meaningfully. A new user may still require a default query representation or a session-based query. Two towers make candidate scoring efficient because item vectors are precomputed, but that factorisation limits cross features: a rule about one particular user's current situation and one particular item's price may be better handled by the ranker.
+
+Training with sampled negatives can make loss values look good while the served retrieval is weak. If there are four items and one positive, a random negative may be easy. If there are millions of items, the nearest wrong item is a harder competitor. Evaluate with the real index or an exact full-catalogue reference on a representative sample, and report recall at the cutoff the ranker can afford. Check accidental positives in the negative set and how duplicate items or variants are treated. The training objective should reflect the similarity used by the index, including any vector normalisation.
+
+### Make index freshness observable
+
+An item can be created, updated, withdrawn or made unavailable between index builds. Define how quickly each state must reach candidate retrieval and how the final eligibility filter protects users during propagation. A newly published item may have a content vector before its interaction history exists. If its embedding enters the index only overnight, the “fresh item” path has a measurable delay. Log item publication and index-entry times, then measure that delay. If a withdrawn item still appears in ANN results, a final filter can block display, but a high filtered-item rate can shrink the candidate pool and hurt recall.
+
+An ANN index must be assessed against an exact search reference on the same vectors. Measure approximate recall at the same cutoff and latency under realistic concurrency. Index settings can favour speed or quality, and a quality loss can vary across dense popular regions and sparse long-tail regions of the embedding space. Monitor both average and tail request latency. When rolling out new towers, create a matching index, verify offline scores and switch query and index versions together. Keep the old pair ready for rollback.
+
+### Treat reranking as a policy
+
+Some post-ranking decisions are obligations: suppress blocked items, respect age or access rules, enforce availability. Others are preferences: diversity, freshness, creator exposure or novelty. Encode the former as hard constraints and the latter as measurable objectives. A diversity rule that always forces one item from a weak category can lower user value; a rule that never takes a chance on a new category can narrow the slate. Compare full lists, not only scores, and log which rule changed which position. For a learning path, prerequisite fit may be a hard rule while topic variety is a soft one.
+
+If multiple candidate sources produce the same item, preserve all source attributions. The item can be useful because it matches both content and collaborative signals. A ranker can learn from those signals, but source attribution can also leak a previous policy or become unavailable after a source is retired. Version source definitions. A source-level ablation can then show whether a route genuinely adds unique relevant items or merely duplicates items already retrieved by another route.
 
 Write a stage contract: catalogue and eligibility snapshot, retrieval sources and cutoffs, index version, ranker input and output, reranking policy, final display positions and log schema. Define separate service-level budgets. Retrieval should be broad enough to preserve high-value items, while ranking must fit the latency budget of the chosen cutoff. Test the complete pipeline because a strong tower evaluated in isolation may degrade when its index is stale or when the ranker was trained on a different candidate mixture.
 

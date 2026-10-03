@@ -18,7 +18,7 @@ Imagine a matrix whose rows are users and columns are items. Its entries are rat
 
 **Matrix factorisation** compresses the matrix. Instead of storing an independent prediction for every user-item pair, learn a short vector for each user and each item. Their dot product becomes a compatibility score. The dimensions are latent: a dimension may correlate with a topic or style, but its numerical axis is not guaranteed to have a clean human label. A low-dimensional model shares statistical strength across interactions, yet a new user or item has no reliable learned vector until there is evidence or a feature-based way to construct one.
 
-<Infographic src="/img/recsys/matrix-factors.svg" alt="A sparse user-by-item matrix is represented by short user and item factor vectors; user (1,1) scores item A (2,1) as 3 and item B (0,2) as 2." caption="Factor scores are dot products; learning those factors requires an objective and feedback policy." />
+<Infographic src="/img/recsys/matrix-factors.svg" alt="Four cards explain a sparse interaction matrix, hand-set factor vectors with scores three and two, a training objective, and a cold-start fallback." caption="Factor scores are dot products; learning those factors requires an objective and feedback policy." />
 
 ## How it works
 
@@ -79,6 +79,34 @@ print('weighted neighbour rating:', round(prediction, 2))
 This reproduces the introductory Information Retrieval chapter's 4.43 rating, linking the neighbour method to the factor method without treating them as the same algorithm.
 
 ## Designing with it
+
+### Work through an explicit-rating case
+
+Imagine three users and three films. The first two users have both rated films A and B, while only the second has rated C. A user-neighbour method compares their common ratings, then uses the second user's C rating to estimate the first user's reaction. If the users use the rating scale differently, raw cosine or an uncentred weighted mean can mislead. One user may reserve five stars for rare favourites while another gives five stars to most acceptable films. Centring by user mean and shrinking similarities with little overlap are practical corrections. They do not remove selection bias: users rated the films they chose to watch, not a random sample of the catalogue.
+
+An item-neighbour method reverses the view. If films A and C receive similar ratings from enough shared users, C can be suggested to someone who liked A. This relationship can be cached and explained as “people who liked A also liked C,” but it may be driven by popularity or a shared promotion rather than intrinsic similarity. A new film has few co-ratings, so content and editorial metadata remain useful. A hybrid candidate pool lets the ranker choose between an established interaction match and a fresh content match.
+
+### Work through an implicit-confidence case
+
+For an implicit matrix, suppose a user watched item A twice and never encountered item B. With $\alpha=2$, A has preference one and confidence five, while B has preference zero and confidence one under the simplified construction. The optimisation penalises an error on A more strongly, but B still contributes a low-confidence term. If B was shown many times and explicitly dismissed, it should probably be represented differently from a never-shown B. The simple count scheme cannot express that distinction by itself. Add event type and exposure information, or use a loss designed for the actual recommendation task.
+
+Weighted alternating least squares exploits the factor structure to update all user vectors while holding item vectors fixed, then all item vectors while holding users fixed. This is a training strategy, not a guarantee that the final ranking serves the product objective. Choice of factor dimension controls capacity: too few dimensions can miss distinct tastes, while too many can memorise sparse events. Regularisation, confidence weight and dimension interact, so select them on chronological held-out ranking quality, not only reconstruction loss. A model can reconstruct frequent interactions very well and still be poor at discovering new items.
+
+### Check geometry at serving time
+
+Suppose user vector $(1,1)$ scores A $(2,1)$ as three and B $(0,2)$ as two. If A's vector is doubled, its dot score doubles even though its direction stays the same. This illustrates how norm can encode frequency or confidence as well as direction. A cosine search would change that relationship. If the retrieval index uses cosine but the model was trained and assessed with raw dot products, the served candidate order may differ. Record the similarity function and any normalisation at training, offline evaluation and serving. A vector index is not a neutral storage detail.
+
+User factors can also become stale. A learner who recently switched from introductory maths to computer vision may be represented by a months-old average preference. Weighting recent interactions, using a session encoder or blending a current-item query with the long-term factor can help. Each creates a new evaluation task: does the system adapt to short-term intent without forgetting stable interests or overreacting to one accidental click? Segment results by history length and recency. New users need a fallback before any factor exists.
+
+### Distinguish predictions from explanations
+
+Latent dimensions are not reliably named concepts. Rotating all vectors in a factorisation can preserve dot products while changing each coordinate. A claim such as “factor two means science fiction” may be tempting after inspecting a few high-scoring items, but it is unstable across retraining and may be wrong for individual users. If a product needs explanations, use verifiable item attributes or a separately tested explanation layer. Also avoid saying a high factor score means a person will enjoy an item with certainty. It is a ranking signal conditioned on incomplete historical data and the previous exposure policy.
+
+### Set a maintenance threshold
+
+Compare the factor model with a content baseline, a popularity baseline and the existing production policy. Report candidate recall, final-slate quality, new-item exposure, latency and resource cost. If factorisation wins only on established users while content handles new items, a hybrid route is justified. If the gain is tiny and the embedding refresh system is fragile, a simpler model may be the better service. Write down the failure fallback and index-version policy before launch so an out-of-date vector does not silently produce plausible but degraded recommendations.
+
+Keep the score's meaning explicit in that comparison: a factor dot product is a ranking signal until calibration and the exposure conditions behind its training labels have been examined.
 
 Start with the feedback type and serving role. If the task is explicit rating prediction for existing users and items, evaluate rating error and downstream list quality separately. If the task is implicit top-$K$ retrieval, do not use rating RMSE as the only success measure. Compare a factor model with popularity, content and neighbour baselines. Use chronological holdouts and remove already consumed or unavailable items before computing displayed-list metrics. Record the full candidate catalogue at the evaluation origin.
 

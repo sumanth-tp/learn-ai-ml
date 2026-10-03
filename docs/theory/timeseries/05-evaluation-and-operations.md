@@ -18,7 +18,7 @@ Forecasting evaluation is a replay of decisions made at past origins. At each or
 
 Point accuracy is only one dimension. Inventory planning may care more about underestimation, capacity planning may need a high quantile, and anomaly detection asks whether an observed value is unusual under an expected range. Production adds latency, missing-feature handling, retraining cadence, incident response and auditability. An evaluation report should make those choices explicit rather than compress everything into one leaderboard number.
 
-<Infographic src="/img/timeseries/forecast-evaluation.svg" alt="Rolling forecast origins feed error calculation; a test absolute error of one divided by a training naive scale of five thirds gives MASE 0.6, while an illustrative interval from 11 to 15 is shown separately." caption="Scaled point error and interval coverage answer different questions." />
+<Infographic src="/img/timeseries/forecast-evaluation.svg" alt="Four cards describe rolling origins, training naive scale five-thirds and MASE 0.6, an illustrative interval from 11 to 15, and production feedback monitoring." caption="Scaled point error and interval coverage answer different questions." />
 
 ## How it works
 
@@ -87,6 +87,28 @@ print('mean interval width:', mean_width)
 This tiny synthetic sample has coverage one and width four. Four examples cannot establish calibrated coverage. In a real report, use many held-out origins and show uncertainty in the coverage estimate, separated by horizon and important segments.
 
 ## Designing with it
+
+### Aggregate errors without hiding weak groups
+
+Suppose a forecast service covers one high-volume product and hundreds of slow-moving ones. A pooled MAE weighted by observations may be dominated by the popular product. An unweighted mean of per-product MASE values gives rare products a stronger voice, but becomes unstable where the training scale is near zero. Report several views: total decision-weighted cost, per-series median and tail, and slices by volume and age. Explain which view is primary. A metric's denominator is part of the claim, and changing the set of eligible series between model versions can produce an apparent improvement without any better predictions.
+
+Hierarchical forecasts add coherence. If store-level predictions sum to 120 but the region-level forecast says 110, an operator cannot use both without a reconciliation rule. Evaluate at the level where decisions occur and at the aggregate levels needed for planning. Reconciliation can improve coherence while slightly worsening one level's point error. Show that trade-off explicitly. For a service forecasting multiple related series, include both per-series error and error on the summed total; correlated mistakes can make the total much less reliable than the individual results suggest.
+
+### Use intervals to make decisions
+
+An interval can help choose a safety buffer. If a planner orders to cover a high demand quantile, the exact cost of overstock and understock determines which quantile is useful. A nominal 90% interval is not a safety policy by itself. The 5th and 95th percentiles may be too wide, too narrow or asymmetric relative to the decision cost. Backtest the complete policy: forecast distribution, chosen order quantity, realised demand, waste and stockouts. If only sales are observed after a stockout, demand is censored, so the outcome data may understate missed demand. Record stockouts and avoid claiming a cost improvement from an incomplete label.
+
+Anomaly alerts also need a decision threshold. A threshold can be set on a scaled residual, a predictive tail probability or an empirical calibration set. Then measure how many alerts operators can inspect and how often they lead to action. Repeated alerts from one broken sensor should be grouped, while a new serious event should not be suppressed by a broad deduplication rule. Include a path for human feedback that distinguishes true event, data incident and expected planned change. This feedback can improve future labels without automatically treating every dismissed alert as a negative training example.
+
+### Separate model drift from system drift
+
+When errors rise, first verify data arrival and feature lineage. A delayed inventory feed can make an otherwise unchanged model fail; a changed product taxonomy can scramble group keys; a software update can shift a timezone boundary. Monitor these alongside statistical residuals. If inputs are sound, inspect whether the relationship between covariates and target changed, whether new products dominate traffic, and whether a policy intervention changed demand. Retraining on more recent data can help some shifts and worsen others. A rollback, fallback baseline or feature repair may be the correct immediate action.
+
+Keep a forecast ledger with origin, horizon, entity, data snapshot, feature publication times, model and calibration versions, prediction, interval and later outcome. This record supports matched comparisons and incidents. It also prevents retrospective data corrections from rewriting what the service actually knew. A backtest generated from today's cleaned dataset is useful for development, but the stored production ledger is stronger evidence about real decision quality once enough outcomes mature. Make label maturity visible so a daily dashboard does not compare a seven-day horizon before seven days have passed.
+
+### A release criterion
+
+A candidate model should beat an appropriate baseline on the primary outcome across enough origins to cover expected cycles, meet interval or risk requirements, and stay within cost and latency limits. Its worst important slices should be reviewed, not silently averaged away. Before release, test missing-feature fallbacks and a replay of known difficult days. After release, monitor both forecast quality and system health and define a rollback trigger. This is a practical definition of a finished forecast: a traceable decision process that continues to work when data arrive late or the world changes.
 
 Before modelling, write down a primary metric, guardrail metrics, baselines, horizons and slices. Specify how zero targets, missing outcomes, censored sales and changed entity identifiers are handled. A stockout can make observed sales lower than unconstrained demand, so scoring against sales may reward a model for missing demand. If the forecast drives an intervention, record that intervention; otherwise a feedback loop can make later labels hard to interpret. Keep raw predictions as well as rounded or clipped decisions so model error can be separated from postprocessing.
 

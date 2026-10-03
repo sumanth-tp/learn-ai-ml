@@ -93,6 +93,28 @@ This prints `['A', 'C']` and two topics. It only verifies the deterministic rera
 
 ## Designing with it
 
+### Interpret metrics through the logged opportunity set
+
+Suppose a new ranker raises Recall@10 on held-out clicks. Ask which items were eligible and exposed when those clicks were recorded. If the metric treats every unclicked catalogue item as irrelevant, it may favour popular, often-exposed items and punish novel ones that never had an opportunity. A temporal split prevents future interactions from leaking into training, but it does not solve exposure bias. At minimum, report the candidate pool, displayed positions and label construction. When a controlled exploration policy provides known selection probabilities, off-policy estimators may help, but they can become unstable when some actions had tiny probability or were never taken. An online experiment remains the clearer test of an intended product change.
+
+List metrics also need a relevance horizon. For a course, clicking a lesson today is immediate while completing it may take days. A seven-day completion label cannot be evaluated on requests from yesterday. If unfinished recent requests are treated as failures, a model that sends learners to longer, more valuable lessons may look worse. Mature the labels or model the delay explicitly. Report the number of evaluated requests and any exclusions. Likewise, a purchase can be reversed by a return, and a “no purchase” label may depend on inventory and price at the time of display.
+
+### A diversity example with real trade-offs
+
+The lab's A,B versus A,C example shows only category coverage. It deliberately leaves out how useful B and C are to an actual user. To evaluate a diversity bonus, record both immediate engagement and longer-term outcomes, perhaps repeat visits or exploration of new topics. Inspect whether the rule helps users whose histories are narrow, harms users with a specific task, or changes exposure for creators. A one-size-fits-all bonus can be too strong for a focused search-like surface and too weak for a discovery surface. The acceptable relevance loss should be agreed before tuning the bonus to online data.
+
+Topic metadata may be incomplete or manipulable. If a creator can choose a rare tag solely to receive a bonus, the diversity metric can rise without actual variety. Sample final slates for human review and compare semantic or editorial categories where appropriate. Distinct-item coverage across the catalogue is another signal: a model may show many topics but only the same few blockbuster items within each. Measure per-user variety, aggregate catalogue exposure and user value separately because one number cannot represent all three.
+
+### Design an experiment that survives feedback
+
+Randomisation unit matters. If the same user alternates between control and treatment across visits, their history is affected by both policies, making a clean comparison harder. Stable user assignment often suits a personalised surface; other products may need household, organisation or geographic assignment when users share content and influence one another. Predefine the primary outcome, guardrails and duration, and check that instrumentation records both variants consistently. If a new interface changes the number of visible tiles, normalise outcome metrics thoughtfully and report the actual exposure difference.
+
+Early results may be misleading because users explore a new list differently at first. Some benefits require several sessions; some harms, such as fatigue or repetitive content, accumulate. Measure the time scale of the claimed benefit. Do not infer long-term improvement from a short click-rate lift. Keep a holdback or periodic comparison where practical, and monitor after rollout because the training data for the next model version will be produced under the new policy. Version the policy and preserve experiment assignment in the data used for retraining.
+
+### Operate the whole slate pipeline
+
+An incident can come from any stage. An empty candidate list may be an index outage, a new user's missing features or an over-strict eligibility filter. A sudden collapse in long-tail exposure may come from an ANN index change even when the ranker is unchanged. A click spike can come from a layout change. Dashboard stage-level counts, filtered reasons, latency, index age, fallback rate and outcome metrics together. Sample request traces with consent and appropriate privacy controls. When a defect is found, the logs should let operators replay the candidate, ranker and reranker versions that produced the displayed slate.
+
 Define an evaluation card for each recommendation surface: request context, eligible universe, exposure logging, relevance label, label delay, offline split, baseline, list metrics, online primary metric and guardrails. Keep candidate, ranker and reranker versions in a single trace. When a metric moves, inspect stage-level coverage and the actual lists rather than changing the final score blindly. Check whether a data collection or layout change caused the movement.
 
 For an experiment, decide a minimum meaningful effect and an observation window before starting. Do not stop as soon as a noisy daily plot crosses a desired threshold. Segment analysis is useful for diagnosis, but many unplanned subgroup comparisons raise false-discovery risk. Preserve an overall primary decision rule and treat exploratory slices as hypotheses for follow-up. After rollout, maintain a holdback or periodic control where appropriate so the feedback loop does not erase the comparison.

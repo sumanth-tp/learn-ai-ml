@@ -18,7 +18,7 @@ Many supervised learning methods expect independent rows with named input column
 
 One-step prediction and multi-step prediction also differ. At an origin $o$, a direct horizon-two model can be trained to map information through $o$ to $y_{o+2}$. A recursive one-step model predicts $y_{o+1}$ and uses that prediction as an input for $y_{o+2}$. The recursive path may compound errors. A set of direct models avoids that feedback but costs more fitting and may ignore relationships between horizons. A multi-output model predicts the whole horizon together. Backtest the exact serving strategy, including whether future lags come from observed values or earlier forecasts.
 
-<Infographic src="/img/timeseries/lagged-learning.svg" alt="A forecasting row uses three earlier observations as lag and rolling features, keeps the current target hidden, and sends rows through chronological train and test windows." caption="A feature window must end before its target or before the forecast origin for longer horizons." />
+<Infographic src="/img/timeseries/lagged-learning.svg" alt="Four cards show the lag-one value 11, lag-two value 12 and prior-three mean 11, then describe tabular learning, direct or recursive horizons and rolling-window leakage." caption="A feature window must end before its target or before the forecast origin for longer horizons." />
 
 ## How it works
 
@@ -83,6 +83,30 @@ for row in rows:
 This prints three one-step rows, with origins two, three and four. A direct two-step design would need a different input boundary: the row targeting index five would have origin index three, and could not use value at index four. Keep origin and target explicit in code reviews.
 
 ## Designing with it
+
+### Trace a two-step example by hand
+
+Take the six-value series $[10,12,11,13,10,12]$. At origin index three, the latest observed target is 13. A direct two-step model predicts the value at index five, 12 in this synthetic history, using only information through index three. Lag one relative to the **origin** is 13 and lag two is 11. A careless row builder indexed by the target may call index four's value 10 “lag one” for index five. That value is future information at origin three. The model can learn from historical rows constructed with this error and score well in a backtest that repeats it, but it cannot receive that value at serving time. Naming variables `origin_index`, `target_index` and `horizon` prevents this ambiguity.
+
+A recursive method takes a different route. At origin three it predicts index four, then uses that *prediction* when predicting index five. If evaluation inserts the realised 10 at index four instead, it is teacher-forcing the second step and reporting an unrealistically easy result. A direct method needs separate training targets or a model that takes the horizon as an input. A multi-output method produces both target values together. Each method has a different data construction and error profile; compare them with the same origin and final target outcomes.
+
+### Make feature lineage executable
+
+A useful feature registry can record entity key, event timestamp, availability timestamp, source table, transformation, window length and missing-value policy. For a rolling seven-day mean, the registry should state whether a row at origin $o$ includes $y_o$ and whether that observation was already final at the issue time. A feature assertion can verify that the maximum availability timestamp in every row is no later than the origin. This should run on sampled historical rows and on serving requests. A human-readable feature name such as `last_week_sales` is insufficient evidence: a join might have read a revised record from a later snapshot.
+
+Groupwise operations are another quiet source of error. If rows for product A end just before rows for product B begin, a global `shift(1)` can give B the final sales of A. Sort by entity and time, then shift within each entity. Apply the same rule to rolling means, missingness indicators and target encoders. If a product changes identifier, decide whether that is a genuinely new series or a renamed continuation, and keep that mapping versioned. A mismatch between training and serving entity keys can produce plausible-looking but unrelated lags.
+
+### Choose transforms and loss deliberately
+
+Log or square-root target transforms can reduce the influence of very large values, but inverse-transforming a mean prediction does not generally produce the mean on the original scale. If the business evaluates units sold, compute metrics after inverse transformation and any clipping or rounding. Price, promotion and inventory features can be powerful, yet they can also change due to actions taken using earlier forecasts. A model that treats an inventory shortage as low demand may learn to forecast stockouts rather than customer demand. Decide whether the target is observed sales or unconstrained demand and document the difference.
+
+Feature importance from a tree can explain which columns helped the fitted model on its training distribution. It does not prove a causal effect or that a feature will remain useful after a policy change. Permutation importance on a time-aware validation set is more relevant than importance computed on training rows, but correlated lags can substitute for one another and make individual scores unstable. Use feature removal tests and error slices to decide whether a costly feature is worth its maintenance burden.
+
+### A production row is more than a vector
+
+At request time, produce both the model input and a trace of its provenance: entity, origin, horizon, feature timestamps, imputation flags and model version. If an upstream source is late, choose a documented fallback or refuse the prediction rather than silently mixing stale and fresh data. Store the final prediction before the outcome arrives. This trace makes a later backtest comparable with real serving and lets an operator distinguish a model miss from a feature incident. A well-instrumented simple tree can be more valuable than a tuned model whose inputs cannot be reconstructed.
+
+Audit the feature table at the longest horizon as well as the shortest. A feature that is safe one step ahead can become unavailable when the same column is reused for a week-ahead target.
 
 Define a feature contract that names source, timestamp, publication lag, imputation and aggregation for each column. Unit-test the contract with a tiny hand-labelled sequence before training. A test should deliberately alter a future value and confirm that earlier feature rows remain identical. It should also place two entities next to each other and confirm that a shift never crosses entities. These tests catch more consequential errors than a sophisticated model-tuning search.
 

@@ -18,7 +18,7 @@ A lagged tabular model sees a curated set of past values and covariates. A seque
 
 Pretraining changes the starting point. Rather than fit every target series from scratch, a model is trained over a broad collection of series and then applied or adapted to a new task. In a **zero-shot** use, the target series did not participate in task-specific fitting. The phrase says how the model is used, not how accurate or unbiased it will be for a particular organisation. Domain shift, unusual units, intermittent demand, new intervention policies and the required horizon can all change performance. A strong local baseline remains necessary.
 
-<Infographic src="/img/timeseries/pretrained-forecasts.svg" alt="Six observed values become three two-value context patches; an unseen two-step future patch remains masked while a separately labelled known-future covariate can be visible." caption="Target history, hidden future targets and genuinely known future inputs have different visibility rules." />
+<Infographic src="/img/timeseries/pretrained-forecasts.svg" alt="Four cards distinguish three observed two-value patches, two hidden future targets, known planned events and fair comparison of versioned pretrained models." caption="Target history, hidden future targets and genuinely known future inputs have different visibility rules." />
 
 ## How it works
 
@@ -82,6 +82,30 @@ for name, event_time, availability in features:
 The explicit labels are part of the example's premise. In a real system, calculate `safe` from recorded publication timestamps, not a hard-coded feature name. A weather forecast published at origin six could be valid, while realised weather at time eight is not.
 
 ## Designing with it
+
+### Compare model families on one held-out ledger
+
+Imagine a service forecasting the next seven days for thousands of shop-product pairs. A seasonal-naive baseline needs only a period and recent observations. A lagged tree may use prices, promotions and rolling sales. A pretrained sequence model may consume a context window and selected covariates. Each candidate must use the same origin timestamps, eligible products and final target definition. If the pretrained model sees a revised promotion plan while the tree sees the original plan, their scores are not comparable. If one produces daily forecasts and another a seven-day total, first align the output to the business decision. Store the raw forecast, interval or quantiles, latency and feature versions for every origin.
+
+Evaluation should separate existing products with long histories, recent products, intermittent products and newly launched products. A foundation model may help a cold-start group while losing on stable seasonal products, or the reverse. One average can hide that structure. Check performance at each lead day because a model that wins at day one may lose at day seven. If probabilistic output is needed, compare coverage and width at each horizon, not only point error. A model's advertised quantiles require calibration checks before they drive safety stock.
+
+### Adaptation has a cost and a boundary
+
+Zero-shot use is attractive when there is little local labelled history or limited training infrastructure. Fine-tuning adds local parameters or updates pretrained ones using the organisation's series. It can improve fit to local patterns, but it also consumes representative data and creates a versioned training process. Split local data so the adaptation procedure never sees final evaluation origins. Tuning context length, normalisation or covariate choices on the test period is still test leakage even if model weights are frozen. Keep a simple no-adaptation baseline and report the incremental gain from tuning.
+
+The choice between one global model and many local models affects operations. A single model can share information across sparse series and simplify deployment. It may also under-serve unusual high-value groups because training loss is dominated by common patterns. Per-series fitting can capture local behaviour but requires many updates, fallbacks and monitoring slices. Hybrid operation is reasonable: use one model as a baseline, route some groups to a specialised model when repeated backtests justify it, and maintain a safe fallback for failures. The routing rule itself must be fixed before final evaluation.
+
+### Covariate masks are a data contract
+
+A multivariate input can contain targets, historical covariates and known-future covariates. Keep a typed schema for each channel. For an energy forecast, realised temperature belongs to history, while the weather forecast available at the issue time can populate a future channel. For a retail forecast, an already published holiday calendar is known, while tomorrow's realised foot traffic is hidden. The model's ability to accept a “future covariate” does not make every future-dated database value valid. Store the publication timestamp and source version of each future input; test this contract with deliberately late data.
+
+Patching adds edge cases. If a context length is not divisible by patch width, the model may pad, truncate or use a shorter patch. If a horizon ends mid-patch, some outputs may be masked or discarded. A library's preprocessing convention must be reproduced exactly when comparing variants. Missing observations may receive a mask token, an imputed value or a skipped timestamp; these imply different information. Confirm whether the model expects a regular cadence, and do not resample irregular data without documenting the aggregation and its effect on targets.
+
+### Plan for deployment and audit
+
+Measure cold start and steady-state latency separately. Loading weights can dominate an occasional forecast request, while batched inference may make per-series cost small. Record memory, processor type, batch size and model version alongside accuracy. Review licence and data-handling requirements before placing private series in an external service. If a provider updates a model behind an endpoint, pin a version or keep a replayable validation set to detect changes. A pretrained model is part of an operational forecasting system; its failure modes include stale covariates, unavailable weights, format mismatches and uncertain outputs as well as statistical error.
+
+When a model returns several quantiles, verify that they are ordered for each horizon and that the requested quantiles are actually supported by that model version. A forecast API can expose similarly named outputs with different semantics, such as samples, quantiles or confidence intervals. Convert them only with a documented rule. For a business decision, test the resulting order or staffing policy on held-out outcomes, not merely the numerical forecast score.
 
 Begin with a dataset card: cadence, horizons, missingness, number of series, context limits, future covariate policy and latency budget. Choose a pretrained model only after confirming its licence and API constraints from its own documentation. Reproduce preprocessing and postprocessing exactly; a model score obtained with a different normalisation or data-frequency conversion is not an apples-to-apples comparison. Cache model weights and pin a version so a deployment can be reproduced.
 

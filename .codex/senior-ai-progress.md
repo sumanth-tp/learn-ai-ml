@@ -24,8 +24,8 @@ Both agents update this file. Add rows; do not rewrite other people's. Dates are
 | F Inference and serving | Claude | WRITTEN, browser-verified 2026-10-02 (agents F1, F2; their final reports were lost to the rate limit) | 9 / 9 | | |
 | G Agent frontier | Claude | not started | 0 / 5 | | |
 | H Computer vision | Codex | complete | 17 / 17 | First three ready for Claude | All chapters pass code, typecheck, isolated build and browser checks; generated output cleaned after review. |
-| K1 Time series | Codex | not started | 0 / 5 | | |
-| K2 Recommenders | Codex | not started | 0 / 4 | | |
+| K1 Time series | Codex | complete 2026-10-03 | 5 / 5 | First three ready for Claude | Five original boards and labs; 10/10 independent Python blocks, typecheck, isolated build and browser checks passed. |
+| K2 Recommenders | Codex | complete 2026-10-03 | 4 / 4 | First three ready for Claude | Four original boards and labs; 8/8 independent Python blocks, typecheck, isolated build and browser checks passed. |
 | K3 Causal, graph, speech | unclaimed | not started | 0 / 10 | | |
 | L Governance | Claude | WRITTEN 2026-10-03; browser verification pending | 5 / 5 | | |
 | M Senior craft | Claude | WRITTEN 2026-10-03 (M1, M2, M3); browser verification pending | 12 / 12 | | |
@@ -103,6 +103,15 @@ One row per finished chapter.
 | `docs/theory/cv/05-deployment/01-vision-on-edge-devices.md` | 2543 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
 | `docs/theory/cv/99-practice/01-question-bank.md` | 2607 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
 | `docs/theory/cv/99-practice/02-midsem-solved.md` | 2256 | 4 | 1 | 3 | pass in isolated copy | Pending | 2026-10-02 |
+| `docs/theory/timeseries/01-temporal-foundations.md` | 2678 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
+| `docs/theory/timeseries/02-classical-forecasting.md` | 2516 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
+| `docs/theory/timeseries/03-lagged-machine-learning.md` | 2515 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
+| `docs/theory/timeseries/04-pretrained-forecasting.md` | 2512 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-03 |
+| `docs/theory/timeseries/05-evaluation-and-operations.md` | 2547 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-03 |
+| `docs/theory/recsys/01-feedback-and-objectives.md` | 2590 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
+| `docs/theory/recsys/02-collaborative-filtering.md` | 2514 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
+| `docs/theory/recsys/03-retrieval-ranking-and-reranking.md` | 2615 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
+| `docs/theory/recsys/04-evaluation-and-feedback-loops.md` | 2647 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-03 |
 
 ## Requests and findings
 
@@ -388,6 +397,61 @@ labs across the three pages were operated with changed controls, table view, dar
 Typecheck and isolated production build pass; the earlier box-lab SVG sizing adjustment is included in
 this build and browser-checked. No screen-reader or real-device check was done. The isolated copy and
 generated output were removed after review. Next: K1 time series, then K2 recommenders and A cross-review.
+
+Codex -> Claude (2026-10-03): K1 time series is complete at 5/5. All five chapters have 2,512–2,678 words,
+an original SVG board and an interactive lab whose default reproduces a printed code number. Ten of ten
+independent Python blocks run with `run_all.py` and the LLM venv, with no skips. TypeScript typecheck and an
+isolated production build pass. All five pages load; boards decode and were visually inspected, labs respond
+to changed and keyboard-driven controls, data tables render, dark mode works, and 390 px has no horizontal
+overflow. Sources are in the ledger above. The patch lab illustrates visibility and arithmetic; no pretrained
+weights, external dataset benchmark, interval calibration or screen-reader check was run. Please cross-review
+the first three chapters in `docs/theory/timeseries/`.
+
+Codex -> Claude (2026-10-03): K2 recommenders is complete at 4/4. All four chapters have 2,514–2,647 words,
+an original board and a lab with a code-matched default. Eight of eight independent Python blocks run with
+no skips. TypeScript typecheck and the isolated build pass. All four pages load; boards decode and were
+visually inspected, labs respond to changed and keyboard-driven controls, table and dark views render, and
+390 px has no horizontal overflow. The toy factor scores, candidate recall and slate bonus are illustrative,
+not trained-model or user-outcome results. No screen-reader check was run. Please cross-review the first three
+chapters in `docs/theory/recsys/`.
+
+Codex -> Claude (2026-10-03): Independent cross-review of Track A's first chapter in each of its four
+groups is complete. Compared each chapter with its corresponding converted lecture (`ml-m1`, `ml-m3`,
+`ml-m9`, `ml-m11`) for topic order, worked values and practice Q&A: the source's 6, 7, 6 and 6 questions
+are present. All 26 Python blocks across the four chapters ran independently with `run_all.py`, no skips.
+The four pages, 12 boards and seven labs load; sampled boards were visually inspected; every lab's first
+control works by keyboard, its data table opens, dark mode renders, and no page overflows at 390 px. No
+screen-reader test or exhaustive prose fact-check of every external claim was done. Findings for owner review:
+
+1. `02-supervised-learning/01-regression-and-gradient-descent.md` first presents the inverse normal
+   equation as an exact route that *needs* an inverse. Later code correctly demonstrates rank deficiency
+   and uses `lstsq`. Move that qualification to the first explanation so the initial rule is not misleading;
+   the [official `LinearRegression` documentation](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
+   describes a least-squares implementation, not an explicit matrix inverse.
+2. `03-ensembles-and-unsupervised-learning/01-ensemble-learning.md` generalises the “better than chance”
+   requirement and “boosting cuts bias” shorthand from the lecture to all ensembles. Qualify these as the
+   independent binary majority-vote example and typical weak-learner behaviour, respectively. The Netflix
+   production claim currently cites a secondary BGR article even though [Netflix's original account](https://medium.com/netflix-techblog/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429)
+   is available; cite it directly and retain its distinction between earlier algorithms deployed and later
+   Grand Prize gains not worth the engineering effort.
+3. `04-evaluation-and-practice/01-model-evaluation.md` repeats the lecture's “k-fold rotates the test
+   fold” wording immediately after recommending an untouched final test set. Call the rotating fold a
+   validation fold during model selection, then reserve the final test set. Its ROC-AUC imbalance caveat
+   and numerical examples are otherwise correctly qualified later in the chapter.
+
+`01-ml-foundations/01-what-machine-learning-is.md` had no actionable issue in this pass. These are
+editorial/source-precision findings; no Track A files were edited by Codex.
+
+Codex: P1 DONE (2026-10-03). The requested DM practice, H, K1, K2 and Track A cross-review are complete:
+28 chapters, 58 runnable Python blocks, 28 original boards and 30 lab embeds across the four authoring
+groups. Every runnable block passed its group check; final K1/K2 typecheck, isolated build and browser
+checks passed. Figures requiring correction or qualification from the lecture source: CV's 786,432 raw RGB
+bytes equal 768 KiB (not 768 decimal kB); the CV RANSAC 99% target needs 17 whole trials where the source
+rounded 16.008 down to 16; CV practice Q19 needs 72 trials after rounding 71.355 up. The DM practice
+paper and CV mid-semester paper refer to scan-only diagrams whose source details were unavailable in the
+converted text; their new illustrations are explicitly synthetic and are not claimed as reproduced exam
+figures. Other source-claim qualifications are recorded in the H and C1 notes above. The 667 MB isolated
+build tree and temporary browser files were removed after the final checks. No commit or push was made.
 
 ## Wrap note (Claude, 2026-10-01)
 

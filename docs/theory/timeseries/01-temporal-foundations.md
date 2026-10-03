@@ -20,7 +20,7 @@ Write the observed value at time $t$ as $y_t$. A forecast issued after $t$ for $
 
 Three patterns often appear together. **Trend** is a sustained change in level, **seasonality** is a repeated pattern with a known or estimated period, and a **cycle** is a broader fluctuation without a fixed calendar period. These are descriptions of the data, not guarantees that a future period repeats. A weekly seasonal pattern can weaken after a product launch, a price change or a change in customer behaviour. Plotting the series with its timestamp, interval and missing observations is the first diagnostic step.
 
-<Infographic src="/img/timeseries/temporal-foundations.svg" alt="A chronological series is cut at a forecast origin, with earlier observations used for training and future observations held out; trend and repeating seasonal motion are shown separately." caption="Forecast inputs are defined by the origin, not by which columns happen to exist in a completed dataset." />
+<Infographic src="/img/timeseries/temporal-foundations.svg" alt="Four cards summarise time-series patterns, a cutoff after six observations, leakage prevention and why random shuffling changes the forecasting task." caption="Forecast inputs are defined by the origin, not by which columns happen to exist in a completed dataset." />
 
 ## How it works
 
@@ -86,6 +86,28 @@ for time, value in observations:
 This availability check is intentionally small. In a real feature pipeline, replace `time` with both event timestamp and publication timestamp, then reject rows whose publication timestamp is later than the origin. A feature derived from a future observation remains unavailable even if its output column has been materialised.
 
 ## Designing with it
+
+### Work backwards from a decision
+
+Suppose a shop places tomorrow's order at 18:00. The forecast target is tomorrow's units sold, and the origin is 18:00 today. A daily aggregate labelled “today's sales” may not be final until midnight, so it is not necessarily an allowed input. A system could use sales through 17:45, an estimate of the remaining quarter-hour and the version of the promotion schedule published before 18:00. Every one of those inputs needs a timestamp. If a backtest silently uses the midnight total, it has given the model information that the ordering clerk did not have. The correct comparison is a replay of 18:00 snapshots, even if that makes the historical dataset less tidy.
+
+Now change the decision to a warehouse order with a three-day lead time. The relevant target may be cumulative demand over the next three days, not only demand on day three. Summing three independent daily forecasts does not necessarily give a good interval for total demand because errors across days can be correlated. The warehouse may also care more about a high demand quantile than the mean. This illustrates why target definition, horizon and loss function should come from the decision before a feature list is assembled.
+
+### A split is a claim about deployment
+
+Consider two years of daily data. One final quarter can serve as the untouched test period. Earlier months can supply rolling validation origins spaced a week apart, each with a seven-day horizon. This arrangement tests several weekdays and some calendar variation. It still cannot prove resilience to a once-in-a-decade event. State what the historical period contains and what it does not. A validation result from only summer months is weak evidence about winter performance even if it includes thousands of rows.
+
+An expanding window assumes that old data remain useful; a sliding window assumes recent behaviour is more representative. A changing price regime or a redesigned product can favour the latter. A sparse annual seasonal pattern may favour retaining older years despite drift. Test the choice with matched origins. If the model is retrained each Monday, the backtest should not refit every day. Otherwise the test rewards an update frequency that the production service will not have. Include a model version and training cutoff in each stored forecast record.
+
+### Revisions and hierarchical series
+
+Operational targets are often revised. A dashboard may first report provisional daily transactions and later replace them after refunds or delayed ingestion. Decide whether the model predicts the provisional number visible the next morning or the final settled number used for planning. If it predicts the final number, backtesting should preserve the original provisional inputs and compare with final targets only after they mature. Joining all historical rows to today's corrected table can disguise both data latency and a target-definition change.
+
+Many series form hierarchies: item demand sums to category demand, and shops sum to regions. Separate models can produce totals that do not add up. Reconciliation can enforce consistency, but it may change the error at each level. Start by deciding which level drives the action, then report accuracy and coherence at that level. A category forecast can be accurate while missing individual products badly enough to cause stockouts. The right granularity is therefore part of the forecasting contract, not merely a chart setting.
+
+### A compact readiness review
+
+Before accepting a forecasting table, sample several rows and reconstruct their origins by hand. For each feature ask when its source event happened, when it was published, how it was aggregated and whether a correction could rewrite it later. Move one future target value and confirm that earlier feature rows stay unchanged. Check whether missing timestamps mean zero, closure or data loss. Then compute naive and seasonal-naive predictions on exactly the same origins as the proposed model. These checks are inexpensive and can prevent a sophisticated but invalid result from advancing to production.
 
 Start by writing a forecast contract in one sentence and auditing every input against it. Use a plot for each material group, not only the aggregate. Choose a horizon aligned with an actual decision, and make the validation period long enough to contain the relevant calendar cycles. For a weekly pattern, a two-day holdout cannot demonstrate weekly generalisation. For an annual pattern, one year of data supplies very little evidence about changes from one year to the next. The amount of history should follow the decision, cadence and stability of the process.
 

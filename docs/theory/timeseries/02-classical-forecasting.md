@@ -18,7 +18,7 @@ import SmoothingLab from '@site/src/components/viz/SmoothingLab';
 
 Begin with baselines. For a forecast issued after $T$, the mean method predicts the training mean, the naive method predicts $y_T$, a drift method extends the change between the first and last observations, and seasonal naive repeats the corresponding value from the previous season. Each gives a different claim about persistence. Compute each at the actual decision horizons before fitting a more elaborate model. A baseline is also a unit test: if a supposedly advanced model underperforms it, inspect leakage, horizon alignment, training windows and the business loss before adding complexity.
 
-<Infographic src="/img/timeseries/classical-forecasts.svg" alt="Classical forecasting compares a last-value baseline, recursively updated smoothing level, and ARIMA dependence across lags, with a separate seasonal repeat." caption="Choose the recurrence that matches the series and decision horizon." />
+<Infographic src="/img/timeseries/classical-forecasts.svg" alt="Four cards compare naive baselines, a smoothed level of 12, structured ETS and ARIMA models, and evaluation at matched forecast origins." caption="Choose the recurrence that matches the series and decision horizon." />
 
 ## How it works
 
@@ -80,6 +80,34 @@ print('actual:', series[origin:origin + 2])
 This prints naive `[13, 13]`, seasonal naive `[10, 12]`, and actual `[10, 12]`. The result illustrates why the correct season can matter; it is not a general performance claim.
 
 ## Designing with it
+
+### Build a model ladder on one contract
+
+Suppose an energy team must predict next-day hourly load from an 18:00 origin. First calculate last-hour, same-hour-yesterday and same-hour-last-week baselines. The 24-hour and 168-hour seasonal periods express different cycles; neither should be chosen just because it wins on a few convenient days. Evaluate several weeks of origins that include weekdays, weekends and unusual demand. If the team needs a 24-hour vector, record error at each lead hour as well as a total. A model can look good on average because it predicts overnight hours well while failing at the costly evening peak.
+
+Next, fit a simple smoothing model to each hour or a seasonal model to the full hourly series. Simple exponential smoothing produces one level, so its unchanged multi-step forecast is an intentionally weak competitor when daily and weekly patterns are strong. Holt-Winters or seasonal ETS adds components that can reflect a repeating cycle. Keep the training window and origin aligned with the baselines. If a new tariff starts during validation, a seasonal component learned under the old tariff may systematically miss the new load shape. Diagnose that change before searching more parameters.
+
+An ARIMA candidate asks a different question: after differencing and accounting for lags and errors, what dependence remains? The sample autocorrelation and seasonal structure can suggest small orders, but the final choice must survive rolling-origin comparison. A model with lower information criterion may not have the lowest peak-hour cost. Fit residual diagnostics on training data and inspect out-of-sample error by lead time. If residuals retain a weekly wave, the structure is incomplete; if only one holiday is badly wrong, an omitted calendar regressor or changed regime may be the issue.
+
+### Understand state, updates and intervals
+
+The smoothed level is a compact state of the past. At $\alpha=0$, it never updates after its initial value. At $\alpha=1$, it follows each newest observation and its next forecast becomes the last-value naive forecast. Between those extremes, the latest observation receives weight $\alpha$, the previous level receives $1-\alpha$, and older observations retain decaying influence. This explains both the stability and lag of a small alpha. The best alpha depends on the series and loss, and a value fitted on one regime can be unsuitable after a structural change.
+
+Adding trend and season creates more states and more initialisation choices. A seasonal method needs enough cycles to distinguish a recurring effect from noise. With only one observed Christmas, a model cannot know whether a spike is annual seasonality or an unusual event. Some software will still return parameters, which makes visual and backtest checks essential. An interval from an ETS or ARIMA model combines model assumptions with estimated residual variation. It is a distributional claim that must be checked on held-out origins; a wide interval is not automatically useful, and a narrow one can be dangerously overconfident.
+
+An intervention can break a recurrence. If a shop closes for renovation, the observed zeros during closure are real sales but may not describe demand after reopening. A local model trained through those zeros can drive its level down. Use an event flag, a shorter post-reopening training window or a fallback that borrows comparable products, depending on the decision. Record the reason for exclusions rather than deleting hard periods because they worsen a metric. If demand is censored by stockouts, a sales forecast and a demand forecast are different targets. No statistical order search repairs a misdefined target.
+
+### Know when a covariate helps
+
+A future calendar and a committed promotion plan can be valid SARIMAX inputs. A realised future competitor price, footfall or weather observation cannot. If an exogenous variable is itself forecast, use the historical forecast version in the backtest. Suppose a temperature forecast available on Monday predicts Wednesday poorly. Training a demand model with Wednesday's actual temperature and evaluating with that actual value measures an easier system than the one served on Monday. The production error includes both demand-model error and temperature-forecast error, and their effects may interact.
+
+An external variable can improve correlation without giving a causal estimate. A promotion may be scheduled for periods when planners already expect low demand, so its coefficient can look negative even when the promotion increases sales relative to what would otherwise happen. Forecasting with the plan can still be useful if the planning policy remains stable, but changing that policy invalidates the simple association. Use causal methods when the question is “what should we schedule?” rather than “what happens under the existing schedule?”
+
+### Compare systems, not fitted lines
+
+A fair result table should include each baseline and fitted model on identical origins, horizons, target units and missing-outcome rules. Include fit failures, fallback use, runtime and interval coverage. Report the median and difficult tail of error by series, not only a pooled mean. When a method wins by a small amount, ask whether the extra parameter tuning, per-series model management and incident burden are worth it. Classical methods are attractive partly because they are inspectable and cheap to retrain, but they still need versioned data and careful operations.
+
+Keep the original forecast issued at each origin. Recomputing it after revised data arrive would make the historical score look better than the decision the organisation actually made.
 
 Match the model to a specific forecast contract. For a stable nonseasonal level, start with naive and simple smoothing. For a changing level, test trend methods and check extrapolation. For a clear repeated cycle with several observations per season, compare seasonal naive, seasonal smoothing and a seasonal ARIMA candidate. When explanatory variables are required, version their availability and backtest with their historical forecasts. Use a fallback when fitting fails or a model is trained on too few cycles; the fallback should be specified before testing.
 

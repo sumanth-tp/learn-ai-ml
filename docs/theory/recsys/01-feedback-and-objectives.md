@@ -84,6 +84,28 @@ Item A and item C have the same click value but different exposure evidence. Eve
 
 ## Designing with it
 
+### An interaction is conditional on opportunity
+
+Consider three learners and one advanced lesson. Learner A saw it in the first position and clicked. Learner B saw it below the fold and did not click. Learner C never had the lesson in their candidate set. Encoding A as one and both B and C as zero discards the opportunity difference. B's non-click is weak evidence because the item may not have been noticed; C's zero is no evidence about reaction to that item. A clean log contains request context, candidate sources, eligible catalogue, shown slate, position, impression timestamp and later action. It also needs a consistent identity policy across devices and sessions so that duplicate views are not mistaken for several independent endorsements.
+
+The same behaviour can mean different things on different surfaces. Repeatedly opening a troubleshooting article may mean it is helpful or that it fails to solve the problem. Watching a tutorial to the end may reflect value, but a required training video can be completed without enthusiasm. Returning an item after purchase changes the interpretation of a purchase label. Choose a label in the context of the user's task, and inspect examples with domain experts before treating it as an objective truth. A more complex model trained on a poor label can optimise the wrong behaviour more efficiently.
+
+### Compare objectives on a concrete slate
+
+Suppose a course homepage can show two lessons. One short, sensational lesson is likely to get a click but rarely leads to completion. A foundational lesson gets fewer immediate clicks but helps learners finish a module. A click model may put the first lesson at the top; a completion model may choose the second. A blended score can represent a product trade-off, but the weights need evidence and ownership. Before experimenting, decide whether completion is the primary outcome and whether click rate is a diagnostic, or vice versa. The measured effect may also depend on learner stage: a new learner needs orientation while an experienced learner may value novelty.
+
+Hard constraints are different from score preferences. A lesson behind a paywall, in a language the user did not select, or requiring an unmet prerequisite may be ineligible even if its predicted click rate is high. Filter or enforce these constraints explicitly. A soft bonus for topic diversity can be tuned; a hard prerequisite should not be traded away because an engagement score is large. Record why an item was filtered so the system can explain a missing recommendation and operators can diagnose unexpected catalogue gaps.
+
+### Cold start is a measurement problem too
+
+A new item cannot collect interactions unless it is shown. A recommender that relies only on historic interaction counts may assign it no score and never show it, then infer from zero interactions that users do not want it. Content-based retrieval can place it in plausible candidate sets; a bounded exploration policy can provide initial exposure. Measure early-item performance by launch cohort and age, not only by all-time totals. Similarly, a new user fallback should be evaluated on actual first sessions rather than on existing users after their histories are artificially hidden, because first-session context and selection can differ.
+
+Popularity is an honest baseline if its limitations are stated. It often works well where many users share interests and labels are scarce. It can also create a feedback loop and a narrow catalogue. Compare it with personalised methods on the same eligible set, and report both immediate engagement and distribution of exposure. If personalisation's gain is small, its additional data collection, privacy cost and serving complexity may not be justified.
+
+### Preserve user agency
+
+An inferred profile should be revisable. A user may buy a gift, research a topic for work or change interests. A “not interested” control is a direct signal that deserves distinct handling, and a reset option can help where long histories trap users in old categories. Show enough context that a person understands why an item appears when the product supports explanation. These controls can improve both experience and data quality, but their events should be logged separately from passive non-clicks. Treating every absence of interaction as rejection undermines that distinction.
+
 Create an event dictionary before training. For each event specify how it is emitted, when it becomes available, what exposure it implies, what it does not imply and which user controls can reverse it. Define a label horizon: a click within ten minutes and a purchase within seven days are not interchangeable targets. De-duplicate bot or retry events, and audit whether the instrumentation changed during the training window. A model trained across a logging migration can mistake the migration for a change in preference.
 
 Separate user cold start, item cold start and both-new cases in evaluation. A random split of existing interactions rarely tests either case. Use a chronological split and a held-out entity slice where needed. Include an eligibility snapshot so a model is not penalised for failing to recommend an item that was unavailable. The evaluation chapter develops ranking metrics and exposure limitations in detail.
