@@ -11,7 +11,7 @@ import DocItemTOCMobile from '@theme/DocItem/TOC/Mobile';
 import DocVersionBadge from '@theme/DocVersionBadge';
 import DocVersionBanner from '@theme/DocVersionBanner';
 import type {Props} from '@theme/DocItem/Layout';
-import {useEffect, useState, type ReactNode} from 'react';
+import {useEffect, useRef, useState, type ReactNode} from 'react';
 
 import styles from './styles.module.css';
 
@@ -21,6 +21,7 @@ export default function DocItemLayout({children}: Props): ReactNode {
   const {frontMatter, metadata, toc} = useDoc();
   const windowSize = useWindowSize();
   const [tocCollapsed, setTocCollapsed] = useState(false);
+  const tocBodyRef = useRef<HTMLDivElement>(null);
 
   // Start with the same markup on the server and first client render.
   // Restore the reader's choice only after hydration.
@@ -34,6 +35,54 @@ export default function DocItemLayout({children}: Props): ReactNode {
 
   const canRenderTOC = !frontMatter.hide_table_of_contents && toc.length > 0;
   const desktopTOC = canRenderTOC && (windowSize === 'desktop' || windowSize === 'ssr');
+
+  useEffect(() => {
+    const container = tocBodyRef.current;
+    if (!container || !desktopTOC || tocCollapsed) return;
+
+    let lastActiveLink: HTMLAnchorElement | null = null;
+    let frame = 0;
+
+    const revealActiveLink = () => {
+      const activeLink = container.querySelector<HTMLAnchorElement>('.table-of-contents__link--active');
+      if (!activeLink || container.scrollHeight <= container.clientHeight) return;
+
+      const bounds = container.getBoundingClientRect();
+      const linkBounds = activeLink.getBoundingClientRect();
+      // Keep the section being read near the middle of the contents pane.
+      // Scroll this container directly so the article stays in place.
+      const target = container.scrollTop + linkBounds.top - bounds.top - container.clientTop
+        - (container.clientHeight - linkBounds.height) / 2;
+      const top = Math.max(0, Math.min(target, container.scrollHeight - container.clientHeight));
+
+      if (Math.abs(top - container.scrollTop) > 1) {
+        container.scrollTo({
+          top,
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        });
+      }
+    };
+
+    const scheduleReveal = (force = false) => {
+      const activeLink = container.querySelector<HTMLAnchorElement>('.table-of-contents__link--active');
+      if (!force && activeLink === lastActiveLink) return;
+      lastActiveLink = activeLink;
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(revealActiveLink);
+    };
+
+    const observer = new MutationObserver(() => scheduleReveal());
+    observer.observe(container, {subtree: true, attributes: true, attributeFilter: ['class'], childList: true});
+    const resizeObserver = new ResizeObserver(() => scheduleReveal(true));
+    resizeObserver.observe(container);
+    scheduleReveal(true);
+
+    return () => {
+      observer.disconnect();
+      resizeObserver.disconnect();
+      window.cancelAnimationFrame(frame);
+    };
+  }, [desktopTOC, tocCollapsed, metadata.permalink]);
 
   function toggleTOC() {
     const next = !tocCollapsed;
@@ -85,7 +134,7 @@ export default function DocItemLayout({children}: Props): ReactNode {
                 <span>{tocCollapsed ? 'Show contents' : 'Collapse'}</span>
               </button>
             </div>
-            <div id="doc-right-contents" className={styles.tocBody} hidden={tocCollapsed}>
+            <div id="doc-right-contents" ref={tocBodyRef} className={styles.tocBody} hidden={tocCollapsed}>
               {!tocCollapsed && <DocItemTOCDesktop />}
             </div>
           </div>
