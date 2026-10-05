@@ -272,6 +272,21 @@ for message in response["messages"]:
 
 `pretty_print()` shows the whole conversation: your message, the model's tool request, the tool result and the final answer. The second loop prints only the tool requests, for example `duckduckgo_search {'query': 'ways to reach Goa from Delhi'}`.
 
+The old `agent_scratchpad` was a text log of Action and Observation steps. The message list now holds the same information, and you can print it in that shape:
+
+```python
+for message in response["messages"]:
+    if message.type == "ai" and message.tool_calls:
+        for call in message.tool_calls:
+            print(f"Action: {call['name']}({call['args']})")
+    elif message.type == "tool":
+        print(f"Observation: {message.content[:200]}")
+    elif message.type == "ai":
+        print(f"Final Answer: {message.content}")
+```
+
+There is no `Thought:` line to print. The model's reasoning isn't exposed as text unless you use a model and setting that return reasoning content.
+
 :::tip Put a ceiling on the loop
 An agent keeps looping while the model keeps requesting tools. While experimenting, cap the number of graph steps so a confused run cannot spin for long:
 
