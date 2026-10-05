@@ -47,7 +47,7 @@ flowchart TD
 
 ### Train / validation / test & cross-validation
 
-Fit on **train**, tune on **validation**, report on an untouched **test** set. When data is scarce, **k-fold CV** rotates the test fold and averages for a stable estimate.
+Fit on **train**, tune on **validation**, report on an untouched **test** set. When data is scarce, **k-fold CV** rotates which fold is held back for validation during model selection and averages for a stable estimate; the untouched test set is still reserved for the final report.
 
 :::tip
 
@@ -529,7 +529,7 @@ Training performance can reflect memorisation, not generalisation. A held-out te
 <details>
 <summary><strong>Q2.</strong> What is k-fold cross-validation and why use it?</summary>
 
-Split into k folds, train on k−1 and test on the held-out fold, rotating so each fold is tested once, then average. It gives a more stable estimate and uses all data for both roles.<br /><em>Module 11 · conceptual</em>
+Split into k folds, train on k−1 and score on the held-out validation fold, rotating so each fold is held out once, then average. It gives a more stable estimate and uses all data for both roles. The final test set stays untouched until the very end.<br /><em>Module 11 · conceptual</em>
 
 </details>
 

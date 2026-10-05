@@ -22,7 +22,7 @@ Picture three forecasters who each call tomorrow's weather correctly 70% of the 
 
 Two conditions make this work, and both matter:
 
-- **Better than chance.** A voter that is right less than half the time drags the vote the wrong way as you add more of them.
+- **Better than chance.** In the independent majority-vote example below, a voter that is right less than half the time drags the vote the wrong way as you add more of them. Boosting asks for less: each weak learner need only beat chance on the reweighted data it is given.
 - **Diverse errors.** The voters must disagree somewhere. Identical copies of one model add cost and nothing else.
 
 Everything in this chapter is a different answer to one question: *how do I get models that are individually decent but make different mistakes?*
@@ -30,7 +30,7 @@ Everything in this chapter is a different answer to one question: *how do I get 
 | Family | How diversity is created | Training | What it mainly reduces |
 | --- | --- | --- | --- |
 | **Bagging** (and random forests) | each model sees a different bootstrap resample of the rows | in parallel, independently | variance |
-| **Boosting** (AdaBoost) | each model is told to concentrate on what the previous ones got wrong | one after another | bias |
+| **Boosting** (AdaBoost) | each model is told to concentrate on what the previous ones got wrong | one after another | bias, typically |
 | **Stacking** | the models are of different kinds (tree, SVM, k-NN) and a meta-learner learns how to weight them | base models first, then the blender | a bit of both, by exploiting different strengths |
 
 The deeper link is the bias-variance trade-off from the earlier chapters. A deep tree has low bias and high variance: fit it on two different samples and you get two quite different trees. Averaging many such trees leaves the bias alone and shrinks the variance. A decision stump (one split) has the opposite problem: stable but too simple. Boosting stacks many of them so that each one repairs the previous residue, and the bias falls. Knowing which problem you have tells you which family to reach for.
@@ -73,7 +73,7 @@ This is the vote calculator lab in the code section below: set each model's accu
 ### Bagging vs Boosting
 
 - **Bagging (parallel)**: Train each model on a **bootstrap resample**; average/vote. Cuts **variance**. **Random Forest** = bagged trees + random feature subsets to decorrelate them.
-- **Boosting (sequential)**: Each model focuses on the previous one's mistakes. Cuts **bias**. **AdaBoost** up-weights misclassified points and weights each learner by α.
+- **Boosting (sequential)**: Each model focuses on the previous one's mistakes. With the usual weak learners (stumps and shallow trees) it cuts **bias**; it can also overfit noisy labels. **AdaBoost** up-weights misclassified points and weights each learner by α.
 
 :::tip
 
@@ -99,7 +99,7 @@ Train a **meta-learner** on top of several *different* base models (tree + SVM +
 
 ## A real system that works this way
 
-**The Netflix Prize** is the textbook case of both the power and the price of ensembling. The competition's winning solutions were large blends of many different predictors, which is exactly stacking and averaging at scale. Netflix's own write-up of the outcome, reproduced in press coverage, said that it evaluated some of the new methods offline but that the additional accuracy gains did not seem to justify the engineering effort needed to bring them into a production environment. The lesson is practical rather than theoretical: a blend that wins a leaderboard by a small margin can still lose to a simpler model once you count serving cost, maintenance and the next change in the business.
+**The Netflix Prize** is the textbook case of both the power and the price of ensembling. The grand-prize solution blended hundreds of predictive models, which is stacking and averaging at scale. Netflix's own account of the outcome says two things. Two of the strongest algorithms from the earlier progress prizes, a matrix factorisation and a restricted Boltzmann machine, were adapted and put into production, where a linear blend of them cut the error on the competition data from 0.8914 and 0.8990 to 0.88. The final grand-prize ensemble was evaluated offline, but its extra accuracy gains "did not seem to justify the engineering effort needed to bring them into a production environment". The lesson is practical rather than theoretical: a blend that wins a leaderboard by a small margin can still lose to a simpler model once you count serving cost, maintenance and the next change in the business.
 
 The everyday version of the same pattern is the **random forest**, a common default for tabular problems: hundreds of trees, each trained on a different resample, voting. It is popular precisely because it needs almost no tuning to be useful, and you can read an honest out-of-bag error from it without holding any data back.
 
@@ -446,7 +446,7 @@ It trains a meta-learner to combine several different base models' predictions, 
 - [Breiman, "Bagging predictors" (Machine Learning, 1996)](https://doi.org/10.1007/BF00058655): the bootstrap-and-aggregate idea in its original form.
 - [Freund and Schapire, "A Decision-Theoretic Generalization of On-Line Learning and an Application to Boosting" (JCSS, 1997)](https://doi.org/10.1006/jcss.1997.1504): the AdaBoost paper.
 - [An Introduction to Statistical Learning (ISLP)](https://www.statlearning.com/): the tree-based methods chapter covers bagging, forests and boosting with worked labs.
-- [Why Netflix paid \$1 million for a recommendation algorithm it never used (BGR, quoting Netflix's own post)](https://bgr.com/2012/04/13/netflix-paid-1-million-for-a-recommendation-algorithm-it-never-used): the engineering-cost lesson quoted above.
+- [Netflix Technology Blog: Netflix Recommendations, Beyond the 5 Stars (Part 1)](https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429): Netflix's own account of what went into production and why the grand-prize ensemble did not. The page blocks automated fetching; it was read through a reader proxy on 5 October 2026.
 - Built from the course lecture "ml-m9-ensemble" (Lecture Library series).
 
 - **[An Introduction to Statistical Learning](https://www.statlearning.com/)** `book`

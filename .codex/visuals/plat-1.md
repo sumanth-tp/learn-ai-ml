@@ -57,3 +57,35 @@ the same closed-form formula or by an embedded, rounded constant.
 - Default result: "Plan: 2 to add, 1 to change, 1 to destroy." with bucket.artifacts replaced, endpoint.ranker changed (three
   attributes) and alarm.latency added. Drift on and everything else at the state's values gives "Plan: 0 to add, 1 to change,
   0 to destroy." (cluster.gpu node_count 4 to 2); with ignore_changes also on it gives "No changes.".
+
+## PlatformChooserLab (chapter 04)
+
+- Data: the capability matrix printed by chapter block 2: 14 capabilities by 5 platforms (SageMaker AI, Vertex (Agent
+  Platform), Azure ML, Bedrock, Foundry). A cell holds the key of the official documentation page that supports it, or nothing
+  when the page read did not show it ("not found on the pages read", never "not offered"). The matrix is generated from the
+  Python block into the TypeScript file so the two cannot drift.
+- Controls: scenario select ("classical ML team", "GenAI application team", "fine-tune and serve", "custom"; default classical
+  ML team) and one native checkbox per capability. Changing a checkbox switches the scenario to "custom".
+- Drawn: one horizontal bar per platform showing how many of the required capabilities have a source, labelled "k of n", sorted
+  by count then name; under each bar the capabilities not found on the pages read.
+- Table: capability by platform, with the source key or "not found".
+- Default result: classical ML team (7 required): Azure ML 7 of 7, SageMaker AI 7 of 7, Vertex (Agent Platform) 7 of 7,
+  Bedrock 2 of 7, Foundry 1 of 7. GenAI application team: Bedrock 6 of 6, Foundry 4, Vertex 4, Azure ML 3, SageMaker AI 3.
+  Fine-tune and serve: Azure ML 4, SageMaker AI 4, Vertex 3, Bedrock 2, Foundry 2. These equal the block 2 output.
+
+## BatchWindowLab (chapter 05)
+
+- Controls: rows per night (select 5 million, 20 million, 50 million, 200 million; default 50 million); rows per second per
+  worker (select 500, 2,000, 10,000; default 2,000; labelled an assumed rate, the reader replaces it with a measured one);
+  workers (range 1 to 32, default 4); batch window in hours (range 1 to 12, step 0.5, default 2); share of the rows held by the
+  largest partition (range 0 to 0.60, step 0.05, default 0.30); chunk size (select none, 20 million, 5 million, 1 million;
+  default none).
+- Formula: makespan = max(rows / (rate x workers), min(share x rows, chunk) / rate), in seconds, with the chunk limit ignored
+  when "none". Workers needed with a perfect split = ceil(rows / (rate x window)).
+- Drawn: makespan in hours against the number of workers 1 to 32 (a falling curve that flattens at the largest partition's
+  time), the window as a dashed horizontal line, the chosen worker count marked; status line with makespan, fits or not,
+  workers needed, and utilisation (perfect-split time divided by makespan).
+- Table: workers 1, 2, 4, 8, 16, 32 against makespan as partitioned and chunked at 5 million rows.
+- Default result: 50 million rows, 2,000 rows/s/worker, 4 workers, 2 h window, share 0.30, no chunk: makespan 2.08 h, does not
+  fit, 4 workers needed with a perfect split, utilisation 83%. With the 5 million chunk: 1.74 h, fits. 8 workers unchunked
+  stays at 2.08 h. Chapter block 3 prints these.

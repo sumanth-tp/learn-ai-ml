@@ -21,7 +21,7 @@ A regression model predicts a number. The simplest kind multiplies each input by
 
 There are two ways to find the bottom of a bowl.
 
-- **Solve for it.** The bowl is a quadratic, so calculus hands you the bottom in one formula, the *normal equation*. It is exact, but it needs a matrix inverse, which becomes expensive when there are many features.
+- **Solve for it.** The bowl is a quadratic, so calculus hands you the bottom in one formula, the *normal equation*. It is exact on a healthy problem, and the textbook form of it uses a matrix inverse, which becomes expensive when there are many features and breaks when two features are copies of each other. Libraries solve the same least-squares problem with a more stable factorisation instead of forming that inverse, as block 2 shows.
 - **Walk down it.** Stand somewhere on the bowl, feel which way is downhill, take a step, repeat. That is *gradient descent*. Picture a hiker in thick fog on a hillside. She cannot see the valley, but she can feel the slope under her boots, so she steps downhill and checks again. The length of her stride is the **learning rate**: too timid and she is still walking at nightfall, too bold and she leaps across the valley floor and lands higher on the far slope than where she started.
 
 Gradient descent matters far beyond straight lines. Swap the single bowl for a bumpy landscape with millions of weights and the very same loop trains a neural network. Regression is where you meet it in a form small enough to compute by hand, and the next two chapters (classification, then trees) reuse the vocabulary you learn here: a model, a cost, and a rule for lowering the cost.
@@ -48,7 +48,7 @@ Gradient descent matters far beyond straight lines. Swap the single bowl for a b
 
 :::tip
 
-**Trade-off.** The (XᵀX)⁻¹ inverse costs O(d³), so it's impractical with very many features, where gradient descent wins.
+**Trade-off.** The (XᵀX)⁻¹ inverse costs O(d³), so it's impractical with very many features, where gradient descent wins. In practice, numerical libraries do not form the inverse at all: they solve the same problem with a QR or SVD factorisation.
 
 :::
 
