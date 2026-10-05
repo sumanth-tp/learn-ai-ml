@@ -727,9 +727,20 @@ html body div[class*="announcementBarClose_"] {
   opacity: 0.85;
 }
 
-/* Back-to-top button */
-.theme-back-to-top-button {
+/* Place back-to-top beside the AI launcher, below the chat panel. */
+body .theme-back-to-top-button {
+  left: auto;
+  right: calc(9rem + env(safe-area-inset-right, 0px));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: calc(var(--ifm-z-index-fixed) + 6);
   box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 600px) {
+  body .theme-back-to-top-button {
+    right: calc(8.75rem + env(safe-area-inset-right, 0px));
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* Scrollbars */
