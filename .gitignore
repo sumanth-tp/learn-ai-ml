@@ -5,7 +5,7 @@
 /build
 
 # Generated files
-.docusaurus
+.docusaurus*
 .docusaurus-build
 .cache-loader
 

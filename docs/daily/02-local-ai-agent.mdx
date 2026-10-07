@@ -1,0 +1,588 @@
+---
+id: local-ai-agent
+title: "Build a Local AI Agent in 10 Minutes using Python"
+sidebar_label: "2 · Local AI agent"
+sidebar_position: 2
+slug: /daily/local-ai-agent
+description: "Build a local Python assistant with Ollama and Pydantic AI: install a model, connect the server, define four tools, keep conversation history and save notes."
+tags: [daily, python, ollama, pydantic-ai, agents, tool-calling]
+---
+
+import Infographic from '@site/src/components/Infographic';
+
+> **Source:** [Tech With Tim: Build a Local AI Agent in 10 Minutes using Python](https://www.youtube.com/watch?v=ByWCsa8DbF8).
+
+**In one line.** Build a terminal assistant that runs a model locally and uses Python tools to calculate, tell the time and save or read notes.
+
+:::tip Before you start
+
+You should know how to:
+
+- run Python and define a function with arguments and a return value;
+- download a model and start Ollama ([Ollama and local LLMs](/docs/genai/ollama));
+- explain what a tool gives a language model ([tools](/docs/genai/tools)).
+
+**Time:** about 25 minutes to read and assemble the script. The first model download can take longer.
+
+**After this chapter you can** connect Python to Ollama, expose four functions as tools, and distinguish conversation history from saved files.
+:::
+
+## In 30 seconds
+
+Imagine asking an assistant, “Save a note that says hello world, Tim.” A chat model can write a reply, but your Python programme must actually write the file. The agent connects the model to that function, runs it when requested and gives the result back to the model. Ollama hosts the model on your computer; Pydantic AI manages the conversation and tool calls. Think of the model as choosing the action and Python as carrying it out.
+
+## Words you will meet
+
+| Term | Plain meaning | Tiny example |
+| --- | --- | --- |
+| Model | The trained network that generates messages and chooses tools | `qwen3.5:2b` |
+| Inference | Running the trained model to produce an answer | Sending “hello” to the model |
+| Provider | The connection settings used to reach a model service | `OllamaProvider` with a local URL |
+| Agent | A model connected to instructions and tools | An assistant with a calculator and note tools |
+| Tool | A function the application can execute for the model | `save_note(note)` |
+| Tool schema | A description of a tool's name and expected arguments | `note` must be a string |
+| Message history | Earlier user, model and tool messages passed into the next request | The previous question and its answer |
+| VRAM | Memory on a graphics card | Space used by model weights on a dedicated GPU |
+| Unified memory | Memory shared by the CPU and GPU on some machines | Memory used by an Apple Silicon Mac |
+| Virtual environment | A project-specific Python installation and its packages | The `.venv` folder |
+
+## The idea in plain words
+
+A plain model can describe how to save a note. An agent application gives it a real `save_note` function. The model returns a tool call containing the text, the application executes the function, and the model receives “Note saved.” before answering.
+
+There are three pieces to build. **Ollama** loads a downloaded model and serves requests. **Pydantic AI** describes your functions to the model and manages the tool loop. **Your Python functions** read the computer's clock, calculate arithmetic and work with one note file.
+
+Local inference needs no cloud API key when you use a downloaded model and the local server URL. Installation and model downloads still need internet. Your laptop also supplies the electricity, memory and computation, so local execution does not make those costs disappear.
+
+<Infographic src="/img/daily/local-python-agent/architecture.svg" alt="A local terminal sends questions to Pydantic AI, which calls an Ollama model and executes four Python tools. Conversation history lives in RAM; saved notes live in a file." caption="Start with the terminal on the left. Follow the model request, then the tool call down to Python and the note file." />
+
+## Worked example, step by step
+
+Start with two tasks whose results you can check yourself.
+
+1. Ask: **“What is 23 × 7 + 1? Use the calculator.”** Multiplication comes first: `23 × 7 = 161`. Then `161 + 1 = 162`. The calculator supplies **162**, rather than asking the model to guess the arithmetic.
+2. Ask: **“Save exactly this note: hello world, Tim.”** The model selects `save_note` and provides a string argument. Python appends the text and a newline to `notes.txt`.
+3. Ask: **“What is currently in my note file?”** The model selects `read_notes`. Python reads the saved text and returns it to the model.
+4. Quit and restart the programme. The old chat history is gone, but `notes.txt` remains. Ask the third question again: the read tool can still retrieve the note.
+
+The text `hello world, Tim` has 16 characters. With its newline, it occupies **17 bytes** in UTF-8 because these characters are all ASCII. Other characters can need more than one byte each. This is why the code checks the note's character count and the file's byte count separately.
+
+<Infographic src="/img/daily/local-python-agent/note-round-trip.svg" alt="Five steps show a user's save request, the model's save_note call, Python appending a file, the tool result and the final answer. A later read retrieves the file; a calculator example produces 162." caption="Read the top row first. The file changes at the Python execution step, before the agent confirms the save." />
+
+## How it works
+
+### 1. Install Ollama and check the service
+
+Install Ollama from the [official download page](https://ollama.com/download), then open it. On macOS and Windows, the app normally starts the local service. On Linux, follow the installer instructions and check that its service is running.
+
+Open a terminal and check that the command is available:
+
+```bash
+ollama --version
+ollama list
+```
+
+The first command reports the installed version. The second asks the running service for downloaded models. An empty list is fine at this stage; a connection error means the service needs to start.
+
+If the service is not running, start it in a separate terminal:
+
+```bash
+ollama serve
+```
+
+Leave that terminal open. If Ollama is already running on the default port, use that service instead of starting another copy. An “address already in use” message usually means something is already listening there.
+
+### 2. Choose a model that fits your machine
+
+The script uses **`qwen3.5:2b`**, a small model with tool support. You can change the model later. The family also has smaller and larger variants; the [model library](https://ollama.com/library/qwen3.5:2b) shows the tags and supported capabilities.
+
+| Hardware situation | What to look at | Practical first step |
+| --- | --- | --- |
+| Dedicated graphics card | Available VRAM, rather than the card's name alone | Start with a small tool-capable model |
+| Unified-memory machine | Available shared memory after the operating system and other apps | Leave headroom for model context and runtime data |
+| CPU-only machine | Available RAM and acceptable response time | Choose a small model and test one request first |
+
+The model's download size is not its complete running-memory requirement. Weights, conversation context and temporary working data all consume memory. A larger model may be more capable, but it can also be slower, and parameter count alone does not guarantee better answers.
+
+Download the model, confirm its tag and try a plain conversation:
+
+```bash
+ollama pull qwen3.5:2b
+ollama list
+ollama run qwen3.5:2b
+```
+
+Type `hello` once the model loads. The first response may take longer because the model has to move into memory. To return to your terminal, type:
+
+```text
+/bye
+```
+
+This checks the model before adding Python or tool calling. If it is too slow, try a smaller **tool-capable** model. Check the exact tag in `ollama list`; the Python configuration must use an installed tag.
+
+### 3. Create the Python project
+
+You can download the [complete project ZIP](/examples/daily/local-python-agent.zip), or create the files yourself using the code below.
+
+```text
+local-python-agent/
+  agent.py
+  requirements.txt
+  check_offline.py
+  README.md
+  notes.txt             generated when a note is saved
+```
+
+`agent.py` is the application. `requirements.txt` pins its Python dependency. `check_offline.py` checks the tools and orchestration without a language model. `notes.txt` is runtime data, so the download does not include someone else's saved notes.
+
+Use **Python 3.10 or newer**, with 3.11+ a reasonable starting point. Create and activate a virtual environment so packages stay separate from other projects.
+
+**macOS or Linux:**
+
+```bash
+mkdir local-python-agent
+cd local-python-agent
+python3 -m venv .venv
+source .venv/bin/activate
+python --version
+```
+
+**Windows PowerShell:**
+
+```powershell
+mkdir local-python-agent
+cd local-python-agent
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python --version
+```
+
+If you extracted the ZIP, enter its `local-python-agent` directory and run the environment commands there; do not create a second nested project folder.
+
+Write this line in `requirements.txt`:
+
+```text
+pydantic-ai-slim[openai]==2.54.0
+```
+
+Then install it using the active interpreter:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+The slim package installs the parts needed for this project. Its `openai` extra provides the client used by Ollama's compatible API. That dependency does not send this programme's requests to OpenAI: the provider below points to your local Ollama server.
+
+**If activation is unavailable**, you can use the environment's interpreter directly. On PowerShell:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe agent.py
+```
+
+On macOS/Linux, the equivalent interpreter is `.venv/bin/python`. See Python's [virtual-environment guide](https://docs.python.org/3/library/venv.html) for the platform details.
+
+## Code you can run
+
+Create **`agent.py`**. Add the following blocks in order to the same file. Together they are the complete application, including the entry point.
+
+### Imports, note location and calculator operations
+
+First import the framework and the small set of standard-library helpers used by the tools.
+
+```python
+import ast
+import math
+import operator
+import os
+from datetime import datetime
+from pathlib import Path
+
+from pydantic_ai import Agent
+from pydantic_ai.models.ollama import OllamaModel
+from pydantic_ai.providers.ollama import OllamaProvider
+from pydantic_ai.usage import UsageLimits
+
+NOTES_FILE = Path(__file__).resolve().with_name("notes.txt")
+OPERATORS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.FloorDiv: operator.floordiv,
+}
+```
+
+**Reading the code:** `NOTES_FILE` points beside the script, so running it from a different directory does not change which file is used. `OPERATORS` maps supported arithmetic operations to Python functions.
+
+**Line by line:**
+
+- `Agent` manages a run, including tool requests and their results.
+- `OllamaModel` describes the model; `OllamaProvider` describes the connection.
+- `UsageLimits` caps how many requests and tool executions one user turn may make.
+- `ast` parses an arithmetic expression into a tree of operations. Parsing does not execute that expression.
+
+### Tool 1: get the current date and time
+
+Use the computer's clock so the answer reflects the current local time rather than the model's training data.
+
+```python
+def get_current_time() -> str:
+    """Return the computer's current local date, time and timezone."""
+    return datetime.now().astimezone().isoformat(timespec="seconds")
+```
+
+**Reading the output:** a result has the shape `YYYY-MM-DDTHH:MM:SS+05:30`, with the actual date, time and offset supplied by your computer. `astimezone()` uses its local timezone. The returned string is the tool result; the model may phrase it more readably.
+
+The type hint `-> str` and the docstring tell Pydantic AI what this function returns and when it is useful. The function takes no arguments, so its tool schema needs no input fields.
+
+### Tool 2: evaluate arithmetic
+
+The calculator accepts numbers and a small set of operators. Evaluate only the node types that the application explicitly supports.
+
+```python
+def evaluate_node(node: ast.AST) -> int | float:
+    if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+        value = node.value
+    elif isinstance(node, ast.BinOp) and type(node.op) in OPERATORS:
+        value = OPERATORS[type(node.op)](
+            evaluate_node(node.left), evaluate_node(node.right)
+        )
+    elif isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+        value = evaluate_node(node.operand)
+        if isinstance(node.op, ast.USub):
+            value = -value
+    else:
+        raise ValueError("Use numbers, parentheses and +, -, *, / or // only.")
+    if not math.isfinite(value) or abs(value) > 1_000_000_000_000:
+        raise ValueError("Numbers and results must be finite and within 1e12.")
+    return value
+```
+
+A constant supplies a number. A binary operation combines two evaluated numbers. A unary operation handles a leading plus or minus. Calls, variable names, attribute access and other Python constructs are rejected. Every intermediate result is checked for finiteness and magnitude.
+
+Now wrap that evaluator in the function exposed to the agent:
+
+```python
+def calculate(expression: str) -> str:
+    """Calculate a short arithmetic expression with numbers and +, -, *, /, //."""
+    try:
+        if len(expression) > 120:
+            raise ValueError("Use at most 120 characters.")
+        tree = ast.parse(expression.strip(), mode="eval")
+        if sum(1 for _ in ast.walk(tree)) > 40:
+            raise ValueError("Use a simpler expression.")
+        return str(evaluate_node(tree.body))
+    except (SyntaxError, ValueError, ZeroDivisionError, OverflowError) as error:
+        return f"Calculation error: {error}"
+```
+
+**Reading the output:** `calculate("23 * 7 + 1")` returns the string **`"162"`**. `calculate("(10 + 2) / 3")` returns **`"4.0"`**. An unsupported expression or division by zero returns a **`Calculation error:`** message that the agent can explain.
+
+**Line by line:**
+
+- `mode="eval"` parses one expression; it does not call Python's `eval()` function.
+- The 120-character and 40-node limits keep accepted expressions small.
+- `tree.body` is the expression's root node.
+- The evaluator applies normal arithmetic precedence through the parsed tree.
+
+The supported operators are `+`, `-`, `*`, `/` and `//`, with parentheses and signed numbers. The double slash performs floor division. Powers, function calls and named constants are outside this calculator's scope. Python's [AST documentation](https://docs.python.org/3/library/ast.html) describes the node types.
+
+### Tool 3: save a note
+
+Append a note to one fixed file. Appending preserves earlier notes instead of replacing them.
+
+```python
+def save_note(note: str) -> str:
+    """Append one short note to notes.txt beside this script."""
+    note = note.strip()
+    if not note or len(note) > 2000:
+        return "Use a non-empty note of at most 2000 characters."
+    text = note + "\n"
+    current_size = NOTES_FILE.stat().st_size if NOTES_FILE.exists() else 0
+    if current_size + len(text.encode("utf-8")) > 20_000:
+        return "The note file is full. Move old notes before adding more."
+    with NOTES_FILE.open("a", encoding="utf-8") as file:
+        file.write(text)
+    return "Note saved."
+```
+
+**Reading the output:** a successful write returns **`"Note saved."`**. An empty or oversized note returns an explanation without writing. The file is created on the first successful save.
+
+**Line by line:**
+
+- `.strip()` removes leading and trailing whitespace from the note.
+- The character limit applies to the note; the byte limit applies to the whole UTF-8 file.
+- Mode `"a"` means append. Each saved note ends with a newline.
+- The tool accepts text, not a path, so the model cannot choose an arbitrary destination file through this function.
+
+### Tool 4: read saved notes
+
+Read the file's actual contents. If it has not been created yet, return a useful message.
+
+```python
+def read_notes() -> str:
+    """Read notes previously saved in notes.txt beside this script."""
+    if not NOTES_FILE.exists():
+        return "No notes saved yet."
+    if NOTES_FILE.stat().st_size > 20_000:
+        return "The note file is too large. Move old notes before reading."
+    return NOTES_FILE.read_text(encoding="utf-8") or "No notes saved yet."
+```
+
+**Reading the output:** the function returns all saved lines, up to the file-size limit, or **`"No notes saved yet."`**. The size check also covers a file edited outside this programme.
+
+A saved note and a remembered conversation are different things. The note is on disk; it remains after the Python process exits. Chat history lives in the `history` list below and starts empty each time the programme runs.
+
+### Connect the model and register the tools
+
+Build the model connection, then give the agent its tools and instructions.
+
+```python
+def build_agent(model=None) -> Agent:
+    if model is None:
+        model = OllamaModel(
+            os.getenv("OLLAMA_MODEL", "qwen3.5:2b"),
+            provider=OllamaProvider(
+                base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+            ),
+        )
+    return Agent(
+        model,
+        tools=[get_current_time, calculate, save_note, read_notes],
+        instructions=(
+            "You are a helpful personal assistant running locally. "
+            "Use tools for the current time, arithmetic and saving or reading notes. "
+            "Save notes only when the user asks. Report tool errors accurately. "
+            "Keep answers short and friendly."
+        ),
+    )
+```
+
+**Reading the code:** `http://localhost:11434/v1` is Ollama's compatible API base URL. `localhost` refers to the same computer running Python. The `/v1` suffix matters for this provider; it is not the native `/api/chat` route.
+
+**Line by line:**
+
+- `OLLAMA_MODEL` can override the default `qwen3.5:2b` tag.
+- `OLLAMA_BASE_URL` can override the local server address.
+- `tools` contains the four function objects, not calls such as `save_note(...)`.
+- `instructions` describes the assistant's behaviour, including when to save a note.
+- The optional `model` argument lets the offline check supply a deterministic test model.
+
+Pydantic AI builds schemas from the tool names, type hints and docstrings. The model chooses a tool and arguments; the framework executes the registered Python function and returns its result to the model. `evaluate_node` is a helper, so it is not registered as a separate tool.
+
+### Keep the terminal conversation running
+
+Read user input, run the agent and carry the returned messages into the next turn.
+
+```python
+def main() -> None:
+    agent = build_agent()
+    history = []
+    print("Local agent ready. Type 'quit' or 'exit' to end.")
+    while True:
+        try:
+            user_input = input("You: ").strip()
+            if user_input.lower() in {"quit", "exit"}:
+                break
+            if not user_input:
+                continue
+            result = agent.run_sync(
+                user_input,
+                message_history=history,
+                usage_limits=UsageLimits(request_limit=8, tool_calls_limit=8),
+            )
+            history = result.all_messages()
+            print(f"Agent: {result.output}\n")
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodbye.")
+            break
+        except Exception as error:
+            print(f"Request failed ({type(error).__name__}): {error}")
+```
+
+**Reading the output:** the programme prints **`Local agent ready`**, then prompts with **`You:`**. A successful run prints the agent's final text. It stays open for another question until you type `quit` or `exit`.
+
+**Line by line:**
+
+- `history = []` starts a new conversation.
+- `message_history=history` passes earlier user, model and tool messages to the run.
+- `result.all_messages()` returns the complete history, including the previous turns. Assign it back rather than appending the whole list again.
+- `result.output` is the final response, after any tool calls have completed.
+- The usage limits allow at most eight model requests and eight tool calls per user turn.
+- A failed run prints its error and keeps the prior successful history, so you can fix the service or model and retry.
+
+The limits bound request counts, not elapsed time or memory use. Long conversations still need trimming or summarising when they approach the model's context window.
+
+Finally, start the loop when this file is executed directly:
+
+```python
+if __name__ == "__main__":
+    main()
+```
+
+Importing `agent.py` from the offline check defines its functions without opening an interactive prompt. Running `python agent.py` invokes `main()`.
+
+## Run the assistant
+
+With Ollama running and the Python environment active:
+
+```bash
+python agent.py
+```
+
+Try these prompts one at a time:
+
+```text
+Hello. How are you?
+Use the calculator: what is 23 * 7 + 1?
+Save exactly this text, without adding punctuation: "hello world, Tim"
+What is currently in my note file?
+What is today's date and time?
+quit
+```
+
+Greeting text varies by model. The arithmetic tool should return **162**. After a successful save, confirm that the expected line exists in `notes.txt` before treating the conversational reply as evidence of a write.
+
+**Check the file directly on macOS/Linux:**
+
+```bash
+cat notes.txt
+```
+
+**On PowerShell:**
+
+```powershell
+Get-Content .\notes.txt
+```
+
+Use the terminal in the project directory for these commands. If the model adds punctuation to a note argument, the file will contain that punctuation too. Quote the exact desired text when precision matters.
+
+### Choose another installed model
+
+Keep the same tools and change the model tag through the environment. For example, if `qwen3:14b` already appears in `ollama list`:
+
+```bash
+export OLLAMA_MODEL=qwen3:14b
+python agent.py
+```
+
+PowerShell uses a different environment-variable syntax:
+
+```powershell
+$env:OLLAMA_MODEL = "qwen3:14b"
+python agent.py
+```
+
+These commands choose an installed model; they do not download it. Pick one whose memory needs and tool behaviour suit your machine. Leave the base URL pointing to the local service for local inference.
+
+## Try it yourself
+
+1. **Check a calculation.** Ask for `(10 + 2) / 3` using the calculator. Expect **4.0**. Then ask for `1 / 0` and look for an explanation of the tool error.
+2. **Check persistent notes.** Save the quoted text, inspect `notes.txt`, quit and restart. Ask to read notes again. The text should remain even though the new `history` list is empty.
+3. **Check conversation memory.** Tell the assistant your preferred name, then ask it to recall that name. Restart and ask again. The new process has no earlier chat messages unless you explicitly saved and retrieved that information.
+
+These experiments test different behaviours. A calculator result tests tool execution; a file tests persistence; a follow-up question tests message history. Passing one does not establish the others.
+
+## Verification
+
+The download includes an offline check you can run after installing the dependency:
+
+```bash
+python check_offline.py
+```
+
+It uses the real Pydantic AI agent loop with a deterministic `FunctionModel`. No Ollama service or model download is needed for this command.
+
+```text
+arithmetic: 162
+saved_note: hello world, Tim
+messages_after_four_runs: 16
+fresh_agent_reads_file: true
+Offline checks passed.
+```
+
+The script prints these values in a JSON line. The clock value is not fixed because it comes from the computer running the check. The fresh-agent check shows that saved notes are retrieved from disk rather than from the first agent's chat history.
+
+| Check | What was verified |
+| --- | --- |
+| Dependency and imports | Pydantic AI 2.54.0, Python 3.14.6 and Ollama 0.30.8 |
+| Deterministic orchestration | Four tools registered, arguments passed, results returned and history retained |
+| Arithmetic and file bounds | Supported expressions, rejected calls/powers, division by zero, empty notes and oversized notes |
+| Real local inference | All four tools called successfully through Ollama using an existing `qwen3:14b` model |
+| Live arithmetic | Tool returned **162** for `23 * 7 + 1` |
+| Live note persistence | The file contained the text passed to `save_note`; `read_notes` retrieved it |
+
+The live check used a local server on a separate port, temperature zero and a 1,024-token output budget. The default `qwen3.5:2b` tag was verified in the model library, but was not downloaded for this check. The live run's model added a trailing full stop to the note argument; the file preserved that actual argument. Model behaviour remains part of what you must test.
+
+## Designing with it
+
+Choose tools around tasks the assistant needs to perform. A function for a current timestamp has no arguments; a note-saving function needs text. The function signature and description should make that difference clear.
+
+Keep each tool's scope small. This project writes one fixed file and exposes a limited calculator. It does not expose a general shell or arbitrary file paths. If you later add more powerful tools, their permissions and failure handling become part of the application design.
+
+Treat the instructions as guidance and the tool implementation as the enforced behaviour. “Keep notes short” is guidance; a character limit in Python is a check. Similarly, the note file's byte limit limits returned context even if the file was changed outside the agent.
+
+## Where this stands in 2026
+
+This is a useful first agent, rather than a complete personal-assistant service. It has a local model, typed tools and an interactive loop. It has no web interface, multi-user separation, durable chat-history store or retrieval system for a large note collection.
+
+The practical implementation uses arithmetic parsing, bounded notes, request limits and environment-based model selection. These implementation choices make the small workflow easier to inspect and test. The model and package versions still need to be checked when you upgrade.
+
+## Common mistakes
+
+| Mistake | Why it happens | What to do |
+| --- | --- | --- |
+| Installing the library without starting Ollama | Python and the inference service are separate processes | Start the app or `ollama serve`, then try `ollama list` |
+| Using a different model tag in Python | Family names and installed tags can differ | Copy the exact tag from `ollama list` |
+| Omitting `/v1` from the provider URL | Confusing the compatible API with the native Ollama API | Use `http://localhost:11434/v1` with this provider |
+| Calling functions while building the tool list | Writing `save_note(...)` instead of passing `save_note` | Pass function objects; let the agent choose arguments |
+| Treating a reply as proof of a saved file | A model can generate confirmation text | Check the tool result and inspect `notes.txt` |
+| Expecting chat history after a restart | History and file persistence are separate | Store history explicitly if you need durable conversations |
+
+If the imports fail, check `python --version` and `python -m pip show pydantic-ai-slim` in the active environment. If the model reports that tools are unsupported, choose a model with Tools capability. If repeated tool requests hit a usage limit, simplify the request and inspect which tool is being retried.
+
+## Practice questions
+
+<details>
+<summary>Easy: what turns a chat model into this small agent application?</summary>
+
+The application connects the model to instructions and callable tools. The model can request an action, and Pydantic AI executes a registered function and sends back its result. The Python function performs the actual action.
+
+</details>
+
+<details>
+<summary>Medium: why does reading a note still work after restarting, while recalling the previous chat may fail?</summary>
+
+`save_note` writes to a file on disk. The restarted process can read that file. `history`, however, is a Python list created in memory inside `main()`. It starts empty on each launch, so prior chat messages are absent.
+
+</details>
+
+<details>
+<summary>Stretch: how would you extend this to many users?</summary>
+
+Give each user a separate note store and conversation history, then bind access to their authenticated identity. Do not let a model choose arbitrary user IDs or file paths. The current single-file design is deliberately a one-person local experiment.
+
+</details>
+
+## Go deeper
+
+- [Ollama model configuration in Pydantic AI](https://ai.pydantic.dev/models/ollama/): the provider URL and model adapter.
+- [Pydantic AI function tools](https://ai.pydantic.dev/tools/): tool signatures and schemas.
+- [Pydantic AI message history](https://ai.pydantic.dev/message-history/): carrying messages between runs.
+- [Ollama quickstart](https://docs.ollama.com/quickstart): model and service setup.
+- [Author's code resource](https://www.aiagentbuilders.co/yt-resources/local-python-agent): the publisher's community download.
+
+## Check yourself
+
+- [ ] I can download and test a local tool-capable model before using Python.
+- [ ] I can install the dependency in a virtual environment and run `agent.py`.
+- [ ] I can explain what the provider URL connects to.
+- [ ] I can register functions as tools and explain who executes them.
+- [ ] I can confirm arithmetic and file changes independently of the final answer.
+- [ ] I can distinguish chat history in RAM from notes on disk.
+- [ ] I can change the installed model without changing the tools.
+
+## Where to go next
+
+Revisit [Ollama and local LLMs](/docs/genai/ollama) for the runtime and API options. Continue to [tool calling](/docs/genai/tool-calling) for tool binding and dependent calls, or [building an AI agent](/docs/genai/ai-agent) for a larger workflow. The first Daily entry, [Transformers Masternote](/docs/daily/transformers-masternote), explains the model underneath the agent.

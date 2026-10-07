@@ -1,0 +1,1 @@
+{ "name": "env-guard", "version": "0.1.0", "description": "Blocks edits to .env files and flags failed Bash commands in the status line." }

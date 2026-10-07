@@ -4,622 +4,1023 @@ title: "Ollama Masterclass 2026: Run Powerful Local LLMs with Ollama (3-Hour Ful
 sidebar_label: "21 · Ollama & local LLMs"
 sidebar_position: 21
 slug: /genai/ollama
-description: "Run open-source models locally — proprietary vs open source, why raw weights are hard to use, and the five ways to use Ollama: CLI, Python library, REST API, LangChain and Ollama Cloud."
+description: "English notes following CampusX's Ollama masterclass: local models, CLI, Python, tool calling, Modelfiles, REST API, LangChain, cloud and desktop demonstrations."
 tags: [ollama, local-llms, open-source, rest-api, langchain, modelfile, ollama-cloud]
 ---
 
-> **Video 21 of 21** · [Watch on YouTube](https://www.youtube.com/watch?v=YcAYmIFtA0o)
-> Notes follow the video section by section. Roughly 2 hours 50 minutes.
+> **Video 21 of 21** · [Watch on YouTube](https://www.youtube.com/watch?v=YcAYmIFtA0o). Notes follow the video's teaching order. Hindi captions were translated into English, then checked against video frames and the instructor's notebooks.
 
-## Why this video exists
+**In one line.** Ollama handles downloading and running models; this lecture shows how to use those models from a terminal, Python and applications.
 
-Study the GenAI videos on the channel and a common pattern shows up: whenever a proof of concept or a small project was built, the LLM used was **OpenAI's GPT models**. Those models are strong and reliable, but they have one big drawback — **they are proprietary**, so you have to pay OpenAI to use them.
+**Source code:** [CampusX's Ollama-Youtube repository](https://github.com/campusx-official/Ollama-Youtube/tree/06244ad032b3ef982e1d4d8b9f514d3c9be60dba). Code below follows the displayed examples. Extra imports, file-name adjustments and corrections are identified where needed. Recorded model outputs are observations, not promises about a new run.
 
-The amount is not large, but a big proportion of the channel's audience are **students without access to a credit card or an international debit card**, and international payment is a real obstacle. Feedback kept arriving asking to be taught some alternative LLMs.
+| Video section | Start |
+| --- | --- |
+| Motivation and scope | [00:00](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=0s) |
+| LLMs and proprietary versus downloadable models | [04:57](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=297s) |
+| Why raw weights are difficult to use | [11:54](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=714s) |
+| Ollama and its benefits | [15:17](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=917s) |
+| Model library | [22:43](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=1363s) |
+| Hardware requirements and installation | [28:37](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=1717s) |
+| Basic and advanced CLI | [34:31](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=2071s) |
+| Python library | [51:41](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=3101s) |
+| Images, system instructions and parameters | [56:38](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=3398s) |
+| Conversation history and model management | [1:04:14](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=3854s) |
+| Tool-calling concept and workflow | [1:10:21](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=4221s) |
+| Electronic-shop code demonstration | [1:26:55](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=5215s) |
+| Modelfile demonstration | [1:44:02](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=6242s) |
+| REST API | [1:59:04](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=7144s) |
+| LangChain | [2:14:11](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=8051s) |
+| Ollama Cloud | [2:28:14](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=8894s) |
+| Desktop app | [2:43:16](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=9796s) |
+| Closing recap and course overview | [2:47:51](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=10071s) |
 
-The good news is that over the last year or two, a parallel field matured alongside GenAI: **open-source LLMs**. Many mature open-source models arrived, especially from China — **DeepSeek**, **Qwen**, **GLM**. Today you have very powerful open-source models that you can use much as you use a proprietary model.
+## 00:00 · Why this masterclass exists
 
-:::note What this video is
-This is an **introductory / trailer video** for a paid course on open-source models, created and taught by a colleague, Ajay. It is released for two reasons: so people considering the course can judge the teaching quality first, and so that anyone who cannot buy the course still gets two to three hours of solid grounding in Ollama and open-source models.
+Earlier CampusX GenAI projects commonly used OpenAI's GPT models. The opening problem is practical: students may be able to write the application but lack a payment method for accessing a paid API. The instructor introduces DeepSeek, Qwen and GLM as examples of increasingly capable downloadable models.
 
-It is not a typical surface-level 15-minute Ollama video — it takes a detailed route.
+The video has two purposes: introduce the team's longer course and give viewers enough grounding to start using Ollama themselves. Nitish introduces the course; Ajay teaches the demonstrations. The promised route is model accessibility, Ollama's role, hardware and installation, then five ways of using it: **CLI, Python library, REST API, LangChain and cloud**. A desktop-app demonstration follows at the end.
+
+## 04:57 · What an LLM contains
+
+The lecture starts with a neural-network view. An LLM has many layers and connections; its learned numerical parameters, described here as weights and biases, hold what training has learned. This matters because obtaining those model files is different from obtaining access to a hosted chatbot.
+
+At [06:23](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=383s), the instructor classifies models by **accessibility and control**.
+
+| Question | Proprietary model in the lecture | Downloadable model in the lecture |
+| --- | --- | --- |
+| Who controls access? | The provider, such as OpenAI or Google | You can obtain the released model files |
+| How do you use it? | A hosted application or API | Download and run it on your own computer |
+| What do you obtain? | Permission to use a service | Weights and the other materials included in the release |
+| Where does inference happen? | On the provider's infrastructure | On your hardware in the local examples |
+| What do you pay for? | The provider's subscription or API usage | Local hardware, storage and electricity |
+| Examples named | Gemini and ChatGPT/GPT | Meta Llama, Mistral and DeepSeek |
+
+At [09:54](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=594s), Ajay explains downloading model components from platforms such as Hugging Face. Having access to weights can also make further fine-tuning possible.
+
+**The cloth analogy:** access to the material gives you the opportunity to shape it to your requirements, like cutting a length of cloth into a garment.
+
+:::note Terminology correction
+The lecture uses “open source” broadly and says model architecture, weights and training data become public. Availability differs by release: downloadable weights do not establish that the training data and code are public. Also, downloading a model does not remove its licence restrictions. The [Llama 3.2 page](https://ollama.com/library/llama3.2:1b) links its licence and acceptable-use policy.
 :::
 
-**What gets covered:** the whole open-source model landscape, their requirements, how they compare with proprietary models, why a tool like Ollama is needed, and then the **five modes** in which you can use Ollama — **CLI**, **REST API**, **the Ollama Python library**, **LangChain**, and **Ollama Cloud**.
+## 11:54 · Why free model files are still difficult to use
 
-## What an LLM is, briefly
+The instructor's question is: if downloadable models are available, why do people still pay for hosted ones? His answer centres on the work required to use raw weights.
 
-LLMs are **complex neural networks** — many layers, many connections. At a lower level, an LLM is basically a **collection of numbers**, and those numbers are your **model weights and biases**. Everything the model learned during training is stored inside them.
+1. **Storage:** obtain the right files and store them in a usable format.
+2. **Working memory:** load the model and arrange the RAM or VRAM needed for inference.
+3. **Compatibility:** use software that can execute those weights on your machine.
 
-## Classifying LLMs by accessibility and control
+The teaching sequence is **downloaded numerical files → storage → memory → computation**, rather than “download a file and it automatically behaves like ChatGPT”. Ollama is introduced as the tool that manages this practical gap.
 
-Based on how much control you have over the model you are using, LLMs split into two groups.
+## 15:17 · What Ollama does
+
+Ollama lets you **download, run and manage supported models** on your own computer. You select the model and provide input; Ollama handles the model package and runtime interaction.
+
+**The WhatsApp analogy:** a user concentrates on sending and receiving messages while the application handles delivery. Likewise, an Ollama user concentrates on model input and output while Ollama handles the mechanics underneath.
+
+The instructor later calls it a **consultant**: it does the model-management work on your behalf. This is an explanation of its role, not a claim that every model fits every computer.
 
 ```mermaid
-flowchart TB
-    L["<b>LLMs</b><br/>classified by accessibility<br/>and control over the model"]
-    L --> P["<b>Proprietary models</b><br/>owned and controlled by a company"]
-    L --> O["<b>Open-source models</b><br/>weights and architecture made public"]
-    P --> P1["You get access rights only.<br/>Architecture, weights, biases and<br/>training data are never public."]
-    P --> P2["Used through an API or a<br/>controlled platform, via paid subscription"]
-    P --> P3["Gemini (Google) · ChatGPT (OpenAI)"]
-    O --> O1["Download the raw files from<br/>a platform like Hugging Face"]
-    O --> O2["Run on your own machine —<br/>you only pay for electricity and hardware"]
-    O --> O3["Llama (Meta) · Mistral · DeepSeek"]
+flowchart LR
+    L["Ollama model library"] -->|pull| D["Model files on disk"]
+    D -->|load for inference| R["RAM / VRAM + compute"]
+    P["Your prompt"] --> R
+    R --> O["Generated response"]
 ```
 
-### Proprietary models
+## 18:51 · Benefits, followed by the model-library tour
 
-These are owned and controlled by a company, and **complete ownership sits with that company**. They generally give users the **access right only** — architecture information, weights and biases, training data, none of it is public. All of it stays with the company.
+The lecture presents the benefits in this order:
 
-You use them **through an API** or through a **controlled platform**. For general purposes you open the chat application; for development and coding you use the API key.
+| Benefit | Point being taught |
+| --- | --- |
+| Privacy and data control | A downloaded model can process data locally |
+| Offline access and latency | Local inference does not require a network request to a hosted model |
+| Cost predictability | No hosted per-request inference fee for running a local model |
+| Simple setup | Install Ollama and manage models through short commands |
+| Prebuilt model library | Find ready-to-use packages rather than assembling raw files yourself |
+| Customisation | Change instructions and generation settings |
+| Reduced provider dependence | Choose and run downloaded models yourself |
+| Easy management | Pull, run and remove models through Ollama |
 
-And mostly you use them through a **paid subscription**. The free tier gives very limited access; for the advanced capabilities you have to pay.
-
-**Summarised crisply:** with proprietary models you only have the right to *use* the model. Most of the time you do not have information about it.
-
-### Open-source models
-
-Exactly the opposite. A company develops and trains a model, and then makes it **public** — the architecture, the weights, the biases, the training data. Now anyone around the globe can download those things and use the model.
-
-You can download all of it from a common platform like **Hugging Face** and run it on your local system. **You only pay for electricity and hardware.**
-
-**The biggest speciality:** since you have all the raw files, you can **further fine-tune** these models and customise them however you like.
-
-:::tip The cloth analogy
-Think of it as having a full length of cloth. You can cut that cloth into any shape and make a dress for yourself. That is what is possible with an open-source model — and not with a proprietary one.
+:::note Clarifications to the benefit claims
+Local privacy and offline access apply to **local inference**. Cloud calls and external tools have other data flows. Local execution also takes time; the lecture's “no latency issue” means avoiding the cloud round trip, not instantaneous generation. Model size and hardware still matter. Changing instructions or sampling parameters does not fine-tune weights.
 :::
 
-## So why do people still pay for proprietary models?
+### 22:43 · Choose by capability as well as model family
 
-A fair question. If open-source models give you the complete raw files, and you do not have to pay anyone, why do people go for subscriptions?
+The instructor opens Ollama's model library and explores families including Qwen, Mistral, Llama, Gemma, LLaVA and DeepSeek. He then uses its capability filters.
 
-**Because having many open-source models in the market does not mean using them is easy.** Using an open-source model is itself the **biggest pain point**.
+| Filter | What the lecture uses it to find |
+| --- | --- |
+| Vision | Models that can interpret image input |
+| Thinking | Models with reasoning support |
+| Tools | Models supporting tool calls |
+| Embedding | Models producing text vectors |
+| Cloud | Models available through Ollama Cloud |
 
-When a company releases a model, it releases it as **raw model weights** — numbers, in an architecture. Downloading that and running it on your PC is a very big friction:
+A small correction happens during the tour: he initially sees no thinking models because **Vision and Thinking are both selected**. Clearing Vision shows Thinking results. The empty list was caused by combined filters.
 
-- **Storage.** How do you store these raw model weights on your local system? They have to be optimised so the LLM works well there. Do you know how to store them? Where would you store them?
-- **Working memory.** Suppose you stored the model. Now you have to *use* it. How do you configure your working memory — your RAM and VRAM — to run it? The model has to run, calculations happen over the weights and biases, so working memory is needed. How do you optimise and configure it?
-- **Compatibility.** Many times these raw weights and biases are **not compatible** with direct use on your local system.
+He opens **Qwen3-VL** to show that one family has multiple sizes. The choice must match both your task and your machine. Model family, parameter count and supported inputs are separate things to check.
 
-And the list is long. **This is why open-source models, although free, are used much less.** Theoretically they are free; practically, using them means solving many other problems first.
+## 28:37 · Requirements for local models
 
-**And this is exactly where Ollama comes in.**
+| Item | What Ajay recommends or demonstrates |
+| --- | --- |
+| Operating system | Windows, macOS or Linux |
+| RAM | At least 8 GB as the lecture's starting recommendation; more helps |
+| Processor | He recommends an i5 13th-generation processor or above for a smoother experience; slower machines may still run models |
+| Disk space | Space for the model package: the displayed Qwen3-VL examples are about 2 GB for 2B and 6.2 GB for 8B |
+| Internet | Required to download Ollama and local models initially |
+| Command line | Basic terminal knowledge |
+| GPU | Optional in this introduction; useful for faster inference |
 
-## What Ollama is
+These are the **lecture's examples**, not universal minimum requirements. Enough disk space to download a model does not establish that you have enough working memory to run it.
 
-> Ollama is a tool that helps you run large language models on your own computer.
+## 32:22 · Install Ollama, then select an interface
 
-In short: a tool with which you can **download, run and manage** open-source models — all on your local PC.
+The recorded demonstration is on Windows. Ajay visits Ollama's website, selects **Download**, opens the setup file and clicks **Install**. Use the download for your own operating system; the Windows installer is what the video shows.
 
-Every pain point of running an open-source model — storage, optimisation, how to use working memory, compatibility issues — **Ollama handles all of it for you**. You only focus on using the model. How to download it, where to store it, which memory to load it into, how the request reaches the model, how the response comes back — **you do not need to worry about any of it**.
+Once installed, he introduces the command line and the library/API/framework routes. Before demonstrating commands, he distinguishes **Ollama from the model**: model quality and capability determine whether an answer is useful or an image can be read. Ollama manages running that model.
 
-:::tip The WhatsApp analogy
-Think of Ollama as WhatsApp for open-source models. When you use WhatsApp you only focus on **sending and receiving** — text messages, images, audio, video. How those messages are actually passed in the backend, how your privacy is maintained, how images travel — each and every thing is handled by WhatsApp for you.
+## 34:31 · CLI: download, list and run
 
-Ollama is the same thing for open-source models.
-:::
-
-Another way to put it: **Ollama is a consultant** who handles, on your behalf, every technical aspect related to the model.
-
-## The benefits of Ollama
-
-### 1. Privacy and data control
-
-You bring the open-source LLM onto your own PC and run it there. **Whatever data you pass to that LLM never leaves your local machine.** In fact, with Ollama you can use an LLM **even without internet**.
-
-### 2. Low latency and offline access
-
-You can download models and use them without any connection to the internet. Yes, you need internet **initially**, while downloading. After that you can use the model as many times as you like with no connection at all, and latency is not an issue.
-
-### 3. Cost predictability and potential savings
-
-The model sits on your local PC and you are using it, so **you do not need to pay anyone**.
-
-With cloud or proprietary models, the model lives in a cloud, and you pay to interact with it — because the weights, biases and architecture responsible for generating output are all sitting there. With Ollama you have downloaded all of it locally.
-
-### 4. Simple installation and setup
-
-Installing Ollama is extremely easy — **one click** and it is set up on your local system. And it is not only Ollama that is easy to set up: downloading models locally and running them is also very easy, through simple commands.
-
-**You do not need to be an ML engineer** to run an LLM locally. Anyone with a laptop of decent configuration can use Ollama.
-
-### 5. A prebuilt model library
-
-Ollama already has many models you can download and use, from the big companies — DeepSeek, Meta's Llama models, Qwen, and many more. Ollama has **already converted these models** into a format you can easily download, store and use.
-
-Go to the **Models** section on the Ollama site and you will find a huge list, spanning many families — **Qwen**, **Mistral**, **Llama**, **Gemma**, **Llava**, **DeepSeek**.
-
-Not only is the variety wide, the repository also lets you filter **by capability**:
-
-| Filter | Gives you models that |
-|---|---|
-| **Vision** | can read your images |
-| **Thinking** | have reasoning capabilities |
-| **Tools** | support tool calling |
-| **Embedding** | generate embeddings |
-| **Cloud** | can run on Ollama Cloud |
-
-And the **same model comes in different sizes**. Take Qwen 3 — it exists at many parameter counts, so you can download a size that matches your system's configuration.
-
-### 6. Customisation
-
-With Ollama you can also **customise** your model — instruction-tune it, change its parameters, shape the whole model to your custom requirement.
-
-### 7. No vendor lock-in
-
-When you download a model through Ollama there is **no vendor lock-in problem and no IP protection problem**. You do not have to follow any company's rules about how you may use their model. Whatever model you downloaded, you use it however you want.
-
-### 8. Easy to run and manage
-
-Simple commands do everything. To bring a model onto your local system, `ollama pull`. To remove it, `ollama rm`. When you write `ollama pull`, Ollama does all the work on your behalf — which files to fetch, how many, where to store them. Removal is the same in reverse.
-
-## Requirements
-
-Since you are downloading and running models locally, there are some system requirements.
-
-Ollama runs on **macOS, Windows and Linux**. But the main thing when using Ollama is **hardware**.
-
-| Requirement | Guidance |
-|---|---|
-| **RAM** | at least **8 GB** — more RAM, more smooth |
-| **Processor** | an **i5 13th gen** or above runs models very smoothly. It works below that too, but this is the minimum for a smooth experience |
-| **Storage** | you need room for the model files. Qwen 3-VL at 2 billion parameters needs roughly **2 GB**; the 8-billion version roughly **6.2 GB** |
-| **Internet** | **first time only** — while downloading Ollama and the models |
-| **Command line** | very basic knowledge; you can manage with little |
-| **GPU** | **optional** — cherry on the cake, makes the experience much smoother |
-
-## Installing Ollama
-
-Search for Ollama, open the first link, and click **Download**. You get a setup file. Click it, then click **Install**. That is it — Ollama is on your local system.
-
-## The five ways to use Ollama
-
-```mermaid
-flowchart TB
-    O["<b>Ollama</b>"]
-    O --> A["<b>1. CLI commands</b><br/>the command prompt"]
-    O --> B["<b>2. Ollama Python library</b>"]
-    O --> C["<b>3. REST API</b>"]
-    O --> D["<b>4. Integrations</b><br/>such as LangChain"]
-    O --> E["<b>5. Ollama Cloud</b>"]
-```
-
-:::note Ollama is not the model
-A point worth being clear about. Whether a model gives good output, poor output, or cannot read images — **that depends on the model, not on Ollama**. Ollama downloads, runs and manages models for you. How well any given model answers your prompt is nothing to do with Ollama. It is used for those three tasks only.
-:::
-
-## Mode 1 — CLI
+The terminal demonstration checks the installation, starts a model download and then uses models already present on the instructor's machine.
 
 ```bash
-# check Ollama is installed
 ollama --version
-
-# bring a model from Ollama's repository onto your machine
-ollama pull mistral:8b
-
-# see which models are on your local system
-ollama ls          # or: ollama list
-
-# load a model into working memory and talk to it
+ollama pull ministral-3:8b
+ollama ls
+ollama list
 ollama run llama3.2:1b
-
-# delete a model
-ollama rm llama3.2:1b
 ```
 
-**What `ollama run` actually does.** Right now the model sits in your **storage**. This command takes all the files related to that model, lifts them out of storage and brings them into your **working memory** — your RAM or VRAM. As soon as the model is in working memory, you can use it.
+The Ministral download is **cancelled during the recording**. Do not read the subsequent list as proof that it completed. The listed local models are `qwen3:8b`, `gemma3:4b` and `llama3.2:1b`.
 
-Then you can ask it anything — *"what is photosynthesis?"*, *"what fundamental rights does the Indian constitution give?"* — and it answers.
+`pull` obtains the package on disk. `run` makes the model available for inference, loading it into working memory as needed. The instructor corrects a mistyped model name and reruns the command.
 
-:::tip Try it offline
-While using the model, **disconnect yourself from the internet** and then give it a prompt. It will still answer, with no error. Worth doing once, because it makes the point concrete.
+Inside the session he tries a greeting, asks what photosynthesis is, then asks about fundamental rights in the Indian Constitution. He asks viewers to test a downloaded local model while disconnected from the internet; he does not disconnect during his recording.
+
+### The image failure and model switch
+
+Ajay copies an image path and asks the model to summarise the image. **`llama3.2:1b` cannot interpret it**, because that model lacks vision capability.
+
+He exits with `/bye`, checks the library and switches to `gemma3:4b`. That model accepts the image and describes the infographic about AI's electricity and water use. The fix is choosing a vision-capable model, rather than changing the spelling of the prompt.
+
+:::note Path adjustment for your machine
+The video pastes a Windows image path. Supply the path to your own copy of the image in that prompt. Copying the instructor's absolute path will not find a file on your computer.
 :::
 
-### Passing an image
+## 44:26 · CLI: inspect and change a session
 
-Copy the path to an image and pass it with your prompt. But it may fail — try it with `llama3.2` and you get *"I cannot summarise the image file."*
+Ajay returns to the small Llama model, types `/show` and inspects its information. He switches to Gemma to show a model with default parameters and system instructions.
 
-**Why?** Because that model **does not have vision capabilities**; it only has tool calling. To have your image read you need a model with vision capability, such as **Gemma 3**. Load that instead, pass the same image, and it describes what is in it correctly.
+| In-session command | What to inspect |
+| --- | --- |
+| `/show` | Available inspection commands |
+| `/show info` | Architecture, parameter count, context length, quantisation and capabilities |
+| `/show parameters` | Default and user-defined generation settings |
+| `/show system` | System instructions |
+| `/show modelfile` | Model configuration |
+| `/show template` | Prompt formatting |
+| `/show license` | Licence text |
 
-### In-session commands
+The absence of an explicit system message or model-defined parameter list in one model is itself part of the demo. Another model can supply those defaults.
 
-| Command | Does |
-|---|---|
-| `/bye` | exit the model and return to your shell |
-| `/show` | list what you can inspect |
-| `/show info` | architecture, parameters, context length, quantisation, capabilities |
-| `/show parameters` | the model's default parameters |
-| `/show system` | the current system instruction |
-| `/set parameter top_p 0.9` | override a parameter |
-| `/set system "You are a helpful assistant"` | set a system instruction |
+Next he opens `/set`, then `/set parameter`, to see the settings he can change. The terminal frame shows these commands:
 
-Once you set a parameter, it **overrides** the model-defined one, and every output afterwards follows your system instruction and your parameter set.
+```text
+/set
+/set parameter
+/set parameter top_p 0.99
+/show parameters
+/set system "You are an helpful assistant"
+/bye
+```
 
-:::note CLI is for experimentation
-Command-line usage is mainly for **testing and experimentation** — developers try different prompts, different system instructions, different model behaviours. Once satisfied that a particular set of instructions and parameters gives the right output, they **integrate** that model into a real application, coded in Python or JavaScript.
+`/show parameters` then displays the new `top_p` value under user-defined settings. This overrides the corresponding default for that session. The value on screen is **0.99**, despite the spoken caption also mentioning 0.90.
 
-That is why it is so easy here to pass a new system instruction or change a parameter.
-:::
+The lecture's reason for using the CLI is **experimentation**: try prompts, instructions and parameters; then carry the successful configuration into an application written in Python or JavaScript.
 
-## Mode 2 — the Ollama Python library
+## 51:41 · Python library: generate and stream
 
-If you want to build a chatbot with memory and an interface, the command line cannot do it. **You need to code.**
+Ajay opens `Ollama.ipynb`, installs the library and imports it. Ollama itself must also be installed and running, and the local model must be downloaded.
 
 ```bash
 pip install ollama
 ```
 
-### The `generate` method
+The first example uses the moon question, not a substituted topic:
 
 ```python
 import ollama
 
 response = ollama.generate(
     model="llama3.2:1b",
-    prompt="Why does the moon glow?",
+    prompt="why does moon glow ?",
 )
 
-print(response)            # lots of metadata: model, created_at, eval_duration, eval_count...
-print(response.response)   # just the text
+print(response)
+print(response.response)
 ```
 
-The first run takes time, because the model has to move from storage into working memory.
+The response object includes model identity, creation time, durations and token counts. `response.response` selects the generated text. The first call can take longer because loading the model also takes time.
 
-### Streaming
+He then enables streaming:
 
 ```python
+import ollama
+
 response = ollama.generate(
     model="llama3.2:1b",
-    prompt="Why does the moon glow?",
+    prompt="why does moon glow ?",
     stream=True,
 )
 
-for chunk in response:
-    print(chunk.response, end="")
+for i in response:
+    print(i["response"], end="")
 ```
 
-With `stream=False` you only see output once the whole thing is generated. With `stream=True` the output arrives **in chunks**, as it is generated.
+With streaming, `response` is iterable: text arrives in successive chunks. Without it, the application receives the complete generated result before printing it.
 
-### Passing images
-
-:::warning Images must be base64 encoded
-You cannot pass a normal image to the `images` parameter. It has to be **base64 encoded** first.
+:::note The displayed model answer contains an error
+The notebook's moon response confuses ordinary moonlight with eclipses. The demonstration establishes that text was generated; it does not validate the explanation. The Moon's ordinary visible light is reflected sunlight. Do not learn astronomy from this recorded model response.
 :::
+
+## 56:38 · Images and generation settings in Python
+
+Before coding images, Ajay tours the generation API fields: model, prompt, suffix, images, system, stream and options. He then returns to the same infographic used in the CLI demonstration.
+
+### Encode one image and request a caption
+
+This follows the notebook's `image_path`, `image_bytes` and `image_64` steps. `Linkedin.jpg` is the filename used while recording.
 
 ```python
 import base64
 import ollama
 
-with open("chart.png", "rb") as f:
-    image_64 = base64.b64encode(f.read()).decode("utf-8")
+image_path = "Linkedin.jpg"
+
+with open(image_path, "rb") as f:
+    image_bytes = f.read()
+image_64 = base64.b64encode(image_bytes).decode("utf-8")
 
 response = ollama.generate(
-    model="gemma3:4b",          # a model with vision capability
-    prompt="Give a caption to the image",
+    model="gemma3:4b",
     images=[image_64],
+    prompt="Give caption for the image.",
 )
-
 print(response.response)
 ```
 
-To pass **multiple** images, encode each one and pass them all as a list. Then a prompt like *"generate a story based on the images"* produces a story drawing details from both.
+The steps are **open binary file → read bytes → encode base64 → pass a list of images**. The model must support vision. The result gives caption suggestions for the infographic.
 
-### System instructions and parameters
+:::note File names and image encoding
+The linked repository names the files `Linkedin (1).jpg` and `Green AI (1).png`. Rename your downloaded copies to the notebook names, or adjust the paths. The lecture's explicit base64 conversion works; it is required for image data in REST JSON. The Python SDK also accepts paths and bytes, as documented in [Ollama's vision reference](https://docs.ollama.com/capabilities/vision).
+:::
+
+### Encode two images and generate a story
+
+The second example adds `Green AI.png`. It asks the model to use context from **both** images.
 
 ```python
+import base64
+import ollama
+
+image_paths = ["Linkedin.jpg", "Green AI.png"]
+images_base64 = []
+
+for i in image_paths:
+    with open(i, "rb") as f:
+        image_bytes = f.read()
+        images_base64.append(base64.b64encode(image_bytes).decode("utf-8"))
+
+response = ollama.generate(
+    model="gemma3:4b",
+    images=images_base64,
+    prompt="Generate an story based on these images, make sure you take context from each and every image.",
+)
+print(response.response)
+```
+
+The recorded response is a story themed around Green AI. Ajay points to information from the images in the story to explain the purpose of providing multiple inputs. Its generated numbers and interpretation still require checking against the images.
+
+### Change the tone through `system`
+
+The instructor repeats the moon question with a funny-assistant instruction:
+
+```python
+import ollama
+
 response = ollama.generate(
     model="llama3.2:1b",
-    prompt="Why do we dream?",
-    system="You are a funny assistant. Answer everything in a humorous way.",
-    options={
-        "temperature": 0.9,
-        "top_p": 0.95,
-        "top_k": 40,
-    },
+    prompt="why does moon glow ?",
+    system="You are an funny assistant , you explain things in funny way",
 )
+print(response.response)
 ```
 
-The **`system`** parameter carries your system instruction — set it to a funny assistant and the phrasing of the output changes accordingly. The **`options`** parameter takes a dictionary of parameters to tune: temperature, top_k, top_p, min_p, stop and more.
+This changes the requested style. It does not verify the facts or update the model's learned parameters.
 
-### The limitation of `generate`
+### Change sampling through `options`
 
-**`generate` does not maintain context awareness.** It is built for *one prompt, one output*. Ask a simple question, get an answer — but it does **not** maintain history the way ChatGPT or Gemini do.
-
-To maintain history and context, Ollama has another method: **`chat`**, which is used to have a conversation, where the whole context is maintained.
-
-### Other methods
-
-Everything you can do from the CLI has a matching method:
+This is a separate call, using the ocean question and the notebook's actual settings:
 
 ```python
-ollama.list()          # list models
-ollama.pull("...")     # pull a model
-ollama.delete("...")   # delete a model
-ollama.show("...")     # show a model's details
-ollama.push("...")     # push a model
+import ollama
+
+response = ollama.generate(
+    model="llama3.2:1b",
+    prompt="why is the ocean blue",
+    options={
+        "temperature": 0.3,
+        "top_p": 0.5,
+        "top_k": 45,
+    },
+)
+print(response.response)
 ```
 
-`ollama.list()` returns model information; iterate over it if you only want names and sizes. `ollama.show()` gives you the date, the template showing how your input reaches the model, the Modelfile, licensing details, and the capabilities — for example, that Qwen 3 has completion, tool calling and thinking.
+`options` is a dictionary of generation settings. Ajay also points to `min_p` and `stop` in the documentation. The demo is about passing settings, not a comparison proving that these values are optimal.
 
-## Tool calling
+## 1:04:14 · Conversation history and other Python methods
 
-> Tool calling is a method that allows an LLM to use external tools or systems to perform tasks it cannot do by itself.
+The instructor contrasts the one-prompt generation examples with a conversation. A chatbot needs earlier turns to understand follow-up questions. He opens the **chat API documentation** to introduce `messages`; this part does not demonstrate a separate name-recall program.
 
-In simple words: a way to get an LLM to do the work it is **not initially capable of**.
+| Message field | Purpose |
+| --- | --- |
+| `role` | Identifies the user, assistant, system or tool |
+| `content` | Carries that turn's text |
+| `messages` | Supplies the sequence of turns to `chat` |
 
-We all know LLMs are very good at **generation** and very good at **understanding language**. But there are tasks where they fail:
+:::note Clarification: the application supplies history
+The lecture says `chat` maintains context. More precisely, your application sends the history in `messages`; separate calls do not automatically share memory. The [Python SDK's chat examples](https://github.com/ollama/ollama-python#chat) show this request structure. The electronic-shop demonstration below provides the video's concrete history example.
+:::
 
-- *"Go and fetch data from my database"* — it cannot
-- *"Give me the current temperature of Chandigarh"* — it cannot
-- *"Give me the news of today"* — it cannot
+### Return to the CLI to show deletion
 
-**Why?** Because of the LLM's own limitations. The biggest is the **knowledge cutoff date** — it is trained on data up to some date, and beyond that it may not answer. The other is that **the LLM cannot interact with the outside world**.
-
-With tool calling you give the LLM **additional capabilities** by giving it tools. The LLM is already very good at generation, reasoning, writing code and solving problems; tools extend that set.
-
-*(This is the same concept covered in depth in the [tools](/docs/genai/tools) and [tool calling](/docs/genai/tool-calling) chapters.)*
-
-## Modelfiles — building a customised LLM
-
-You can create your own customised model from an existing one, using a **Modelfile** — which is just a text file.
+At about [1:06:00](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=3960s), Ajay remembers a command omitted earlier. He lists models, removes `llama3.2:1b`, then lists them again:
 
 ```bash
-ollama create sentiment:latest -f Modelfile
+ollama ls
+ollama rm llama3.2:1b
+ollama ls
 ```
 
-`ollama create` takes the name you want for your new model (with a tag), and `-f` points at the Modelfile it should build from. Ollama reads the existing model, applies the instructions from the file, and produces a **new customised LLM**.
+The model disappears from the list. If you reproduce that deletion, download it again before the later Llama examples.
 
-Run `ollama ls` afterwards and your new model is there. Then:
+### List model names and sizes
 
-```bash
-ollama run sentiment:latest "I love the course"
+Returning to Python, he uses the wrapper methods corresponding to CLI operations. The list demonstration prints the whole response, then selects names and sizes:
+
+```python
+import ollama
+
+local_models = ollama.list()
+print(local_models)
+
+for i in local_models["models"]:
+    print(i["model"])
+    print(i["size"])
 ```
 
-If the Modelfile instructed JSON-only output, you get back a JSON object with a score and a label. Try *"I love the course but this course is expensive"* and it returns negative with a score.
+The size is the downloaded model information, not a measurement of all memory used by an active inference request.
 
-**The point:** simply by writing a text file, you built a customised LLM that works exactly to your requirement.
+### Pull with progress
 
-You can also do this through the Python library — the API reference has a **create a model** method — but the command-line route is simpler.
+```python
+import ollama
 
-## Mode 3 — REST API
+model_name = "deepseek-r1"
+progess = ollama.pull(model_name, stream=True)
 
-So far we have used Ollama two ways: CLI commands and the Python library. Now an important fact:
+for i in progess:
+    print(i)
+```
 
-> **Internally, Ollama works using REST API only.** The CLI commands and the Python library are just **wrappers** around the API endpoints.
+The misspelt variable `progess` comes from the notebook and is used consistently. Ajay starts the pull to demonstrate status messages, then **stops the download**. This is not an inference example.
 
-### How proprietary models work, for comparison
+### Inspect a model
 
-A company trains a model and stores it on the **web**. As a user you interact with it through **API requests**.
+```python
+import ollama
+
+models_details = ollama.show("qwen3:8b")
+print(models_details.model_dump())
+
+model_dict = models_details.model_dump()
+print(model_dict["capabilities"])
+print(model_dict["parameters"])
+```
+
+The recorded Qwen model lists `completion`, `tools` and `thinking`. Ajay also examines its template, Modelfile and licence information. The notebook uses `.dict()` and displays a deprecation warning; the code above uses `.model_dump()` to address that warning without changing the example.
+
+He mentions `delete` and `push` as other library methods. The underlying lesson is that model management can be done from application code as well as the terminal.
+
+## 1:10:21 · Tool calling: give the model access to a task
+
+Ajay starts with three requests an unaided model cannot reliably fulfil: fetch records from your database, report Chandigarh's current temperature, and provide today's news. Its learned knowledge has a cutoff, and generating text does not give it access to your live systems.
+
+His database example is concrete: write a Python function that connects to the database and performs the query. That function supplies the missing capability. The model can request its use, but your program performs the actual operation.
+
+**Check model support first.** The lecture opens the **Tools** filter in Ollama's library. Tool calling requires a model supporting that capability; the upcoming example uses `qwen3:8b`.
+
+### 1:17:54 · The workflow, in the instructor's order
+
+1. **Create tools:** write functions that perform the required tasks.
+2. **Create tool schemas:** describe each function's name, purpose, parameters, parameter types and required inputs.
+3. **Call the model:** send the user's question and those schemas. The model can answer directly or request a tool with arguments.
+4. **Execute the request:** application code selects and runs the real Python function.
+5. **Call the model again:** send the original question, assistant tool request and tool result as history, allowing it to formulate an answer.
+
+Ajay uses a city-temperature example to explain argument extraction: a question about Dehradun supplies the city name for the weather function. A schema tells the model what argument it needs; the user's message supplies its value.
+
+```mermaid
+flowchart TB
+    F["1. Python functions"] --> S["2. JSON tool schemas<br/>names, descriptions, parameters"]
+    U["User question"] --> C["3. chat(messages, tools)"]
+    S --> C
+    C -->|tool requested| J["Function name + argument values"]
+    J --> X["4. Application runs the function"]
+    X --> T["Tool result"]
+    C --> H["History: user question<br/>+ assistant tool request<br/>+ tool result"]
+    T --> H
+    H --> A["5. Another model call<br/>to formulate the answer"]
+```
+
+The distinction is essential: **a tool request is generated data; execution is Python code**. An apparent function call printed in ordinary text does not prove that the function ran.
+
+:::note Schema clarification
+The video passes explicit JSON-style schemas, so this chapter does too. Its statement that functions cannot be passed directly is too broad: the Python SDK can also derive schemas from supported Python callables. The underlying model still receives a tool description. See [Ollama's tool-calling documentation](https://docs.ollama.com/capabilities/tool-calling).
+:::
+
+## 1:26:55 · Practical tool calling: the electronic shop
+
+The shop needs to look up stock and calculate a loyalty discount. Ajay represents its database with a Python dictionary; this recording does **not** connect to a real database.
+
+The code below follows [Tool Calling.ipynb](https://github.com/campusx-official/Ollama-Youtube/blob/06244ad032b3ef982e1d4d8b9f514d3c9be60dba/Tool%20Calling.ipynb), the notebook visible in the recording. Run these blocks in sequence in one notebook or script.
+
+:::note Two different shop examples in the repository
+`Ollama.ipynb` also contains a shop example, with a **25%** cap and a three-year prompt. The separate `Tool Calling.ipynb` shown in this video uses a **30%** cap and eventually a five-year prompt. These notes follow the recorded version rather than combining the two.
+:::
+
+### Step 1: inventory and functions
+
+```python
+import ollama
+
+inventory_db = {
+    "laptop": {"stock": 5, "base_price": 1200},
+    "monitor": {"stock": 0, "base_price": 300},
+    "keyboard": {"stock": 25, "base_price": 80},
+}
+
+
+def check_inventory(product_name):
+    product_name = product_name.lower()
+
+    if product_name in inventory_db:
+        return inventory_db[product_name]
+
+    return {"stock": 0, "base_price": None}
+
+
+def calculate_loyalty_discount(base_price, years_as_customer):
+    discount = min(years_as_customer * 0.05, 0.30)
+    final_price = base_price * (1 - discount)
+    return round(final_price, 2)
+```
+
+`check_inventory` normalises the product name and returns stock and price. An unknown product returns zero stock and no price. The discount rule is **5% per customer year, capped at 30%**.
+
+Ajay then defines a name-to-function mapping, leaving its explanation until the execution step:
+
+```python
+available_functions = {
+    "check_inventory": check_inventory,
+    "calculate_loyalty_discount": calculate_loyalty_discount,
+}
+```
+
+### Step 2: describe both tools
+
+```python
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "check_inventory",
+            "description": "Get stock and price for a product",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "product_name": {"type": "string"},
+                },
+                "required": ["product_name"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_loyalty_discount",
+            "description": "Calculate final price based on loyalty years",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "base_price": {"type": "number"},
+                    "years_as_customer": {"type": "integer"},
+                },
+                "required": ["base_price", "years_as_customer"],
+            },
+        },
+    },
+]
+```
+
+`type` identifies a function tool. `function` supplies its definition. `properties` describes arguments, while `required` marks which arguments must be supplied. In the discount schema, **`base_price` is a number** and customer years are an integer; the spoken explanation briefly calls both integers, but the displayed schema distinguishes them.
+
+### Step 3: ask about an iPhone
+
+The recording first asks about an iPhone, then changes the product to a laptop. The list is called **`message`**, singular, in the notebook.
+
+```python
+message = [
+    {"role": "user", "content": "I want to buy an iPhone. Can you check stock?"},
+]
+
+response = ollama.chat(
+    model="qwen3:8b",
+    messages=message,
+    tools=tools,
+)
+
+print(response)
+print(response["message"])
+```
+
+Ajay uses **`chat`**, because its request accepts `tools`; the `generate` request shown earlier does not. The tool schemas tell Qwen what functions are available, while `message` holds the user question and later history.
+
+The displayed assistant message has empty text content and a structured tool request for `check_inventory`, with the product argument set to iPhone. Ajay inspects that request to explain where the selected name and arguments appear. The relevant execution field is **`tool_calls`**, rather than the model's explanatory text.
+
+### Step 4: dispatch and execute the requested function
+
+This is the notebook's execution block. It reads the generated request instead of manually hard-coding a product lookup.
+
+```python
+tool_calls = response["message"].get("tool_calls")
+
+if tool_calls:
+    for tool_call in tool_calls:
+        tool_name = tool_call["function"]["name"]
+        tool_args = tool_call["function"]["arguments"]
+
+        function_to_call = available_functions[tool_name]
+        result = function_to_call(**tool_args)
+
+        message.append(response["message"])
+        message.append({
+            "role": "tool",
+            "content": str(result),
+        })
+
+print(message)
+```
+
+`available_functions[tool_name]` turns a returned name into the actual Python function. `**tool_args` passes the argument dictionary as keyword arguments. The application then adds the assistant request and result to history.
+
+For the one-tool request shown, `message` now has three turns:
+
+| Order | Role | What it carries |
+| --- | --- | --- |
+| 1 | user | The stock question |
+| 2 | assistant | The request to run `check_inventory` |
+| 3 | tool | The dictionary returned by the Python function |
+
+### Step 5: send that history back
+
+```python
+final_response = ollama.chat(
+    model="qwen3:8b",
+    messages=message,
+)
+
+print(final_response["message"]["content"])
+```
+
+Notice that the **second call does not pass `tools`** in the recorded code. It asks the model to write an answer from the history assembled so far.
+
+The iPhone is absent from the dictionary, so the lookup returns zero stock and no base price. The model describes it as unavailable. Next Ajay changes the original question to a laptop stock request and reruns the blocks. The lookup now returns **5 units and a base price of 1200**.
+
+Reset `message` when rerunning a new question, as the first block does. Otherwise, earlier tool turns remain in the list.
+
+### The five-year prompt and the visible failure
+
+Finally, Ajay changes the user's content to:
+
+```text
+I am a customer for 5 years. What will be the final price of a laptop?
+```
+
+The model first requests `check_inventory`, because the discount function needs a base price. The application executes that lookup and makes the same final call above.
+
+At [about 1:43:00](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=6180s), the output prints text resembling a discount call, followed by a claimed price of **1140** and a **60** discount. The instructor moves on after presenting it as a tool-calling result.
+
+:::note Correction: the printed discount was not executed
+The displayed dispatch block processes only the **first** model response. That response requests inventory. The later call neither supplies tool schemas nor dispatches another response, so a discount call printed in its text is not executed by this code.
+
+The actual function gives `min(5 * 0.05, 0.30) = 0.25`, hence `1200 * (1 - 0.25) = 900`. **1140 is not the result of the demonstrated five-year rule.** To complete dependent tools, an application must keep providing schemas, execute each structured request and send its result back until it receives a final answer. This is a correction to the demo, not a loop shown in the video.
+:::
+
+## 1:44:02 · Modelfiles: specialised behaviour around an existing model
+
+The next problem is different: a general-purpose model may need to behave as a polite support assistant, an honest code reviewer, a legal assistant with boundaries, or a casual Gen Z chatbot.
+
+Ajay contrasts training a model from scratch with using a **trained base model plus an instruction file**. The base provides learned capability; the file says how to use it.
+
+**The student analogy:** a student already knows how to solve a difficult maths problem. Teaching a shortcut changes the way the student approaches the solution without rebuilding all that prior learning. Likewise, this Modelfile demo guides a trained model without changing its weights.
 
 ```mermaid
 flowchart LR
-    U["User writes a prompt<br/>in natural language"] --> W1["<b>Wrapper</b><br/>converts it to an API request"]
-    W1 --> S["Web server where<br/>the model is stored"]
-    S --> R["Server processes it and<br/>returns a structured response"]
-    R --> W2["<b>Wrapper</b><br/>converts it to human-readable form"]
-    W2 --> U2["Response reaches the user"]
+    B["Existing trained model<br/>learned weights"] --> C["ollama create"]
+    M["Modelfile<br/>instructions, parameters,<br/>examples and formatting"] --> C
+    C --> N["Named customised model<br/>base weights + configuration"]
 ```
 
-The whole flow happens through API calls. And whichever method you use — the chatbot, or their libraries — **those methods are wrappers**: they turn your natural-language prompt into an API request, and turn the structured response back into something readable.
+A Modelfile is a text configuration. It is not the large weight package itself. Ajay opens the Modelfile reference and explains the directives before building his sentiment model.
 
-### Ollama follows exactly the same flow
+| Directive | What it specifies |
+| --- | --- |
+| `FROM` | The base model; required |
+| `PARAMETER` | Generation and runtime settings |
+| `SYSTEM` | Instructions governing the requested behaviour |
+| `TEMPLATE` | The prompt's formatting |
+| `MESSAGE` | Example/history turns |
+| `LICENSE` | Licence text; listed in the reference tour |
 
-**The only difference:** the brain — your LLM — is **not hosted on the web**. It is hosted **locally**.
+### The sentiment configuration
 
-Whenever you call a model through Ollama, it creates a server on your local system at:
+The intended task is to read text and return **only a JSON score and a sentiment label**. The model is `llama3.2:1b`, with the actual settings from the displayed file.
+
+Save this as **`Modelfile`** in the directory from which you run the next commands. The repository offers the source as [Modelfile.txt](https://github.com/campusx-official/Ollama-Youtube/blob/06244ad032b3ef982e1d4d8b9f514d3c9be60dba/Modelfile.txt); rename it or adjust the `-f` argument.
+
+```text
+FROM llama3.2:1b
+
+PARAMETER temperature 0.1
+PARAMETER num_ctx 1024
+PARAMETER num_predict 20
+PARAMETER top_k 10
+
+SYSTEM """
+You are a sentiment analysis API.
+You ONLY output JSON in the following schema: {"score": float, "label": "string"}.
+Labels allowed: [POSITIVE, NEGATIVE, NEUTRAL].
+Scores range from 0.0 to 1.0.
+"""
+
+MESSAGE user "This product is okay, but the shipping was slow."
+MESSAGE assistant {"score": 0.4, "label": "NEUTRAL"}
+
+MESSAGE user "Absolutely amazing experience, highly recommend!"
+MESSAGE assistant {"score": 0.95, "label": "POSITIVE"}
+```
+
+`num_ctx` supplies a context budget; `num_predict` limits generated tokens. The low temperature asks for less sampling variability. The `MESSAGE` pairs demonstrate the intended format with a neutral and a positive example.
+
+:::note Corrections to the file's comments
+The repository escapes JSON inside quoted assistant `MESSAGE` values. The assistant lines above use unquoted JSON: the installed Ollama CLI preserves the source backslashes in message content, whereas these adjusted lines send plain JSON examples. The demonstrated scores and labels are unchanged.
+
+The source calls these examples “few-shot training”. Here they are **prompt examples**, not weight training. Its comment also says `top_k` narrows vocabulary to essential characters; it actually limits the candidate tokens considered during sampling. It does not enforce a JSON alphabet or schema. The [Modelfile reference](https://docs.ollama.com/modelfile#valid-parameters-and-values) defines the directives and parameters.
+:::
+
+### Create, list and try the model
+
+Ajay opens a terminal in the folder containing his file, creates `sentiment:latest`, and checks that it appears in the local list.
+
+```bash
+ollama create sentiment:latest -f Modelfile
+ollama ls
+ollama run sentiment:latest "I love the course"
+ollama run sentiment:latest "I love the course but this course is expensive"
+```
+
+`-f` identifies the configuration file. The created name allows repeated use of the same base and settings without respecifying them with every prompt.
+
+The frame at [1:57:50](https://www.youtube.com/watch?v=YcAYmIFtA0o&t=7070s) shows JSON-shaped outputs: **NEUTRAL** for the first statement and **NEGATIVE** for the mixed statement.
+
+:::note Formatting success does not prove correct sentiment
+“I love the course” expresses positive sentiment, so the recorded neutral label is a classification failure. The configuration demonstrates packaged behaviour; it does not guarantee correct labels or valid, complete JSON. A 20-token output budget can also truncate a result. Validation and changes to that budget would be application improvements, not results established by the recording.
+:::
+
+Ajay finishes by pointing to **create a model** in the API reference. He mentions doing this programmatically but prefers the command-line version for this example. No separate Python creation program is demonstrated here.
+
+## 1:59:04 · REST API: what the wrappers are doing
+
+The lecture now revisits the two interfaces already used: CLI commands and the Python library. Ajay explains that they make requests to Ollama's HTTP API.
+
+He first draws the hosted-model flow: a user prompt becomes an API request, the remote model service processes it, and the wrapper extracts a readable answer from the structured response.
+
+```mermaid
+flowchart LR
+    U["User prompt"] --> W["Application / SDK wrapper<br/>builds a request"]
+    W --> S["Model service<br/>processes the request"]
+    S --> J["Structured response"]
+    J --> R["Wrapper extracts output"]
+    R --> A["Readable answer"]
+```
+
+For a downloaded model, the same interaction goes to a **local** Ollama service:
 
 ```text
 http://localhost:11434
 ```
 
-When you `ollama run` a model, it moves from storage into working memory and **creates a server at that address**. Then, whether you interact through CLI commands or through the Python library, in the backend **every request goes to that local server** and the response comes back from it.
+:::note Correction to the server explanation
+The lecture describes each model call as creating a server. The Ollama service persists and handles requests; `run` loads and interacts with a model through that service. It does not create a separate HTTP server for every request. Ollama's [FAQ](https://docs.ollama.com/faq#how-can-i-expose-ollama-on-my-network) documents the default local binding and port.
+:::
 
-### Seeing the endpoints
+Ajay opens API endpoints to connect the library methods to HTTP requests.
 
-In the Ollama documentation, under **API references**, every method you have been using is really an **endpoint**:
+| Operation | HTTP request |
+| --- | --- |
+| Generate | `POST /api/generate` |
+| Chat | `POST /api/chat` |
+| List downloaded models | `GET /api/tags` |
+| Push | `POST /api/push` |
 
-| Method | Endpoint | Verb |
-|---|---|---|
-| `generate` | `/api/generate` | POST |
-| `list` | `/api/tags` | GET |
-| `push` | `/api/push` | POST |
+### First use the library, then call generation directly
 
-**Which endpoint to hit, and which request to send — you do not need to worry about it.** Ollama handles that for you and interacts with the server on your behalf.
+This follows [Ollama using Rest API.ipynb](https://github.com/campusx-official/Ollama-Youtube/blob/06244ad032b3ef982e1d4d8b9f514d3c9be60dba/Ollama%20using%20Rest%20API.ipynb). The same prompt is used in both requests.
 
-### Hitting the endpoint directly
+```python
+import ollama
+
+response = ollama.generate(
+    model="llama3.2:1b",
+    prompt="Explain black holes simply",
+)
+print(response.response)
+```
+
+For the direct version, the `requests` package sends the HTTP request. Install it if your environment does not already include it; that is a setup clarification for running the notebook.
+
+```bash
+pip install requests
+```
 
 ```python
 import requests
 import json
 
 url = "http://localhost:11434/api/generate"
-
 payload = {
     "model": "llama3.2:1b",
-    "prompt": "What are black holes?",
+    "prompt": "Explain black holes simply",
 }
 
 response = requests.post(url, json=payload)
 
-# the output arrives as multiple JSON lines, so iterate and join
+for i in response.iter_lines():
+    print(i)
+```
+
+The recording first prints the raw lines. Each line is a JSON object, and successive `response` fields contain pieces of the generated text. The final record has `done` set to true.
+
+Next Ajay assembles those pieces into one string:
+
+```python
 output = ""
-for line in response.iter_lines():
-    if line:
-        output += json.loads(line).get("response", "")
+
+for i in response.iter_lines():
+    if i:
+        data = json.loads(i.decode("utf-8"))
+        if "response" in data:
+            output += data["response"]
+        if data.get("done"):
+            break
 
 print(output)
 ```
 
-And for a GET endpoint:
+The direct call exposes details the Python wrapper handled earlier: URL, request method, JSON body, response parsing and text assembly. The two routes perform the same task; two generation requests do not guarantee identical wording.
+
+:::note Streaming clarification
+The displayed `requests.post` call does not set `stream=True`, so Requests buffers the HTTP response before the iteration. Ollama still returns newline-delimited JSON. To display chunks while they arrive, client-side HTTP streaming would also need to be enabled. The code above preserves the recorded call and its two inspection passes over the buffered response.
+:::
+
+### Compare listing through the wrapper and through HTTP
+
+First the library version:
 
 ```python
-r = requests.get("http://localhost:11434/api/tags")
+import ollama
+
+models = ollama.list()
+
+for model in models["models"]:
+    print(model["model"])
+```
+
+Then the direct request:
+
+```python
+import requests
+
+url = "http://localhost:11434/api/tags"
+r = requests.get(url)
 data = r.json()
 
 for model in data["models"]:
     print(model["name"])
 ```
 
-**Both approaches work and give the same output.** But notice: hitting the endpoint directly means writing these **extra lines of code**, and it gets a little more complex. Because the library is just a wrapper, it makes coding easy for you.
+Both list downloaded models, including the sentiment model created earlier. The example also shows a response-shape detail: the SDK example selects `model`, while the raw JSON example selects `name`.
 
-## Mode 4 — LangChain
+## 2:14:11 · LangChain: compose the surrounding application
 
-### What LangChain is, briefly
+Ajay introduces LangChain as an orchestration framework. A useful application may need input handling, memory, retrieval and other components alongside model generation.
 
-> LangChain is an open-source framework with which you can build advanced-level LLM applications.
-
-When you build an industry-level LLM application, frameworks like LangChain act as an **orchestrator layer**. You do not only give input to an LLM and generate output — you handle many components: memory, a web search, creating embeddings, and more. Your whole application is made of those components working together.
-
-**LangChain coordinates between all those parts.**
-
-### The RAG example
-
-Say you need a chatbot over your company's policy, which exists as a PDF — so you need a RAG-based system. Look at how many components that means handling:
+His example is a **company-policy PDF chatbot**. He draws the tasks in this order:
 
 ```mermaid
 flowchart LR
-    A["Input handling<br/>read the PDF"] --> B["Chunking"]
-    B --> C["<b>Embeddings</b>"] --> D["Database creation"]
-    D --> E["Retrieval"] --> F["<b>Final generation</b>"]
+    P["Read company-policy PDF"] --> C["Create chunks"]
+    C --> E["Generate embeddings<br/>Ollama model"]
+    E --> D["Create vector database"]
+    D --> R["Retrieve relevant text"]
+    R --> G["Final generation<br/>Ollama model"]
 ```
 
-Of those, **only embedding and final generation** are done by the AI / the LLM. **All the other components have nothing to do with AI.**
+He identifies embeddings and generation as the model-driven steps in this example. He then sketches existing components, including a PDF reader and FAISS, to explain why a framework can save repeated implementation work. **He does not build a complete RAG application in this video.**
 
-So you have two options. **One:** code each individual component from scratch — write how a PDF is read, how chunks are made, how databases are created. **Two:** use a framework like LangChain, where those components are **already written**. You just use them and build your flow.
-
-Build the whole flow that way and you get a **chain**, where the output of one component automatically becomes the input of the next, and the task executes smoothly.
-
-### Three ways to use Ollama in LangChain
+The actual notebook demonstration covers three Ollama adapters. It follows [Ollama Using LangChain.ipynb](https://github.com/campusx-official/Ollama-Youtube/blob/06244ad032b3ef982e1d4d8b9f514d3c9be60dba/Ollama%20Using%20LangChain.ipynb).
 
 ```bash
 pip install langchain-ollama
 ```
 
-**1. Chat**
+### Chat: `ChatOllama`
 
 ```python
 from langchain_ollama import ChatOllama
 
-llm = ChatOllama(model="llama3.2:1b")
+llm = ChatOllama(
+    model="llama3.2:1b",
+    temperature=0,
+)
 
-response = llm.invoke("Explain the concept of quantum entanglement in one sentence")
-
+response = llm.invoke(
+    "Explain the concept of quantum entanglement in one sentence."
+)
 print(response.content)
 ```
 
-Make sure the model is **already downloaded** on your local system, and that **Ollama is installed**. You can pass model parameters here too.
+`invoke` runs this component. `ChatOllama` returns a message, so the text is selected through `.content`. Ollama must be running and this local model must be downloaded.
 
-**2. Plain generation (non-chat)**
+### Plain text generation: `OllamaLLM`
 
 ```python
 from langchain_ollama import OllamaLLM
 
 llm = OllamaLLM(model="llama3.2:1b")
-
-response = llm.invoke("What is the capital of France?")
-
+response = llm.invoke("The capital of France is")
 print(response)
 ```
 
-**3. Embeddings**
+Here the prompt is a sentence prefix. `OllamaLLM` returns text directly, so the code prints `response` itself.
+
+### Embeddings: `OllamaEmbeddings`
+
+The recorded model is **`embeddinggemma:latest`**, not `nomic-embed-text`. Download it before reproducing this local call. The pull below is a setup step, added to make that prerequisite explicit.
+
+```bash
+ollama pull embeddinggemma:latest
+```
 
 ```python
 from langchain_ollama import OllamaEmbeddings
 
-embeddings = OllamaEmbeddings(model="nomic-embed-text")
+embeddings = OllamaEmbeddings(model="embeddinggemma:latest")
 
-# a single text
 query_result = embeddings.embed_query("What is LangChain?")
+print(query_result)
 
-# multiple texts
-doc_result = embeddings.embed_documents([
-    "Document one content",
-    "Document two content",
+# The next notebook cell embeds two strings.
+doc_results = embeddings.embed_documents([
+    "Document 1 content",
+    "Document 2 content",
 ])
+print(f"Embedding length: {len(doc_results)}")
 
-print(len(doc_result))     # 2 embeddings
+# Inspect the first document's vector, as in the notebook.
+print(doc_results[0])
 ```
 
-### Why use LangChain rather than the Ollama library directly?
+`embed_query` returns one vector. `embed_documents` returns one vector for each input string. The printed **2** is the number of document vectors, not the number of coordinates in one vector.
 
-A fair question — these simple tasks could be done straight from the Ollama library, so why bring LangChain in?
+### Why bring in LangChain for these simple calls?
 
-Go back to the RAG diagram. **The embedding task and the generation task you can do with Ollama.** But what about the other components — input handling, chunking, database creation, retrieval? **Those cannot be done with Ollama.**
+Ajay returns to the company-policy diagram: Ollama can generate embeddings and answers, while the wider application still needs document reading, chunking, storage and retrieval. LangChain's adapters give the model steps the interfaces used by the surrounding components.
 
-So say you build component one with LangChain, component two with LangChain, and this one with Ollama. **Then you cannot build a proper chain — your chain breaks right there.**
-
-But if you build **all** the components with LangChain, you can build a proper chain in which your task executes very smoothly.
-
-*(The [LangChain playlist chapters](/docs/genai/intro-to-langchain) cover this framework in depth.)*
-
-## Mode 5 — Ollama Cloud
-
-Around **September 2025**, Ollama launched a new feature: **Ollama Cloud**.
-
-### The problem it solves
-
-The same model comes in different sizes. Qwen 3-VL exists at 2B, 4B, 8B, 30B, 32B and 235B parameters. And **we all know the more parameters a model has, the better the output quality.**
-
-Still, you cannot download and use the large-parameter models locally. **Ollama is not what stops you — your hardware is.**
-
-When you run an LLM locally, all its computation happens in your **working memory** — RAM or VRAM. And that working memory is **limited**. Download a 100-billion-parameter model, try to run it, and your working memory simply does not have the capability to handle that computation. **Your whole system crashes.**
-
-### What Ollama Cloud is
-
-> Ollama Cloud is a cloud-based extension of the Ollama platform that allows you to run large language models without needing powerful local hardware.
-
-Instead of running those large models on your local system, you run them on **powerful data-centre-grade hardware that Ollama manages**. The computation that would have happened on your local system now happens on Ollama Cloud instead.
-
-:::warning Not every model can run on Ollama Cloud
-You can only run LLMs that have **cloud capabilities**. In the Ollama model list, click the **Cloud** filter to see exactly which models those are.
+:::note Correction to the “broken chain” claim
+The lecture says a direct Ollama component cannot be combined into a LangChain chain. The practical issue is matching interfaces and input/output types; direct Python operations can be wrapped or composed with framework components. Using the adapters simplifies this composition. See LangChain's [runnable interface](https://reference.langchain.com/python/langchain-core/runnables/).
 :::
 
-### Using it
+## 2:28:14 · Ollama Cloud: move inference to larger hardware
+
+Ajay dates the cloud feature to around September 2025. He reopens Qwen3-VL's sizes: 2B, 4B, 8B, 30B, 32B and 235B. Availability in the library does not mean your laptop can execute every size.
+
+His constraint is hardware: weights and inference working data need memory, and the machine has finite resources. Cloud execution puts the workload on hardware managed by Ollama instead.
+
+:::note Hardware and size clarifications
+The lecture places computation “in RAM/VRAM” and predicts that an oversized model will crash the whole system. RAM/VRAM hold data; CPU/GPU perform computation. Insufficient memory can prevent loading or cause severe slowdown, rather than guaranteeing a system crash. Also, a larger parameter count alone does not guarantee a better answer to every task.
+:::
+
+Only models offered for cloud execution are available through this route. Ajay uses the library's **Cloud** filter; choosing a local-only model does not move it to cloud automatically.
+
+### Sign in, connect and run the cloud model
+
+The recorded sequence is: sign in on `ollama.com`, run the CLI sign-in command, open the returned URL, and select **Connect**. Running sign-in again confirms the connected account.
 
 ```bash
-# 1. Sign in on the website first (ollama.com), then:
 ollama signin
-```
-
-That gives you a URL. Copy it, paste it into your browser, and click **Connect**. You are now signed in for Ollama Cloud. Run `ollama signin` again and it confirms which user you are signed in as.
-
-Then run a cloud model:
-
-```bash
 ollama run deepseek-v3.1:671b-cloud
 ```
 
-It reports that you are connected to a **671-billion-parameter model** — and that the connection is on **Ollama Cloud**, not your local system. Running a 671B model locally is unimaginable; you can use it only because of this feature.
+The session identifies a **671B cloud model**. Ajay greets it and asks about rainbow colours. The model runs remotely even though the prompt was entered in a local terminal.
 
-Ask it anything and it answers. You can also use cloud models **through the Python library** — the code is exactly the same as for any model. **The one condition:** you must be signed in to your Ollama account.
+### Use the same Python interface
+
+The cloud notebook repeats the familiar generation shape, changing the model tag:
+
+```python
+import ollama
+
+response = ollama.generate(
+    model="deepseek-v3.1:671b-cloud",
+    prompt="Why do stars twinkle?",
+)
+print(response["response"])
+```
+
+This follows [Ollama Cloud.ipynb](https://github.com/campusx-official/Ollama-Youtube/blob/06244ad032b3ef982e1d4d8b9f514d3c9be60dba/Ollama%20Cloud.ipynb). Through the local Ollama service, it uses the account connected above.
+
+Ajay then signs out and reruns the call:
+
+```bash
+ollama signout
+```
+
+The recording shows an **unauthorised** error. Sign-in is a prerequisite for this cloud route, even though the Python syntax resembles local generation.
+
+### Usage limits and the privacy trade-off
+
+The lecture shows free, Pro and Max tiers. It describes a free usage allowance and paid tiers for more usage. These are observations about the interface at recording time; consult the [current cloud documentation](https://docs.ollama.com/cloud#usage) before relying on an allowance or price.
+
+Ajay explicitly revisits privacy: the earlier local examples kept inference on the computer, whereas **cloud prompts leave it**. He points to Ollama's stated retention policy, then distinguishes that policy from keeping all processing local.
+
+:::note Provider policy versus local execution
+Ollama's [current FAQ](https://docs.ollama.com/faq#does-ollama-send-my-prompts-and-answers-back-to-ollamacom) says cloud prompt/response content is processed without being stored, logged or used for training, while limited account and usage metadata is collected. This is a service policy, not local inference. The [cloud reference](https://docs.ollama.com/cloud) also distinguishes signed-in local-service access from direct `ollama.com` API access using an API key; that second authentication route is not demonstrated in this video.
+:::
+
+## 2:43:16 · Desktop app: the final demonstration
+
+Ajay opens the installed Ollama application and walks through its chat interface.
+
+1. **New chat and Settings:** the upper-left controls start a chat and expose settings. He recommends account sign-in when cloud access is needed.
+2. **Local text model:** choose `llama3.2:1b`, type a greeting and receive a reply.
+3. **Vision model:** start another chat, choose `gemma3:4b`, attach the same resource-use infographic and ask for a summary.
+4. **Model requiring a download:** select `deepseek-r1:8b`. A download starts before it can be used. **Ajay cancels this download**; the video does not show its completed local inference.
+5. **Search the picker:** use a library model name if the model is absent from the displayed list.
+6. **Cloud model:** select `gpt-oss:120b-cloud` and request a response while signed in.
+
+The picker distinguishes models that are downloaded from those requiring a download. Image input still depends on the selected model's capabilities.
+
+The instructor recommends the app for ordinary chat and exploration, then points to CLI/code for deliberate parameter and instruction control. That recommendation describes the recorded interface; desktop features can change between versions.
+
+## 2:47:51 · Closing recap and course overview
+
+Nitish returns to close the introduction and show the longer **Generative AI using Open Source LLMs** course. He describes deeper coverage of the same material plus projects. This video itself ends after the demonstrations above; it does not contain those further project builds.
+
+The recording displays a course offer and duration estimate. Those are historical promotion details, not current purchasing information. The course link is in the video's description.
 
 ## Checklist
 
-- [ ] I can explain the difference between proprietary and open-source models across ownership, access and cost
-- [ ] I can name the friction points that make raw open-source weights hard to use
-- [ ] I can explain what Ollama is, using the WhatsApp or consultant analogy
-- [ ] I can name at least five benefits of Ollama
-- [ ] I know the hardware requirements and why they matter
-- [ ] I can pull, list, run, inspect, tune and delete a model from the CLI
-- [ ] I know why a model fails on an image, and how to fix it
-- [ ] I can use the Python library for generation, streaming, images, system instructions and options
-- [ ] I know why `generate` cannot hold a conversation and what to use instead
-- [ ] I can explain that CLI and the library are wrappers over a local REST API at port 11434
-- [ ] I can hit an Ollama endpoint directly with `requests`
-- [ ] I can use Ollama in LangChain three ways, and say why LangChain is worth it
-- [ ] I can explain what Ollama Cloud solves and how to sign in and use it
-
-## Summary table
-
-| Topic | Summary |
-| --- | --- |
-| Purpose | Ollama runs supported models locally through a CLI, Python library, REST API or LangChain. |
-| Model selection | Match model capabilities such as vision and tool calling to the task and available hardware. |
-| Customisation | Use parameters and Modelfiles to package repeatable local behaviour. |
-| Model access | Compare proprietary API access with downloadable models that can run under local control. |
-| Ollama service | Ollama packages model download, runtime and a local interface. |
-| Hardware fit | Check memory, model size and feature support before choosing a local model. |
-| CLI and Python | Pull, inspect and run a model from a terminal or application code. |
-| REST and LangChain | Call the local service directly or through a framework adapter. |
-| Modelfiles | Package a base model with system instructions and parameters for reuse. |
+- [ ] I can distinguish access to a hosted model from obtaining its weights.
+- [ ] I can explain the storage, memory and compatibility problems Ollama manages.
+- [ ] I can select a model by capability and hardware fit.
+- [ ] I can pull, list, run, inspect and change a CLI session.
+- [ ] I can explain the failed Llama image request and the switch to Gemma.
+- [ ] I can reproduce the moon generation, streaming and two-image examples.
+- [ ] I can pass the video's system instruction and sampling settings in Python.
+- [ ] I know that the application supplies conversation history.
+- [ ] I can read a tool schema, dispatch its structured request and return a result.
+- [ ] I can explain why the shop's five-year result of 1140 is wrong and the rule gives 900.
+- [ ] I can create the sentiment configuration and separate output format from label accuracy.
+- [ ] I can call generation and listing through the REST endpoints.
+- [ ] I can use ChatOllama, OllamaLLM and embeddinggemma through LangChain.
+- [ ] I can explain cloud authentication, hardware benefits and the remote data flow.
+- [ ] I can reproduce the app's chat and image steps and identify the cancelled downloads.

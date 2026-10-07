@@ -49,7 +49,7 @@ def hbar(b, x, y, w, h, frac, color, label, value):
 
 @board("graphrag-and-knowledge-graphs-pipeline")
 def graphrag_pipeline():
-    b = Board(1240, 720, "GraphRAG: build the graph once, ask two kinds of question", "Counts are from chapter code blocks 1 and 2 (24 documents)")
+    b = Board(1240, 720, "GraphRAG: build the graph once, ask two kinds of question", "Counts are from chapter code blocks 2, 4, 5 and 6 (24 documents)")
     b.group(20, 90, 1200, 190, "Index time: every step before the first question", "blue")
     d = b.card(40, 135, 200, 110, "24 documents", ["one sentence each,", "in four business areas"], "grey", size=12)
     e = b.card(280, 135, 220, 110, "extract", ["entities and relations", "an LLM call per chunk;", "a regex stands in here"], "orange", size=12)
@@ -83,7 +83,7 @@ def graphrag_pipeline():
 
 @board("graphrag-and-knowledge-graphs-vector-vs-graph")
 def graphrag_vs_vector():
-    b = Board(1240, 700, "What the graph buys and what it costs", "Numbers printed by code blocks 1, 2 and 3")
+    b = Board(1240, 700, "What the graph buys and what it costs", "Numbers printed by code blocks 3, 6 and 7")
     b.group(20, 90, 600, 290, "Local, multi-hop: questions fully supported (of 8)", "blue")
     ks = [2, 3, 4, 5, 6, 7, 8]
     vals = [0, 1, 2, 3, 4, 4, 6]
@@ -105,7 +105,168 @@ def graphrag_vs_vector():
             ["GraphRAG", "9.33 (7.33 + 2.00)", "0.0071", "0.5821"],
             ["ratio", "1,666 vector queries", "1.3 x", "104 x"]]
     b.table(50, 455, [200, 300, 300, 350], rows, "orange", size=14, row_h=44)
-    raw_text(b, 620, 660, "Parameters: 600-token chunks, 1 gleaning pass, 400 communities, all editable in block 3", 12, FAINT)
+    raw_text(b, 620, 660, "Parameters: 600-token chunks, 1 gleaning pass, 400 communities, all editable in block 7", 12, FAINT)
+    return b
+
+
+@board("graphrag-and-knowledge-graphs-worked-example")
+def graphrag_worked():
+    b = Board(1240, 640, "Worked example: follow two relations from Voltro", "Three of the 24 sentences; the same walk as chapter code block 4")
+    b.group(20, 90, 1200, 230, "The graph the three sentences make (each edge remembers its document)", "teal")
+    n4 = b.card(50, 150, 200, 90, "Nordic Safety Board", ["regulator"], "pink", size=12)
+    n3 = b.card(370, 150, 200, 90, "Helion Group", ["owner"], "orange", size=12)
+    n2 = b.card(690, 150, 200, 90, "Voltro", ["seed entity"], "green", size=12)
+    n1 = b.card(1010, 150, 200, 90, "Kestrel Motors", ["not needed"], "grey", size=12)
+    b.arrow(n4.right(), n3.left(), label="regulates\ndoc 3", color="pink")
+    b.arrow(n3.right(), n2.left(), label="owns\ndoc 2", color="orange")
+    b.arrow(n2.right(), n1.left(), label="supplies\ndoc 1", color="grey", dashed=True)
+    raw_text(b, 620, 290, "dashed edge: never touched, so document 1 is never read", 12, FAINT)
+
+    b.group(20, 350, 1200, 270, "The walk, backwards along the arrows", "green")
+    s1 = b.card(50, 395, 260, 100, "1. seed", ["start at Voltro", "named in the question"], "green", size=12)
+    s2 = b.card(360, 395, 260, 100, "2. hop 1: owns (in)", ["who points at Voltro", "with owns?", "Helion Group, doc 2"], "orange", size=12)
+    s3 = b.card(670, 395, 260, 100, "3. hop 2: regulates (in)", ["who points at Helion", "with regulates?", "Nordic Safety Board, doc 3"], "pink", size=12)
+    s4 = b.card(980, 395, 200, 100, "answer", ["Nordic Safety Board", "evidence: docs 2, 3"], "teal", size=12)
+    for a, z in ((s1, s2), (s2, s3), (s3, s4)):
+        b.arrow(a.right(), z.left())
+    raw_text(b, 620, 560, "vector top 2 for this question: doc 2 (rank 1) and a wrong one; doc 3 ranks 3rd", 12, FAINT)
+    raw_text(b, 620, 585, "path following reads 2 documents and gets both", 12, "#2b8a3e", "middle", "700")
+    return b
+
+
+@board("contextual-retrieval-and-reranking-idea")
+def contextual_idea():
+    b = Board(1240, 700, "Two repairs for retrieval: restore each chunk's context, then rescore the shortlist", "Numbers from chapter code blocks 1, 5 and 9")
+    b.group(20, 90, 1200, 250, "Repair 1, at index time: a chunk should say where it came from", "orange")
+    c1 = b.card(40, 135, 330, 110, "chunk as cut", ["Revenue grew by 12% over the", "previous quarter."], "grey", size=12)
+    c2 = b.card(450, 135, 330, 110, "add context (once per chunk)", ["a model, or here a template, writes:", "Brightwell Energy, Q3 2025 report."], "orange", size=12)
+    c3 = b.card(860, 135, 330, 110, "chunk as indexed", ["Brightwell Energy, Q3 2025", "report. Revenue grew by 12%", "over the previous quarter."], "green", size=12)
+    b.arrow(c1.right(), c2.left())
+    b.arrow(c2.right(), c3.left())
+    raw_text(b, 620, 285, "plain chunks: hit@1 0.042 (BM25), 0.050 (dense)", 12, FAINT)
+    raw_text(b, 620, 310, "with context: hit@1 1.000 (BM25), 0.742 (dense)", 13, "#2b8a3e", "middle", "700")
+
+    b.group(20, 370, 1200, 310, "Repair 2, at query time: a slower, sharper model rescores a short list", "purple")
+    s1 = b.card(40, 420, 210, 100, "first stage", ["BM25 + dense,", "fused (RRF)", "top 100"], "blue", size=12)
+    s2 = b.card(310, 420, 210, 100, "shortlist", ["top 20 sent on", "its recall is the", "ceiling for what follows"], "teal", size=12)
+    s3 = b.card(580, 420, 250, 100, "cross-encoder", ["reads query and", "document together", "7.7 ms per pair"], "purple", size=12)
+    s4 = b.card(890, 420, 300, 100, "top 5 for the answer", ["order can change,", "membership cannot", "(shortlist is a ceiling)"], "pink", size=12)
+    for a, z in ((s1, s2), (s2, s3), (s3, s4)):
+        b.arrow(a.right(), z.left())
+    raw_text(b, 620, 575, "hybrid nDCG@10 0.691  |  general reranker 0.682  |  reranker fine-tuned on 3,346 labelled pairs 0.705", 12, "#5f3dc4", "middle", "700")
+    raw_text(b, 620, 605, "a reranker trained on someone else's data can hurt; measure before you ship", 12, FAINT)
+    return b
+
+
+@board("contextual-retrieval-and-reranking-worked-example")
+def contextual_worked():
+    b = Board(1240, 640, "Worked example: why a bare chunk cannot be found", "Counting query words that appear in each chunk; the chapter code measures the same effect on 120 chunks")
+    b.group(20, 90, 1200, 130, "Query", "blue")
+    b.card(60, 130, 1120, 60, "How fast did revenue grow at Brightwell Energy in Q3 2025?", [], "blue", size=13)
+    b.group(20, 245, 590, 370, "Plain chunks: 24 chunks that all say much the same", "grey")
+    rows = [["chunk text", "shared words"],
+            ["Revenue grew by 12% ...", "1 (revenue)"],
+            ["Revenue grew by 31% ...", "1 (revenue)"],
+            ["Revenue grew by 7% ...", "1 (revenue)"],
+            ["... 21 more, same pattern", "1 each"]]
+    b.table(45, 295, [330, 220], rows, "grey", size=12, row_h=34)
+    raw_text(b, 315, 520, "24 chunks tie, so the right one is a coin toss", 13, "#343a40", "middle", "700")
+    raw_text(b, 315, 548, "hit@1 = 1 in 24 = 0.042", 13, "#c92a2a", "middle", "700")
+    b.group(630, 245, 590, 370, "Chunks with context prefixed", "green")
+    rows2 = [["chunk text", "shared words"],
+            ["Brightwell Energy, Q3 2025. Revenue ...", "5  (right one)"],
+            ["Brightwell Energy, Q2 2025. Revenue ...", "4"],
+            ["Eskarn Telecom, Q3 2025. Revenue ...", "3"],
+            ["Aldermoor Foods, Q1 2025. Revenue ...", "2"]]
+    b.table(655, 295, [380, 180], rows2, "green", size=12, row_h=34)
+    raw_text(b, 925, 520, "the right chunk wins with no ties", 13, "#2b8a3e", "middle", "700")
+    raw_text(b, 925, 548, "BM25 hit@1 = 1.000 (block 1)", 13, "#2b8a3e", "middle", "700")
+    return b
+
+
+@board("text-to-sql-and-structured-rag-pipeline")
+def sql_pipeline():
+    b = Board(1240, 720, "Text-to-SQL: link, generate, guard, grade", "Numbers from chapter code blocks 2 to 6")
+    b.group(20, 90, 1200, 260, "One question, left to right", "blue")
+    q = b.card(40, 140, 170, 110, "question", ["How many customers", "live in Lyon?"], "grey", size=12)
+    l = b.card(250, 140, 190, 110, "1. link schema", ["31 columns in,", "about 12 shown", "recall 0.979"], "teal", size=12)
+    m = b.card(480, 140, 190, 110, "2. model writes SQL", ["greedy decoding,", "SQL only"], "purple", size=12)
+    g = b.card(710, 140, 190, 110, "3. guard", ["one SELECT, read-only", "file, authorizer, timer"], "red", size=12)
+    d = b.card(940, 140, 240, 110, "4. database", ["rows come back", "compared with the gold", "rows on two databases"], "green", size=12)
+    for a, z in ((q, l), (l, m), (m, g), (g, d)):
+        b.arrow(a.right(), z.left())
+    b.arrow((805, 250), (575, 300), via=[(805, 300)], label="rejected: error text goes back", color="orange", dashed=True)
+    b.arrow((575, 300), (575, 252), color="orange", dashed=True)
+
+    b.group(20, 380, 590, 310, "Three layers in the guard", "red")
+    b.card(40, 425, 550, 70, "statement check", ["one SELECT or WITH, no second statement"], "red", size=12)
+    b.card(40, 510, 550, 70, "read-only file + authorizer", ["writes fail; ATTACH ran through the read-only file alone"], "red", size=12)
+    b.card(40, 595, 550, 70, "progress handler", ["aborts the endless recursive query after 0.5 s"], "red", size=12)
+
+    b.group(630, 380, 590, 310, "Why grade on two databases", "green")
+    b.card(650, 425, 550, 70, "database 1", ["gold and generated query return the same rows"], "green", size=12)
+    b.card(650, 510, 550, 70, "database 2: seven shipped orders changed", ["a lucky wrong query stops matching"], "green", size=12)
+    raw_text(b, 925, 625, "robust = matches on both", 13, "#2b8a3e", "middle", "700")
+    return b
+
+
+@board("text-to-sql-and-structured-rag-worked-example")
+def sql_worked():
+    b = Board(1240, 600, "Worked example: how many customers live in Lyon?", "40 customers, cities cycling Lyon, Porto, Graz, Leeds, Turin by id")
+    c1 = b.card(30, 110, 260, 130, "1. link", ["customers.city", "\"city where the", "customer lives\""], "teal", size=12)
+    c2 = b.card(340, 110, 260, 130, "2. prompt", ["customers(customer_id,", "name, city, signup_date)", "Question: ..."], "blue", size=12)
+    c3 = b.card(650, 110, 270, 130, "3. query", ["SELECT COUNT(*)", "FROM customers", "WHERE city = 'Lyon'"], "purple", size=12)
+    c4 = b.card(970, 110, 240, 130, "4. guard", ["starts with SELECT", "one statement", "reads only: allowed"], "red", size=12)
+    for a, z in ((c1, c2), (c2, c3), (c3, c4)):
+        b.arrow(a.right(), z.left())
+    b.group(30, 290, 1180, 280, "Run and grade", "green")
+    b.card(60, 340, 340, 170, "ids that are Lyon", ["5, 10, 15, 20,", "25, 30, 35, 40", "8 customers"], "green", size=13)
+    b.card(450, 340, 340, 170, "database returns", ["[(8,)]"], "green", size=16)
+    b.card(840, 340, 340, 170, "gold query returns", ["[(8,)]", "execution match", "text need not match"], "green", size=13)
+    b.arrow((400, 425), (450, 425))
+    b.arrow((790, 425), (840, 425))
+    raw_text(b, 620, 545, "COUNT(DISTINCT customer_id) would also return 8: grade the rows, not the text", 12, FAINT)
+    return b
+
+
+@board("long-context-vs-rag-decision")
+def lc_decision():
+    b = Board(1240, 680, "Long context or RAG: three questions, in order", "Cost figures are from chapter code block 1 (Claude Sonnet 5.5 list prices, 7 October 2026)")
+    d1 = b.diamond(250, 190, 330, 150, "does the corpus fit\nthe window?", "yellow", size=13)
+    r0 = b.card(520, 140, 290, 100, "RAG only", ["1,200,000 tokens does not", "fit in 1,000,000"], "green", size=12)
+    d2 = b.diamond(250, 420, 330, 150, "is it asked more often\nthan every 5 minutes?", "yellow", size=13)
+    b.arrow(d1.right(), r0.left(), label="no", color="green")
+    b.arrow(d1.bottom(), d2.top(), label="yes", color="blue")
+    r1 = b.card(520, 370, 290, 100, "cache stays warm", ["500,000 tokens: 0.1032 per", "question, 9.2 x RAG"], "blue", size=12)
+    r2 = b.card(520, 500, 290, 100, "cache goes cold", ["long context costs more", "with a cache: 1.25 vs 1.00 an hour"], "red", size=12)
+    b.arrow(d2.right(), r1.left(), label="yes", color="blue")
+    b.arrow(d2.bottom(), r2.left(), via=[(250, 550)], label="no", color="red")
+    d3 = b.diamond(1020, 420, 330, 150, "does every question\nneed the whole corpus?", "yellow", size=13)
+    b.arrow(r1.right(), d3.left())
+    s1 = b.card(920, 140, 290, 100, "long context", ["summaries, comparisons", "across the corpus"], "purple", size=12)
+    s2 = b.card(920, 540, 290, 100, "RAG first, long context", ["as the fallback", "0.2118 per question at 80% by RAG"], "teal", size=12)
+    b.arrow(d3.top(), s1.bottom(), label="yes", color="purple")
+    b.arrow(d3.bottom(), s2.top(), label="no", color="teal")
+    return b
+
+
+@board("long-context-vs-rag-worked-example")
+def lc_worked():
+    b = Board(1240, 600, "Worked example: one question about a 500,000-token knowledge base", "100 tokens in, 300 tokens out, 4,000 tokens of retrieved chunks for RAG")
+    rows = [
+        ("long context, no cache", 1.0032, "orange", "1.0032"),
+        ("long context, cache hit", 0.1032, "purple", "0.1032"),
+        ("RAG", 0.0112, "green", "0.0112"),
+    ]
+    b.group(20, 90, 1200, 280, "Dollars per question", "blue")
+    for i, (label, value, color, text) in enumerate(rows):
+        y = 140 + i * 68
+        hbar(b, 280, y, 700, 40, max(value / 1.0032, 0.004), color, label, text)
+    raw_text(b, 620, 345, "bar length is to scale: RAG is too short to see at this width", 12, FAINT)
+    b.group(20, 400, 1200, 180, "Where the numbers come from", "grey")
+    b.card(40, 445, 380, 110, "no cache", ["500,100 x 2.00 / 1,000,000", "= 1.0002 + 0.003 output"], "orange", size=12)
+    b.card(430, 445, 380, 110, "cache hit", ["500,000 x 0.20 / 1,000,000 = 0.10", "+ 0.0002 + 0.003 output"], "purple", size=12)
+    b.card(820, 445, 380, 110, "RAG", ["4,100 x 2.00 / 1,000,000 = 0.0082", "+ 0.003 output"], "green", size=12)
     return b
 
 

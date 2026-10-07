@@ -4,7 +4,7 @@ import {seriesColor} from './palette';
 import VizPanel, {useDarkViz, vizStyles as s} from './VizPanel';
 
 const GB = 1e9;
-const VOCAB = 128000;
+const VOCAB = 128256;
 
 type Spec = {layers: number; h: number; heads: number; kv: number; ffn: number};
 

@@ -740,3 +740,138 @@ No supplied numeric bank answer was arithmetically wrong. The supplied mid-semes
 Not verified: screen-reader use, GPU/NCCL, multiple machines, real network/codec throughput, private training/accounting, cryptographic secure aggregation/dropout recovery, full AdaComm/FedProx/SCAFFOLD implementations, real client populations, interleaved GPU scheduling or provider prices. No performance result is inferred from toy arithmetic. The large temporary build copy and this session's failed-build output/cache are removed after review; small temporary verification outputs remain outside the repository. All changes stay uncommitted.
 
 Codex B -> Claude: all seven assigned pages are ready for independent cross-review. Please retain ownership of unfinished RAG/platform/frontier/training files and of D1b verification. Session A's brief remains separate as you confirmed. **Codex B: DONE.**
+
+## Session wrap and new priorities (Claude, 2026-10-05, late)
+
+- **User decisions:** (1) Codex does ALL remaining chapter writing; Claude validates, improves, checks sources and enriches. (2) New standard for all content: `.codex/beginner-friendly-standard.md`
+  (beginner-friendly, detailed explanation, working labs, diagrams, plus a depth bar). (3) **The GenAI capstone (`docs/genai/23-capstone.md`) is first priority** and is being rebuilt by Claude as a real,
+  tested repository (updated for current LangChain, file names, repo structure, full explanation).
+- **Ready for Codex, not yet started:** `.codex/codex-next-prompt-4.md` (session C: advanced RAG 02 to 04, validating the GraphRAG draft, plus agent frontier 5 chapters) and
+  `.codex/codex-next-prompt-5.md` (session D: training at scale 4 chapters). Also pending: `-2.md` (session A) and `-3.md` (session B, started: 1 chapter written).
+- **Claude's authors for B2, D2 and G were stopped** (GraphRAG chapter, GraphRetrievalLab and 2 boards exist; ParallelismMemoryLab, a spec and working code exist for D2; nothing for G).
+- **Claude's improvement backlog (next sessions):** enrich Codex's thin chapters (IR, DM, CV, time series, recommenders: 59 chapters at 14 to 26 lines of code each) with real-library experiments and a second board,
+  using `.lecture-import/track-c/ENRICH-PROMPT.md` and `ENRICH-ASSIGNMENTS.md`; write `readability_audit.py` and run the beginner-friendly pass; browser-verify platform operations (5 chapters), distributed ML
+  `02-dist-challenges` (3) and everything Codex adds; check every external link; full build of the live tree.
+
+## Claude: GenAI capstone rebuilt (2026-10-05)
+
+- docs/genai/23-capstone.md rewritten (old stashed at docs/genai/_old/23-capstone-v1.md). Generated from the tested repo in .lecture-import/capstone/research-copilot (75 offline tests pass from a fresh install of the ZIP). Generator: .lecture-import/capstone/build_chapter.py (prose in ch_a/ch_b/ch_c.py).
+- 3 boards (static/img/capstone), labs ChunkSplitLab and RrfFusionLab (browser-verified: numbers match chapter, no console errors, no horizontal overflow at 390px), ZIP at static/examples/projects/research-copilot.zip.
+- Verified: tsc clean; isolated build passes. The live tree currently fails onBrokenLinks only because docs/genai/rag-advanced/graphrag-and-knowledge-graphs links to /docs/genai/rag-advanced/contextual-retrieval-and-reranking, which does not exist yet (Codex session C owns it).
+- Not verified: real-model path (no API key); live web search and YouTube; prose averages 25 words per sentence against the 22 target (Flesch about 62).
+
+
+## Codex: Ollama video gap check started (2026-10-05)
+
+User requested a minimal English update to `docs/genai/21-ollama-local-llms.md` from YouTube `YcAYmIFtA0o`, then explicitly requested checking video frames. Codex owns only that page for this task. Hindi auto-captions retrieved (3,778 segments, 2:49:40); sampled demonstration frames inspected. Main gaps: Ollama-specific tool schemas/dispatch/history and shop demo, actual sentiment Modelfile, Cloud limits/privacy/authentication failure, and desktop app. Preserving the chapter and other authors’ changes. No commits.
+
+
+## Codex: Ollama video gap check complete (2026-10-06)
+
+- Updated only `docs/genai/21-ollama-local-llms.md`: English explanations from Hindi captions plus 40 inspected frames. Preserved the chapter order; added timestamps, Ollama tool schema/dispatch/history workflow and the electronic-shop demo, actual sentiment Modelfile, cloud authentication/limits/privacy and desktop app instructions. Small chat and repeated-tool examples are labelled additions.
+- Frame-backed correction: the final shop answer prints a purported discount call/result as text after executing only inventory, then reports 1140. The displayed five-year rule gives 900; the new bounded loop enables the required second tool step. Sentiment frame actually shows NEUTRAL for the positive course sentence, so removed the guarantee of correct labels. Corrected the Ministral tag, image encoding distinction and persistent-service explanation.
+- Private source material and English topic review: `.lecture-import/ollama-video-review/`. No lecture frames embedded in the published page.
+- Checks: all 14 Python blocks parse; new conversation and tool examples exercised through the real Ollama SDK with mocked HTTP, including message history and dependent tool calls; stock cases and zero/five/ten-year discount arithmetic pass. The real Ollama CLI parses the exact Modelfile into the expected create request against a mocked endpoint. No live inference or model creation claimed; no model download.
+- Final MDX compilation, TypeScript and diff whitespace checks pass. Production client/server compilation succeeds; full site build is blocked only by the pre-existing GraphRAG link to the unfinished contextual-retrieval-and-reranking chapter. Browser verification passes for new headings and diagram, expansion/zoom/Escape, no page errors and no horizontal overflow at 390px.
+- Codex -> Claude: Ollama page ready for review. Other authors’ edits preserved, progress append-only, no commits.
+
+
+## Codex: Ollama notes style correction (2026-10-06)
+
+User clarified that these are course notes, not a timestamped video review. Removed all in-body video timestamps, frame/screenshot commentary and source narration from `docs/genai/21-ollama-local-llms.md`. Rewrote the motivation, examples and callouts to teach the concepts directly, following the surrounding chapters’ explanatory style. Kept the single source link at the top, working code and diagrams. Code unchanged; MDX compilation and Python syntax checks pass. Progress append-only; no commits.
+
+
+## Codex: factual explanations without speaker criticism (2026-10-06)
+
+User preference: course notes should state correct concepts with explanations, without timestamps or calling out a speaker’s mistakes. Applied to the Ollama page: removed the incorrect-price comparison and explained the correct tool-result flow directly; clarified downloadable/open-weight models and licences, inference configuration versus fine-tuning, local latency and hardware limits, LangChain component interfaces, and model size versus quality. Retained working code and examples. Official Ollama model/FAQ and LangChain model documentation checked. MDX and all 14 Python syntax checks pass; no commits.
+
+
+## Codex: Daily 2 local Python agent (2026-10-07, in progress)
+
+User requested YouTube ByWCsa8DbF8 as the second Daily entry, with all code, commands and explanations, and explicitly asked for transcript/code-file review. Retrieved transcript and reviewed the complete agent.py visible in video frames. Publisher’s download redirects to a community membership page; did not join or claim its downloadable original was retrieved. Authored `docs/daily/02-local-ai-agent.mdx`, a complete project in `static/examples/daily/local-python-agent/` plus ZIP, and two original boards generated by `scripts/infographics/daily_local_agent.py`. Daily sidebar position 2; no timestamps or speaker-error commentary. Pydantic AI 2.54.0 imports work. Offline checks pass. Real local Ollama inference on existing qwen3:14b successfully invoked all four tools; no model download. Build/browser checks in progress.
+
+
+## Codex: Daily 2 local Python agent complete (2026-10-07)
+
+- Added `docs/daily/02-local-ai-agent.mdx`, sidebar position 2, following the transcript and complete code visible in Tech With Tim’s ByWCsa8DbF8. English auto/manual transcripts reviewed. The publisher’s original downloadable file is membership-gated; reviewed on-screen code and did not claim original-file retrieval. Full source/verification ledger: `.lecture-import/daily-02/source-review.md`.
+- Complete project: `static/examples/daily/local-python-agent/` and `static/examples/daily/local-python-agent.zip`; all nine inline Python blocks match agent.py. Contains pinned requirements, README and offline checks. Two original boards under `static/img/daily/local-python-agent/`, generated by `scripts/infographics/daily_local_agent.py`. No timestamps or speaker-error commentary.
+- Real inference: existing qwen3:14b successfully called all four tools. Calculator result 162; actual saved text read back from the file; current time supplied by the clock. Unmodified downloadable CLI starts, calculates and exits. No new model downloaded; default qwen3.5:2b quality not tested. Offline checks verify tools, history, rejected arithmetic and file persistence from a new agent instance. Extracted ZIP passes.
+- MDX, TypeScript, whitespace and code parity checks pass. Isolated full production build passes; copied GraphRAG page has only its pre-existing unresolved contextual-retrieval link removed for validation. Live-tree build hits stale cached metadata from a prior generated-files path; no shared caches, source pages or configuration changed to hide this.
+- Browser passes: correct Daily order, two loaded/expandable boards, zoom/Escape, nine rendered Python blocks, exact ZIP download, zero page errors and no document overflow at 390px. Existing user/collaborator changes untouched. No commits.
+
+## Claude: Ollama chapter re-aligned to the video (2026-10-07)
+
+User reported docs/genai/21-ollama-local-llms.md did not match YouTube YcAYmIFtA0o. Compared the Hindi transcript (.lecture-import/ollama-video-review/source-hi.txt) section by section: intro, classification, Ollama benefits, CLI, Python library, REST, Modelfile, LangChain and cloud already matched in order and content. Fixed the divergences: (1) tool-calling demo now follows the video's step order (functions and lookup, tool schemas, messages list, chat call with tools, read tool_calls, run the function, append assistant and tool messages, second chat call, prompts for iPhone and laptop) with the dependent-call loop kept as a labelled addition; (2) hardware table restored to the video's guidance (8 GB RAM minimum, Core i5 13th generation or newer for smooth use); (3) cloud usage paragraph now states the free-to-start model with request limits and Pro/Max plans. New code run against the real Ollama SDK with a mocked HTTP server: single-pass flow and loop both pass (900 for five years). Not verified: live Ollama server (none running).
+
+## Session wrap (Claude, 2026-10-07): state for the next session
+
+- User asked to stop and continue next session. Codex sessions A to D were never started; Claude started three subagents (advanced RAG, agent frontier 01 to 03, training at scale) and stopped them mid-run to save tokens. They were NOT finished or verified. Partial output left in the tree, treat all as DRAFTS to validate before relying on them:
+  - docs/llm-engineering/03-training-at-scale/01-parallelism-strategies-for-llms.md and 02-ddp-fsdp-and-zero.md (+ ZeroStagesLab.tsx, 4 boards in static/img/llme/). 03 and 04 not written.
+  - docs/agentic-frontier: no chapters yet; scripts/infographics/afr_1.py, labs ContextWindowLab.tsx, ProtocolFlowLab.tsx, ActionSpaceLab.tsx and static/img/afr/ exist as unvalidated drafts.
+  - docs/genai/rag-advanced: only 01 (GraphRAG). 02 to 04 not written. The live-tree build still fails on onBrokenLinks until /docs/genai/rag-advanced/contextual-retrieval-and-reranking exists (or the link is removed).
+- Not yet started: causal, graph and speech chapters (10), interview additions file, Track C enrichment of 59 thin chapters (baseline in .lecture-import/track-c/readability_baseline_2026-10-07.txt; script readability_audit.py), final full build and link check.
+- Done this session: GenAI capstone rebuilt and verified; Ollama chapter re-aligned to the video; distributed ML and platform pages browser-checked (16 pass). Nothing committed. Remove the untracked .docusaurus-capstone/ folder before committing.
+
+
+## Claude subagent: agent frontier chapters 01 to 03 (2026-10-07)
+
+Took over from the Codex C session that never started. Chapters 04 and 05 are with other agents; task A (rag-advanced) is not touched.
+
+| File | Words | Python blocks run | Boards | Labs | Gates |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `docs/agentic-frontier/01-context-engineering.md` | 6,675 | 4 (188 lines of code) | 3 | ContextWindowLab | run_all 4/4, readability audit pass (Flesch 67.3), isolated build pass |
+| `docs/agentic-frontier/02-agent-interoperability-mcp-and-a2a.md` | 6,844 | 5 (295 lines) | 3 | ProtocolFlowLab | run_all 5/5, Flesch 69.2, isolated build pass |
+| `docs/agentic-frontier/03-computer-use-and-browser-agents.md` | 6,283 | 4 (162 lines) | 3 | ActionSpaceLab | run_all 4/4, Flesch 67.5, isolated build pass |
+
+- Boards: `scripts/infographics/afr_1.py` writes 9 SVGs to `static/img/afr/`, each rendered to PNG and inspected. Lab specs: `.codex/visuals/afr-1.md`. Working data and capture scripts: `.lecture-import/afr-1/`.
+- Installed into `.lecture-import/venv-llm` (additions only): mcp 2.3.0, a2a-sdk 1.2.2, playwright 1.63.0 (plus their dependencies). Ran `python -m playwright install chromium-headless-shell` once (Chrome Headless Shell 153, revision 1243); Playwright removed the older cached browser revisions 1208 and 1509/2248 as stale, which may matter to scripts that pinned them.
+- Ledger (opened 2026-10-07): MCP specification 2026-07-28 (overview, basic, versioning, tools, discover, MRTR, Streamable HTTP, stdio, authorization, changelog) and 2025-11-25 lifecycle; MCP blog release candidate 21 May 2026; AAIF migration post 21 July 2026; A2A specification 1.0.0, agent discovery page, Python tutorial, Google Open Source Blog April 2026; Anthropic context engineering post (29 Sep 2025), prompt caching, context editing, computer use and vision docs; OpenAI prompt caching and computer use guides; Gemini computer use docs; Chroma Context Rot (14 Jul 2025); Lost in the Middle (arXiv 2307.03172); Manus post (18 Jul 2025); arXiv 2508.21433; OSWorld (2404.07972), WebArena (2307.13854), BrowseComp (2504.12516), steel.dev OSWorld leaderboard (updated 30 Sep 2026, self-reported entries); OWASP LLM01:2025; Playwright ARIA snapshot and MCP pages.
+- Not verified: any real model reading a masked or summarised history; vendor price ratios (0.10 and 1.25 are placeholders from documentation); MCP authorisation flow, subscriptions/listen, Tasks extension (read, not run); A2A gRPC and REST bindings, streaming, push notifications, signed Agent Cards (read, not run); the A2A JSON-RPC error code for a version mismatch (the SDK returned -32009); real computer-use models or benchmark scores; OpenAI browse-comp page was blocked (403), so BrowseComp is cited from the arXiv abstract only.
+- Honest findings in the experiments: masking every step cost more with a prefix cache (107,548 units) than keeping everything (57,017); a clock at the top of the prompt cut cache hits from 91.6% to 0.1%; the MCP 2026-07-28 stateless style costs more bytes from the third call of a session; the SDK's tools/list defaults to ttlMs 0, cacheScope private; an ARIA snapshot (2,492 tokens) cost more than the screenshot (1,334) of the same 40-product page.
+- No commits.
+
+
+## Session D (taken over by a Claude subagent): training at scale, 4 chapters (2026-10-07)
+
+Replaces the unstarted Codex D. Folder `docs/llm-engineering/03-training-at-scale/`; boards `scripts/infographics/llme_5.py` to `static/img/llme/`; spec `.codex/visuals/llme-5.md`; work files `.lecture-import/track-b/d2-code`, `d2-src`, `d2-build.py` (assembles the chapters from the source templates and the run code), `d2-audit.py`. The earlier draft is kept in `.lecture-import/track-b/d2-old/`.
+
+| Chapter | id | Words (prose by audit / file incl. code) | Python lines | Blocks run | Boards | Lab | Flesch | Sentence | Paragraph |
+| --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | ---: |
+| 01 parallelism strategies | llme-parallelism | 4,200 / 7,352 | 308 | 6 | 3 | ParallelismMemoryLab | 65.7 | 15.2 | 61.6 |
+| 02 DDP, FSDP and ZeRO | llme-fsdp-zero | 3,454 / 6,211 | 333 | 5 | 3 | ZeroStagesLab | 67.2 | 14.9 | 55.0 |
+| 03 mixed precision and numerics | llme-precision | 4,052 / 6,550 | 265 | 6 | 3 | PrecisionRangeLab | 71.8 | 14.5 | 57.6 |
+| 04 mixture of experts | llme-moe | 4,027 / 7,190 | 289 | 5 | 4 | MoeRoutingLab | 65.7 | 16.5 | 60.2 |
+
+`run_all.py` on the folder: 22 of 22 blocks pass. Environment: Python 3.14, PyTorch 2.14.1 CPU, Transformers 5.18.0. No extra pip installs.
+
+### What was run (key numbers)
+
+- 01: real configs from the Hub (8B, 70B, and the Hermes 3 fine-tune of 405B because Meta's repo is gated): formula equals the `meta`-device `LlamaForCausalLM` count (8.030B, 70.554B, 405.853B). Vocabulary in the configs is 128,256, the paper's Table 3 says 128,000 (8.4M parameters difference). 70B on TP 8 x PP 2 x DP 4: 70.55, 30.87, 24.25, 17.85 GB per GPU for ZeRO 0 to 3. Table 4 rows multiply out to 16,777,216 tokens. 405B: 6.69 GB states + 71.9 GB activations = 78.6 GB (ZeRO 2). Communication per step per GPU: TP 236.8 GB, DP 12.6 GB, PP 8.6 GB. Real 2-process gloo: tensor-parallel `LlamaMLP` matches to 1.34e-07; zigzag context parallel matches to 5.96e-08 with 264 and 264 score pairs against 136 and 392 contiguous.
+- 02: ZeRO paper example 120.0, 31.4, 16.6, 1.9 GB; real 2-process gloo toy (reduce_scatter_single, all_gather_single); DDP, hand-written ZeRO-2, `ZeroRedundancyOptimizer` and FSDP2 `fully_shard` (explicit CPU mesh) each match a single process to 2.00e-06 after 10 AdamW steps on a 158,016-parameter Llama; Adam state 632,064 B per rank against 1,264,128 B unsharded.
+- 03: `torch.finfo` table; fp16 sum of 0.01 x 10,000 stops at 32.0, bf16 at 4.0, fp32 gives 100.0030; gradient 2e-8 is 0 in fp16, 2.0023e-08 after a 1,024 scale; real `GradScaler` on CPU grows then skips and halves on an injected overflow; 60-step runs: fp32 1.7358, bf16 autocast 1.7386, fp16 autocast + scaler 1.7363, pure bf16 2.0277 (34.7% weights unchanged), pure fp16 NaN (Adam eps 1e-8 is 0.0 in fp16; 79.2% of second moments zero); real SmolLM2-135M hidden state after block 15 has max 24,946 vs median 2.09: per-tensor e4m3 flushes 1.46% to zero, per-64 tiles 0%.
+- 04: hand example balance term 1.3625; seeded router; toy training with Zipf data (3 seeds): loss 0.0177 / 0.0180 / 0.0290 / 0.0171 for none / aux 0.01 / aux 0.1 / bias update; library `load_balancing_loss_func` equals k x the Switch formula (2.0059 vs 1.0030); meta-device counts match cards (Mixtral 46.70B and 12.88B, DeepSeek-V3 671.03B and 37.55B, gpt-oss-120b 116.83B, Qwen3-30B-A3B 30.53B and 3.35B); 2-process `all_to_all_single` expert parallelism equals one process (error 0).
+
+### Findings and corrections of the earlier draft
+
+- The draft used vocabulary 128,000 and a hard-coded config; chapter 01 now reads real configs (vocabulary 128,256). Memory numbers are unchanged to two decimals.
+- The Megatron activation formula is for GPT-style layers; applied to Llama it gives 83.8 GB for the third Table 4 layout, above 80 GB, although Meta trained it. The chapter says so and does not present 78.6 GB as a measurement.
+- `torch.distributed.reduce_scatter_tensor` and `all_gather_into_tensor` are deprecated in 2.14; the chapters use `reduce_scatter_single` and `all_gather_single`.
+- `fully_shard` without a mesh fails on this Mac (default mesh picks MPS: `torch.mps` has no `is_initialized`); an explicit CPU mesh works.
+- Cards count active parameters differently: gpt-oss-120b's 5.1B excludes the input embedding (5.71 incl., 5.13 excl.), Qwen3-30B-A3B's 3.3B includes it.
+- Kimi K3 card says 2.8T total and 104B active; an aggregator search result said about 50B active, so the card was used.
+
+### Source ledger (all opened 2026-10-07)
+
+PyTorch 2.14 docs (DDP notes, FSDP2 `fully_shard`, `ZeroRedundancyOptimizer`, AMP, AMP examples; FSDP1 page checked for deprecation: none stated); DeepSpeed config reference and getting started (PyPI 0.19.7, 2026-09-16, not installed); NVIDIA Transformer Engine FP8 primer (2.20.2, PyPI 2026-10-05); arXiv 1909.08053, 2104.04473, 2205.05198, 1910.02054, 2407.21783 (v3), 1710.03740, 2209.05433, 2412.19437, 2101.03961, 2401.04088 (full text); 2509.25149, 2402.17762, 1701.06538, 2006.16668, 2401.06066, 2408.15664, 2304.11277 (abstract pages only); Ultra-Scale Playbook page; Hub `config.json` and cards: Llama 3.1 (NousResearch copies and Hermes 3), Mixtral-8x7B, gpt-oss-120b, DeepSeek-V3, V4-Pro, V4-Flash, V4.1-Flash, Kimi-K3, Qwen3-30B-A3B, Qwen3.6-35B-A3B, Kolibri-1, MiMo-V2.5, Llama-4-Scout (card only).
+
+### Not verified
+
+GPU behaviour (NCCL, real TP/PP/FSDP/DeepSpeed/Transformer Engine runs, fp8 kernels), throughput or MFU of anything, the 2026 model cards' benchmark claims, DeepSeek-V4 and Kimi K3 parameter counts beyond a config-based plausibility estimate (all layers assumed MoE), Kolibri-1's balancing method beyond the card text, FSDP paper body (abstract only), screen reader, and the live full-site build (one pre-existing broken link from `docs/genai/rag-advanced/graphrag-and-knowledge-graphs` to a page another session is writing; verified in an isolated copy with that page stubbed).
+
+## Session wrap 2 (Claude, 2026-10-07): agents resumed then stopped again at the user's request
+
+All three agents were stopped mid-run. Everything below is UNVERIFIED unless stated; validate before relying on it (build, tsc, run_all.py, browser check of boards and labs).
+- docs/llm-engineering/03-training-at-scale: 01, 02, 03 (mixed precision), 04 (mixture of experts) now all exist as drafts, with labs ZeroStagesLab, PrecisionRangeLab (precisionMath.ts), MoeRoutingLab (moeMath.ts) and boards in static/img/llme/. The agent was at its "build, audit, run" step when stopped, so the final checks did not complete.
+- docs/agentic-frontier: 01 context engineering, 02 interoperability MCP and A2A, 03 computer use exist as drafts (labs ContextWindowLab, ProtocolFlowLab, ActionSpaceLab; boards in static/img/afr/). 04 voice and 05 DSPy not written. Spec claims about MCP and A2A were being checked against current official specs; not confirmed.
+- docs/genai/rag-advanced: chapters 02 to 04 still NOT written. Labs ContextVsRagLab, SchemaLinkingLab, RerankLab (+ rerankData.ts, schemaLinkData.ts) and 6 boards in static/img/rag-adv/ exist without chapters. docs/genai/rag-advanced/_old/ holds a stashed copy made by the agent; check it matches 01 before deleting. The live build stays blocked on the missing contextual-retrieval-and-reranking page.
+- Still not started: causal, graph and speech chapters (10), interview additions file, Track C enrichment, final full build and link check.
