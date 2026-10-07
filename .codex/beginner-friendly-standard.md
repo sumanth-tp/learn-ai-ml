@@ -56,3 +56,7 @@ Before: "Exponential smoothing updates a state with a convex combination of the 
 After: "Imagine you are guessing tomorrow's temperature. You trust today's reading a little and your old guess a lot. Exponential smoothing does exactly that: new guess = 0.5 x today + 0.5 x old guess. With readings 10, 12, 11, 13 and a first guess of 10, the guesses are 10, 11, 11, 12. The weight 0.5 is called alpha. In words: a bigger alpha trusts today more."
 
 The simplicity comes from the example, not from removing the idea. Keep the precise statement too, one paragraph later, once the reader has the picture.
+
+## How to fill this shape well
+
+This file is the shape. `.codex/write-like-claude.md` is the craft: run a real experiment, explain with a small example before the idea, teach every code block, name the failure. The measured gate is `.lecture-import/track-c/quality_gate.py`.

@@ -84,3 +84,11 @@ Working checks/scripts/logs remain under ignored `.lecture-import/ollama-video-r
 ## Outstanding
 
 No missing video sections identified in this review. Whole-site build remains blocked by the two unrelated GraphRAG links. No commit, push or deployment requested or performed.
+
+## Teaching and timestamp-rule update, 2026-10-07
+
+Supersedes the earlier published timestamp navigation: the current chapter has exactly one source-video link at the top and no video timestamp headings, prose, links or index. Narrator and frame commentary removed. Source lookup and timestamp evidence remain private in the review cache.
+
+Applied `.codex/write-like-claude.md`: added explanations around code, a glossary, worked arithmetic, two inspected SVG boards, an interactive shop lab, common mistakes and reasoned practice questions. A labelled live addition uses an existing Llama 3.1 model; it rejected string discount arguments and the model then emitted an unexecuted text retry. Only inventory actually ran. Independent rule checks produced 900.0 and 840.0. The live result is presented as incomplete, not success.
+
+Final quality gate passes; Flesch 59.1, mean sentence 11.4 words. Typecheck, 27-block syntax check, original SDK/CLI mock checks, final MDX and browser checks pass. Thirty-three Python/TypeScript lab cases match. Full build still fails on the same two unrelated GraphRAG links. No extra model downloads, cloud calls, commits or publishing.

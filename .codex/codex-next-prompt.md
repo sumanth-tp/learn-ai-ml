@@ -75,3 +75,5 @@ DEFINITION OF DONE for a chapter: G1 to G10 in .codex/senior-ai-plan.md section 
 the prose numbers equal the printed numbers; no bare {...} in prose and currency written as \$; own words except the lecture text you were told to
 keep; not-from-the-lecture sections marked; at least one rendered and inspected board; every lab typechecks, is keyboard operable, has a data table,
 works in dark mode and at 390 px, and its defaults reproduce a printed number.
+
+QUALITY (added 2026-10-07, mandatory): read .codex/write-like-claude.md before writing and imitate the chapters it names. Every chapter needs a real-library experiment whose printed numbers you quote. Before you report any chapter done, run python3 .lecture-import/track-c/quality_gate.py <your folder>, fix every FAIL, and paste the final GATE line in your report. A chapter that fails the gate is not done.

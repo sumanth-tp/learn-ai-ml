@@ -4,6 +4,14 @@ How to turn a video course, lecture series, book or paper into chapters under
 `docs/`. Follow this end to end; the rules exist because each one was learned by
 getting it wrong first.
 
+> **Depth and teaching quality (mandatory, added 2026-10-07).** Before writing any chapter, read `.codex/write-like-claude.md` and imitate the chapters it lists. Run one real-library experiment per chapter and quote its output. Before reporting a chapter done, run `python3 .lecture-import/track-c/quality_gate.py <your folder>` and fix every failure; paste its final `GATE:` line into your report.
+
+---
+
+## 0. No timestamps in the notes
+
+Never put video timestamps in chapter headings, sentences, link text, `&t=` links or timestamp tables, and do not narrate the video ("on screen", "in the frame"). Keep one source line at the top. The user has asked for this more than once, and the quality gate fails chapters that break it.
+
 ---
 
 ## 1. Establish the contract before writing

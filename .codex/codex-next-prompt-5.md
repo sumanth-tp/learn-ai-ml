@@ -31,3 +31,5 @@ DO NOT TOUCH: anything owned by sessions A, B or C, docs/llm-engineering/01-adap
 
 BUILD AND REPORT: build with DOCUSAURUS_GENERATED_FILES_DIR_NAME=.docusaurus-codex-d npx docusaurus build --out-dir .lecture-import/codex-build-d ; npx tsc --noEmit ; .lecture-import/codetest/run_all.py on your folder; never save a chapter that imports
 a missing lab or image; no commit. Append your report to the progress file (rows, ledger, what you did not verify) and finish with "Codex D: DONE" and the counts.
+
+QUALITY (added 2026-10-07, mandatory): read .codex/write-like-claude.md before writing and imitate the chapters it names. Every chapter needs a real-library experiment whose printed numbers you quote. Before you report any chapter done, run python3 .lecture-import/track-c/quality_gate.py <your folder>, fix every FAIL, and paste the final GATE line in your report. A chapter that fails the gate is not done.

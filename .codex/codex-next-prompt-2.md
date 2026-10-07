@@ -43,3 +43,5 @@ docs/agentic-frontier, docs/llm-engineering/03-training-at-scale, and any file o
 
 REPORT: after each part update .codex/senior-ai-progress.md (chapter log rows, ledger rows, findings). When A, B and C are done write "Codex: BATCH 2 DONE" with counts and
 list every lecture or source claim you had to correct. Do not commit or push.
+
+QUALITY (added 2026-10-07, mandatory): read .codex/write-like-claude.md before writing and imitate the chapters it names. Every chapter needs a real-library experiment whose printed numbers you quote. Before you report any chapter done, run python3 .lecture-import/track-c/quality_gate.py <your folder>, fix every FAIL, and paste the final GATE line in your report. A chapter that fails the gate is not done.

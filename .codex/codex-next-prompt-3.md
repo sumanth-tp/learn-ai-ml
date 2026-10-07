@@ -42,3 +42,5 @@ Save a chapter only after the lab and board files it uses exist. Do not commit o
 
 REPORT: after each group append to the progress file (chapter log rows, ledger rows, findings, what you did not verify). When all seven are done append "Codex B: DONE" with counts and
 every source or lecture claim you had to correct.
+
+QUALITY (added 2026-10-07, mandatory): read .codex/write-like-claude.md before writing and imitate the chapters it names. Every chapter needs a real-library experiment whose printed numbers you quote. Before you report any chapter done, run python3 .lecture-import/track-c/quality_gate.py <your folder>, fix every FAIL, and paste the final GATE line in your report. A chapter that fails the gate is not done.
