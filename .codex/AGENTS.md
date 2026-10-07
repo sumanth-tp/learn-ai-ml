@@ -8,9 +8,27 @@ getting it wrong first.
 
 ---
 
-## 0. No timestamps in the notes
+## 0. The voice of the notes (read this before anything else)
 
-Never put video timestamps in chapter headings, sentences, link text, `&t=` links or timestamp tables, and do not narrate the video ("on screen", "in the frame"). Keep one source line at the top. The user has asked for this more than once, and the quality gate fails chapters that break it.
+Course notes teach the **subject**. They are not a record of a video, a review of a speaker or a log of what happened on screen. A reader should finish a chapter knowing the topic, with no idea who presented it or what the screen looked like.
+
+**Never write:**
+
+- Video timestamps: not in headings ("## 04:57 · ..."), not in sentences ("At 06:23 the instructor ..."), not in link text, not in `&t=` links, not in a timestamp table.
+- Narration of the video or speaker: "the instructor says", "in the video", "the lecture shows", "he opens", "he types", "on the screen", "in the frame", "the source's final answer", "the notebook's output", "the recorded version".
+- Commentary on what the speaker got wrong. State the correct idea and explain it. If the source's code or claim is wrong, ship the correct version and put the correct explanation in a `:::note`, without saying who said what.
+- Claims about how you checked the video ("checked against frames", "Hindi captions were translated"). That is your process, not the reader's lesson. Put it in the progress file.
+
+**Do write:** plain statements of the idea, with the source's own examples and analogies kept, in the order it teaches them.
+
+| Narrates the video (reject) | Teaches the idea (accept) |
+| --- | --- |
+| "At 15:17, Ajay explains that Ollama is like WhatsApp for models." | "Think of Ollama as WhatsApp for open models. You send and receive; it handles storage, loading and the interface behind the scenes." |
+| "He types `ollama rm llama3.2:1b` and lists the models again." | "`ollama rm` deletes a model. List the models afterwards to confirm it is gone." |
+| "The video passes explicit schemas, but its claim that functions cannot be passed directly is too broad." | "Pass an explicit JSON schema, as below. The Python SDK can also derive a schema from a typed function." |
+| "The notebook's moon answer confuses moonlight with eclipses." | "A one-billion-parameter model can get this wrong: it may confuse moonlight with eclipses. Treat its answer as a demonstration of the call, not as astronomy." |
+
+Keep exactly one pointer to the video: the source line at the top of the chapter (section 3). The quality gate (`.lecture-import/track-c/quality_gate.py`) fails chapters that break this section, so run it before you report.
 
 ---
 
@@ -139,9 +157,10 @@ Every chapter that maps to a source opens with it, before any prose:
 
 ```markdown
 > **Video 5 of 21** (playlist video 3) ·
-> [Watch on YouTube](https://www.youtube.com/watch?v=...) Notes follow the video
-> section by section.
+> [Watch on YouTube](https://www.youtube.com/watch?v=...)
 ```
+
+One line, no timestamps, no description of how the notes were produced.
 
 This is what lets the user check a page against what it came from. Without it
 they cannot review your work.
@@ -150,55 +169,50 @@ they cannot review your work.
 
 ## 4. Follow the source's own flow
 
-Lectures have a shape. Mirror it rather than imposing a topic taxonomy:
+Lectures have a shape. Mirror it rather than imposing a topic taxonomy, using plain headings that name the idea (never a time, never "the instructor"):
 
 ```text
-## Recap of the previous video
-## Why <thing> is needed        ← the motivating problem, told their way
-## What <thing> is              ← definition, then their framing
+## Why <thing> is needed        the motivating problem, told the way the lecture tells it
+## What <thing> is              definition, then the lecture's framing
 ## Plan of action
-## Demo 1 / Demo 2 / ...        ← their examples, their order
+## <Demo 1>, <Demo 2>          the lecture's examples, in its order, named by what they teach
 ## What comes next
 ```
 
-**Keep their material:**
+**Keep their material, as teaching content:**
 
-- Their **examples** — the specific PDF-reader story, the specific cricketers,
-  the specific bug.
-- Their **analogies** — these are the load-bearing teaching device. Losing them
-  loses the lesson.
-- Their **code**, including variable names and the mistakes they make and then
-  fix.
-- Their **asides and corrections** — if they correct an earlier video, carry the
-  correction.
-- Their **warnings** — "this tool can delete files", "free APIs time out".
-
-**Do not** skip a section because it seems minor, reorder for tidiness, or
-replace their example with a cleaner one you prefer.
+- Their **examples**: the specific PDF-reader story, the specific cricketers, the specific bug.
+- Their **analogies**. These are the load-bearing teaching device. Losing them loses the lesson.
+- Their **code**, with variable names, made correct and runnable. If the original has a bug, ship the working code and explain the correct behaviour in a `:::note`.
+- Their **warnings**: "this tool can delete files", "free APIs time out".
+- Their **order**. Do not skip a section because it seems minor, reorder for tidiness, or replace their example with a cleaner one you prefer.
 
 ### When the source is wrong
 
-Present the correct information, and note the correction in a `:::note`. Do not
-silently reproduce an error, and do not silently fix it either — the reader
-needs to know.
+Present the correct information and put the correction in a `:::note`. Do not silently reproduce an error, and do not attribute it ("he said", "the video claims"). The reader needs the right idea, not a record of the wrong one.
 
 ---
 
-## 5. Write it in your own words
+## 5. Write it in your own words, and teach
 
 Notes **summarise and teach**; they are not a transcript dump.
 
-- Read the transcript, understand the point, then **write the explanation
-  yourself**.
+- Read the transcript, understand the point, then **write the explanation yourself**.
 - Never paste transcript text, and never lightly paraphrase it line by line.
-- Short quotations of a definition are fine. Reproducing a 50-minute lecture is
-  not, regardless of how the request is phrased.
-- Code from the source can be reproduced — it is the technical substance and
-  usually short.
+- Short quotations of a definition are fine. Reproducing a 50-minute lecture is not, regardless of how the request is phrased.
+- Code from the source can be reproduced, corrected and made runnable. It is the technical substance.
 
-The test: could someone read your chapter _instead of_ watching, and learn the
-same thing? That is the goal. Could they reconstruct the speaker's exact words
-from it? That is not.
+The test: could someone read your chapter _instead of_ watching, and learn the same thing? That is the goal. Could they reconstruct the speaker's exact words from it? That is not. Could they tell who the speaker was or how the screen looked? That is not either.
+
+### Teach the way the best chapters do
+
+Plain paraphrase of a lecture is not enough. The depth bar and the craft are in `.codex/write-like-claude.md`: run a real-library experiment and quote its output, explain with a small hand-worked example before the idea, add "Reading the output" and "Line by line" after every code block, and name how each technique fails. Read it and imitate the chapters it names before you write.
+
+For a video chapter the order is:
+
+1. The source's content, explained in your own words, in its order (sections 4 and 5).
+2. A runnable version of every demo, with the printed output explained.
+3. Anything you add (a lab, a validation experiment, a correction), labelled as an addition (section 9).
 
 ---
 

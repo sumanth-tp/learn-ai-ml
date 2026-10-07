@@ -68,6 +68,9 @@ playlist order, nothing skipped, nothing merged.
 
 ## Step 1: English transcript (for every video, before any notes)
 
+**Voice of the published notes (added 2026-10-07, overrides the lines above where they conflict).**
+"Feel like watching the video" means the same topics, order, examples, analogies and code, not a record of the video. The English working transcript may keep timestamps, because it is a private working file. The published notes must not: no timestamps anywhere, no "the instructor says", "in the video", "he opens", "in the frame" or "the notebook's output", and no remarks about what the speaker got wrong. State each idea directly, correct any error in a `:::note` without attributing it, and keep one source line at the top. Read `.codex/AGENTS.md` section 0 and `.codex/write-like-claude.md`, then run `python3 .lecture-import/track-c/quality_gate.py <your folder>` before you report.
+
 The captions are Hinglish written in Devanagari. English technical words appear
 transliterated: "लैंग ग्राफ" = LangGraph, "स्टेट" = state, "नोड" = node, "इनवोक"
 = invoke. Produce one English transcript file per video:
