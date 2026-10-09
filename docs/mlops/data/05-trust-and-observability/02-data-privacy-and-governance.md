@@ -13,25 +13,75 @@ import KAnonymityLab from '@site/src/components/viz/KAnonymityLab';
 
 **In one line.** A privacy control works only when the team can state what data it protects, from whom and for how long.
 
+:::tip Before you start
+
+**You should already know**
+
+- What a group-by and a count are ([Session 1, data representations](/docs/mlops/data/representations-for-ml)).
+- Why a table's lineage matters when data must be deleted ([Lecture 12, experiments, metadata and lineage](/docs/mlops/data/experiments-metadata-lineage)).
+
+**Reading time:** about 45 minutes, plus a few seconds to run the code.
+
+**After this chapter you can**
+
+- Show by counting that a table with no names can still single people out.
+- Generalise and suppress until every group has at least k records, and measure what that costs.
+- Say what k-anonymity does not promise, and why a release needs more than one check.
+
+:::
+
+## In 30 seconds
+
+Remove the names from a table and it feels anonymous. It is not, if the remaining columns are rare in combination. A 34-year-old woman in a small town who is divorced and has a PhD may be the only such person in the file. Anyone who knows those facts about her can find her row.
+
+k-anonymity is a check that every such combination appears at least k times, so nobody stands alone. It is a useful floor, and a floor is not a roof.
+
+## Words you will meet
+
+| Term | Plain meaning | Tiny example |
+| --- | --- | --- |
+| Direct identifier | A field that names a person | Name, account number |
+| Quasi-identifier | Fields that identify only in combination | Age, sex, ZIP code |
+| Pseudonymisation | Replace a direct identifier with a token | `u_83fa` in place of a name |
+| Linkage | Joining a release to outside data on shared columns | Release plus a voter list |
+| k-anonymity | Every combination of quasi-identifiers appears at least k times | The smallest group has 4 rows |
+| Generalise, suppress | Coarsen a value, or drop a rare row | Age 34 becomes 30s |
+| Homogeneity | Everyone in a group shares the sensitive value | All four have the same diagnosis |
+| Differential privacy | A formal limit on how much one person changes a published result | Noise scaled by sensitivity over epsilon |
+
+
 ## The idea in plain words
 
 A data team can make a table technically accurate and still use it irresponsibly. Customer records may be collected for one purpose and copied into a model dataset for another. A supposedly anonymous export may retain combinations of attributes that point back to individuals. A training snapshot may outlive the retention rule of its source. **Data governance** names the ownership, policies and evidence needed to keep data use within an approved purpose; privacy controls implement those decisions in collection, storage, analysis and release.
 
-The lecture lists catalogues, access control, retention and audit as governance practices. It also names data minimisation, masking, tokenisation, encryption, anonymisation and pseudonymisation as protection techniques. These are not interchangeable. Encryption protects data while keys are controlled, but authorised users can still see plaintext. Tokenisation replaces a direct identifier with a reference, but the mapping service can reconnect it. Pseudonymised data can remain personal data when re-identification is possible. A genuinely anonymous release requires an assessment of what recipients can link with other information.
+Governance practices include catalogues, access control, retention and audit. Protection techniques include data minimisation, masking, tokenisation, encryption, anonymisation and pseudonymisation. These are not interchangeable. Encryption protects data while keys are controlled, but authorised users can still see plaintext. Tokenisation replaces a direct identifier with a reference, but the mapping service can reconnect it. Pseudonymised data can remain personal data when re-identification is possible. A genuinely anonymous release requires an assessment of what recipients can link with other information.
 
 <Infographic src="/img/dm/privacy-governance.svg" alt="The data lifecycle moves from purpose-limited collection through protected transformation to reviewed release; a smallest age and ZIP group of four gives k equals four, while differential privacy needs a unit and epsilon budget." caption="A group count and a noise parameter answer different privacy questions; neither substitutes for governance of the whole data flow." />
 
-The source's worked table groups people by age and ZIP code. If the smallest released group contains **four** people, the table is **4-anonymous** with respect to those chosen quasi-identifiers. The source writes a re-identification probability bound of 1/4. That interpretation needs strong assumptions, such as an attacker knowing only the group and treating all four members as equally likely. It is not a general upper bound: outside knowledge, other columns and group homogeneity may reveal identity or a sensitive attribute. A group of one clearly fails a k≥2 goal and needs suppression or generalisation before release.
+A worked table groups people by age and ZIP code. If the smallest released group contains **four** people, the table is **4-anonymous** with respect to those chosen quasi-identifiers. It is common to write a re-identification probability bound of 1/4. That interpretation needs strong assumptions, such as an attacker knowing only the group and treating all four members as equally likely. It is not a general upper bound: outside knowledge, other columns and group homogeneity may reveal identity or a sensitive attribute. A group of one clearly fails a k≥2 goal and needs suppression or generalisation before release.
 
-:::note Beyond the lecture
+:::note Correction
 
-The source equates k-anonymity with a 1/k re-identification bound and describes differential privacy as adding epsilon-calibrated noise. The sections below correct those shortcuts. K-anonymity controls indistinguishability on selected quasi-identifiers but has known inference limits. Differential privacy requires a defined neighbouring-dataset relationship, sensitivity, mechanism and composed privacy budget; arbitrary noise does not establish its guarantee.
+It is common to equate k-anonymity with a 1/k re-identification bound and to describe differential privacy as adding epsilon-calibrated noise. Both are shortcuts, and the sections below correct them. K-anonymity controls indistinguishability on selected quasi-identifiers but has known inference limits. Differential privacy requires a defined neighbouring-dataset relationship, sensitivity, mechanism and composed privacy budget; arbitrary noise does not establish its guarantee.
 
 :::
 
 The lab begins with equivalence groups of sizes **4, 5 and 7**, so **k = 4**. It shows **1/4 = 0.25** only as a uniform-guess illustration within a known group. Move the first group's size to one to see why a unique combination fails even a modest k target. A higher k does not guarantee that the group's sensitive values are diverse.
 
 <KAnonymityLab />
+
+## Worked example, step by step
+
+A release has three age and sex groups of 4, 5 and 7 people, 16 rows in all. An attacker knows a target's age and sex and that the target is in the release.
+
+1. **k.** The smallest group has 4 rows, so k = 4.
+2. **Guess chance per row.** In a group of 4 each row is guessed with chance 1/4 = 0.25; in a group of 5, 1/5 = 0.20; in a group of 7, 1/7 = 0.143.
+3. **Mean guess chance.** (4 x 0.25 + 5 x 0.20 + 7 x 0.143) / 16 = (1 + 1 + 1) / 16 = 3/16 = 0.1875. In general it is the number of groups divided by the number of rows.
+4. **Add one rare person.** A fourth group of 1 row makes k = 1, and the mean guess chance becomes 4/17 = 0.235. That one person is identified with certainty.
+5. **Homogeneity.** If all 4 people in the first group have the same diagnosis, the attacker learns the diagnosis for sure, although the chance of naming the person is still 0.25.
+6. **Noise for a count.** A count query with sensitivity 1 and epsilon 0.5 gets Laplace noise of scale 1 / 0.5 = 2. Three such releases cost epsilon 3 x 0.5 = 1.5 under basic composition.
+
+In words: k-anonymity limits singling out on the chosen columns, and says nothing about what the group has in common. The first block below prints steps 1 to 6.
 
 ## How it works
 
@@ -95,6 +145,128 @@ assert basic_composed_epsilon == 1.5
 
 The sensitivity assumption breaks if one person can contribute many rows. A real release must bound contributions, use a vetted random mechanism, track all disclosures and review utility and privacy together. A fixed or public random seed would not be an appropriate shortcut for a private release.
 
+### The worked example in code
+
+This block reproduces the six steps of the worked example.
+
+```python
+groups = [4, 5, 7]
+k = min(groups)
+mean_guess = len(groups) / sum(groups)
+with_rare = groups + [1]
+print("k", k, "per-row guess", [round(1 / g, 3) for g in groups], "mean", round(mean_guess, 4))
+print("with one rare person: k", min(with_rare), "mean", round(len(with_rare) / sum(with_rare), 4))
+diagnoses = {"group_a": ["flu"] * 4}
+print("homogeneous group reveals", set(diagnoses["group_a"]))
+print("laplace scale", 1 / 0.5, "basic composed epsilon", 3 * 0.5)
+```
+
+**Reading the output.** It prints k 4, guess chances 0.25, 0.2 and 0.143 with a mean of 0.1875, then k 1 and mean 0.2353 once the lone record joins, then `{'flu'}`, then scale 2.0 and composed epsilon 1.5.
+
+### An experiment on a real table
+
+Does pseudonymising a real table protect anyone, and what does generalising cost? The block below loads the UCI Adult census extract (48,842 rows before cleaning, CC BY 4.0, a US census income extract) and keeps 45,222 complete rows. It gives each row a random-looking hashed ID, which is the pseudonymisation. It then treats age, sex, race, marital status, native country, education and occupation as quasi-identifiers and measures how many rows are unique as quasi-identifiers are added. Next it generalises (age to decades, marital status, country, education and occupation to a few groups), suppresses rows in groups smaller than 5, checks the sensitive column (income over 50K) for homogeneity, and compares a gradient-boosted model's AUC on the same rows before and after.
+
+Versions used: Python 3.14.6, scikit-learn 1.9.1, pandas 2.3.3, NumPy 2.5.3. Uniqueness inside a sample is not uniqueness in the population, and an attacker needs outside data that covers the same people. It runs in under ten seconds once the data is cached.
+
+```python
+import hashlib
+
+import numpy as np
+import pandas as pd
+from sklearn.datasets import fetch_openml
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+
+adult = fetch_openml("adult", version=2, as_frame=True).frame.dropna().reset_index(drop=True)
+adult["pid"] = [hashlib.sha256(f"salt-{i}".encode()).hexdigest()[:10] for i in range(len(adult))]
+adult["income"] = (adult["class"] == ">50K").astype(int)
+qi = ["age", "sex", "race", "marital-status", "native-country", "education", "occupation"]
+
+def group_sizes(frame, columns):
+    return frame.groupby(columns, observed=True)["pid"].transform("size")
+
+print("rows", len(adult), "pseudonymised ids unique", adult.pid.nunique())
+print("quasi-identifiers kept, share of rows unique, smallest group")
+for count in range(1, len(qi) + 1):
+    sizes = group_sizes(adult, qi[:count])
+    print(f"{count} {'+'.join(qi[:count]):56} {(sizes == 1).mean():.3f} {sizes.min()}")
+
+general = adult.copy()
+general["age"] = (general["age"].astype(int) // 10 * 10).astype(str) + "s"
+general["marital-status"] = np.where(general["marital-status"].astype(str).str.startswith("Married"), "married", "other")
+general["native-country"] = np.where(general["native-country"].astype(str) == "United-States", "US", "other")
+general["education"] = pd.cut(general.pop("education-num").astype(int), [0, 9, 12, 13, 16], labels=["school", "some college", "bachelors", "advanced"]).astype(str)
+general["occupation"] = np.where(general["occupation"].astype(str).isin(["Exec-managerial", "Prof-specialty", "Tech-support", "Sales", "Adm-clerical"]), "office", "other")
+for k in (2, 5, 10):
+    sizes = group_sizes(general, qi)
+    print(f"generalised: share of rows in groups smaller than {k}: {(sizes < k).mean():.4f}")
+
+released = general[group_sizes(general, qi) >= 5].copy()
+sizes = group_sizes(released, qi)
+rate = released.groupby(qi, observed=True)["income"].transform("mean")
+print("k=5 release keeps", len(released), "rows, suppressed", len(general) - len(released), f"({1 - len(released) / len(general):.4f})")
+print("smallest group", sizes.min(), "rows whose group is all one income class", round(((rate == 0) | (rate == 1)).mean(), 4))
+print("rows whose group is at least 90% one class", round(((rate <= 0.1) | (rate >= 0.9)).mean(), 4))
+print("share of rows with income over 50K", round(adult.income.mean(), 3))
+print("mean guess success of an attacker who knows the quasi-identifiers: before", round((1 / group_sizes(adult, qi)).mean(), 4), "after", round((1 / sizes).mean(), 4))
+print("share of rows with k=1 before", round((group_sizes(adult, qi) == 1).mean(), 4), "after", round((sizes == 1).mean(), 4))
+
+def auc(frame):
+    features = frame.drop(columns=["pid", "class", "income", "fnlwgt"])
+    features = features.astype({c: "category" for c in features.select_dtypes(["object", "category"]).columns})
+    x_train, x_test, y_train, y_test = train_test_split(features, frame.income, test_size=0.3, random_state=0)
+    model = HistGradientBoostingClassifier(categorical_features="from_dtype", random_state=0).fit(x_train, y_train)
+    return roc_auc_score(y_test, model.predict_proba(x_test)[:, 1])
+
+print("AUC on the same rows: original", round(auc(adult.loc[released.index]), 4), "generalised", round(auc(released), 4))
+```
+
+The output of the run:
+
+```text
+rows 45222 pseudonymised ids unique 45222
+quasi-identifiers kept, share of rows unique, smallest group
+1 age                                                      0.000 1
+2 age+sex                                                  0.000 1
+3 age+sex+race                                             0.001 1
+4 age+sex+race+marital-status                              0.012 1
+5 age+sex+race+marital-status+native-country               0.056 1
+6 age+sex+race+marital-status+native-country+education     0.138 1
+7 age+sex+race+marital-status+native-country+education+occupation 0.303 1
+generalised: share of rows in groups smaller than 2: 0.0070
+generalised: share of rows in groups smaller than 5: 0.0248
+generalised: share of rows in groups smaller than 10: 0.0528
+k=5 release keeps 44101 rows, suppressed 1121 (0.0248)
+smallest group 5 rows whose group is all one income class 0.0766
+rows whose group is at least 90% one class 0.4547
+share of rows with income over 50K 0.248
+mean guess success of an attacker who knows the quasi-identifiers: before 0.436 after 0.0123
+share of rows with k=1 before 0.3026 after 0.0
+AUC on the same rows: original 0.9276 generalised 0.9245
+```
+
+**Reading the output.** Each row of the first table adds one quasi-identifier and reports the share of rows that are the only one with that combination, and the smallest group. The generalised lines show the share of rows that sit in groups smaller than 2, 5 and 10. The next lines describe the k=5 release: rows kept, rows suppressed, the share of rows whose whole group has one income class, and the share whose group is at least 90% one class. `mean guess success` is the average of 1 over group size.
+
+**Line by line.**
+
+- `transform("size")` gives every row the size of its quasi-identifier group, so a size of 1 marks a unique row.
+- `general.pop("education-num")` removes the numeric education column. Leaving it in would put the original education back into the release.
+- `(rate == 0) | (rate == 1)` finds rows whose group has income class all low or all high, the homogeneity case.
+
+### What the numbers say
+
+Pseudonymising did nothing for privacy. All 45,222 hashed IDs are unique, yet with seven quasi-identifiers 30.26% of rows are the only one with their combination, and an attacker who knows the quasi-identifiers guesses a row with mean success 0.436. With only age, sex and race it is 0.1%, so the risk comes from combining columns.
+
+Generalising and suppressing fixed the singling out cheaply. Dropping 1,121 rows (2.48%) left a smallest group of 5, no unique rows, and mean guess success 0.0123. Model AUC moved from 0.9276 to 0.9245 on the same rows, a cost of 0.0031. The model draws its signal from columns other than the quasi-identifiers.
+
+The surprise is what k=5 did not fix. In 7.66% of the kept rows, everyone in the group has the same income class, so an attacker who locates the group learns the class with certainty. About three quarters of rows are in the low class (24.8% earn over 50K), so many groups are mostly one class, and 45.47% of rows sit in groups at least 90% one class. A table can pass a k check and still disclose the sensitive attribute.
+
+Limits: one old dataset, one choice of quasi-identifiers and groupings, and an attacker who knows every quasi-identifier exactly.
+
+<Infographic src="/img/dm-enrich/dm2-k-anonymity-cost.svg" alt="Share of unique rows climbs from 0.0 percent with one quasi-identifier to 30.3 percent with seven, falls to zero after generalising and suppressing 2.48 percent of rows, while 7.66 percent of rows stay in single-class groups." caption="Look first at the rising bars: uniqueness comes from combining columns, and the cost of fixing it is small." />
+
 ## Designing with it
 
 ### Start with purpose and data inventory
@@ -157,6 +329,16 @@ Review the system after a new data source, model feature or release recipient is
 
 :::
 
+## Common mistakes
+
+| Mistake | Why it feels right | What to do instead |
+| --- | --- | --- |
+| Calling a table anonymous because the names are gone | The obvious identifiers are removed | Count unique quasi-identifier combinations. With seven columns 30.26% of rows were unique |
+| Reading k as a 1/k risk bound | k = 5 sounds like a one-in-five chance | Treat 1/k as a uniform-guess illustration. Outside knowledge and homogeneous groups break it |
+| Stopping when k is met | The check passed | Also test the sensitive column. In 7.66% of kept rows the whole group shared one income class |
+| Leaving a derived column behind | It was not on the quasi-identifier list | Remove or coarsen every column that carries the same information, such as the numeric education code |
+| Quoting epsilon without its unit and composition | A single number looks rigorous | State the unit of privacy, the sensitivity, the mechanism and how many releases share the budget |
+
 ## Practice questions
 
 <details>
@@ -194,12 +376,28 @@ A correctly implemented mechanism limits the output change between defined neigh
 
 </details>
 
+<details>
+<summary><strong>Q6.</strong> (Medium) A release has groups of 3, 6 and 11 rows. What are k and the mean guess chance for an attacker who knows the group, and what does adding a group of 1 do?</summary>
+
+k = 3. The mean guess chance is the number of groups divided by the number of rows: 3 / 20 = 0.15. Adding a group of 1 gives k = 1 and 4 / 21 = 0.190, and that one person is identified with certainty.
+
+</details>
+
+<details>
+<summary><strong>Q7.</strong> (Stretch) A table is 5-anonymous on age band and ZIP, yet an attacker learns a patient's diagnosis with certainty. How, and what extra check would catch it?</summary>
+
+The patient's group of five may contain only one diagnosis. Knowing which group the patient is in is then enough, and no row needs to be singled out. In the experiment 7.66% of rows were in such groups. The extra check is a diversity check on the sensitive column, which counts the distinct values in each group, with suppression or further generalisation where a group is homogeneous.
+
+</details>
+
 ## Go deeper
 
 - [European Commission on personal data](https://commission.europa.eu/law/law-topic/data-protection/information-business-and-organisations/application-gdpr_en) distinguishes anonymous and re-identifiable data.
 - [European Commission on data minimisation](https://commission.europa.eu/law/law-topic/data-protection/reform/rules-business-and-organisations/principles-gdpr/overview-principles/what-data-can-we-process-and-under-which-conditions_en) states purpose and necessity principles.
 - [ICO anonymisation guidance](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/data-sharing/anonymisation/how-do-we-ensure-anonymisation-is-effective/) discusses k-anonymity and its limits.
 - [NIST SP 800-226](https://csrc.nist.gov/pubs/sp/800/226/final) evaluates differential privacy guarantees and implementation hazards.
+- [UCI Adult dataset](https://archive.ics.uci.edu/dataset/2/adult), opened 2026-10-09: 48,842 instances, CC BY 4.0, citation Becker and Kohavi (1996), doi 10.24432/C5XW20. The experiment loads it through scikit-learn's OpenML loader.
+- ICO anonymisation guidance (the link above), opened 2026-10-09: k-anonymity is weak with many personal-data variables and open to homogeneity and background-knowledge attacks; linkability is the mosaic effect, where combining sources identifies someone even after direct identifiers are removed.
 - Built from the course lecture "dm-l15-privacy-governance" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
@@ -209,9 +407,16 @@ A correctly implemented mechanism limits the output change between defined neigh
 - **[Apache Airflow docs](https://airflow.apache.org/docs/)** `docs`
   Apache; How production data pipelines are scheduled and orchestrated.
 
-## Check your understanding
+## Check yourself
 
 - [ ] I can identify a dataset's purpose, owner, access boundary and retention path.
-- [ ] I can calculate k=4 for the lecture's minimum group and explain why 1/4 is not a universal risk bound.
+- [ ] I can calculate k=4 for a minimum group of four and explain why 1/4 is not a universal risk bound.
 - [ ] I can distinguish masking, tokenisation, pseudonymisation, encryption and anonymisation.
 - [ ] I can state the unit, sensitivity, mechanism and budget needed for a differential privacy claim.
+- [ ] I can compute k and the mean guess chance for a set of group sizes, and show how one unique record changes them.
+- [ ] I can explain why a pseudonymised table with unique hashed IDs can still be 30% unique on its quasi-identifiers.
+- [ ] I can say why a 5-anonymous table can still disclose a sensitive value, and name the check for it.
+
+## Where to go next
+
+Next: [Lecture 16, observing data in production](/docs/mlops/data/data-observability), which watches the data after release. Related: [Lecture 12, experiments, metadata and lineage](/docs/mlops/data/experiments-metadata-lineage), which finds every copy of a record when it must be deleted.

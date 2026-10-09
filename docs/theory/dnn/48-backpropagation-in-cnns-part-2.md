@@ -12,8 +12,8 @@ tags: [cnn, backpropagation, max-pooling, multi-channel, gradient-flow, deep-lea
 
 Part 1 covered the gradient through a single convolutional layer. This part covers the remaining pieces: backprop through max pooling, through multi-channel convolutions, and through the full stack from loss to the first layer. Together these form a complete picture of how a CNN trains.
 
-![Max pooling with 2×2 windows and stride 2 — the backward pass routes gradient only to the position that held the maximum (the argmax switch)](https://cs231n.github.io/assets/cnn/maxpool.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![Max pooling with 2×2 windows and stride 2 — the backward pass routes gradient only to the position that held the maximum (the argmax switch)](https://cs231n.stanford.edu/assets/cnn/maxpool.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## Backpropagation through max pooling
 

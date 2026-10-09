@@ -12,7 +12,7 @@ tags: [python, functions, closures, scope, args, kwargs, first-class-functions]
 
 ## Start here: input, work, result
 
-> **Video connection:** [functions, 2:05:51](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=7551s), [parameters, 2:15:02](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=8102s), and [returns, 2:28:50](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=8930s).
+> **Video connection:** functions, parameters and returns in [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 Defining a function gives a block of work a name. Calling it runs the block:
 

@@ -20,7 +20,7 @@ This readable companion follows the document’s topic order. The PDF contains a
 
 A Transformer builds representations of a sequence using attention and feed-forward layers. In language tasks, the sequence consists of tokens representing words, word fragments, characters, or bytes. Attention lets one position use information from other positions without passing it through a chain of recurrent states.
 
-The source uses “The cat sat on the mat” to illustrate context: predicting “mat” depends on the preceding words, and attention can connect the prediction position directly to those earlier positions.
+The standard illustration is “The cat sat on the mat” to illustrate context: predicting “mat” depends on the preceding words, and attention can connect the prediction position directly to those earlier positions.
 
 ### Why move beyond recurrent models?
 
@@ -41,7 +41,7 @@ Processing a known sequence can be parallelised across positions. Autoregressive
 
 *Source: printed page 2.*
 
-The original Transformer has an **encoder** that reads the source sequence and a **decoder** that generates the target sequence. For example, the source’s translation illustration maps “The cat sits” to “Le chat est assis”.
+The original Transformer has an **encoder** that reads the source sequence and a **decoder** that generates the target sequence. For example, a standard translation illustration maps “The cat sits” to “Le chat est assis”.
 
 ```mermaid
 flowchart TD
@@ -91,7 +91,7 @@ $$
 
 :::note Correction: vocabulary size and context
 
-Character tokenisation normally has a **smaller vocabulary and longer sequences**, not the very large vocabulary shown in the source table. Also, a basic embedding lookup gives the same vector for the same token ID; the attention layers make representations depend on context.
+Character tokenisation normally has a **smaller vocabulary and longer sequences**, not a very large vocabulary. Also, a basic embedding lookup gives the same vector for the same token ID; the attention layers make representations depend on context.
 :::
 
 ## 4. Positional encoding
@@ -117,7 +117,7 @@ Here $p$ is the token position and $i$ indexes a sine/cosine pair. For $d_{\text
 | 2 | 0.909 | −0.416 | 0.093 | 0.996 | 0.004 | 1.000 |
 | 3 | 0.141 | −0.990 | 0.139 | 0.990 | 0.006 | 1.000 |
 
-These values are recalculated from the formula; several entries in the source’s example table differ.
+These values are recalculated from the formula.
 
 **Learned position embeddings** use a trainable lookup vector for each supported position. Relative-position methods instead represent relationships between positions; the notes name Transformer-XL and T5 as examples.
 
@@ -144,7 +144,7 @@ $$
 
 In self-attention, all three come from the same sequence. A token can attend to itself as well as other permitted tokens. A causal or padding mask changes which positions are permitted.
 
-For one head, $Q$ and $K$ have shape $n \times d_k$, and $V$ has shape $n \times d_v$, omitting the batch dimension. The source often writes $n \times d_{\text{model}}$; that is a simplified full-width example rather than the general per-head shape.
+For one head, $Q$ and $K$ have shape $n \times d_k$, and $V$ has shape $n \times d_v$, omitting the batch dimension. Notes often write $n \times d_{\text{model}}$; that is a simplified full-width example rather than the general per-head shape.
 
 ## 6. Scaled dot-product attention
 
@@ -155,7 +155,7 @@ $$
 \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}+M\right)V.
 $$
 
-The source presents the unmasked case. Here $M$ makes the masking used later in the decoder explicit; it is zero for allowed positions and negative infinity for blocked positions.
+The basic form is unmasked. Here $M$ makes the masking used later in the decoder explicit; it is zero for allowed positions and negative infinity for blocked positions.
 
 1. Multiply $QK^\top$ to obtain pairwise scores.
 2. Divide by $\sqrt{d_k}$ to control the scale of those scores.
@@ -178,7 +178,7 @@ $$
 
 Scaling matters because larger dot products can push softmax towards saturated probabilities and small gradients.
 
-**The source’s one-key example:** let $Q=[1,0]$, $K=[1,0]$, $V=[2,3]$, and $d_k=2$. The score is $1/\sqrt{2}\approx0.707$. With only one available key, its softmax weight is 1, so the output is $[2,3]$. With multiple keys, the weights form a distribution across them.
+**A one-key example:** let $Q=[1,0]$, $K=[1,0]$, $V=[2,3]$, and $d_k=2$. The score is $1/\sqrt{2}\approx0.707$. With only one available key, its softmax weight is 1, so the output is $[2,3]$. With multiple keys, the weights form a distribution across them.
 
 ## 7. Multi-head attention
 
@@ -273,7 +273,7 @@ $$
 \operatorname{FFN}(x)=\max(0,xW_1+b_1)W_2+b_2.
 $$
 
-It expands from $d_{\text{model}}$ to $d_{\text{ff}}$, applies a nonlinearity, and projects back. The source’s example is $512\rightarrow2048\rightarrow512$.
+It expands from $d_{\text{model}}$ to $d_{\text{ff}}$, applies a nonlinearity, and projects back. A typical example is $512\rightarrow2048\rightarrow512$.
 
 | Component | What to remember |
 | --- | --- |
@@ -287,7 +287,7 @@ $$
 \operatorname{LN}(x)=\gamma\odot\frac{x-\mu}{\sqrt{\sigma^2+\epsilon}}+\beta.
 $$
 
-The mean and variance are computed across the token’s features. The source describes **post-norm**, where normalisation follows the residual addition. Pre-norm architectures place normalisation before a sublayer instead. Residual connections help optimisation; they do not guarantee that gradient problems disappear.
+The mean and variance are computed across the token’s features. The original Transformer uses **post-norm**, where normalisation follows the residual addition. Pre-norm architectures place normalisation before a sublayer instead. Residual connections help optimisation; they do not guarantee that gradient problems disappear.
 
 ## 11. Training Transformers
 
@@ -324,7 +324,7 @@ $$
 \eta(t)=\eta_{\min}+\frac{\eta_{\max}-\eta_{\min}}{2}\left(1+\cos\frac{\pi t}{T}\right).
 $$
 
-Here $t$ starts at the beginning of the decay phase and $T$ is its duration. The source also mentions label smoothing as a regularisation option. Neither cosine decay nor label smoothing is a universal requirement.
+Here $t$ starts at the beginning of the decay phase and $T$ is its duration. Label smoothing is another regularisation option. Neither cosine decay nor label smoothing is a universal requirement.
 
 ### Teacher forcing
 
@@ -342,7 +342,7 @@ During teacher-forced training, the decoder receives the correct preceding targe
 | Transfer learning | Reuses knowledge or representations learned on one task for another |
 | Parameter-efficient tuning | Adapts a limited set of parameters, for example with LoRA or adapters |
 
-The source’s masked-language example is “The `[MASK]` is great”, with “cat” as the hidden training target. BERT-style masked prediction and GPT-style next-token prediction construct supervision differently.
+A masked-language example is “The `[MASK]` is great”, with “cat” as the hidden training target. BERT-style masked prediction and GPT-style next-token prediction construct supervision differently.
 
 A task-specific model might classify text, answer questions, translate, or summarise. Fine-tuning often uses labelled examples, but continued pre-training on domain text can also be self-supervised. Pre-training need not happen only once in a model’s lifetime.
 
@@ -373,7 +373,7 @@ The notes connect Transformer layers to a language-model head that produces next
 - **Top-k sampling** limits the candidate set to the highest-probability tokens.
 - **Top-p sampling** uses a candidate set whose cumulative probability reaches a threshold.
 - **Zero-shot prompting** supplies a task without examples; **few-shot prompting** adds examples.
-- **System instructions** set application behaviour. The source also lists prompts requesting step-by-step explanations.
+- **System instructions** set application behaviour. Prompts can also request step-by-step explanations.
 
 Applications include chat, summarisation, translation, question answering, code generation, search, retrieval-augmented generation, and creative writing.
 
@@ -412,7 +412,7 @@ For dense attention, the pairwise computation costs $O(n^2d)$, and materialising
 | Sparse or sliding-window attention | Restricts which positions attend to which others | Reduces connections and changes the attention pattern |
 | Linear-attention methods | Reformulate or approximate attention to avoid the full pairwise matrix | Not generally identical to ordinary softmax attention |
 
-The source’s “2–4× faster” statement for FlashAttention is a performance example, not a guarantee across hardware, sequence lengths, or implementations.
+A “2–4× faster” figure quoted for FlashAttention is a performance example, not a guarantee across hardware, sequence lengths, or implementations.
 
 ### Long context, experts, and quantisation
 
@@ -431,11 +431,11 @@ In a **mixture-of-experts** model, a router selects a subset of expert networks 
 
 These ratios do not describe total application memory or guaranteed speedups. Scales, higher-precision tensors, activations, and caches also use memory. The notes list post-training quantisation, quantisation-aware training, GPTQ, and AWQ; accuracy and speed need to be measured for the chosen method.
 
-Other optimisation topics in the source are mixed precision, gradient accumulation, gradient checkpointing, optimiser choice, and efficient attention. Gradient accumulation increases the effective batch size across steps; checkpointing saves activation memory by recomputing some forward operations during backpropagation.
+Other optimisation topics are mixed precision, gradient accumulation, gradient checkpointing, optimiser choice, and efficient attention. Gradient accumulation increases the effective batch size across steps; checkpointing saves activation memory by recomputing some forward operations during backpropagation.
 
 ### Revision checklist
 
-Use the source’s interview prompts to check whether you can explain:
+Use these interview prompts to check whether you can explain:
 
 - [ ] Why token order needs positional information.
 - [ ] How queries, keys, values, scaling, softmax, and masking fit together.

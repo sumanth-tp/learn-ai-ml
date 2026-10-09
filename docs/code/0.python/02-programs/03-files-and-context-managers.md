@@ -12,7 +12,7 @@ tags: [python, files, pathlib, context-manager, encoding, with-statement]
 
 ## Start here: where is Python looking?
 
-> **Video connection:** [project structure and paths, around 3:20:30](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=12030s).
+> **Video connection:** project structure and paths in [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 Suppose the project looks like this:
 

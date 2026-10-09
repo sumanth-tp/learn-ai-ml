@@ -22,23 +22,23 @@ tags:
 import Infographic from '@site/src/components/Infographic';
 
 > **Part 8 of 9** ·
-> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=33775s) ·
-> 9:22:55 to 10:30:25 · Notebook: `RAG-Tutorials/1-rag_evaluation.ipynb` (the
+> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
+> Notebook: `RAG-Tutorials/1-rag_evaluation.ipynb` (the
 > instructor's RAG tutorials folder). Notes follow the video in order.
 
 This chapter shows how to put numbers on an LLM application: you build a small
 test dataset in LangSmith, let a second LLM grade your app's answers, and read
 the scores for a plain chatbot first and then for a RAG pipeline.
 
-## The end of the guardrails demo (9:22:55)
+## The end of the guardrails demo
 
 The first half-minute of this section is the tail of the previous chapter. The
 instructor finishes the healthcare chatbot, the project that combines every
 guardrail middleware, says he will explain it properly in a separate video
 later, and signs off. Nothing here belongs to evaluation, so the real topic
-starts at 9:23:20.
+starts.
 
-## What this module is about (9:23:20)
+## What this module is about
 
 He introduces the module as a response to what viewers asked for most: how do
 you apply evaluation metrics to whatever you built, whether that is a chatbot, a
@@ -57,7 +57,7 @@ The plan for the module, in his words turned into a list:
 - The code and written material are shared in the video description, and he
   asks you to implement everything yourself.
 
-### The LangSmith pages he opens (9:24:30)
+### The LangSmith pages he opens
 
 Before any code he shows the LangSmith evaluation pages on the LangChain
 website. The headline reads "Harden your application with LangSmith
@@ -71,7 +71,7 @@ pairs, for instance a question about the largest planet in the solar system next
 to the expected answer. That table is exactly the shape of the dataset he
 builds later: an input column and a reference output column.
 
-## Why evaluate a chatbot at all (9:25:30)
+## Why evaluate a chatbot at all
 
 He switches to an Excalidraw page and draws the simplest possible system: an
 input goes into a chatbot and an output comes out. Then he lists the questions
@@ -93,7 +93,7 @@ that appear the moment you have such a chatbot.
 <Infographic
   src="/img/agentic-course/08-chatbot-eval-plan.svg"
   alt="The chatbot evaluation plan: input to chatbot to output, data holding input and ground-truth output, three questions about which LLM, ground truth and metrics, LLM as a judge with a prompt tracked in LangSmith, and four numbered steps."
-  caption="Redrawn from the instructor's Excalidraw page at 9:30:30."
+  caption="Redrawn from the Excalidraw page."
 />
 
 He then writes the steps he will follow, which become the skeleton of the first
@@ -110,7 +110,7 @@ He uses LangSmith because the tracking can be done entirely in the LangChain
 cloud, so every run is visible there. (He says "LangGraph cloud" at one point;
 the product he is using is LangSmith.)
 
-## Setup (9:30:40)
+## Setup
 
 He opens the notebook, whose first markdown cell is the tutorial introduction:
 a short definition of RAG, the three things you will learn (how to create test
@@ -125,7 +125,7 @@ the RAG half.
 Then he adds a heading, "Chatbot Evaluation", and installs the two libraries he
 needs.
 
-### Installing with uv (9:31:00)
+### Installing with uv
 
 ```bash
 uv add langsmith openai
@@ -138,7 +138,7 @@ text even offers a `--frozen` flag, but the right fix is just to spell it
 `langsmith`. The corrected command resolves 253 packages and audits 232. Check
 the name before you chase an environment problem.
 
-### LangSmith account and API key (9:32:00)
+### LangSmith account and API key
 
 - Search for LangSmith and sign up. The tagline he reads out: a unified
   observability and evaluation platform where teams can debug, test and monitor
@@ -163,7 +163,7 @@ rotate any key that has been displayed. In your own file the lines are simply
 `OPENAI_API_KEY=...` and `LANGSMITH_API_KEY=...`.
 :::
 
-### The first notebook cell (9:33:20)
+### The first notebook cell
 
 ```python
 import os
@@ -190,7 +190,7 @@ current names. Older tutorials use `LANGCHAIN_TRACING_V2` and
 `LANGCHAIN_API_KEY`; they still work in some versions but prefer the new ones.
 :::
 
-## Step 1: create the data points (9:34:40)
+## Step 1: create the data points
 
 Before writing the code he shows where the data will live. In LangSmith,
 **Evaluation** contains **Datasets and Experiments**. A dataset is a table of
@@ -199,7 +199,7 @@ scored by evaluators. The existing list in his account shows datasets from
 earlier work (for instance "Lilian Weng Blogs Q&A" and "QA Example Dataset"),
 each with an experiment count, an example count and a created date.
 
-### Creating a dataset from code (9:36:40)
+### Creating a dataset from code
 
 The code needs a `Client`, which is the object that talks to LangSmith and
 uploads data. He builds the cell live:
@@ -281,10 +281,10 @@ The notebook's saved output also contains `LangSmithRateLimitError` messages
 (HTTP 429, "tenant exceeded usage limits ... monthly_traces of 100"). That is
 the free tier's monthly trace cap, which his account had used up from earlier
 videos. Your code still runs, but traces stop being stored. He comments on it
-again at 10:04.
+again.
 :::
 
-### What the dataset looks like in LangSmith (9:40:00)
+### What the dataset looks like in LangSmith
 
 Refreshing the **Chatbots Evaluation** dataset in the browser shows all five
 rows with a created time, a split called `base`, an **Inputs** column and a
@@ -307,14 +307,14 @@ examples into a Python list.
 He closes this part by recapping what the code did: create a client, choose a
 dataset name, create an empty dataset, then add any number of examples to it.
 
-## Step 2: define the metrics, LLM as a judge (9:41:20)
+## Step 2: define the metrics, LLM as a judge
 
 A recap of the board, then the next piece. The model under test produces an
 output; the judge is a second LLM call that looks at the question, the expected
 answer and the produced answer, and says whether the produced answer is
 correct. He builds two evaluators: one graded by an LLM, one by plain Python.
 
-### The wrapped OpenAI client (9:43:20)
+### The wrapped OpenAI client
 
 He imports `openai` and `wrappers` from `langsmith`, then wraps the client with
 `wrappers.wrap_openai(openai.OpenAI())`. Hovering over `wrap_openai` shows its
@@ -328,7 +328,7 @@ the judge as an expert professor whose job is grading students' answers. This
 is the "teacher grading a quiz" framing that he reuses in every judge prompt
 later.
 
-### The correctness evaluator (9:44:40)
+### The correctness evaluator
 
 An evaluator in LangSmith is simply a function. This one takes three
 dictionaries, which LangSmith fills in by argument name:
@@ -397,7 +397,7 @@ RAG half he replaces this style with structured output, which removes the
 problem. Prefer that version for anything you will rely on.
 :::
 
-### The concision evaluator (9:48:20)
+### The concision evaluator
 
 The second metric is deliberately simple. It makes no LLM call; it only
 compares lengths:
@@ -419,13 +419,13 @@ that a response must satisfy the rule to pass.
 | `correctness` (first version) | LLM judge answers CORRECT or INCORRECT | `inputs`, `outputs`, `reference_outputs` | `True` or `False` |
 | `concision` | Python: `len(response) < 2 * len(reference answer)` | `outputs`, `reference_outputs` | `1` or `0` |
 
-## Step 3: run the evaluation (9:50:00)
+## Step 3: run the evaluation
 
 Now the experiment itself. Three pieces are needed: the application, a thin
 function that connects each dataset row to the application, and the call to
 `client.evaluate`.
 
-### The application under test (9:50:40)
+### The application under test
 
 First a default instruction, then a function that stands in for the chatbot.
 `my_app` takes a question, a model name and an instruction string, and returns
@@ -448,7 +448,7 @@ def my_app(question: str, model: str = "gpt-4o-mini", instructions: str = defaul
 The default instruction asks for a short, concise answer of one short sentence.
 That instruction is also why `concision` is a fair test for this bot.
 
-### The target function (9:51:20)
+### The target function
 
 `client.evaluate` calls your system once per dataset row and passes it that
 row's `inputs` dictionary. `ls_target` is the adapter: it picks the question out
@@ -464,7 +464,7 @@ def ls_target(inputs: str) -> dict:
 (The type hint says `str` but `inputs` is a dictionary, as the body shows. It is
 harmless, but if you copy the pattern, hint it as `dict`.)
 
-### Running it (9:52:20)
+### Running it
 
 While typing the call, he opens the signature tooltip and reads out the
 parameters: the target, the data, the evaluators, a summary-evaluators option,
@@ -502,7 +502,7 @@ The `5it` is the progress bar: five rows processed in about ten seconds. (A
 `ipywidgets` and is harmless.) The printed link opens the experiment, and the
 experiment name carries the suffix `ac3151d5`, which he tells you to remember.
 
-### Reading the result in LangSmith (9:54:00)
+### Reading the result in LangSmith
 
 In **Datasets and Experiments** the dataset **Chatbots Evaluation** now shows
 one experiment. Opening it lists the experiments with an average score for each
@@ -539,7 +539,7 @@ two metrics disagree about the same answer: a model can be right but wordy
 (Google and OpenAI) or short but wrong (LangSmith). That is the main reason to
 use more than one metric.
 
-## Step 4: compare another model (9:55:00)
+## Step 4: compare another model
 
 He now answers his original question, "which model?". He keeps the same
 dataset, same evaluators and same `my_app`, and only changes which model the
@@ -585,7 +585,7 @@ LangSmith screens:
 <Infographic
   src="/img/agentic-course/08-chatbot-results.svg"
   alt="The LangSmith experiments table with gpt-4o-mini at concision 0.40 and correctness 0.60 and gpt-4-turbo at concision 0.00 and correctness 1.00, with the per-example pass and fail chips for the first experiment."
-  caption="Redrawn from the LangSmith result screens at 9:54:45 to 9:57:00."
+  caption="Redrawn from the LangSmith result screens."
 />
 
 His commentary stumbles on the numbers: he first expects the new model's
@@ -612,7 +612,7 @@ several evaluation metrics and compare several models, then pick the one you
 prefer. The next videos move to RAG, where the data is your own or a company's
 documents, so the metrics change.
 
-## RAG evaluation: the plan (9:57:30)
+## RAG evaluation: the plan
 
 Back in Excalidraw he starts a second page titled RAG evaluation. The three
 things to cover are written down:
@@ -623,7 +623,7 @@ things to cover are written down:
 
 He ticks off LangSmith as the tool that will track all three.
 
-### The LangSmith diagram of the four metrics (9:58:40)
+### The LangSmith diagram of the four metrics
 
 To explain which metrics apply to a RAG application, he pastes in a diagram from
 the LangSmith documentation. It shows a question going to a search step (a
@@ -641,7 +641,7 @@ sits to the right of the answer. Four coloured brackets mark the checks:
 <Infographic
   src="/img/agentic-course/08-four-metrics.svg"
   alt="A RAG pipeline from question through search over documents, relevant documents, an LLM and an answer, with four coloured checks: answer relevance from question to answer, retrieval relevance from question to relevant documents, groundedness from documents to answer, and correctness between answer and reference answer."
-  caption="Redrawn from the LangSmith documentation diagram the instructor shows at 9:59:00."
+  caption="Redrawn from the LangSmith documentation diagram the instructor shows."
 />
 
 He adds that accuracy is the key thing, but that these four give you a more
@@ -668,7 +668,7 @@ right documents for every question. They are more exact but cost more to build.
 The LLM-judged version used here is a quick approximation.
 :::
 
-### The three steps for RAG (10:00:40)
+### The three steps for RAG
 
 He lays out the work in the order he will do it, and later ticks each one:
 
@@ -684,10 +684,10 @@ not use one to implement the evaluation metrics?
 <Infographic
   src="/img/agentic-course/08-rag-eval-whiteboard.svg"
   alt="The RAG evaluation page: three questions on creating test datasets, running the RAG app on them and measuring performance with different metrics, and three experiment steps, RAG, test data and evaluation metrics as an LLM judge."
-  caption="Redrawn from the instructor's Excalidraw page at 10:02:30."
+  caption="Redrawn from the Excalidraw page."
 />
 
-## Step 1: build the RAG (10:02:40)
+## Step 1: build the RAG
 
 This part is quick, because he has built RAG several times already in the
 course. Three blog posts by Lilian Weng are loaded (on agents, prompt
@@ -759,7 +759,7 @@ but your evaluation results then describe a four-chunk retriever, not a
 six-chunk one.
 :::
 
-### Trying the retriever (10:04:00)
+### Trying the retriever
 
 ```python
 retriever.invoke("what is agents")
@@ -779,7 +779,7 @@ He also points at a red LangSmith rate-limit message under the output and says
 free accounts allow a limited number of requests; the evaluation still works for
 the demo.
 
-### The generation part (10:04:40)
+### The generation part
 
 He wants a chat model, goes to use `llm`, and gets `NameError: name 'llm' is not
 defined`, because the notebook kernel had lost it. He shrugs, defines it again
@@ -860,7 +860,7 @@ He reads the answer and notes that the whole context, the documents, comes back
 with it. That completes the first of the three steps: data ingestion, retriever
 and generation.
 
-## Step 2: create the test data (10:10:00)
+## Step 2: create the test data
 
 Now the dataset for RAG. As before, a `Client`, a list of examples, a dataset
 name and `create_examples`. Each question is about something the three blog
@@ -923,7 +923,7 @@ retention-limit usage; that is the free-tier cap again.)
 code above.) He then ticks step two and says the next video will cover the
 evaluators.
 
-## Step 3: the four evaluators (10:12:40)
+## Step 3: the four evaluators
 
 He adds a markdown heading, "Evaluators or Metrics", and pastes the same
 four-metric diagram next to the code, so he can implement the metrics in the
@@ -936,7 +936,7 @@ carefully and then the rest quickly.
   caption="Explanatory board (not shown in the video): the four evaluators of this chapter compared."
 />
 
-### Metric 1: correctness, response against reference answer (10:13:40)
+### Metric 1: correctness, response against reference answer
 
 The notebook cell opens with a short markdown note, which he reads out:
 
@@ -971,7 +971,7 @@ Finally the evaluator function. Its signature matches the chatbot one: `inputs`,
 the ground truth and the student answer into one message, calls the judge, and
 returns the `correct` field.
 
-#### The error on camera, and the fix (10:26:00)
+#### The error on camera, and the fix
 
 When he first wrote the schema, he typed the description as the second item
 inside `Annotated` (spelling tidied here; this is the broken form, not the notebook's):
@@ -982,7 +982,7 @@ class CorrectnessGrade(TypedDict):
     correct: Annotated[bool, "True if the answer is correct, False otherwise."]
 ```
 
-Everything seems fine until the evaluation runs. Much later, at 10:26, running
+Everything seems fine until the evaluation runs. Much later, running
 the RAG experiment fails with an "Error running evaluator" message for the `correctness` evaluator, and the cause he reads is an invalid schema in `CorrectnessGrade`.
 His diagnosis: the description needs a different slot. In the three-item form
 `Annotated[type, default, description]`, the middle item is the default value,
@@ -1053,7 +1053,7 @@ this cell, they will fail with a `KeyError`. Either re-run the earlier cell
 first, or give one of the two functions a different name.
 :::
 
-### Metric 2: relevance, response against input (10:20:40)
+### Metric 2: relevance, response against input
 
 The notebook note: the flow is the same as above, but it looks only at the inputs
 and outputs, with no reference outputs. Without a reference answer you cannot
@@ -1104,7 +1104,7 @@ def relevance(inputs: dict, outputs: dict) -> bool:
     return grade["relevant"]
 ```
 
-### Metric 3: groundedness, response against retrieved documents (10:22:45)
+### Metric 3: groundedness, response against retrieved documents
 
 The note: another useful way to evaluate answers without reference answers is to
 check whether the response is justified by, or grounded in, the retrieved
@@ -1151,7 +1151,7 @@ def groundedness(inputs: dict, outputs: dict) -> bool:
     return grade["grounded"]
 ```
 
-### Metric 4: retrieval relevance, retrieved documents against input (10:24:20)
+### Metric 4: retrieval relevance, retrieved documents against input
 
 The last one judges the retriever, not the model. It gives the judge the question
 and the retrieved text and asks only whether the facts are related to the
@@ -1209,7 +1209,7 @@ correctness, you can do the others.
 | `groundedness` | none | `documents`, `answer` | none | `gpt-4o` | `grounded` |
 | `retrieval_relevance` | `question` | `documents` | none | `gpt-4o` | `relevant` |
 
-## Run the RAG evaluation (10:25:00)
+## Run the RAG evaluation
 
 The target wraps `rag_bot`, and `client.evaluate` is called with the new dataset
 and all four evaluators. Two arguments are new: `metadata`, which tags the
@@ -1269,7 +1269,7 @@ The feedback columns from the saved notebook:
 He wonders aloud whether pandas is installed before running the cell. If
 `to_pandas()` complains, install it with `uv add pandas`.
 
-### Reading the result in LangSmith (10:27:20)
+### Reading the result in LangSmith
 
 The experiment appears under **RAG Test Evaluation** with one bar chart per
 evaluator and a table row for the experiment. He reads the aggregates out:
@@ -1281,11 +1281,11 @@ cost of each run, which he calls really useful.
 <Infographic
   src="/img/agentic-course/08-rag-results.svg"
   alt="A results table for the rag-doc-relevance experiment with three questions and four evaluators; the first question fails groundedness and retrieval relevance, the other two pass everything; averages are 1.00, 0.67, 1.00 and 0.67."
-  caption="Redrawn from the LangSmith result screens at 10:28:00 to 10:28:30."
+  caption="Redrawn from the LangSmith result screens."
 />
 
 :::note Why 0.5 on the chart and 0.67 in the table
-The groundedness bar he reads out at 10:28 shows 0.50, and the retrieval
+The groundedness bar he reads out shows 0.50, and the retrieval
 relevance cell next to it shows 0.00, because that screen was captured while the
 last judge calls were still finishing. The finished experiment, shown a few
 seconds later and matching the notebook's DataFrame, has groundedness and
@@ -1327,7 +1327,7 @@ the judge by reading some rows yourself, which is what the human annotation
 series he announces is for.
 :::
 
-## Wrapping up RAG evaluation (10:29:00)
+## Wrapping up RAG evaluation
 
 He recaps what the module did. Using LangChain and LangSmith, he built a RAG
 pipeline, a test dataset and four custom LLM-as-a-judge evaluators, one per
@@ -1337,7 +1337,7 @@ into your RAG pipeline. His stated aim was to show how to evaluate a chatbot and
 a RAG application by writing your own metrics, and he promises further videos in
 the series.
 
-## What comes next (10:30:00)
+## What comes next
 
 The next section, covered in the next chapter, switches topic to **LLM
 gateways**: what they are, why they belong in any application that calls LLMs,

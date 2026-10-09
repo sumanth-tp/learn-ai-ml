@@ -73,7 +73,7 @@ def backtest_mase():
     for r, c in best.items():
         rect(b, x_edges[c] + 2, 100 + r * 50 + 2, widths[c] - 4, 46, "none", PALETTE["green"]["stroke"], 3, 6)
     b.card(30, 380, 520, 110, "Where the baseline holds", ["quiet weekly series: all three structured", "models land within 10% of seasonal naive"], "yellow", size=14, title_size=15)
-    b.card(580, 380, 550, 110, "Where it fails", ["noise copied from one week ago costs accuracy;", "averaging models win by about 20% to 25%"], "orange", size=14, title_size=15)
+    b.card(580, 380, 550, 110, "Where it fails", ["noise copied from one week ago costs accuracy;", "ARIMA scores 20% to 25% lower"], "orange", size=14, title_size=15)
     return b
 
 

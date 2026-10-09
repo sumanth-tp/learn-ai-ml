@@ -403,7 +403,7 @@ Plain rounding makes a repeating, low-frequency error: steps with one fixed leve
 
 - **[Computer Vision: Algorithms and Applications](https://szeliski.org/Book/)** `book`
   Richard Szeliski; The standard computer-vision reference; the author posts the full PDF.
-- **[Stanford CS231n notes](https://cs231n.github.io/)** `course`
+- **[Stanford CS231n notes](https://cs231n.stanford.edu/)** `course`
   Stanford; The classic notes on neural nets, backprop and CNNs; clear and example-driven.
 - **[OpenCV documentation](https://docs.opencv.org/)** `docs`
   OpenCV; Practical reference for filtering, edges, features and the algorithms in this course.

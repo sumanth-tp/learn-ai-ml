@@ -8,7 +8,7 @@ description: "Build a small project with supplied CSV data, reusable helpers, re
 tags: [python, beginner, project, pandas, files, modules]
 ---
 
-> **Video:** [practical project work near 3:20:30](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=12030s), then helper modules near [3:34:05](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=12845s).
+> **Video:** the practical project and helper module sections of [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 Keep input data, reusable calculations and generated reports in predictable places.
 

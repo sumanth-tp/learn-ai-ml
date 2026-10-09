@@ -16,8 +16,8 @@ CNNs are easier to understand when seen as the image-specific continuation of AN
 
 A convolutional neural network is a neural network designed for grid-like data such as images, using local filters and weight sharing to detect patterns efficiently.
 
-![ConvNet architecture — activations flow through convolutional, pooling, and fully connected layers to produce class scores](https://cs231n.github.io/assets/cnn/convnet.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![ConvNet architecture — activations flow through convolutional, pooling, and fully connected layers to produce class scores](https://cs231n.stanford.edu/assets/cnn/convnet.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## Why CNNs were needed
 

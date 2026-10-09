@@ -16,8 +16,8 @@ A CNN with 25 million parameters trained on 10,000 images will memorize the trai
 
 Data augmentation applies random label-preserving transformations to training images to increase effective dataset size and reduce overfitting.
 
-![CNN feature maps — data augmentation forces each of these features to be learned from all positions and orientations, not just as memorized patterns](https://cs231n.github.io/assets/cnn/weights.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford) — augmentation makes each filter more general by exposing it to all image variations*
+![CNN feature maps — data augmentation forces each of these features to be learned from all positions and orientations, not just as memorized patterns](https://cs231n.stanford.edu/assets/cnn/weights.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford) — augmentation makes each filter more general by exposing it to all image variations*
 
 ## Why augmentation works
 

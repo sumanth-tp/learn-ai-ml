@@ -973,3 +973,12 @@ GATE: 7 of 7 chapters pass
 
 - New: 3 industry-level projects for EACH of docs/theory/ir, docs/theory/cv and docs/mlops/data (9 in total), added as a new group folder (98-projects) beside the existing 99-practice papers, which are kept. Each project: business context and requirements, data, architecture board, step-by-step solution with full runnable code, evaluation, failure analysis, operations notes, extensions, and a ZIP of the project in static/examples/projects/.
 - Order of remaining work: finish the running enrichment agents; enrich data management 9 to 16; write the 9 projects; fix Daily 01 to 03 (narration, timestamps); clean timestamps in older chapters; then run the audit of the full 150-chapter plan against what exists on disk (user asked for the audit last); then full build, link check, browser pass, delete .docusaurus-capstone/, decide on commit.
+
+## Rate-limit stop (Claude, 2026-10-09 19:24 IST)
+
+The spend limit was hit at about this time; it resets 04:50 IST. Five enrichment agents died mid-run (partial edits are on disk, some chapters half-enriched; none committed):
+- time series 01 to 05 (1 of 5 passes the gate), agent ab95b35c67b3d6e41
+- computer vision 6 to 10, agent a81c5af4d24ced202 (CV overall: 12 of 17 pass; 1 to 5 and 11 to 15 are finished)
+- information retrieval 8 to 14, agent ad3504af6f932eff5 (web group 0 of 4, modern retrieval 0 of 3 pass)
+- data management 1 to 8, agent aa4e767767a32dffe, and 9 to 16, agent a804fa174ac753439 (0 of 18 pass)
+Resume each with SendMessage once the limit resets (they keep their transcripts). Then: 9 industry projects (3 each for IR, CV, DM in 98-projects, practice papers kept), Daily 01 to 03 narration fixes, older-chapter timestamps, plan audit, build and release checks.

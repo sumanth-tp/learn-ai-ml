@@ -67,7 +67,7 @@ The session opens by pressure-testing that obvious answer:
 <Infographic
   src="/img/secure-ehr/ehr-problem.svg"
   alt="Hospital EHR data, the privacy risk of sending raw records to an LLM, and the privacy-first pipeline."
-  caption="Redrawn from Monal's whiteboard, 0:13 to 0:25 (page 1 of the handwritten notes)."
+  caption="Redrawn from Monal's whiteboard (page 1 of the handwritten notes)."
 />
 
 :::note What HIPAA actually requires
@@ -86,7 +86,7 @@ So the brief is not "build a RAG chatbot." It is: build a chatbot that
 let the LLM behave like a clinician**. Those two constraints, redaction and
 guardrails, are where HIPAA compliance actually lives in this system.
 
-### Doubts · Is this only an AI problem? · 00:20:42
+### Doubts · Is this only an AI problem?
 
 **Monal (to the class):** "If hospital shares data to an LLM, that is a
 violation of HIPAA. Very, very serious." He deliberately doesn't let the
@@ -123,7 +123,7 @@ class is watching an FDE work, not a from-scratch tutorial:
 <Infographic
   src="/img/secure-ehr/ehr-ai-sdlc.svg"
   alt="Classic SDLC beside the AI-assisted planning, coding, testing, review and maintenance process."
-  caption="Redrawn from Monal's whiteboard, 0:29 to 0:37 (page 2)."
+  caption="Redrawn from Monal's whiteboard (page 2)."
 />
 
 :::note Not "vibe coding"
@@ -136,14 +136,14 @@ each artifact, not *whether* the artifacts (plan, tests, review, docs) exist.
 
 ## Solution architecture
 
-This is the flow Monal draws on screen ("In-depth overview", 0:39 to 0:59;
+This is the flow Monal draws on screen ("In-depth overview";
 page 3 of the handwritten notes), redrawn here. Every phase in this chapter
 builds one part of it.
 
 <Infographic
   src="/img/secure-ehr/ehr-overview.svg"
   alt="The full EHR architecture: patient-scoped retrieval, Presidio redaction, NeMo guardrails, LLM and Streamlit."
-  caption="Redrawn from Monal's in-depth overview, 0:39 to 0:59 (page 3)."
+  caption="Redrawn from Monal's in-depth overview (page 3)."
 />
 
 He labels redaction and the guardrail together as the two places HIPAA
@@ -168,7 +168,7 @@ accept:
    which is both faster and a second, independent privacy boundary: a
    mistaken query can't accidentally surface a different patient's data.
 
-### Doubts · Why not just use RAG/LangChain/CrewAI/an agent framework? · 00:14:13, 03:18:33
+### Doubts · Why not just use RAG/LangChain/CrewAI/an agent framework?
 
 **Monal (posing it to the audience):** asks which frameworks people know for
 building agents (LangChain, AutoGen, CrewAI), then explains why none of them
@@ -299,7 +299,7 @@ and load the CSV.
 <Infographic
   src="/img/secure-ehr/ehr-phase0.svg"
   alt="AWS security group, EC2, Elastic IP, PostgreSQL setup and local Python data ingestion."
-  caption="Redrawn from Monal's Phase 0 board, 1:10 to 1:34 (page 4)."
+  caption="Redrawn from Monal's Phase 0 board (page 4)."
 />
 
 ### Set up version control before touching AWS
@@ -752,7 +752,7 @@ every checkpoint" habit the session insists on even under time pressure:
 five-row sample is enough to catch a silently-empty table before three more
 hours are spent building on top of it.
 
-### Doubts · Why database and not table first? · 01:31:40
+### Doubts · Why database and not table first?
 
 **Monal (rhetorical, to the class):** "Why database and not table? Guys,
 table exists inside database."
@@ -774,7 +774,7 @@ column to the existing table, and fill it.
 <Infographic
   src="/img/secure-ehr/ehr-phase1.svg"
   alt="A pgvector extension adds a clinical embedding column with 768 dimensions to the patient encounters table."
-  caption="Redrawn from Monal's Phase 1 board, 1:54 to 2:02 (page 4)."
+  caption="Redrawn from Monal's Phase 1 board (page 4)."
 />
 
 ```bash
@@ -838,7 +838,7 @@ column by querying `information_schema.columns`** rather than trusting that
 `ALTER TABLE ... IF NOT EXISTS` silently succeeded. It's the same "test at every
 checkpoint" discipline as Phase 0.
 
-### Doubts · Why 768 dimensions? · 01:58:20
+### Doubts · Why 768 dimensions?
 
 **Monal (to the class):** "Why 768? ... The LLM [embedding model] is going to
 extract the embedding vector space of dimension 768. So I also want that to
@@ -860,10 +860,10 @@ embedding model?**
 <Infographic
   src="/img/secure-ehr/ehr-phase2.svg"
   alt="Clinical text is embedded with a domain-aware model and fills the previously null vector column."
-  caption="Redrawn from Monal's Phase 2 board, 2:09 to 2:14 (page 5)."
+  caption="Redrawn from Monal's Phase 2 board (page 5)."
 />
 
-### Doubts · Why not a general-purpose embedder? · 02:11:20
+### Doubts · Why not a general-purpose embedder?
 
 **Monal (to the class):** "What is special about our data that we cannot
 choose a normal or general embedder?"
@@ -1017,7 +1017,7 @@ therefore ~11,000 rows, not the full 230,000. Remember this when the
 <Infographic
   src="/img/secure-ehr/ehr-recap.svg"
   alt="The database and embedding work so far, the prepared 11000-row demo, and cosine similarity search."
-  caption="Redrawn from Monal's recap board, 2:21 to 2:27 (page 5)."
+  caption="Redrawn from Monal's recap board (page 5)."
 />
 
 ## Phase 3 — Semantic search, scoped to one patient
@@ -1094,7 +1094,7 @@ one layer up, in the FastAPI endpoint, once a patient has actually been
 selected. This script's job is only to prove the cosine-distance query
 itself is correct.
 
-### Doubts · Should search run on all 25 million rows? · 00:44:22
+### Doubts · Should search run on all 25 million rows?
 
 **Monal (to the class):** "If this DB contains 25 million rows, do you think
 this is a good approach to do similarity search on all 25 million rows of
@@ -1212,20 +1212,20 @@ How it actually works, in the order the class was walked through it:
 <Infographic
   src="/img/secure-ehr/ehr-presidio.svg"
   alt="Presidio redaction in the request path, regional ID recognisers, and the analyzer and anonymizer engines."
-  caption="Redrawn from Monal's Presidio board, 2:37 to 2:47 (page 6)."
+  caption="Redrawn from Monal's Presidio board (page 6)."
 />
 
 <Infographic
   src="/img/secure-ehr/ehr-scores.svg"
   alt="Entity confidence scores for the sample sentence, with SSN and person spans above the redaction threshold."
-  caption="Redrawn from Monal's entity-score example, 2:46 (page 6), with the 0.45 cut-off from page 7."
+  caption="Redrawn from Monal's entity-score example (page 6), with the 0.45 cut-off from page 7."
 />
 
 On the board the cut-off is written as 0.45; the committed code uses
 `score_threshold=0.4`. Either way, the custom SSN pattern (0.9) and a
 detected name (0.7) clear it, and filler words don't.
 
-### Doubts · Why not just redact every number? · 02:38:30
+### Doubts · Why not just redact every number?
 
 **Monal (to the class):** "Not every number in our data should be redacted
 ... let's suppose someone's data has a bacteria count of 10,000. Do you
@@ -1321,7 +1321,7 @@ explicit about which provider and why:
 <Infographic
   src="/img/secure-ehr/ehr-guardrails.svg"
   alt="Colang flows and the DeepSeek-backed guardrail accept or reject a request."
-  caption="Redrawn from Monal's guardrails board, about 2:50 (page 7)."
+  caption="Redrawn from Monal's guardrails board (page 7)."
 />
 
 1. **Provider: DeepSeek**, chosen for being "very cheap and very powerful."
@@ -1454,7 +1454,7 @@ cycle.
 <Infographic
   src="/img/secure-ehr/ehr-request-apis.svg"
   alt="A query moves through retrieval, redaction, guardrails and generation; three APIs serve the demo, chat and patient list."
-  caption="Redrawn from Monal's board, 3:05 to 3:08 (page 7): one request end to end, then the three APIs that serve it."
+  caption="Redrawn from Monal's board (page 7): one request end to end, then the three APIs that serve it."
 />
 
 ### Complete file: `src/api/main.py`
@@ -1664,7 +1664,7 @@ sentence-transformer model **once**, into a shared `middleware` dict, rather
 than per-request, is what keeps latency reasonable: spaCy's pipeline and a
 transformer model are too expensive to reload on every single API call.
 
-### Doubts · Why pass `patient_id` in every chat payload? · 03:27:22
+### Doubts · Why pass `patient_id` in every chat payload?
 
 **Monal (to the class):** "When I was testing this application, when I was
 just passing the messages, AI in the next response was saying 'which patient
@@ -1761,13 +1761,13 @@ Read top to bottom, this is deliberately small:
 <Infographic
   src="/img/secure-ehr/ehr-ui-prompt.svg"
   alt="Streamlit patient selection and chat, with the newest question joined to clinical context before the guardrail."
-  caption="Redrawn from Monal's UI and prompt board, 3:08 to 3:26 (page 8)."
+  caption="Redrawn from Monal's UI and prompt board (page 8)."
 />
 
 <Infographic
   src="/img/secure-ehr/ehr-memory.svg"
   alt="A plain workflow retains the conversation as a growing message list and sends the history to the LLM on each call."
-  caption="Redrawn from Monal's workflow and memory boards, 3:08 to 3:26 (pages 8 and 9)."
+  caption="Redrawn from Monal's workflow and memory boards (pages 8 and 9)."
 />
 
 Rendered, this is what the UI actually looks like: a patient selected in
@@ -1841,7 +1841,7 @@ deliberately left out (see the Doubts section at the end of this phase).
 <Infographic
   src="/img/secure-ehr/ehr-docker-plan.svg"
   alt="GitHub project to Docker image and container on AWS EC2, with CI/CD named but left out of the session."
-  caption="Redrawn from Bappy's Excalidraw sketch, 3:41 to 3:45."
+  caption="Redrawn from Bappy's Excalidraw sketch."
 />
 
 The result, as deployed:
@@ -2232,7 +2232,7 @@ Bappy calls this the weak point of a manual deployment: "we have to again
 and again go to this [server] and execute these commands." CI/CD would
 remove it.
 
-### Doubts · What about CI/CD and fully-managed alternatives? · 03:44:36, 04:19:40, 04:21:26
+### Doubts · What about CI/CD and fully-managed alternatives?
 
 **Live viewers asked, and Bappy fielded, three related questions:** why not
 set up CI/CD for this deployment; how do you scale it if load gets high; and

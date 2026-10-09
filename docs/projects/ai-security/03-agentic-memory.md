@@ -20,12 +20,12 @@ import MemoryWindowLab from '@site/src/components/viz/MemoryWindowLab';
 import ForgettingCurveLab from '@site/src/components/viz/ForgettingCurveLab';
 
 > **Module 3 of 4** ·
-> [Watch from 2:47:50](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=10070s) ·
+> [Watch on YouTube](https://www.youtube.com/watch?v=rQE3w8Qjx98) ·
 > about three hours of the 7h48m course
 >
 > From Krish Naik's *The Complete AI Security Course In 8 Hours*. This module
-> is taught by Chirantan Lonkar over two live sessions; the second opens at
-> 4:05 with a recap, folded into the sections below. Notes follow the module
+> is taught by Chirantan Lonkar over two live sessions; the second opens
+> with a recap, folded into the sections below. Notes follow the module
 > in order. Diagrams redraw his architecture notes and notebook figures;
 > blocks marked *Not from the session* are additions.
 
@@ -46,8 +46,7 @@ session's, not reproduced from this code.
 
 ## The project that needs all of this: MOSAIC
 
-Chirantan opens with the production system he is building next (2:48 to
-2:53), because it uses almost every idea in the module. **MOSAIC**, a
+Chirantan opens with the production system he is building next, because it uses almost every idea in the module. **MOSAIC**, a
 multi-agent clinical-trial intelligence engine, reads two US government
 databases: ClinicalTrials.gov, with around half a million studies, and
 PubMed's research papers. The business problem is scale. A researcher can
@@ -63,7 +62,7 @@ them.
 <Infographic
   src="/img/ai-security/m3-mosaic.svg"
   alt="MOSAIC architecture: data sources, ingestion, GCP storage, processing, a LangMem memory layer with episodic, procedural and semantic memory, a supervisor with six specialist agents, a human-in-the-loop gate with a learning loop, FastAPI on Cloud Run, and observability."
-  caption="Redrawn from the mentor's architecture board, 2:48 to 2:52."
+  caption="Redrawn from the architecture board."
 />
 
 What makes it interesting is the memory layer, built with **LangMem**, which
@@ -87,7 +86,7 @@ the module.
 ## Memory is more than memorising facts
 
 Everyone talks about agent memory, Chirantan says, but few can explain what
-it means (2:53 to 3:00). Memory is not "make my agent memorise facts". Many
+it means. Memory is not "make my agent memorise facts". Many
 people jump straight to LangMem and episodic or semantic memory without
 knowing why they'd pick semantic over a simple summary. So the module traces
 the **lineage**: start with the simplest technique, see what breaks, and
@@ -112,7 +111,7 @@ watch each next technique fix it.
 <Infographic
   src="/img/ai-security/m3-lineage.svg"
   alt="The thirteen memory techniques: five short-term techniques that live in RAM, six long-term ones that live in a database, plus memory routing and forgetting."
-  caption="The lineage of the module's notebooks, 2:55."
+  caption="The lineage of the module's notebooks."
 />
 
 He has built these thirteen notebooks and plans 26 to 28 in total; the rest,
@@ -128,7 +127,7 @@ retrieved (its dynamics).
 <Infographic
   src="/img/ai-security/m3-survey.svg"
   alt="The survey organises agent memory by forms, functions and dynamics."
-  caption="Redrawn from the survey's structure as shown in the session, 2:57 to 3:00."
+  caption="Redrawn from the survey's structure as shown in the session."
 />
 
 **Does the agent even need memory?** Before any AI, he asks the class
@@ -235,7 +234,7 @@ steps later on.
 
 ## 1. Conversation buffer memory
 
-The first technique starts from one fact (3:00 to 3:12, recapped at 4:07).
+The first technique starts from one fact.
 **LLMs are stateless.** An API call has no idea what the model did a second
 ago, let alone five minutes ago. That is not a bug but a feature: every
 request is isolated.
@@ -249,7 +248,7 @@ first item.
 <Infographic
   src="/img/ai-security/m3-buffer.svg"
   alt="Conversation buffer: every turn re-sends the whole history, so prompt tokens grow from 149 to 976 over ten turns, with the trade-offs listed below."
-  caption="Redrawn from the notebook's turn table and token analysis, 3:02 to 3:12."
+  caption="Redrawn from the notebook's turn table and token analysis."
 />
 
 The pain point is visible straight away: the list only grows. Turn one
@@ -335,7 +334,7 @@ in this module exists to bend that line.
 
 ## 2. Sliding window memory
 
-The next idea is obvious from the name (3:12 to 3:30, recapped at 4:10).
+The next idea is obvious from the name.
 Instead of the whole history, send only the last *k*. Chirantan's diagram
 uses Alice, since "in computer science every user is called Alice", and a
 window of four messages.
@@ -343,7 +342,7 @@ window of four messages.
 <Infographic
   src="/img/ai-security/m3-sliding-window.svg"
   alt="Sliding window with k = 4: the window fills, the first message is evicted, and a fact slides out; the FinCoach example forgets the salary by turn 5."
-  caption="Redrawn from the mentor's architecture notes, 3:13 to 3:15 (again at 4:11), and the notebook's FinCoach example."
+  caption="Redrawn from the mentor's architecture notes (again), and the notebook's FinCoach example."
 />
 
 When the window is full, the oldest message is **evicted**, like a
@@ -394,7 +393,7 @@ alone. It handles recency and cost; a long-term retrieval layer, a vector
 store or a knowledge graph, catches the facts that slide out. When papers
 say "hybrid memory", check which short-term memory is inside it.
 
-### Doubts · Can evicted messages go into a vector store? · 3:19
+### Doubts · Can evicted messages go into a vector store?
 
 **Chirantan:** Since evicted messages aren't deleted, could you vectorise
 them and retrieve them later?
@@ -404,7 +403,7 @@ short-term technique and the vector store a long-term one, and joining them
 adds embedding and storage cost. It is possible, and he wants the class to
 think about combinations like this instead of memorising techniques.
 
-### Doubts · When should I use a sliding window instead of a token buffer? · 3:29
+### Doubts · When should I use a sliding window instead of a token buffer?
 
 **Chirantan:** Use a sliding window for the simplest bounded solution when
 messages are roughly the same length. Use a token buffer when lengths vary
@@ -460,13 +459,13 @@ counts **turns** (three). Both are valid; know which one your implementation
 uses, because a four-message window holds only two turns.
 :::
 
-*The session then breaks for course promotion (3:30 to 3:37); it is left
+*The session then breaks for course promotion; it is left
 out here.*
 
 ## 3. Summary memory
 
 Ask the class what summary memory is and they answer at once: summarise the
-previous conversation (3:37 to 3:56, recapped at 4:13). Instead of
+previous conversation. Instead of
 discarding history, it **compresses** it: fewer tokens, same context.
 
 His analogy is a proverb. You tell him a long story about your aching back
@@ -480,7 +479,7 @@ edition on it.
 <Infographic
   src="/img/ai-security/m3-summary.svg"
   alt="Summary memory: the buffer fills, a summariser LLM merges it into a running summary, and new turns start from the summary; progressive summarisation levels 0 to 3; lossy compression and its mitigation."
-  caption="Redrawn from the mentor's architecture notes, 3:15 (again at 4:15), and the notebook, 3:48 to 3:50."
+  caption="Redrawn from the mentor's architecture notes (again), and the notebook."
 />
 
 Where the sliding window saved tokens and lost context, summary memory saves
@@ -539,7 +538,7 @@ compression. The mitigation is a **domain-specific summarisation prompt**
 that names the categories of fact that must survive: salary, risk profile,
 goals, decisions.
 
-### Doubts · Can we choose which facts must survive? · 3:41
+### Doubts · Can we choose which facts must survive?
 
 **Krishna:** Can we mark facts such as a person's IDs as important so they
 survive summarisation?
@@ -547,7 +546,7 @@ survive summarisation?
 **Chirantan:** Yes, and he returns to it with the lossy-compression point:
 name the must-keep categories in the summarisation prompt.
 
-### Doubts · How do we know the summary kept everything? · 3:43
+### Doubts · How do we know the summary kept everything?
 
 **Chirantan:** How would you check that every raw turn was summarised
 correctly?
@@ -617,8 +616,7 @@ described above.
 
 ## 4. Summary buffer memory
 
-Summary buffer memory combines techniques 1 and 3 (3:56 to 4:04, recapped
-at 4:15). The most recent messages stay **word for word**; older history
+Summary buffer memory combines techniques 1 and 3 (recapped in the second session). The most recent messages stay **word for word**; older history
 is summarised. His analogy is a long phone call with a friend: you can
 repeat the last few sentences exactly, but of what they said twenty minutes
 ago you only remember a few facts.
@@ -626,7 +624,7 @@ ago you only remember a few facts.
 <Infographic
   src="/img/ai-security/m3-summary-buffer.svg"
   alt="Summary buffer: messages stay verbatim in the buffer until it passes a threshold, then the oldest are merged into a running summary; the prompt is summary plus buffer plus the new message."
-  caption="Redrawn from the mentor's architecture notes, 3:57 (again at 4:17)."
+  caption="Redrawn from the mentor's architecture notes (again)."
 />
 
 This answers the sliding-window homework: evicted messages are not wasted,
@@ -662,7 +660,7 @@ work on shrinking the KV cache as one research direction.
 <Infographic
   src="/img/ai-security/m3-kv-cache.svg"
   alt="KV cache growth with tokens and layers, followed by MHA separate keys and values, GQA shared groups, and MLA compressed latent storage."
-  caption="Redrawn from the web-page diagrams shown briefly at 4:19:00 to 4:19:55."
+  caption="Redrawn from the web-page diagrams shown briefly."
 />
 
 :::note Correction to the visual aside
@@ -705,18 +703,18 @@ class SummaryBufferMemory(SummaryMemory):
 
 ## Between the sessions
 
-The Friday session ends at 4:04 after the first four techniques. Monday's
+The Friday session ends after the first four techniques. Monday's
 opens with a point about the job market: with today's coding assistants
 anyone can build a basic agentic workflow. The opportunity for the next
 three to five years is the **infrastructure** around it: memory, security
 and governance. He also mentions context engineering and, newer, "loop
 engineering", which he hasn't explored yet. Then he recaps techniques 1 to
-4 (4:07 to 4:20), which is folded into the sections above.
+4, which is folded into the sections above.
 
 ## 5. Token buffer memory
 
 Token buffer memory keeps a buffer that **never exceeds a fixed number of
-tokens** (4:20 to 4:24). When a new message would breach the limit, the
+tokens**. When a new message would breach the limit, the
 oldest messages are dropped, one at a time, until it fits. The notebook's
 image is a ticket tape of fixed length: new text prints on the right, the
 left end is torn off.
@@ -724,7 +722,7 @@ left end is torn off.
 <Infographic
   src="/img/ai-security/m3-token-buffer.svg"
   alt="Token buffer: count tokens with tiktoken and evict the oldest message until the history fits max_token_limit."
-  caption="Redrawn from the mentor's architecture notes, 4:05."
+  caption="Redrawn from the architecture notes."
 />
 
 Input tokens per call are fixed by a simple formula:
@@ -816,8 +814,7 @@ class TokenBufferMemory(ConversationBufferMemory):
 
 ## 6. Vector store memory
 
-With the vector store the module crosses into **long-term memory** (4:24 to
-4:41). Techniques 1 to 5 live in RAM and reset when the session ends, which
+With the vector store the module crosses into **long-term memory**. Techniques 1 to 5 live in RAM and reset when the session ends, which
 suits temporary chatbots and Q&A bots, as the class answers. They also
 retrieve context by **position**, meaning recency; recommendation systems,
 someone suggests, are a case where recent context should weigh more.
@@ -838,7 +835,7 @@ were a notepad on the advisor's desk; this is a searchable filing cabinet.
 <Infographic
   src="/img/ai-security/m3-vector-store.svg"
   alt="Vector store memory: RAM versus database, and the worked flow from a portfolio question through embedding and ChromaDB search to personalised advice; the stale fact problem."
-  caption="Redrawn from the notebook's tables and worked flow, 4:24 to 4:41."
+  caption="Redrawn from the notebook's tables and worked flow."
 />
 
 The search is an **approximate nearest neighbour** (ANN) lookup that returns
@@ -961,7 +958,7 @@ before it.
 
 Entity memory comes from NLP's **named entity recognition** (NER), which
 Chirantan says should be learnt before AI engineering, alongside bag of
-words and n-grams (4:41 to 4:56). How does a model know "Tesla" means the
+words and n-grams. How does a model know "Tesla" means the
 car company and not Nikola Tesla? Every token is classified: currency,
 date, place, person. In "Barack Obama, the 44th President of the USA, was
 born in Honolulu, Hawaii", Barack Obama is a person, 44 a number, and the
@@ -978,7 +975,7 @@ promoted" and they update Sarah's card, knowing Sarah is a person.
 <Infographic
   src="/img/ai-security/m3-entity.svg"
   alt="Entity memory: an extractor turns each message into structured facts in a key-value store that updates in place, used to build the prompt; compared with vector store memory."
-  caption="Redrawn from the mentor's architecture notes, 4:05, and the notebook's comparison table."
+  caption="Redrawn from the mentor's architecture notes, and the notebook's comparison table."
 />
 
 The store is a plain JSON dictionary. "Chirantan earns ₹1,20,000 per month"
@@ -1011,7 +1008,7 @@ later.
 <Infographic
   src="/img/ai-security/m3-hot-background.svg"
   alt="Hot path versus background memory updates: update before replying, or reply first and update later in a separate process."
-  caption="Redrawn from the LangMem documentation as shown in the session, 4:50 to 4:52."
+  caption="Redrawn from the LangMem documentation as shown in the session."
 />
 
 His example: tell the agent "from now on, call me Alex". On the hot path the
@@ -1030,7 +1027,7 @@ Use it where tracking an entity's progress matters, such as an HR engine
 that follows each employee's salary history, or an automation that keeps a
 small knowledge base or spreadsheet up to date.
 
-### Doubts · Can entity memory be the only memory layer? · 4:58
+### Doubts · Can entity memory be the only memory layer?
 
 **Chirantan:** Would a standalone entity layer be a good engineering
 decision?
@@ -1088,7 +1085,7 @@ class EntityMemory:
 ## 8. Episodic memory
 
 The last six techniques are inspired by human memory, and episodic memory
-is the first (4:56 to 5:15). Chirantan notes that LangMem, from the LangChain
+is the first. Chirantan notes that LangMem, from the LangChain
 ecosystem, implements the three MOSAIC types, and that **every memory
 structure here is still experimental**: none is a sure-shot production
 pattern, some degrade or become impossible to scale, and choosing is trial
@@ -1107,7 +1104,7 @@ ago.
 <Infographic
   src="/img/ai-security/m3-episodic.svg"
   alt="Episodic memory: a boundary detector closes an episode, a packager summarises it, and the episode store is searched by time and topic at query time."
-  caption="Redrawn from the mentor's architecture notes, 4:05."
+  caption="Redrawn from the architecture notes."
 />
 
 The hard engineering problem, he says, is the **episode boundary**: where
@@ -1147,7 +1144,7 @@ tokens, but it's summarisation, so lossy compression applies again. And
 **Production verdict.** Essential for regulated domains and long-running
 agent relationships, as a complement to entity and vector memory.
 
-### Doubts · Doesn't storing episodes exceed the context window? · 5:09
+### Doubts · Doesn't storing episodes exceed the context window?
 
 **Santosh:** Won't all these episodes bloat the context?
 
@@ -1206,7 +1203,7 @@ request path, so the user never waits for it.
 
 ## 9. Semantic memory
 
-Semantic memory is for **facts** (5:15 to 5:20). You know Paris is the
+Semantic memory is for **facts**. You know Paris is the
 capital of France, but not the moment you learnt it. If a user mentions
 their favourite language is Python in session one, their team size in
 session two and their deployment target in session three, an agent without
@@ -1218,7 +1215,7 @@ memory in action.
 <Infographic
   src="/img/ai-security/m3-semantic.svg"
   alt="Semantic memory: a fact extractor feeds a dedup and conflict check that inserts, merges or resolves facts into a knowledge base; episodic versus semantic."
-  caption="Redrawn from the mentor's architecture notes, 4:05, and the notebook's comparison table."
+  caption="Redrawn from the mentor's architecture notes, and the notebook's comparison table."
 />
 
 The difference from episodic memory is the question "when was it true?".
@@ -1233,7 +1230,7 @@ Episodic memory records what happened; semantic memory distils what it
 and "where" stripped out. Repeated mentions raise a fact's confidence, and
 the retrieved facts go into the system prompt as bullets.
 
-### Doubts · Isn't episodic memory hard to scale? Does semantic memory update? · 5:17
+### Doubts · Isn't episodic memory hard to scale? Does semantic memory update?
 
 **Rishabh:** Handling episodic memory at scale is a challenge, isn't it?
 
@@ -1296,7 +1293,7 @@ def known_facts(user_id: str, query: str, k: int = 5) -> str:
 
 ## 10. Procedural memory
 
-Procedural memory changes **how the agent itself behaves** (5:20 to 5:25).
+Procedural memory changes **how the agent itself behaves**.
 The agent learns from what happens and updates its own system instructions,
 which is where its core behaviour lives. Human procedural memory is why you
 can ride a bicycle without thinking: you don't recall the session where you
@@ -1305,7 +1302,7 @@ learnt to balance, you just know how.
 <Infographic
   src="/img/ai-security/m3-procedural.svg"
   alt="Procedural memory: successful runs become parameterised workflow templates in a skill library, retrieved and adapted for new tasks; semantic versus procedural."
-  caption="Redrawn from the mentor's architecture notes, 4:05 (again at 4:11)."
+  caption="Redrawn from the mentor's architecture notes (again)."
 />
 
 A **skill library** of step-by-step workflows lets the agent retrieve a
@@ -1400,7 +1397,7 @@ with the conversation that produced it.
 ## 11. Self-reflection memory
 
 Self-reflection has the agent **analyse its own performance** after a task,
-extract the lessons and store them for next time (5:25 to 5:33). The class
+extract the lessons and store them for next time. The class
 suggests trading bots, code generation and planning as uses, and he agrees.
 
 His analogy is a thoughtful doctor. After a difficult consultation they
@@ -1412,7 +1409,7 @@ through self-critique, not formal training, as it does for people.
 <Infographic
   src="/img/ai-security/m3-self-reflection.svg"
   alt="Self-reflection memory: attempt the task, evaluate the outcome, extract a short insight into a reflection store, and retrieve it for the next task of the same type."
-  caption="Redrawn from the mentor's architecture notes, 4:05."
+  caption="Redrawn from the architecture notes."
 />
 
 The research foundation is
@@ -1442,7 +1439,7 @@ number of agents; no technique is simply cheap or expensive. Token
 budgeting frameworks exist for exactly this.
 
 :::note
-In the Monday recap (4:05) Chirantan says coding assistants such as Claude
+In the Monday recap Chirantan says coding assistants such as Claude
 Code "primarily use" self-reflection memory. Treat that as his opinion. What
 Claude Code documents is compaction, summary memory, and project memory
 files of standing instructions, which are closer to procedural memory.
@@ -1499,7 +1496,7 @@ class ReflectionMemory:
 ## 12. Memory routing
 
 With half a dozen stores, something has to decide which one each message
-touches (5:33 to 5:40). **Memory routing** classifies the intent of every
+touches. **Memory routing** classifies the intent of every
 incoming message and dispatches it to the right store, for reading, writing
 or both. The notebook's image is an air-traffic controller: it doesn't send
 a plane to every runway, it picks one based on type, destination, size and
@@ -1508,7 +1505,7 @@ traffic.
 <Infographic
   src="/img/ai-security/m3-routing.svg"
   alt="Memory routing: a router classifies each message and sends it to the entity, episodic, semantic, procedural or vector store, with the notebook's routing examples."
-  caption="Redrawn from the mentor's architecture notes, 4:05 to 4:06, and the notebook's routing table."
+  caption="Redrawn from the mentor's architecture notes, and the notebook's routing table."
 />
 
 | Message | Routed to |
@@ -1535,7 +1532,7 @@ it won't. "I changed jobs to TCS and my new salary is 150" is a **fan-out**:
 a fact update that rewrites the entity profile's salary from 120 to 150 and
 is also stored in the vector store.
 
-### Doubts · Is an LLM used for routing? · 5:36
+### Doubts · Is an LLM used for routing?
 
 **Chirantan:** Not in the notebook: the routing is rule-based code, in a
 `RoutedMemory` class. Frameworks for memory routing exist too.
@@ -1601,8 +1598,7 @@ is rules first, a model only when no rule fires.
 
 ### Aside: temporal memory
 
-The architecture notebook briefly shows a temporal-memory board at 4:06 and
-4:11. It is not taught as a separate technique in the thirteen-part sequence.
+The architecture notebook briefly shows a temporal-memory board. It is not taught as a separate technique in the thirteen-part sequence.
 Timestamp filters narrow the candidate records, and the retrieval path combines
 semantic similarity with recency. A separate path groups records into an event
 timeline. This distinguishes time-aware retrieval from deleting old memories.
@@ -1610,13 +1606,13 @@ timeline. This distinguishes time-aware retrieval from deleting old memories.
 <Infographic
   src="/img/ai-security/m3-temporal.svg"
   alt="Timestamped memory and a query feed a time filter, semantic and recency scorers, and combined top-k ranking; a separate branch builds an event timeline."
-  caption="Redrawn from the temporal-memory board shown at 4:06:04 to 4:06:10 and 4:11:17."
+  caption="Redrawn from the temporal-memory board."
 />
 
 ## 13. Forgetting and decay
 
 The last technique is the one Chirantan is most excited about, though he
-hasn't yet used it in a product (5:40 to 5:50). **More memory is not always
+hasn't yet used it in a product. **More memory is not always
 better.** An agent that remembers everything becomes slower to search, noisier
 in its answers, and unable to tell what matters now from what mattered two
 years ago. Forgetting on purpose, systematically pruning low-value, stale
@@ -1643,7 +1639,7 @@ memory at 0.5 to 0.8, the idea behind spaced repetition.
 <Infographic
   src="/img/ai-security/m3-forgetting.svg"
   alt="Forgetting and decay: a decay engine lowers memory strength, retrieval boosts it, a pruning engine archives or deletes memories below 0.10; the four forgetting strategies."
-  caption="Redrawn from the mentor's architecture notes, 4:11, and the notebook's strategy table."
+  caption="Redrawn from the mentor's architecture notes, and the notebook's strategy table."
 />
 
 *Interactive exercise added to these notes.*
@@ -1804,7 +1800,7 @@ it, because its access count and category outweigh its faded strength. The
 pinned allergy survives everything. Tune the weights, the half-life and the
 boost on your own data; these values are only a starting point.
 
-### Doubts · What decides that a memory is low value? · 5:44
+### Doubts · What decides that a memory is low value?
 
 **Manpreet:** What counts as "low value"?
 

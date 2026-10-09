@@ -13,25 +13,74 @@ import ExperimentChoiceLab from '@site/src/components/viz/ExperimentChoiceLab';
 
 **In one line.** A metric becomes useful when its data, evaluation method and model artifact can be traced and challenged.
 
+:::tip Before you start
+
+**You should already know**
+
+- What a pipeline run reads and writes ([Lecture 10, orchestration and recovery](/docs/mlops/data/orchestration-and-recovery)).
+- What an F1 score is and why a holdout set must stay separate ([Model evaluation](/docs/theory/ml/model-evaluation)).
+
+**Reading time:** about 40 minutes, plus a minute to run the code.
+
+**After this chapter you can**
+
+- Build a lineage graph from run metadata and ask which models a changed table touches.
+- Explain why a plain graph over-reports impact and what a time context fixes.
+- Say how much a few missing lineage emitters hurt an impact answer.
+
+:::
+
+## In 30 seconds
+
+Suppose someone tells you a column in the orders table was wrong last month. Which reports and models used it? If every job wrote down what it read and what it wrote, you can follow the arrows from the table to the answer. If you never wrote it down, you start asking people.
+
+Think of a recipe card box where every dish lists its ingredients. When one batch of flour is recalled you look up every dish that used it, and only the dishes cooked after the bad batch arrived.
+
+## Words you will meet
+
+| Term | Plain meaning | Tiny example |
+| --- | --- | --- |
+| Experiment tracking | Logging each run's settings, metrics and artifacts | F1 0.76 with seed 17 and snapshot 3 |
+| Lineage | The graph of what was read to produce what | `orders` to `features` to `model_7` |
+| Upstream, downstream | Earlier and later in that graph | `orders` is upstream of `model_7` |
+| Impact analysis | Listing everything downstream of a change | Which models read the changed table? |
+| Catalog | A searchable list of datasets with owners and schemas | Owner, grain, update schedule |
+| Registry | Named model versions with approval state | `champion` alias points to version 4 |
+| Run event | A record that one job run read and wrote datasets | Job `train_7` read `feat_3` on day 70 |
+| Time context | The date a read happened | Trained before the bug, so unaffected |
+
+
 ## The idea in plain words
 
 Machine learning is empirical: a model is chosen from experiments whose results must be compared. A notebook number on its own is fragile. Which data snapshot produced it? Was the holdout truly separate? What code and configuration ran? Which artifact was measured? **Experiment tracking** records these relationships so another person can inspect a claim and attempt to repeat it. **Metadata and lineage** connect the run to upstream datasets, features and downstream releases.
 
-The source has three runs with F1 scores **0.71, 0.76 and 0.74**. A tracker can sort them and show that run 2 has the largest reported score. That is only the beginning of a selection decision. The runs must use a comparable evaluation set and metric definition; the measurement needs uncertainty and subgroup checks; deployment may have latency, cost or safety limits. A logged configuration helps reconstruction but does not make a biased evaluation valid. A registry entry should record the evidence and approval decision, not merely promote whichever number is largest.
+Take three runs with F1 scores **0.71, 0.76 and 0.74**. A tracker can sort them and show that run 2 has the largest reported score. That is only the beginning of a selection decision. The runs must use a comparable evaluation set and metric definition; the measurement needs uncertainty and subgroup checks; deployment may have latency, cost or safety limits. A logged configuration helps reconstruction but does not make a biased evaluation valid. A registry entry should record the evidence and approval decision, not merely promote whichever number is largest.
 
 <Infographic src="/img/dm/experiment-metadata.svg" alt="Three runs report F1 scores of 0.71, 0.76 and 0.74; lineage connects source data, features, run and model version, while release review checks leakage and latency." caption="Tracking makes a reported result inspectable; a release decision still tests the result's meaning." />
 
 Lineage is a graph of what was used and what was produced. A source table feeds a cleaned dataset, which feeds a feature set, which feeds a training run and model version. If a source field changes, the graph helps identify affected descendants. A data catalog adds searchable descriptions, owners, schemas, freshness and quality signals. These tools shorten an investigation, provided the metadata is complete and updated by the actual jobs.
 
-:::note Beyond the lecture
+:::note Added for this site
 
-The source states that tracking makes the top run trustworthy and exact reproducibility follows from pinned code, data, configuration and environment. The sections below qualify those claims: evaluation design and deployment constraints determine trust, while hardware, nondeterministic operations and external services can prevent bit-for-bit reproduction.
+The course material says that tracking makes the top run trustworthy and that exact reproducibility follows from pinned code, data, configuration and environment. The sections below qualify those claims: evaluation design and deployment constraints determine trust, while hardware, nondeterministic operations and external services can prevent bit-for-bit reproduction.
 
 :::
 
-The lab starts with the lecture's **0.71, 0.76 and 0.74 F1 scores**. With an 80 ms latency budget, run 2 is eligible and has the highest score. Tighten the budget to 60 ms and run 3 becomes the best eligible candidate. The control demonstrates why a metric ranking needs release constraints.
+The lab starts with the **0.71, 0.76 and 0.74 F1 scores**. With an 80 ms latency budget, run 2 is eligible and has the highest score. Tighten the budget to 60 ms and run 3 becomes the best eligible candidate. The control demonstrates why a metric ranking needs release constraints.
 
 <ExperimentChoiceLab />
+
+## Worked example, step by step
+
+A source table `src` feeds a staging table `stg`, which feeds a feature set `feat`. Two models were trained on `feat`: `model_1` on day 40 and `model_2` on day 70. On day 60 someone finds that `src` was wrong from day 60 onward.
+
+1. **Draw the graph.** Edges: `src` to `stg`, `stg` to `feat`, `feat` to `model_1`, `feat` to `model_2`. The descendants of `src` are `stg`, `feat`, `model_1` and `model_2`.
+2. **Plain impact analysis.** Every model below the table is flagged: 2 models.
+3. **Add time.** Only runs on or after day 60 can have read the bad data. The `stg` job runs daily, so from day 60 it carries the problem into `feat`. `model_1` was trained on day 40, before the change, so it is unaffected. `model_2` on day 70 is affected. Result: 1 model.
+4. **Over-flag factor.** 2 flagged against 1 truly affected is a factor of 2.0.
+5. **A missing emitter.** If the `stg` job never emitted lineage events, the graph has no edge from `src` onward. The search finds 0 of the 1 affected models: recall 0.
+
+In words: a lineage graph answers "could this reach that", and a time context answers "did it". A job that does not report cuts the chain. The first block below prints these numbers.
 
 ## How it works
 
@@ -60,7 +109,7 @@ A practical system uses tracking and lineage together. The experiment run stores
 
 ## Code you can run
 
-Start with the lecture's F1 ranking, then apply a serving constraint. The candidate table is small enough to inspect directly.
+Start with the F1 ranking, then apply a serving constraint. The candidate table is small enough to inspect directly.
 
 ```python
 runs = [
@@ -96,6 +145,142 @@ assert hashlib.sha256(payload + b" ").hexdigest() != manifest["data_sha256"]
 ```
 
 For a real dataset, identify the immutable snapshot or table version and hash a canonical manifest of its files. A single output hash is useful for detecting drift but may change for harmless ordering differences unless canonicalisation is defined.
+
+### The worked example in code
+
+This block builds the four-edge graph, runs the plain and time-aware searches and then removes the `stg` job.
+
+```python
+import networkx as nx
+
+edges = [("src", "stg"), ("stg", "feat"), ("feat", "model_1"), ("feat", "model_2")]
+runs = [(60, "stg", ["src"]), (61, "feat", ["stg"]), (40, "model_1", ["feat"]), (70, "model_2", ["feat"])]
+graph = nx.DiGraph(edges)
+plain = sorted(n for n in nx.descendants(graph, "src") if n.startswith("model"))
+
+def affected(runs, change_day=60, start="src"):
+    tainted = {start}
+    for day, output, inputs in sorted(runs):
+        if day >= change_day and tainted.intersection(inputs):
+            tainted.add(output)
+    return sorted(n for n in tainted if n.startswith("model"))
+
+timed = affected(runs)
+without_stg = affected([r for r in runs if r[1] != "stg"])
+print("plain", plain, "timed", timed, "factor", len(plain) / len(timed))
+print("stg emits nothing:", without_stg)
+```
+
+**Reading the output.** It prints the plain list with both models, the timed list with `model_2` only, a factor of 2.0, and an empty list when the `stg` job does not report. These are steps 2 to 5.
+
+### An experiment on a lineage graph
+
+Does the graph over-report, and how fragile is it? The block below builds a synthetic estate: 10 source tables, 15 staging tables, 15 marts, 20 feature sets and 60 model training runs, with every table job running daily for 120 days (6,060 run events). It stores them as events, builds a networkx directed graph and asks, for each source, which models are affected if the source was bad from day 60. It compares the plain graph answer with a time-aware answer that follows only runs on or after day 60. Then it silences a random share of jobs, as if their code never emitted events, and measures how many truly affected models are still found.
+
+Versions used: Python 3.14.6, networkx 3.6.1, pandas 2.3.3, NumPy 2.5.3. The estate is random and synthetic. It runs in about a second.
+
+```python
+import networkx as nx
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(12)
+days, change_day = 120, 60
+sources = [f"src_{i}" for i in range(10)]
+layer1 = {f"stg_{i}": list(rng.choice(sources, rng.integers(1, 3), replace=False)) for i in range(15)}
+layer2 = {f"mart_{i}": list(rng.choice(list(layer1), rng.integers(1, 3), replace=False)) for i in range(15)}
+features = {f"feat_{i}": list(rng.choice(list(layer2) + list(layer1), rng.integers(1, 3), replace=False)) for i in range(20)}
+jobs = {**layer1, **layer2, **features}
+level = {name: 0 for name in sources} | {name: 1 for name in layer1} | {name: 2 for name in layer2} | {name: 3 for name in features}
+
+events = []
+for day in range(days):
+    for name, inputs in jobs.items():
+        events.append((day, level[name], f"job_{name}", tuple(inputs), name))
+for i in range(60):
+    day = int(rng.integers(0, days))
+    inputs = tuple(rng.choice(list(features), rng.integers(1, 3), replace=False))
+    events.append((day, 4, f"train_{i}", inputs, f"model_{i}"))
+events.sort()
+models = {e[4] for e in events if e[4].startswith("model_")}
+
+graph = nx.DiGraph()
+for _, _, job, inputs, output in events:
+    graph.add_edges_from((i, output) for i in inputs)
+
+def time_respecting(source, dropped):
+    tainted = {source}
+    for day, _, job, inputs, output in events:
+        if day >= change_day and job not in dropped and tainted.intersection(inputs):
+            tainted.add(output)
+    return tainted & models
+
+def naive(source):
+    return nx.descendants(graph, source) & models if source in graph else set()
+
+job_names = sorted({e[2] for e in events})
+print("nodes", graph.number_of_nodes(), "edges", graph.number_of_edges(), "events", len(events), "models", len(models))
+rows = []
+for source in sources:
+    truth, plain = time_respecting(source, set()), naive(source)
+    rows.append((source, len(plain), len(truth)))
+frame = pd.DataFrame(rows, columns=["source", "graph_flags", "truly_affected"])
+print(frame.to_string(index=False))
+print("mean flagged", frame.graph_flags.mean(), "mean truly affected", frame.truly_affected.mean(), "over-flag factor", round(frame.graph_flags.sum() / frame.truly_affected.sum(), 2))
+
+print("share of jobs with no lineage events, recall of the affected models")
+for share in (0.0, 0.05, 0.10, 0.20):
+    recalls = []
+    for seed in range(40):
+        pick = np.random.default_rng(seed).choice(job_names, int(share * len(job_names)), replace=False)
+        dropped = set(pick)
+        for source in sources:
+            truth = time_respecting(source, set())
+            if truth:
+                recalls.append(len(time_respecting(source, dropped) & truth) / len(truth))
+    print(f"{share:5.2f} {np.mean(recalls):.3f}")
+```
+
+The output of the run:
+
+```text
+nodes 119 edges 172 events 6060 models 60
+source  graph_flags  truly_affected
+ src_0            0               0
+ src_1           39              20
+ src_2           31              12
+ src_3           18               6
+ src_4           35              15
+ src_5            0               0
+ src_6           18              11
+ src_7           27              12
+ src_8           32              18
+ src_9           10               4
+mean flagged 21.0 mean truly affected 9.8 over-flag factor 2.14
+share of jobs with no lineage events, recall of the affected models
+ 0.00 1.000
+ 0.05 0.869
+ 0.10 0.689
+ 0.20 0.481
+```
+
+**Reading the output.** The first line gives the size: 119 tables and models (one source was never read, so it is not a node), 172 edges. Each row is one bad source. `graph_flags` is how many of the 60 models lie below it in the graph, `truly_affected` how many were trained on or after day 60 with a tainted input. The last four lines show recall of the truly affected set as more jobs fail to report.
+
+**Line by line.**
+
+- `events.sort()` orders runs by day, then by level, so a staging job on a given day is processed before the marts and features that read it.
+- `time_respecting` marks a table tainted only when a run on or after `change_day` reads a tainted input. That is the time context.
+- `dropped` holds job names. A silenced job removes every run of that job, so one missing emitter cuts every path through it.
+
+### What the numbers say
+
+The plain graph flagged 21.0 models on average against 9.8 truly affected, an over-flag factor of 2.14. For `src_1` it named 39 models when 20 were affected. The extra models were trained before the change on data that was still good. A plain graph alone sends the incident team to read twice as many models as needed.
+
+The fragility is the surprise. Silencing 5% of jobs reduced recall to 0.869, 10% to 0.689 and 20% to 0.481. Recall falls much faster than the share of missing jobs, because a path from a source to a model crosses several jobs and one gap cuts the whole path. With a fifth of emitters missing, a bit more than half the affected models are not found, and nothing in the output says so.
+
+Limits: a random synthetic estate with a fixed shape, one change day, jobs silenced entirely at random, and whole-job granularity. Real gaps cluster in notebooks and ad hoc scripts. Measure your own coverage by tracing a deployed model backwards.
+
+<Infographic src="/img/dm-enrich/dm2-lineage-impact.svg" alt="Plain graph flags 21.0 models against 9.8 truly affected, and recall of affected models falls from 1.000 to 0.481 as 20 percent of jobs stop emitting lineage." caption="Look first at the falling bars: a few silent jobs break many paths." />
 
 ## Designing with it
 
@@ -147,6 +332,16 @@ Metadata can also carry risk. A run artifact may contain sample records or perso
 
 :::
 
+## Common mistakes
+
+| Mistake | Why it feels right | What to do instead |
+| --- | --- | --- |
+| Promoting the run with the highest metric | The tracker sorts it first | Compare evaluation sets and latency first. With an 80 ms run at 0.76 and a 60 ms budget, the 0.74 run is the eligible one |
+| Reading lineage as proof of impact | The graph says "downstream" | Add a time context. The plain graph flagged 2.14 times as many models as were affected |
+| Assuming the graph is complete | A tool is installed, so every job reports | Trace a deployed model backwards on a schedule. Silencing 20% of jobs cut recall to 0.481 |
+| Logging a code revision but not a data snapshot | The code is the thing we edit | Log an immutable snapshot ID or a content hash of a canonical manifest |
+| Expecting bit-for-bit reruns | Everything is pinned | State a tolerance for the metric or the predictions, and test it |
+
 ## Practice questions
 
 <details>
@@ -184,11 +379,28 @@ Pin code, data, configuration and environment, then test a stated reproducibilit
 
 </details>
 
+<details>
+<summary><strong>Q6.</strong> (Medium) A source table is found to be wrong from day 60. Models were trained on days 40, 55, 70 and 90 from a feature set built from it. How many are affected, and what extra information did you need?</summary>
+
+Two, the models trained on days 70 and 90. You needed the date of each training run, which is the time context on the lineage edge. The plain graph would flag all four.
+
+</details>
+
+<details>
+<summary><strong>Q7.</strong> (Stretch) In the experiment 10% of jobs were silent and recall was 0.689, not 0.90. Why is recall lower than the share of jobs that report?</summary>
+
+An affected model sits at the end of a path that passes through several jobs, here staging, mart, feature and training. If any one of them is silent the path is cut and the model is missed. With four or five jobs on a path, a 10% chance of silence per job leaves a full path intact only about two times in three. Recall therefore drops faster than the silent share. The remedy is to measure coverage by tracing from a deployed model to its sources, not to trust the graph.
+
+</details>
+
 ## Go deeper
 
 - [MLflow Tracking](https://mlflow.org/docs/latest/ml/tracking/) describes runs and logged artifacts.
 - [MLflow Model Registry workflow](https://mlflow.org/docs/latest/ml/model-registry/workflow) describes versions, aliases and tags.
 - [OpenLineage object model](https://openlineage.io/docs/spec/object-model/) defines jobs, runs, datasets and facets.
+- OpenLineage object model (the link above), opened 2026-10-09: a Job is a process that consumes or produces datasets, a Run is one occurrence of a job, and run events carry input and output datasets plus facets such as schema and version.
+- MLflow model registry workflow (the link above), opened 2026-10-09: aliases are named references to model versions, tags annotate status, and model stages are deprecated as of MLflow 2.9.0.
+- [networkx descendants](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.dag.descendants.html), opened 2026-10-09: all nodes reachable from a source node in a directed graph.
 - Built from the course lecture "dm-l12-experimentation-metadata" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
@@ -198,9 +410,16 @@ Pin code, data, configuration and environment, then test a stated reproducibilit
 - **[Apache Airflow docs](https://airflow.apache.org/docs/)** `docs`
   Apache; How production data pipelines are scheduled and orchestrated.
 
-## Check your understanding
+## Check yourself
 
 - [ ] I can identify run 2 as the highest reported F1 and explain why that alone does not approve it.
 - [ ] I can log a run with data, code, configuration, artifact and evaluation identities.
 - [ ] I can trace a deployed model back to an upstream dataset version and name missing lineage edges.
 - [ ] I can distinguish a registry version, approval state and deployment alias.
+- [ ] I can list the models a changed table can reach, and cut the list with a time context.
+- [ ] I can explain why 2 flagged models against 1 affected is an over-flag factor of 2.0 and what removes it.
+- [ ] I can say why recall of an impact search falls faster than the share of jobs that fail to emit lineage.
+
+## Where to go next
+
+Next: [Lecture 13, distributed processing and skew](/docs/mlops/data/distributed-processing-skew), which looks at how a large job is split across workers. Related: [Lecture 11, features and point-in-time correctness](/docs/mlops/data/features-and-point-in-time), where the same time context decides which feature value a model saw.

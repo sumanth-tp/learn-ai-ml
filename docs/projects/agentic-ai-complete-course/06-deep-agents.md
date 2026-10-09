@@ -10,7 +10,7 @@ tags: [agentic-ai, deep-agents, deepagents, langgraph, langchain, middleware, ta
 
 import Infographic from '@site/src/components/Infographic';
 
-> **Part 6 of 9** · [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=28931s) · 8:02:11 to 8:45:43 ·
+> **Part 6 of 9** · [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
 > Notebook: `deepagentscourse/deeoagentsdemo/1-basicsdeepagent.ipynb`. The instructor shared this notebook only as a
 > Google Drive file, so it is not in a repository. Every line of code below was read from the video frames (enlarged
 > to read them) and cross-checked against what he says. Notes follow the video in order.
@@ -25,7 +25,7 @@ Customising the model, system prompt and tools, then the backend, sub-agents and
 and is not in this video. Where this chapter goes beyond the video it says so in a clearly marked **addition**.
 :::
 
-## Where this fits in the course (8:02)
+## Where this fits in the course
 
 By now the course has covered building generative AI applications, building independent agents that can carry out a
 task, the different types of agent, and getting several agents to collaborate in multi-agent applications. Deep agents
@@ -33,7 +33,7 @@ are the next step up. The plan for this video is to understand how deep agents d
 see a little code that creates one, and leave the full practical treatment (customisation, sub-agents, backends,
 interrupts) for the next video.
 
-## First, what a plain agent looks like (8:03)
+## First, what a plain agent looks like
 
 The instructor opens a whiteboard with two headings: "Agents, which we will call shallow agents" and "Deep agents".
 He starts with the simplest agent there is, because the word "shallow" only makes sense after you have seen it.
@@ -51,10 +51,10 @@ The instructor calls it a **shallow agent**.
 <Infographic
   src="/img/agentic-course/06-shallow.svg"
   alt="A shallow agent: input goes to an LLM, which either calls a tool such as SERP API and returns the result, or answers directly. Below, three limits: no explicit planning, complex queries cannot be handled, limited context retention."
-  caption="Redrawn from the instructor's whiteboard at 8:03:15 to 8:07:20."
+  caption="Redrawn from the whiteboard."
 />
 
-### Why he calls it shallow (8:04 to 8:07)
+### Why he calls it shallow
 
 He gives three reasons, and the whole chapter is really about fixing them.
 
@@ -73,7 +73,7 @@ practice, frameworks usually pass the tool result back to the model once so it c
 argument does not change: there is still one decision, no plan and no memory worth the name.
 :::
 
-## The ReAct agent (8:07)
+## The ReAct agent
 
 "Fine," he anticipates, "but surely we have seen better agents than that." The best known is the **ReAct agent**.
 
@@ -88,7 +88,7 @@ context, the second part is solved with that context, and the combined context p
 <Infographic
   src="/img/agentic-course/06-react.svg"
   alt="A ReAct agent: an LLM with a system prompt loops with many tools, acting and observing, and then produces an output. A bracket labels it still a shallow agent, with five missing things."
-  caption="Redrawn from the instructor's whiteboard at 8:07:45 to 8:10:30."
+  caption="Redrawn from the whiteboard."
 />
 
 This is a real improvement, because the model can keep going until the query is solved. But the instructor still files
@@ -110,7 +110,7 @@ to do, acts by calling a tool, observes the result, and repeats. His point about
 | Memory beyond the chat | None | None | A file system, shared with sub-agents |
 | Behaviour steered by | A short prompt | A short prompt | A rich system prompt |
 
-## Deep agents (8:10)
+## Deep agents
 
 A deep agent "works completely differently", so he refuses to call it shallow. His examples are the deep research modes
 in ChatGPT and Claude, and Manus. He also says that his own team is building a product on a deep agent, which he names
@@ -123,7 +123,7 @@ and hang these four things on it.
 <Infographic
   src="/img/agentic-course/06-four-parts.svg"
   alt="A deep agent in the centre with four components around it: a planning tool, sub agents, a system prompt and a file system acting as persistent memory. Claude Code is noted as the example."
-  caption="Redrawn from the instructor's whiteboard at 8:11:45 to 8:16:00."
+  caption="Redrawn from the whiteboard."
 />
 
 1. **A planning tool.** When a query arrives it does not go straight to a tool or straight to an answer. A planning
@@ -132,7 +132,7 @@ and hang these four things on it.
 3. **A system prompt.** The standing instructions that say how the agent should behave.
 4. **A file system.** A place to keep things, which acts as persistent memory.
 
-### The example he keeps coming back to: Claude Code (8:12)
+### The example he keeps coming back to: Claude Code
 
 To make this concrete he points at Claude Code, which he calls an amazing deep agent. It is used for far more than
 writing code, because it has planning and decomposition built in.
@@ -149,7 +149,7 @@ Code's real prompt changes between releases. Treat it as an illustration of the 
 style, safety rules and tool use), not as the current text.
 :::
 
-### Planning tool, with the Paris trip (8:13)
+### Planning tool, with the Paris trip
 
 Back on the board, he takes the first component. Whenever a query arrives, the first important module is the planning
 tool. In Claude Code the plan is simply a **to-do list**. He gives "the thousand-foot view" with a request:
@@ -161,13 +161,13 @@ Paris and staying at a particular hotel at a particular price. Day two is breakf
 is another place. Day four is the flight back to India. Each day carries its cost, and the list says what to book and
 what not to book.
 
-### Sub-agents (8:15)
+### Sub-agents
 
 A list is not work. Someone has to execute it, so the next component is the sub-agents. Sub-agent one makes sure the
 first item is carried out, sub-agent two takes the next, then three and four. The to-do list decides how many workers
 the job needs, and each worker is responsible for its own slice.
 
-### System prompt and file system (8:16)
+### System prompt and file system
 
 To carry out the work properly the agents need a system prompt that says how they should behave: tone, coding style,
 anything you want to pin down. Claude Code's prompt, shown earlier, is the model for this.
@@ -183,10 +183,10 @@ file system as persistent memory between those sub-agents.
 <Infographic
   src="/img/agentic-course/06-planning-to-subagents.svg"
   alt="A request to plan a Paris holiday becomes a to-do list from the planning tool, which is handed out to four sub agents. A system prompt guides them and a shared file system acts as persistent memory."
-  caption="Redrawn from the instructor's whiteboard at 8:14:00 to 8:17:15, combining his two sketches of the to-do list and the sub-agents."
+  caption="Redrawn from the whiteboard, combining his two sketches of the to-do list and the sub-agents."
 />
 
-### A second example: researching and writing a blog (8:17)
+### A second example: researching and writing a blog
 
 For a more everyday case, imagine you give the deep research agent a blog topic and ask it to research the topic and
 produce the blog. First it makes a to-do list. The tasks he writes down are:
@@ -205,7 +205,7 @@ done in parallel.
 <Infographic
   src="/img/agentic-course/06-blog-example.svg"
   alt="A blog topic becomes a to-do list of four items: research, more research, write the blog and copyright check. Each is handled by a sub agent with internet access, arXiv access, writing skill or internet access respectively."
-  caption="Redrawn from the instructor's whiteboard at 8:17:20 to 8:18:40."
+  caption="Redrawn from the whiteboard."
 />
 
 :::tip Why splitting the work helps
@@ -217,7 +217,7 @@ same idea from the other side, with a tool result that is too big for the conver
 With that, the theory is done. The instructor says it is a basic understanding, and moves to build a basic deep agent
 with some tools.
 
-## Project setup (8:18)
+## Project setup
 
 He shows the whole setup from an empty folder, because the environment is part of the lesson. The folder is called
 `deepagentscourse` and he opens it in Google Antigravity, an editor in the VS Code family. Any IDE is fine. The commands
@@ -255,8 +255,8 @@ python-dotenv
 | `langchain-openai` | In case an OpenAI model is wanted. It is installed but not used in this video. |
 | `langchain-groq` | The chat model integration for Groq, which is the model provider used in the run. |
 | `ipykernel` | Lets the Jupyter notebook attach to this virtual environment's Python. |
-| `tavily-python` | The Tavily client, for real-time internet search. Added at 8:24. |
-| `python-dotenv` | Loads the `.env` file. Added at 8:26. |
+| `tavily-python` | The Tavily client, for real-time internet search. Added. |
+| `python-dotenv` | Loads the `.env` file. Added. |
 
 He installs with:
 
@@ -297,7 +297,7 @@ setup is different: a generic model gets no `write_todos` tool and no summarisat
 picture or tool list differs from this chapter, check your installed version before assuming you made a mistake.
 :::
 
-### Keys in the `.env` file (8:24)
+### Keys in the `.env` file
 
 He creates a `.env` file next to the notebook with four variables: `OPENAI_API_KEY`, `GROQ_API_KEY`,
 `GOOGLE_API_KEY` and `TAVILY_API_KEY`. The Tavily key is for internet search. The OpenAI, Groq and Google keys are for
@@ -318,7 +318,7 @@ real key on screen, in a commit or in a chat, treat it as leaked and rotate it. 
 To get a Tavily key you sign in at the Tavily website (he continues with Google), and the dashboard shows an API key
 you can copy. Tavily is a real-time internet search service built for LLM tools.
 
-## The notebook (8:22)
+## The notebook
 
 He creates a folder `deeoagentsdemo` (the spelling is his) and a notebook `1-basicsdeepagent.ipynb` inside it. First he
 selects the kernel, the `.venv` environment with Python 3.13.2. Then he adds two Markdown cells for reference, so you
@@ -340,7 +340,7 @@ on the board. Notice the phrases "context management" and "context isolation". T
 system holds the bulky material so the conversation does not have to, and a sub-agent works in its own context so its
 mess does not pollute the main one. Persistence across conversations comes from LangGraph, which the library sits on.
 
-## Cell 1: environment variables (8:25)
+## Cell 1: environment variables
 
 He starts a new code cell headed `### Basic deep agent`.
 
@@ -372,7 +372,7 @@ raises a `TypeError`. The simplest safe version is just `load_dotenv()`. The lin
 the video runs.
 :::
 
-## Cell 2: the web search tool (8:27)
+## Cell 2: the web search tool
 
 Before building the agent he wants a tool. A deep agent without tools still has its planning and file tools, but a
 researcher needs the internet, so he builds a web search tool around the Tavily client.
@@ -410,7 +410,7 @@ the next positional slots are `search_depth`, `topic` and `time_range`, so his t
 wrong parameters. His fix is to pass each one **by keyword**, which removes the problem. He also notes (and the tooltip confirms) how he found out what to pass: he read the Tavily
 documentation page, and the `Literal` is simply the set of news categories he wants the search to support.
 
-His default `"general"` was not in his list the first time. He corrects it at 8:33 by adding `"general"` as the first
+His default `"general"` was not in his list the first time. He corrects it by adding `"general"` as the first
 entry of the `Literal`. Here is the final merged cell as it stood when he ran it, with a comment heading:
 
 ```python
@@ -447,7 +447,7 @@ argument that the `Literal` should mirror what the client accepts is right; take
 He stops to say that the same `Literal` idea applies to anything: you decide how many categories you want to expose.
 The tool is now ready to be handed to the agent.
 
-## Creating the deep agent (8:33)
+## Creating the deep agent
 
 Now the part the video is named for. To create a deep agent you need a prompt, a model, and the agent itself.
 
@@ -480,7 +480,7 @@ needs:
   simple or elaborate, and it sits on top of the library's own built-in instructions.
 - **`model`**: which LLM to use. This is a string or a chat model object.
 
-### Choosing a model: `init_chat_model` and Groq (8:35)
+### Choosing a model: `init_chat_model` and Groq
 
 The model is the next cell. He imports `init_chat_model` and builds a Groq model. The first typing shows a typo in the
 import path (`lanchain.chat`) that he corrects on the next attempt.
@@ -511,7 +511,7 @@ Qwen3 32B instead. Groq's catalogue of model names changes, so if `qwen/qwen3-32
 current tool-calling model from Groq's list.
 :::
 
-### Running it, and the first error (8:36)
+### Running it, and the first error
 
 With the model defined, he puts it into the agent cell and runs it:
 
@@ -533,7 +533,7 @@ The first run failed. The error said that there was an unexpected keyword argume
 named the fix. After correcting it the cell ran in about a second. Ending the cell with the bare name `deepagent`
 makes the notebook draw the compiled graph, which is the picture he comes back to in a minute.
 
-## A normal agent next to a deep agent (8:37)
+## A normal agent next to a deep agent
 
 To make the difference visible, he builds an ordinary agent with the same model and tool.
 
@@ -568,10 +568,10 @@ says: both have a model and tools. What a deep agent adds is a set of middleware
 <Infographic
   src="/img/agentic-course/06-simple-vs-deep-graph.svg"
   alt="Two LangGraph pictures side by side. The simple agent has start, model, tools and end. The deep agent adds PatchToolCallsMiddleware.before_agent, SummarizationMiddleware.before_model and TodoListMiddleware.after_model around the model."
-  caption="Redrawn from the two graph pictures printed in the notebook: the simple agent at 8:39:00 and 8:44:45, the deep agent at 8:37:45 to 8:40:30."
+  caption="Redrawn from the two graph pictures printed in the notebook: the simple agent, the deep agent."
 />
 
-### Reading the deep agent's graph (8:38)
+### Reading the deep agent's graph
 
 The simple agent's graph is small: `__start__`, then `model`, which either goes to `__end__` or to `tools`, and tools
 go back to `model`. It is the loop from the ReAct board.
@@ -606,7 +606,7 @@ stops the model from updating the list several times in one turn. Whether a to-d
 model's decision. You will see in a moment that for a simple question it does not make one.
 :::
 
-## Calling the agent (8:40)
+## Calling the agent
 
 A deep agent is invoked exactly like any LangGraph agent: you pass a dictionary with a `messages` list, each message
 having a role and content.
@@ -627,7 +627,7 @@ result
 - The input has a single user message. `role` is `"user"` and `content` is the question.
 - Ending the cell with `result` prints the state.
 
-### What happens inside while you wait (8:41)
+### What happens inside while you wait
 
 He explains the run before showing the result. The question enters the graph. The model decides whether it needs a tool
 call. For a question like this it will do an internet search. Whatever hook is relevant fires on the way: the model can
@@ -640,10 +640,10 @@ later, but he does not do so in this video. While waiting, the notebook's cell t
 <Infographic
   src="/img/agentic-course/06-invoke-flow.svg"
   alt="One invoke call: the question passes through middleware hooks to the model, which plans, calls web_search or answers. A large tool result is saved to the virtual file system, and the returned result holds messages, files and optionally todos."
-  caption="Explanatory board (not shown in the video), based on the notebook run at 8:40 to 8:44."
+  caption="Explanatory board (not shown in the video), based on the notebook run."
 />
 
-### The output (8:42)
+### The output
 
 The printed state is a dictionary with a `messages` list and a `files` dictionary. Trimmed to what is legible on screen:
 
@@ -701,7 +701,7 @@ because the model did not call the planning tool for this simple lookup. The pla
 chooses to use when a task needs it.
 :::
 
-## Simple agent versus deep agent, in his words (8:44)
+## Simple agent versus deep agent, in his words
 
 He closes the notebook part with the comparison. With `create_deep_agent` a number of middleware hooks are applied for
 you, and you can create any number of tools on top. With a plain `create_agent` agent you just get nodes, a graph and
@@ -717,18 +717,18 @@ hooks. The point of the demonstration is the clear idea of what a deep agent is,
 | Large tool results | Stay in the conversation | Moved into a file, the conversation keeps a pointer |
 | Where to customise | Add middleware yourself | Model, system prompt, tools, backend, sub-agents, interrupts |
 
-### Mistakes made on camera, in one place
+### Errors you may hit, in one place
 
-| Where | Mistake | Fix |
-| --- | --- | --- |
-| 8:30 and 8:32 | Search call passed `max_results, include_raw_content, topic` by position, so the order mattered | Pass them by keyword |
-| 8:33 | Default topic `"general"` was not one of the allowed values | Add `"general"` to the `Literal` |
-| 8:36 | `create_deep_agent(models=...)` | `model=` (singular) |
-| 8:38 | `create_agent(tool=[...])` | `tools=` (plural) |
-| 8:41 | Half-typed message dictionary, `SyntaxError` | Complete the `role` and `content` pair |
-| 8:41 | Question ran as "What is deepagent?", ambiguous | See the warning above |
+| Mistake | Fix |
+| --- | --- |
+| Search call passed `max_results, include_raw_content, topic` by position, so the order mattered | Pass them by keyword |
+| Default topic `"general"` was not one of the allowed values | Add `"general"` to the `Literal` |
+| `create_deep_agent(models=...)` | `model=` (singular) |
+| `create_agent(tool=[...])` | `tools=` (plural) |
+| Half-typed message dictionary, `SyntaxError` | Complete the `role` and `content` pair |
+| Question ran as "What is deepagent?", ambiguous | See the warning above |
 
-## What comes in part two (8:44)
+## What comes in part two
 
 He ends by saying this was the initial part of building deep agents, and that many topics remain and he does not want to
 make the video too long. Part two customises the agent: the **model**, **system prompt** and **tools**, and then the
@@ -739,7 +739,7 @@ system prompt, tools) and features (backend, subagents, interrupts), and everyth
 <Infographic
   src="/img/agentic-course/06-customisation-map.svg"
   alt="create_deep_agent branches into core config with model, system prompt and tools, and features with backend, subagents and interrupts, all feeding a customised agent."
-  caption="Redrawn from the LangChain docs diagram he shows at 8:45:15."
+  caption="Redrawn from the LangChain docs diagram he shows."
 />
 
 The video then moves straight on to the next series, on guardrails, which is the next chapter.

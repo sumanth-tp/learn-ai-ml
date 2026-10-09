@@ -18,7 +18,7 @@ import Infographic from '@site/src/components/Infographic';
 import HPALab from '@site/src/components/viz/HPALab';
 
 > **Module 4 of 4** ·
-> [Watch from 5:50:47](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=21047s) ·
+> [Watch on YouTube](https://www.youtube.com/watch?v=rQE3w8Qjx98) ·
 > about two hours of the 7h48m course ·
 > [Code](https://github.com/sourangshupal/Agentic-RAG-project) (branch
 > `agentops`)
@@ -37,7 +37,7 @@ tests it until it bends.
 
 ## From MLOps to AgentOps
 
-Paul starts by placing AgentOps next to MLOps (5:50 to 5:53). Around half
+Paul starts by placing AgentOps next to MLOps. Around half
 of it is familiar: deployment, pipelines, monitoring. The other half is new,
 because agents need **tracing** of multi-step runs, **evaluation** of
 free-text answers, and **security** around what they may do. That's why a
@@ -47,7 +47,7 @@ LangSmith, Langfuse, and Arize AI's Phoenix.
 <Infographic
   src="/img/ai-security/m4-prototype-production.svg"
   alt="Prototype reality versus production reality: traditional MLOps was built for models that predict, agents act."
-  caption="Redrawn from the mentor's slide, 5:53."
+  caption="Redrawn from the slide."
 />
 
 Everyone prototypes in notebooks, and for prototyping that's right. The
@@ -63,7 +63,7 @@ batch. This session is the shortcut through it.
 ## The project: arXiv Paper Curator
 
 The repository is an agentic RAG system over research papers from
-[arXiv](https://arxiv.org), hosted by Cornell University (5:54 to 5:56). Its
+[arXiv](https://arxiv.org), hosted by Cornell University. Its
 `notebooks/` folder holds one notebook and README per phase, which is where
 he tells beginners to start.
 
@@ -83,12 +83,12 @@ server, A2A endpoints, EKS manifests, CI/CD and load tests.
 <Infographic
   src="/img/ai-security/m4-system-overview.svg"
   alt="The arXiv Paper Curator in seven phases: ingestion, indexing, search, serving with a cache, and the agentic RAG layer."
-  caption="Adapted from the repository's system overview, shown at 5:55."
+  caption="Adapted from the repository's system overview."
 />
 
 ## Phase 1: the infrastructure
 
-Phase 1 sets up the services; nothing runs through them yet (5:55 to 6:02).
+Phase 1 sets up the services; nothing runs through them yet.
 
 - **Airflow** runs the ingestion. The DAG lives in `airflow/dags/`, split
   into setup, fetching, indexing and reporting modules. It runs in its own
@@ -118,7 +118,7 @@ DB is paid and gained vector support later, like Postgres did with pgvector.
 <Infographic
   src="/img/ai-security/m4-phase1-infra.svg"
   alt="Four local containers on a Docker bridge network, and the cloud-managed services the API and Airflow call."
-  caption="Adapted from the repository's phase 1 diagram, shown at 5:56 and 6:02."
+  caption="Adapted from the repository's phase 1 diagram."
 />
 
 ### Complete file: `compose.yml`
@@ -267,7 +267,7 @@ on a laptop and nowhere else.
 ## Run it locally
 
 From the project folder, with the virtual environment active, he runs
-`make start` (6:02 to 6:10). `make` wraps the Docker Compose commands so
+`make start`. `make` wraps the Docker Compose commands so
 nobody has to remember them.
 
 ```makefile
@@ -343,13 +343,12 @@ configured model is `meta.llama3-1-70b-instruct-v1:0`: Llama 3.1 with 70
 ## Tracing with Langfuse
 
 Logfire gives application-level logs. For **trace-level** detail, what each
-step of the agent did and how long it took, he opens Langfuse (6:10 to
-6:19). Only requests are traced there, not the application's own chatter.
+step of the agent did and how long it took, he opens Langfuse. Only requests are traced there, not the application's own chatter.
 
 <Infographic
   src="/img/ai-security/m4-langfuse-trace.svg"
   alt="One agentic request in Langfuse: the trace, the LangGraph spans from guardrail to output guardrail, and human feedback on the trace."
-  caption="Redrawn from the Langfuse trace shown in the session, 6:11 to 6:14."
+  caption="Redrawn from the Langfuse trace shown in the session."
 />
 
 The breakdown shows every tool used and every step's latency: how many
@@ -390,7 +389,7 @@ flowchart LR
     LF --> DS["Scores and datasets<br/>for evaluation"]
 ```
 
-### Doubts · Why not Ragas or DeepEval? · 6:16
+### Doubts · Why not Ragas or DeepEval?
 
 **Sandesh:** Have you used an evaluation framework such as Ragas or
 DeepEval?
@@ -398,7 +397,7 @@ DeepEval?
 **Paul:** Not here: Langfuse has built-in evaluations, as LangSmith does. If
 your tracing tool has none, use Ragas or DeepEval.
 
-### Doubts · Is human feedback done during testing? · 6:17
+### Doubts · Is human feedback done during testing?
 
 **Nitish:** Is this human-in-the-loop evaluation part of the test phase?
 
@@ -408,13 +407,13 @@ feedback.
 
 ## Bedrock Guardrails
 
-The guardrail layer uses **AWS Bedrock Guardrails** (6:19 to 6:30). One
+The guardrail layer uses **AWS Bedrock Guardrails**. One
 script creates the guardrail resource in AWS with four kinds of policy.
 
 <Infographic
   src="/img/ai-security/m4-bedrock-guardrails.svg"
   alt="Bedrock Guardrails: topic denial, content filters, PII anonymise and block on the input; grounding and relevance on the output."
-  caption="Redrawn from the guardrail script walked through in the session, 6:19 to 6:21."
+  caption="Redrawn from the guardrail script walked through in the session."
 />
 
 **Grounding** checks whether the answer is supported by the retrieved
@@ -668,7 +667,7 @@ two possible scores, any threshold between 1 and 100 gives the same result.
 
 ### Airflow, OpenSearch and Neon on screen
 
-He then shows the data side running locally (6:29 to 6:33). OpenSearch
+He then shows the data side running locally. OpenSearch
 Dashboards on port 5601 now shows about 317 chunks. Airflow runs on port
 8080 with the default `admin`/`admin` login, hard-coded for the demo. The
 DAG `arxiv_paper_ingestion` has five steps. Neon records which papers were
@@ -679,7 +678,7 @@ neither Airflow nor the API worked.
 <Infographic
   src="/img/ai-security/m4-dag.svg"
   alt="The five tasks of the arxiv_paper_ingestion DAG, from setup to cleanup."
-  caption="Redrawn from the Airflow DAG graph view, 6:31."
+  caption="Redrawn from the Airflow DAG graph view."
 />
 
 #### Complete file: `airflow/dags/arxiv_paper_ingestion.py`
@@ -769,7 +768,7 @@ pod can poll Telegram for updates, and the others crash.
 
 ## Ingestion, keyword and hybrid search
 
-The `workflows/` folder documents each phase as diagrams (6:33 to 6:45). He
+The `workflows/` folder documents each phase as diagrams. He
 also shows **Upstash Redis**, a serverless Redis, since he likes serverless
 services; Neon is one too.
 
@@ -778,7 +777,7 @@ which hand the route handler a database session (Neon), the OpenSearch
 client, the Jina embeddings client, the LLM client, the Langfuse tracer, the
 cache client and the agentic RAG service.
 
-### Doubts · What is an index? · 6:37
+### Doubts · What is an index?
 
 **Smith:** Can you explain the concept of an index?
 
@@ -808,7 +807,7 @@ documents.
 <Infographic
   src="/img/ai-security/m4-hybrid-search.svg"
   alt="Section-based chunking into Jina embeddings and OpenSearch, and the hybrid BM25 plus k-NN query fused with RRF."
-  caption="Adapted from the repository's phase 3 and 4 diagrams, 6:40 to 6:45."
+  caption="Adapted from the repository's phase 3 and 4 diagrams."
 />
 
 ### Keyword, dense and hybrid search
@@ -867,7 +866,7 @@ documents.
 
 ## RAG with a Redis cache
 
-The complete RAG flow adds a cache in front (6:44 to 6:49). An agentic
+The complete RAG flow adds a cache in front. An agentic
 answer takes 20 to 30 seconds; a cached one comes back in 200 to 300
 milliseconds. Entries expire after a **6-hour TTL**, changed by one variable
 in `.env` (`REDIS__TTL_HOURS`). He generally uses Redis for short-term,
@@ -876,7 +875,7 @@ session-level data.
 <Infographic
   src="/img/ai-security/m4-rag-cache.svg"
   alt="The RAG flow with an exact-match Upstash Redis cache: a SHA-256 key, a 200 to 300 ms hit, or the full 20 to 30 s pipeline on a miss."
-  caption="Adapted from the repository's phase 5 and 6 diagrams, 6:45 to 6:48."
+  caption="Adapted from the repository's phase 5 and 6 diagrams."
 />
 
 This is an **exact-match** cache, a hash lookup: change a single character
@@ -966,7 +965,7 @@ class CacheClient:
 Every cache error is caught and logged, so Redis being down means slower
 answers, never failed ones.
 
-### Doubts · Does a slightly different prompt hit the cache? · 6:46
+### Doubts · Does a slightly different prompt hit the cache?
 
 **Kangaraj:** Same meaning, different wording?
 
@@ -984,14 +983,13 @@ wouldn't show the keys during the demo.
 
 ## Phase 7: the LangGraph agent
 
-The final phase turns the RAG pipeline into a LangGraph agent (6:49 to
-6:52). He stresses the order: he didn't start with agents on day one, he
+The final phase turns the RAG pipeline into a LangGraph agent. He stresses the order: he didn't start with agents on day one, he
 added them once the pieces underneath worked.
 
 <Infographic
   src="/img/ai-security/m4-langgraph.svg"
   alt="The LangGraph agent: guardrail, retrieve, tool retrieve, grade documents, rewrite query, generate answer and output guardrail."
-  caption="Redrawn from the LangGraph graph shown in Langfuse and the repository, 6:49 to 6:51."
+  caption="Redrawn from the LangGraph graph shown in Langfuse and the repository."
 />
 
 - **Guardrail.** The same Bedrock check as above, as the first node.
@@ -1066,7 +1064,7 @@ refusal and ends. Rewriting happens on a different branch: after
 
 ## An MCP server on the same API
 
-Paul converted the whole application into an **MCP server** (6:53 to 7:02).
+Paul converted the whole application into an **MCP server**.
 He built it with **FastMCP**, mounted on the same FastAPI app at `/mcp`, so
 the deployed application can be shared as tools with any MCP client or
 coding agent. Most organisations, he says, do exactly this: the product runs
@@ -1076,7 +1074,7 @@ token.
 <Infographic
   src="/img/ai-security/m4-mcp.svg"
   alt="The FastAPI app exposes its routes as an MCP server with six tools, used from the MCP Inspector, Claude and Telegram."
-  caption="Redrawn from the session, 6:53 to 7:02."
+  caption="Redrawn from the session."
 />
 
 He tests it with the **MCP Inspector** instead of building a UI:
@@ -1227,7 +1225,7 @@ In `src/main.py` the MCP app is created once with
 inside the main app's lifespan, and it's mounted at `settings.mcp.path` when
 `MCP__ENABLED=true`.
 
-### Doubts · How is the MCP server deployed on Kubernetes? · 6:55
+### Doubts · How is the MCP server deployed on Kubernetes?
 
 **Shree:** How did you deploy the MCP server on Kubernetes?
 
@@ -1235,7 +1233,7 @@ inside the main app's lifespan, and it's mounted at `settings.mcp.path` when
 with the major routes turned into tools, so wherever the API is deployed,
 the MCP server is too. Read `src/main.py` for the wiring.
 
-### Doubts · Does MCP load every tool on every call? · 7:01
+### Doubts · Does MCP load every tool on every call?
 
 **Sandesh:** Will it load all the tools for each call?
 
@@ -1245,7 +1243,7 @@ every agent framework.
 
 ## Configuration, Telegram and fallbacks
 
-Everything is switched from `.env` (7:02 to 7:06): the EKS cluster name, a
+Everything is switched from `.env`: the EKS cluster name, a
 placeholder AWS account ID, Grafana and Logfire settings, and feature
 flags. `MCP__ENABLED` turns the MCP server on, `TELEGRAM__ENABLED` the bot,
 and `PROVIDER=openai` or `PROVIDER=bedrock` picks the LLM. True/false flags
@@ -1263,7 +1261,7 @@ list to add.
 
 ## Deploy to Amazon EKS
 
-Now the production side (7:06 to 7:18). Running the Kubernetes deployment
+Now the production side. Running the Kubernetes deployment
 for the demo cost him about \$10, and it's not free for anyone following
 along.
 
@@ -1277,7 +1275,7 @@ stack with `make stop` so nothing runs twice.
 <Infographic
   src="/img/ai-security/m4-eks.svg"
   alt="The EKS deployment: two m5.xlarge nodes with the API, OpenSearch, Airflow and dashboards pods, load balancers, ECR, and the external services."
-  caption="Adapted from the repository's EKS architecture document, shown at 7:08 to 7:18."
+  caption="Adapted from the repository's EKS architecture document."
 />
 
 His cluster is deliberately small: two nodes with a hard 16 GB each. For
@@ -1527,7 +1525,7 @@ the Vertical Pod Autoscaler, or bigger node instances.
 
 ### CI/CD with GitHub Actions
 
-The deployment runs from GitHub Actions (7:18 to 7:19); AWS CodeDeploy
+The deployment runs from GitHub Actions; AWS CodeDeploy
 would work too. CI runs lint, type checks and tests, plus a golden-dataset
 job, so the pipeline only continues if those pass. CD builds two images, the
 FastAPI app and Airflow, pushes them to ECR and deploys to EKS. A full run
@@ -1536,7 +1534,7 @@ takes 16 to 18 minutes, so he doesn't re-trigger it live.
 <Infographic
   src="/img/ai-security/m4-cicd.svg"
   alt="CI/CD: push, CI checks, build and push two images to ECR, deploy to EKS, rollout status."
-  caption="Adapted from the repository's CI/CD document, 7:18 to 7:19."
+  caption="Adapted from the repository's CI/CD document."
 />
 
 :::note Not from the session
@@ -1550,13 +1548,13 @@ metrics against a staging deployment.
 
 ## What is AgentOps? The six pillars
 
-Back on the slides (7:19 to 7:21), Paul defines the discipline and checks
+Back on the slides, Paul defines the discipline and checks
 the project against it.
 
 <Infographic
   src="/img/ai-security/m4-six-pillars.svg"
   alt="The six pillars of AgentOps."
-  caption="Redrawn from the mentor's slide, 7:20."
+  caption="Redrawn from the slide."
 />
 
 - **Deployment and orchestration:** GitHub Actions deploys; EKS
@@ -1576,7 +1574,7 @@ the project against it.
 
 ## Load testing with Locust
 
-The part most people came for: how much can it take (7:21 to 7:40)? He uses
+The part most people came for: how much can it take? He uses
 [Locust](https://locust.io), a widely used Python load-testing framework;
 a simple script would also do. The load goes at `/api/v1/ask-agentic`
 through the cluster's load balancer.
@@ -1651,7 +1649,7 @@ kubectl get pods -n production -w    # in a third
 <Infographic
   src="/img/ai-security/m4-load-test.svg"
   alt="Three Locust runs at 10, 20 and 50 users: pods scale from 2 to 4 to 6 and the failure rate rises with load."
-  caption="Redrawn from the load test as it ran, 7:23 to 7:39."
+  caption="Redrawn from the load test as it ran."
 />
 
 | Run | What happened |
@@ -1667,7 +1665,7 @@ He stops there because every request is costing real money in API calls.
 
 <HPALab />
 
-### Doubts · Why not test with 10,000 users? · 7:32
+### Doubts · Why not test with 10,000 users?
 
 **Pandit:** What about 10,000 users?
 
@@ -1685,7 +1683,7 @@ place to look.
 
 ## Questions and wrap-up
 
-A short Q&A closes the course (7:40 to 7:48).
+A short Q&A closes the course.
 
 - **Is EKS necessary?** No. It's here because he teaches it. **ECS with
   Fargate** is really good, and Nginx with proper load balancing can handle

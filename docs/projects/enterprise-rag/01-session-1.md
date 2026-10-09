@@ -173,12 +173,12 @@ The opening security discussion therefore separates several boundaries:
 
 The reason for placing safety, observability and evaluation around the agent is that no single prompt can verify all these boundaries. A gateway manages model traffic; it cannot determine whether a user is entitled to read a particular document. A vector database finds similar content; similarity does not establish permission to use it.
 
-The opening slide, *Why security is the biggest concern in Gen AI applications* (0:07 to 0:19), brings together the typical architecture, the seven security risks, their impact and the controls that address them:
+The opening slide, *Why security is the biggest concern in Gen AI applications*, brings together the typical architecture, the seven security risks, their impact and the controls that address them:
 
 <Infographic
   src="/img/enterprise-rag/s1-security.svg"
   alt="A Gen AI request passes through the application, model, data and tools, with seven security risks, their impacts and the controls needed at each boundary."
-  caption="Redrawn from the session's opening security slide, 0:07 to 0:19."
+  caption="Redrawn from the opening security slide."
 />
 
 **`NOT from session`** In this repository, the later shared API key protects entry to the API but does not implement per-user document permissions. Keep the training corpus free of documents with different access entitlements until retrieval applies an authenticated access filter.
@@ -207,12 +207,12 @@ flowchart TB
     GOV -.-> GW
 ```
 
-The slide behind this summary, *Architecture of agentic AI application* (0:22 to 0:32), has twelve layers, shown together in the board below:
+The slide behind this summary, *Architecture of agentic AI application*, has twelve layers, shown together in the board below:
 
 <Infographic
   src="/img/enterprise-rag/s1-agentic-architecture.svg"
   alt="Twelve layers connect users, orchestration, tools, memory, guardrails, model access, monitoring, governance, infrastructure, delivery and human review."
-  caption="Redrawn from the session's agentic architecture slide, 0:22 to 0:32."
+  caption="Redrawn from the agentic architecture slide."
 />
 
 ### Start with the smallest request
@@ -222,7 +222,7 @@ A plain LLM call has a short path: question, model, response.
 <Infographic
   src="/img/enterprise-rag/s1-simple-llm-supplied.png"
   alt="A user question goes directly to a language model, which returns a response without retrieving external documents."
-  caption="Supplied session whiteboard, 1:34."
+  caption="Supplied session whiteboard."
 />
 
 A RAG application
@@ -233,7 +233,7 @@ time; ingesting a PDF into Qdrant does not train the language model on that PDF.
 <Infographic
   src="/img/enterprise-rag/s1-simple-rag-supplied.png"
   alt="A user question retrieves relevant document context, and the language model uses that context to generate its response."
-  caption="Supplied session whiteboard, 1:35 to 1:36."
+  caption="Supplied session whiteboard."
 />
 
 **`NOT from session`** A diagram with these boxes is an architectural design,
@@ -243,12 +243,12 @@ workload. The live exercise does not demonstrate a million-user load test.
 
 ### What "production grade" means here
 
-Before building anything, Divesh frames the target on the whiteboard (0:46, revisited at 1:10): an assistant for one organisation rather than the public, expected to serve heavy traffic from a collection where most documents are noise.
+Before building anything, Divesh frames the target on the whiteboard: an assistant for one organisation rather than the public, expected to serve heavy traffic from a collection where most documents are noise.
 
 <Infographic
   src="/img/enterprise-rag/s1-production-goals.svg"
   alt="An organisation assistant must retrieve useful evidence among noisy documents while meeting the four goals of robustness, reliability, security and scalability."
-  caption="Redrawn from the session's whiteboard, 0:46 to 0:47 and 1:10 to 1:11."
+  caption="Redrawn from the whiteboard."
 />
 
 ### The project request path
@@ -261,7 +261,7 @@ to the conversation.
 <Infographic
   src="/img/enterprise-rag/s1-request-path.svg"
   alt="A Streamlit question reaches FastAPI and the guardrail, then the planner routes it to a responder or Qdrant retrieval and FlashRank reranking, with shared conversation memory."
-  caption="Redrawn from the session's whiteboard, 1:04 to 1:07, revisited 5:00 to 5:02."
+  caption="Redrawn from the whiteboard."
 />
 
 A request such as “What is a Kubernetes pod?” needs external context. “What was
@@ -269,22 +269,22 @@ my previous question?” usually does not. A follow-up such as “How do I autos
 it?” needs the earlier turn to reconstruct a useful search query. This is why
 the planner sees conversation history before deciding what to search.
 
-The full target architecture the two sessions build towards (1:07, shown again at 5:02 and 5:15). It includes pieces Session 2 adds, such as the evaluation app and the gateway:
+The full target architecture the two sessions build towards. It includes pieces Session 2 adds, such as the evaluation app and the gateway:
 
 <Infographic
   src="/img/enterprise-rag/s1-full-architecture.svg"
   alt="Enterprise Agentic RAG: full target architecture"
-  caption="Redrawn from the session's whiteboard, 1:07 to 1:08, 5:02 to 5:03 and 5:15 to 5:17."
+  caption="Redrawn from the whiteboard."
 />
 
 ### From prototype to cloud
 
-The board also lays out the route this project takes (1:09 to 1:11): prototype on a laptop with Groq and open-source pieces, then local development, then a cloud deployment on AWS with CI/CD, which is Session 2's deployment fork.
+The board also lays out the route this project takes: prototype on a laptop with Groq and open-source pieces, then local development, then a cloud deployment on AWS with CI/CD, which is Session 2's deployment fork.
 
 <Infographic
   src="/img/enterprise-rag/s1-prototype-to-cloud.svg"
   alt="From prototype to cloud"
-  caption="Redrawn from the session's whiteboard, 1:09 to 1:11 (additions at 5:03)."
+  caption="Redrawn from the session's whiteboard (additions)."
 />
 
 **Summary**
@@ -318,12 +318,12 @@ is a retrievable unit. An embedding is the model's numeric representation of
 that unit. The database stores the vector for search and the text as payload so
 it can return readable evidence.
 
-The whiteboard works a concrete example through both halves (1:37 to 1:48): a chunk about a rhino becomes the vector 0.2, 0.4 on the way in; on the way out, "Which is the best laptop?" becomes 0.8, 0.4 and retrieves the laptop chunks.
+The whiteboard works a concrete example through both halves: a chunk about a rhino becomes the vector 0.2, 0.4 on the way in; on the way out, "Which is the best laptop?" becomes 0.8, 0.4 and retrieves the laptop chunks.
 
 <Infographic
   src="/img/enterprise-rag/s1-ingestion-retrieval.svg"
   alt="RAG: ingestion, retrieval and generation"
-  caption="Redrawn from the session's whiteboard, 1:33, 1:37 to 1:48, retrieval half re-shown 4:22 to 4:25 and 4:34."
+  caption="Redrawn from the session's whiteboard, retrieval half."
 />
 
 The whiteboard uses animal, vehicle and laptop examples to explain semantic
@@ -335,27 +335,27 @@ aid. Real embedding coordinates do not come with named axes such as
 <Infographic
   src="/img/enterprise-rag/s1-word-embedding.svg"
   alt="Words become numeric representations"
-  caption="Redrawn from the session's whiteboard, 1:41 to 1:43, re-shown 1:54."
+  caption="Redrawn from the whiteboard."
 />
 
-The two-dimensional vector-store sketch itself (1:42 to 1:44) plots these clusters, plus AI terms and an outlier, and drops the laptop query next to MacBook and Lenovo:
+The two-dimensional vector-store sketch itself plots these clusters, plus AI terms and an outlier, and drops the laptop query next to MacBook and Lenovo:
 
 <Infographic
   src="/img/enterprise-rag/s1-vector-clusters.svg"
   alt="Vector store: semantic neighbourhoods"
-  caption="Redrawn from the session's whiteboard, 1:42 to 1:44, re-shown 1:54 and 4:24."
+  caption="Redrawn from the whiteboard."
 />
 
 If the query and indexed text use the same embedding space, cosine similarity
 can provide candidate evidence. A high similarity score indicates proximity in
 that representation; it does not prove that the chunk entails the answer.
 
-### Doubts · Why add noisy data? · 04:20
+### Doubts · Why add noisy data?
 
 <Infographic
   src="/img/enterprise-rag/s1-noisy-goal.svg"
   alt="Goal: an accurate RAG system"
-  caption="Redrawn from the session's whiteboard, 5:08 to 5:09."
+  caption="Redrawn from the whiteboard."
 />
 
 **Omar:** Why deliberately include irrelevant documents?
@@ -383,12 +383,12 @@ This section shows the two files that define the environment first,
 `requirements.txt` and `app/config.py`. The commands that clone the project and
 create the environment follow, then the credentials `config.py` reads.
 
-Yash works through the build in this order (1:25 to 1:30), from the session's Excalidraw board:
+Yash works through the build in this order, from the session's Excalidraw board:
 
 <Infographic
   src="/img/enterprise-rag/s1-build-plan.svg"
   alt="Build plan"
-  caption="Redrawn from the session's whiteboard, 1:25 to 1:30, re-shown 2:20, 2:30, 2:33 to 2:35."
+  caption="Redrawn from the whiteboard."
 />
 
 ### Complete file: `requirements.txt`
@@ -541,7 +541,7 @@ quota failure is different from a missing package, an invalid credential or an
 unavailable model. Preserve that distinction in the error message before
 changing the code.
 
-### Doubts · Can Docling be the parser? · 01:58
+### Doubts · Can Docling be the parser?
 
 **Bhavesh:** Can this use Docling?
 
@@ -549,7 +549,7 @@ changing the code.
 and metadata required by the next stage. This implementation starts with
 extension-specific loaders. Complex layout and OCR are explored in Session 2.
 
-### Doubts · Why Qdrant? Does it support BM25? · 02:09 and 03:03
+### Doubts · Why Qdrant? Does it support BM25?
 
 **Host prompt:** What makes Qdrant suitable here?
 
@@ -576,7 +576,7 @@ from this project's implementation, which performs dense cosine retrieval.
 <Infographic
   src="/img/enterprise-rag/s1-data-ingestion-supplied.png"
   alt="Data ingestion pipeline"
-  caption="Supplied session whiteboard, 1:31 to 1:33, re-shown 2:00 to 2:03, 2:08, 2:14, 2:23 to 2:24, 2:32, 2:41 to 2:42, 2:52 to 2:58, 3:29 to 3:31, 4:16."
+  caption="Supplied session whiteboard."
 />
 
 The parser's job is to preserve the evidence that an answer will need. Its output is a string, but that string must retain relationships: which heading a paragraph belongs to, which table column a number belongs to, and which command flags belong on the same line.
@@ -800,7 +800,7 @@ reassemble by page number before chunking. The HTML loader can produce
 single-newline text while the chunker splits on double newlines; inspect the
 extracted text instead of assuming meaningful paragraph boundaries survived.
 
-### Doubts · Do we need an orchestrator to select parsers? · 02:42
+### Doubts · Do we need an orchestrator to select parsers?
 
 **Student question:** Is parser selection itself an LLM or orchestration
 problem?
@@ -994,7 +994,7 @@ embedding also does not have the same batch retry loop. A log message about
 fallback during initialisation should not be interpreted as a guarantee that
 every later outage is handled.
 
-### Doubts · Can different dimensions share a collection? · 02:53
+### Doubts · Can different dimensions share a collection?
 
 **Shiva Kumar:** What happens when one model produces 3072 dimensions and
 another produces 768?
@@ -1003,7 +1003,7 @@ another produces 768?
 A 768-dimensional query cannot search a collection configured for
 3072-dimensional vectors.
 
-### Doubts · If dimensions match, can models be mixed? · 02:56–02:57
+### Doubts · If dimensions match, can models be mixed?
 
 **Rakesh and host follow-up:** Is matching the vector length enough?
 
@@ -1023,7 +1023,7 @@ shorter dimensions. That is a supported transformation within a model family,
 not evidence that arbitrary truncation or cross-model mixing preserves retrieval
 quality.
 
-### Doubts · What happens when documents change? · 03:08
+### Doubts · What happens when documents change?
 
 **Student question:** Do updated documents require ingestion again?
 
@@ -1152,7 +1152,7 @@ model's tokenizer. Character count is not token count.
 | Semantic chunking        | Representation-based topic changes | Can follow topic boundaries           | Extra cost and unstable/oversized chunks   |
 | Structure-aware chunking | Headings, tables, functions        | Keeps meaningful units together       | Depends on parser quality                  |
 
-### Doubts · Why no overlap? · 03:29
+### Doubts · Why no overlap?
 
 **Host prompt:** Was overlap deliberately omitted?
 
@@ -1176,7 +1176,7 @@ boundaries actually break the questions you care about.
 <Infographic
   src="/img/enterprise-rag/s1-ingestion-code-flow-supplied.png"
   alt="Ingestion: data flow and Python files"
-  caption="Supplied session whiteboard, 4:13 to 4:15."
+  caption="Supplied session whiteboard."
 />
 
 The processor joins the modules into one write path. Read it as a sequence of irreversible boundaries: before an upsert, all work is local or an embedding request; after an upsert, Qdrant contains new searchable records.
@@ -1420,7 +1420,7 @@ embeddings or retrieval.
 }
 ```
 
-### Doubts · Does `processed_data` contain vectors? · 04:18
+### Doubts · Does `processed_data` contain vectors?
 
 **Student question:** What is saved in the processed-data folder?
 
@@ -1560,12 +1560,12 @@ successful files too.
 
 Retrieval and reranking solve different problems. The vector index cheaply narrows the whole corpus to candidates. The reranker then scores each query–candidate pair with more attention to the actual question. It cannot recover a relevant passage that never entered the candidate list.
 
-The full board below contrasts two panels (4:26 to 4:32). **The problem:** a query with `top_k = 25` returns 25 records from the vector DB, and the relevant ones are scattered through the list, some near the bottom. **The solution:** a reranker takes those 25 and moves the three most relevant to the top.
+The full board below contrasts two panels. **The problem:** a query with `top_k = 25` returns 25 records from the vector DB, and the relevant ones are scattered through the list, some near the bottom. **The solution:** a reranker takes those 25 and moves the three most relevant to the top.
 
 <Infographic
   src="/img/enterprise-rag/s1-reranking.svg"
   alt="ReRanking"
-  caption="Redrawn from the session's whiteboard, 4:26 to 4:32."
+  caption="Redrawn from the whiteboard."
 />
 
 **`NOT from session` · Worked ranking example.** Ask “How does a Kubernetes Job divide work across parallel pods?” A generic paragraph about CPU scheduling may share several terms and rank highly in vector search. A lower-ranked paragraph explaining `.spec.parallelism` and a shared queue may answer the question better. Reranking should promote the latter. Inspect the before/after text; a higher numeric reranker score alone does not prove the answer became better.
@@ -1707,12 +1707,12 @@ and one candidate together, allowing more detailed relevance scoring. Applying
 that expensive comparison to 15 candidates is much cheaper than applying it to
 the entire corpus.
 
-Yash's board puts the two side by side (4:30 to 4:31), with the same query and chunk in both. The bi-encoder embeds them separately and compares with cosine similarity: no token in the query ever sees a token in the chunk. The cross-encoder reads them as one sequence, so self-attention runs across both, which is more accurate but has to run once per candidate.
+Yash's board puts the two side by side, with the same query and chunk in both. The bi-encoder embeds them separately and compares with cosine similarity: no token in the query ever sees a token in the chunk. The cross-encoder reads them as one sequence, so self-attention runs across both, which is more accurate but has to run once per candidate.
 
 <Infographic
   src="/img/enterprise-rag/s1-encoders.svg"
   alt="Bi-encoders vs cross-encoders"
-  caption="Redrawn from the session's whiteboard, 4:30 to 4:31."
+  caption="Redrawn from the whiteboard."
 />
 
 ```mermaid
@@ -1730,12 +1730,12 @@ a candidate pool; reranking changes the order and keeps a smaller set.
 
 ### FlashRank implementation
 
-Divesh's tool board (5:05 to 5:06) names the choice for each component. Reranking runs locally with FlashRank. Jina is the hosted alternative that supplies both embeddings and a reranker, which is what the Session 2 deployment switches to. Guardrails use NeMo, and the gateway is Portkey.
+Divesh's tool board names the choice for each component. Reranking runs locally with FlashRank. Jina is the hosted alternative that supplies both embeddings and a reranker, which is what the Session 2 deployment switches to. Guardrails use NeMo, and the gateway is Portkey.
 
 <Infographic
   src="/img/enterprise-rag/s1-tool-choices.svg"
   alt="Tool choices in the session"
-  caption="Redrawn from the session's whiteboard, 5:05 to 5:06."
+  caption="Redrawn from the whiteboard."
 />
 
 `ranking_service.py` creates a `Ranker` on first use, builds passage
@@ -1780,7 +1780,7 @@ RRF is discussed as another retrieval technique. It does not perform the same
 operation as the FlashRank cross-encoder. A hybrid pipeline can fuse dense and
 sparse lists, then rerank the combined candidates.
 
-### Doubts · What about code, legal documents and multilingual data? · 04:35–04:57
+### Doubts · What about code, legal documents and multilingual data?
 
 **Students:** Can one chunker and embedding model handle every domain?
 
@@ -1860,7 +1860,7 @@ documents and the starting plan so stale evidence is not intentionally carried
 over as the current retrieval result. Conversation history remains available
 through the checkpoint.
 
-### Doubts · Why both `messages` and `final_answer`? · 05:18
+### Doubts · Why both `messages` and `final_answer`?
 
 **Suraj:** If the assistant's answer is in messages, why store `final_answer`
 too?
@@ -1890,12 +1890,12 @@ flowchart LR
 
 ## 10. Implement planner, responder and retriever
 
-Before the planner code, Divesh contrasts ordinary software with AI-enabled software (5:22 to 5:24). In rule-based software the developer fixes the order of steps: step 4, then 1, then 2, every time. In an agent, the model decides at run time which function to call next: should I run this one, or that one? The planner below is the smallest version of that idea, choosing between two branches.
+Before the planner code, Divesh contrasts ordinary software with AI-enabled software. In rule-based software the developer fixes the order of steps: step 4, then 1, then 2, every time. In an agent, the model decides at run time which function to call next: should I run this one, or that one? The planner below is the smallest version of that idea, choosing between two branches.
 
 <Infographic
   src="/img/enterprise-rag/s1-rules-vs-agent.svg"
   alt="Software → AI-enabled software"
-  caption="Redrawn from the session's whiteboard, 5:22 to 5:24."
+  caption="Redrawn from the whiteboard."
 />
 
 ### 10.1 Planner: decide whether fresh evidence is needed
@@ -1903,12 +1903,12 @@ Before the planner code, Divesh contrasts ordinary software with AI-enabled soft
 <Infographic
   src="/img/enterprise-rag/s1-agentic-behaviour.svg"
   alt="Agentic behaviour: let the planner route"
-  caption="Redrawn from the session's whiteboard, 5:19 to 5:22."
+  caption="Redrawn from the whiteboard."
 />
 
 The planner is a model call with a small output contract: emit `CONVERSATIONAL` or a search query. Its input includes history, so it can turn a context-dependent question into a self-contained search. Its output controls the graph edge, making planner mistakes operationally significant.
 
-On the board (5:19 to 5:22) the planner and the responder are both marked as LLM calls. A casual question, Divesh's example is about coffee, takes the conversational branch straight to the responder. A Kubernetes question takes the technical branch: Qdrant returns 15 unordered candidates, the reranker picks the few relevant ones, and only those reach the responder.
+On the board the planner and the responder are both marked as LLM calls. A casual question, Divesh's example is about coffee, takes the conversational branch straight to the responder. A Kubernetes question takes the technical branch: Qdrant returns 15 unordered candidates, the reranker picks the few relevant ones, and only those reach the responder.
 
 For “What did I ask earlier?”, retrieval would add irrelevant document evidence. For “How do I configure that Job?”, answering from conversation alone could miss an important configuration detail. Inspect `current_query` and `plan` before changing the responder prompt when either symptom occurs.
 
@@ -2215,7 +2215,7 @@ into an unsupported answer.
 <Infographic
   src="/img/enterprise-rag/s1-graph-loop.svg"
   alt="Entry point → planner"
-  caption="Redrawn from the session's whiteboard, 5:44 to 5:45."
+  caption="Redrawn from the whiteboard."
 />
 
 The graph encodes the allowed workflow; the planner's output chooses one of its permitted branches. There is no open-ended tool loop in this application. The technical path is planner → retriever → responder; the conversational path skips the retriever.
@@ -2335,12 +2335,12 @@ that they own the conversation.
 | Streamlit session state    | UI messages and thread ID      | UI session                     |
 | Gateway cache, added later | Reusable model responses       | Depends on cache configuration |
 
-The memory board (5:39 to 5:44) puts this checkpointer in a wider picture. What the graph keeps is **conversational memory**, a buffer of recent turns; longer-lived memory splits into **episodic** memory (what happened in earlier sessions) and **semantic** memory (facts learnt about the user or domain). Divesh numbers the turns, user 1, AI 1, user 2, AI 2, and says a conversation window typically holds about 10 to 15 of them. For production-grade long-term memory he names mem0, LangMem and Neo4j as a graph database.
+The memory board puts this checkpointer in a wider picture. What the graph keeps is **conversational memory**, a buffer of recent turns; longer-lived memory splits into **episodic** memory (what happened in earlier sessions) and **semantic** memory (facts learnt about the user or domain). Divesh numbers the turns, user 1, AI 1, user 2, AI 2, and says a conversation window typically holds about 10 to 15 of them. For production-grade long-term memory he names mem0, LangMem and Neo4j as a graph database.
 
 <Infographic
   src="/img/enterprise-rag/s1-memory.svg"
   alt="Conversational memory"
-  caption="Redrawn from the session's whiteboard, 5:39 to 5:44."
+  caption="Redrawn from the whiteboard."
 />
 
 **`NOT from session`** `MemorySaver` does not automatically forget after 10 or
@@ -2361,12 +2361,12 @@ growth.
 
 The API converts an HTTP request into an initial graph update and converts the graph's final state into JSON. Keep these contracts distinct: the external request has `q` and `thread_id`; internal state has messages, query, documents, plan, status and answer.
 
-Divesh's board (5:46 to 5:49) reduces the backend to two functions in `main.py`. The **query** function triggers the graph; the **graph** function shows it.
+Divesh's board reduces the backend to two functions in `main.py`. The **query** function triggers the graph; the **graph** function shows it.
 
 <Infographic
   src="/img/enterprise-rag/s1-fastapi.svg"
   alt="main.py → FastAPI backend"
-  caption="Redrawn from the session's whiteboard, 5:46 to 5:49."
+  caption="Redrawn from the whiteboard."
 />
 
 Follow one request through the file: validate its shape, choose the checkpoint thread, initialise current-turn fields, invoke the graph, and return the answer plus diagnostic context. The `sources` field currently contains retrieved text strings, so the name does not imply verified document citations.
@@ -2516,7 +2516,7 @@ Use the same thread for the follow-up, then repeat it with a new thread to
 observe isolation. The response text is generated, so inspect the route and
 evidence rather than expecting a byte-for-byte fixed answer.
 
-### Doubts · What does the thread ID do? · 05:52
+### Doubts · What does the thread ID do?
 
 **Host explanation:** It groups messages like the identifier of a chat
 conversation. The same ID lets the graph recover earlier messages.
@@ -2531,7 +2531,7 @@ user's allowed conversations. A UUID alone is not authorisation.
 <Infographic
   src="/img/enterprise-rag/s1-rendered-graph.svg"
   alt="GET /graph: the compiled LangGraph"
-  caption="Redrawn from the app's GET /graph browser render, 6:03."
+  caption="Redrawn from the app's GET /graph browser render."
 />
 
 The teaching application returns a structured error object from its exception
@@ -2557,12 +2557,12 @@ prove that credentials work.
 
 ## 13. Trace the whole request with Logfire
 
-Divesh defines three terms on the board before opening Logfire (6:12 to 6:16). A **span** is one unit of execution; LangSmith calls the same thing a *run*. A **trace** is the whole record of one application request. The **waterfall** is the timeline view of a trace's spans.
+Divesh defines three terms on the board before opening Logfire. A **span** is one unit of execution; LangSmith calls the same thing a *run*. A **trace** is the whole record of one application request. The **waterfall** is the timeline view of a trace's spans.
 
 <Infographic
   src="/img/enterprise-rag/s1-observability.svg"
   alt="Observability: span, trace, waterfall"
-  caption="Redrawn from the session's whiteboard, 6:12 to 6:16."
+  caption="Redrawn from the whiteboard."
 />
 
 A slow answer can result from embedding, database search, model download,
@@ -2619,12 +2619,12 @@ distributed trace.
 | LangSmith           | LangChain/LangGraph runs, prompts, outputs and node behaviour      |
 | Portkey logs, later | Provider requests, routing, cache and gateway metadata             |
 
-The first two rows come from an earlier board (5:03 to 5:05): trace the *application's* execution with Logfire, and the *LLM's* with LangSmith, whose graph view is LangGraph Studio. LangChain and LangGraph calls report to LangSmith directly.
+The first two rows come from an earlier board: trace the *application's* execution with Logfire, and the *LLM's* with LangSmith, whose graph view is LangGraph Studio. LangChain and LangGraph calls report to LangSmith directly.
 
 <Infographic
   src="/img/enterprise-rag/s1-trace-tools.svg"
   alt="Trace execution of…"
-  caption="Redrawn from the session's whiteboard, 5:03 to 5:05."
+  caption="Redrawn from the whiteboard."
 />
 
 ### Read the waterfall diagnostically
@@ -2840,7 +2840,7 @@ everything has not automatically become a safer assistant.
 <Infographic
   src="/img/enterprise-rag/s1-security-guardrails.svg"
   alt="LLM security: guardrails enforce policy"
-  caption="Redrawn from the session's whiteboard, 6:49 to 6:51."
+  caption="Redrawn from the whiteboard."
 />
 
 Open the supplied
@@ -2855,12 +2855,12 @@ period and a vacation request submitted ten business days in advance. A correct
 HR answer should use those policy facts. A request for pancakes or Netflix
 recommendations is outside that assistant's scope.
 
-The HR demo's own "What this demo shows" panel (6:38) lays out its pipeline in four stages, and its sidebar warns that every message makes **two** separate LLM calls. Its knowledge base is six HR documents, cut into segments of about 500 characters and indexed in FAISS with `BAAI/bge-small-en-v1.5` embeddings.
+The HR demo's own "What this demo shows" panel lays out its pipeline in four stages, and its sidebar warns that every message makes **two** separate LLM calls. Its knowledge base is six HR documents, cut into segments of about 500 characters and indexed in FAISS with `BAAI/bge-small-en-v1.5` embeddings.
 
 <Infographic
   src="/img/enterprise-rag/s1-hr-policy.svg"
   alt="HR Policy Assistant: NeMo + FAISS RAG"
-  caption="Redrawn from the HR Policy Assistant demo app, 6:38 to 6:42."
+  caption="Redrawn from the HR Policy Assistant demo app."
 />
 
 The demonstration also explores sensitive information and attempts to change the
@@ -2878,12 +2878,12 @@ flowchart LR
     OUT -->|revise / reject| SAFE["Sanitised answer or refusal"]
 ```
 
-Divesh's compact version of the same idea (6:52 to 6:55) is one line: user → g → LLM → g → user, a guardrail on each side of the model. The input side catches things like PII typed into the question. He describes NeMo Guardrails as still developing, though its output is clean.
+Divesh's compact version of the same idea is one line: user → g → LLM → g → user, a guardrail on each side of the model. The input side catches things like PII typed into the question. He describes NeMo Guardrails as still developing, though its output is clean.
 
 <Infographic
   src="/img/enterprise-rag/s1-input-output-rails.svg"
   alt="Input and output rails"
-  caption="Redrawn from the session's whiteboard, 6:52 to 6:55."
+  caption="Redrawn from the whiteboard."
 />
 
 This redraw represents the input/output guardrail concept. The main project
@@ -2900,12 +2900,12 @@ does not automatically implement every output control shown here.
 | Sensitive-data handling | Should particular information be withheld or transformed?    | Personal information in a request/response       |
 | Output control          | Is the proposed answer suitable to return?                   | Sanitisation or refusal after generation         |
 
-The technical demo, *NeMo Guardrails Classroom* (6:47 to 7:08), stacks these controls one experiment at a time: a baseline with no protection, then input rails (topic guard, jailbreak shield, sensitive-topic block, dialog rails), custom actions and output rails. Its guard model is Llama 3.3 70B. It starts from the problem, a raw LLM with no filtering:
+The technical demo, *NeMo Guardrails Classroom*, stacks these controls one experiment at a time: a baseline with no protection, then input rails (topic guard, jailbreak shield, sensitive-topic block, dialog rails), custom actions and output rails. Its guard model is Llama 3.3 70B. It starts from the problem, a raw LLM with no filtering:
 
 <Infographic
   src="/img/enterprise-rag/s1-progressive-rails.svg"
   alt="NeMo Guardrails Classroom"
-  caption="Redrawn from the NeMo Guardrails Classroom demo app, 6:47 to 7:08."
+  caption="Redrawn from the NeMo Guardrails Classroom demo app."
 />
 
 The topic guard adds the first branch: an intent check (LLM call 1) refuses off-topic messages and passes the rest to the answer model (LLM call 2). By the dialog-rails experiment the same intent check has five branches, shown in the third panel of the NeMo Guardrails Classroom board above.
@@ -2922,7 +2922,7 @@ is not an attack.
 <Infographic
   src="/img/enterprise-rag/s1-colang.svg"
   alt="Rails in Colang: define user, bot and flow"
-  caption="Redrawn from the session's Colang demonstration, 7:09 to 7:16."
+  caption="Redrawn from the Colang demonstration."
 />
 
 The rule structure separates examples of user utterances from the bot's response
@@ -2957,15 +2957,15 @@ library, not the vector database itself.
 [NeMo's architecture](https://docs.nvidia.com/nemo/guardrails/0.18.0/architecture/README.html)
 explains the intent and flow stages.
 
-The next two boards (7:16 to 7:19) answer how the matching works and what the alternative is. NeMo embeds the user message and the Colang example sentences with **FastEmbed**, locally, so no separate database, authentication or endpoint is needed for that step. **Llama Guard** takes a different approach: it is itself a model trained for safety, and its verdict is binary, safe or unsafe, which a rail can act on.
+The next two boards answer how the matching works and what the alternative is. NeMo embeds the user message and the Colang example sentences with **FastEmbed**, locally, so no separate database, authentication or endpoint is needed for that step. **Llama Guard** takes a different approach: it is itself a model trained for safety, and its verdict is binary, safe or unsafe, which a rail can act on.
 
 <Infographic
   src="/img/enterprise-rag/s1-fastembed-llama-guard.svg"
   alt="Intent matching and safety classification"
-  caption="Redrawn from the session's whiteboard, 7:16 to 7:19."
+  caption="Redrawn from the whiteboard."
 />
 
-### Doubts · Which production guardrail tools can be used? · 06:54
+### Doubts · Which production guardrail tools can be used?
 
 **Host question:** What options exist beyond this demonstration?
 
@@ -2973,7 +2973,7 @@ The next two boards (7:16 to 7:19) answer how the matching works and what the al
 Amazon Bedrock Guardrails are raised. The relevant decision is which controls
 the application needs and whether those controls work on its real traffic.
 
-### Doubts · What happens after rotating a key? · 07:08
+### Doubts · What happens after rotating a key?
 
 **Harsh:** How does key rotation affect the application?
 
@@ -2984,7 +2984,7 @@ process. Updating `.env` alone does not guarantee an already constructed client
 sees the new value; restart/recreate the relevant client and verify the old
 credential has been revoked where intended.
 
-### Host interaction · What should come next? · 07:19
+### Host interaction · What should come next?
 
 The host offers to integrate guardrails immediately or continue to the new
 gateway topic. The audience chooses gateways. Therefore the application
@@ -3008,20 +3008,20 @@ quota or provider error. If each application directly embeds provider-specific
 retry and routing logic, the same policy gets copied into many places. A gateway
 centralises model access and request policy.
 
-The gateway was first sketched early on (0:28 to 0:31), during the architecture tour: many clients, one gateway, several providers behind it.
+The gateway was first sketched early on, during the architecture tour: many clients, one gateway, several providers behind it.
 
 <Infographic
   src="/img/enterprise-rag/s1-gateway-sketch.svg"
   alt="Why an LLM gateway?"
-  caption="Redrawn from the session's whiteboard, 0:28 to 0:31."
+  caption="Redrawn from the whiteboard."
 />
 
-The rest of this section follows the dedicated gateway discussion. It opens (7:21) on the gateway app's home page, which frames the choice in two words. Calling a model directly, you are **blind**: no logs, no retries, no fallback, no caching. Through a gateway you have **full control** over all four, transparently to the application. Divesh's one-line definition on the board (7:29) is a backup layer in front of the LLMs.
+The rest of this section follows the dedicated gateway discussion. It opens on the gateway app's home page, which frames the choice in two words. Calling a model directly, you are **blind**: no logs, no retries, no fallback, no caching. Through a gateway you have **full control** over all four, transparently to the application. Divesh's one-line definition on the board is a backup layer in front of the LLMs.
 
 <Infographic
   src="/img/enterprise-rag/s1-gateway-intro.svg"
   alt="What is an LLM gateway?"
-  caption="Redrawn from the LLM Gateway Explorer app, 7:21, and the session's whiteboard, 7:29."
+  caption="Redrawn from the LLM Gateway Explorer app, and the session's whiteboard."
 />
 
 ```mermaid
@@ -3056,12 +3056,12 @@ flowchart TD
     FIRST -->|failure| SECOND["Try fallback target"]
 ```
 
-The board behind this table (7:35 to 7:38) is headed *fault tolerant, robust*. One gateway fans out to several providers, OpenAI, Gemini, Anthropic and an open-source model, so that one failing provider doesn't take the service down. For task routing, Divesh's example is a deep-research request going to a reasoning model and a request to write a mail going to a small open-source model. Who decides which is which? Either the UI, with a button the user presses, or the planner.
+The board behind this table is headed *fault tolerant, robust*. One gateway fans out to several providers, OpenAI, Gemini, Anthropic and an open-source model, so that one failing provider doesn't take the service down. For task routing, Divesh's example is a deep-research request going to a reasoning model and a request to write a mail going to a small open-source model. Who decides which is which? Either the UI, with a button the user presses, or the planner.
 
 <Infographic
   src="/img/enterprise-rag/s1-gateway-routing.svg"
   alt="Fault tolerant, robust: fallback and model routing"
-  caption="Redrawn from the session's whiteboard, 7:35 to 7:38."
+  caption="Redrawn from the whiteboard."
 />
 
 The demonstration intentionally uses invalid target slugs to trigger a fallback.
@@ -3085,24 +3085,24 @@ flowchart LR
     K2 --> M2["Fallback model"]
 ```
 
-The virtual-keys board (7:45 to 7:53) draws the before and after. Without a gateway, ten provider API keys sit in the application's `.env`. With one, the application holds a single gateway key, and the gateway maps named virtual keys, Divesh's xyz, abc and pqr, to the real credentials and diverts each request to the right LLM.
+The virtual-keys board draws the before and after. Without a gateway, ten provider API keys sit in the application's `.env`. With one, the application holds a single gateway key, and the gateway maps named virtual keys, Divesh's xyz, abc and pqr, to the real credentials and diverts each request to the right LLM.
 
 <Infographic
   src="/img/enterprise-rag/s1-virtual-keys.svg"
   alt="Virtual keys"
-  caption="Redrawn from the session's whiteboard, 7:45 to 7:53."
+  caption="Redrawn from the whiteboard."
 />
 
 The metadata demo labels requests by feature, environment and user. That makes
 it possible to distinguish a customer-support call from a code-assistant call in
 gateway logs even when both use the same provider.
 
-### Doubts · What if the gateway itself is down? · 07:38
+### Doubts · What if the gateway itself is down?
 
 <Infographic
   src="/img/enterprise-rag/s1-gateway-options.svg"
   alt="LLM gateway options"
-  caption="Redrawn from the session's whiteboard, 7:39 to 7:40."
+  caption="Redrawn from the whiteboard."
 />
 
 **Balkrishna:** Does adding a gateway introduce another point of failure?
@@ -3122,12 +3122,12 @@ work. Exact caching reuses an equivalent request; semantic caching looks for a
 sufficiently similar earlier request. Similar wording alone is not enough to
 guarantee that reusing the answer is correct.
 
-The board's examples (7:40 to 7:43): "What is K8s?" asked again, or a repeated question about the NLP course, is served straight from a cache database, like an exact SQL lookup. But "Tell me about NLP" after "What is NLP?" shares no exact key, so, in Divesh's words, simple caching will not work there; only a semantic cache matches it.
+The board's examples: "What is K8s?" asked again, or a repeated question about the NLP course, is served straight from a cache database, like an exact SQL lookup. But "Tell me about NLP" after "What is NLP?" shares no exact key, so, in Divesh's words, simple caching will not work there; only a semantic cache matches it.
 
 <Infographic
   src="/img/enterprise-rag/s1-caching.svg"
   alt="Simple cache vs semantic cache"
-  caption="Redrawn from the session's whiteboard, 7:40 to 7:43."
+  caption="Redrawn from the whiteboard."
 />
 
 ```mermaid
@@ -3143,7 +3143,7 @@ flowchart LR
 | Semantic                | Similarity plus configured constraints | False hit on a meaningfully different request           |
 | Conversation checkpoint | Same thread ID                         | Not a response cache; a new model call may still happen |
 
-### Doubts · Fifteen years versus twenty years · 07:47
+### Doubts · Fifteen years versus twenty years
 
 **Ganesh:** Should questions with the same structure but different numbers reuse
 an answer?
@@ -3156,7 +3156,7 @@ user identity can all determine cache validity. Use an expiry and invalidation
 policy. Do not assume the cache stores an answer forever, and do not let one
 user's protected evidence become another user's cache hit.
 
-### Doubts · Is it safe to give a gateway provider keys? · 07:58
+### Doubts · Is it safe to give a gateway provider keys?
 
 **Student question:** What is the trust implication of storing provider
 credentials with a gateway?

@@ -12,7 +12,7 @@ tags: [python, control-flow, comprehensions, pattern-matching, loops, truthiness
 
 ## Start here: choose a branch, then repeat an action
 
-> **Video connection:** [conditions near 1:36](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=5760s) and [loops near 1:43:30](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=6210s).
+> **Video connection:** conditions and loops in [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 An `if/elif/else` chain runs the first matching branch. It then continues after the chain:
 

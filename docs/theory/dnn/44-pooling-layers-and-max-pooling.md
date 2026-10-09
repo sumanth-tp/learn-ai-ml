@@ -16,8 +16,8 @@ After a convolution layer produces a feature map, pooling reduces its spatial di
 
 Pooling applies a fixed aggregation function (max or average) over non-overlapping windows to reduce the spatial resolution of a feature map.
 
-![Max pooling with a 2×2 filter and stride 2 — the maximum value in each window is kept, halving spatial dimensions](https://cs231n.github.io/assets/cnn/maxpool.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![Max pooling with a 2×2 filter and stride 2 — the maximum value in each window is kept, halving spatial dimensions](https://cs231n.stanford.edu/assets/cnn/maxpool.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## Max pooling
 

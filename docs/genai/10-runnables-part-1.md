@@ -72,7 +72,7 @@ Now LangChain had support not only for talking to an LLM but for everything else
 
 As a developer you could pick up all these components, put them together, and create any type of LLM-based application.
 
-**Two code examples show how easy this made things** (11:32 to 15:10). Both are deliberately old-style LangChain: this is a flashback to when completion-style LLM classes were used instead of chat models.
+**Two code examples show how easy this made things**. Both are deliberately old-style LangChain: this is a flashback to when completion-style LLM classes were used instead of chat models.
 
 **A simple LLM application.** Two components: the LLM component and the prompt template component. Create the LLM, create a prompt template, ask the user for a topic, format the prompt with it, send the formatted prompt to the LLM's `predict`, and print what comes back.
 
@@ -159,7 +159,7 @@ And the idea came: **this is being done manually by AI engineers.** You create a
 
 That is where **chains** came from. You are connecting two or more components and giving them the form of a pipeline. The simplest of these was named **`LLMChain`** — you provide an LLM and a prompt, the prompt gets generated and sent to the LLM.
 
-Here is the simple LLM application again, rewritten with `LLMChain` (18:49). The LLM and the prompt template are created exactly as before. They go into `LLMChain`, and the chain runs with the topic.
+Here is the simple LLM application again, rewritten with `LLMChain`. The LLM and the prompt template are created exactly as before. They go into `LLMChain`, and the chain runs with the topic.
 
 ```python title="llmchain.py"
 from langchain.llms import OpenAI
@@ -195,11 +195,11 @@ For example, an entire machine learning book covered page by page, with page emb
 
 That is retrieval. You have a query, you have a vector database with your documents, you extract relevant text, and then you combine the relevant text and the query into a new prompt saying *"from these relevant documents, answer this query"*, and send it to the LLM.
 
-This is exactly what lines 21 to 33 of `pdf_reader.py` above do by hand (21:53): the query, `get_relevant_documents`, joining the retrieved text, the "Based on the following text, answer the question" prompt, and `llm.predict`.
+This is exactly what lines 21 to 33 of `pdf_reader.py` above do by hand: the query, `get_relevant_documents`, joining the retrieved text, the "Based on the following text, answer the question" prompt, and `llm.predict`.
 
 **That task appears in every RAG application.** So the team made a chain for it too: **`RetrievalQA`**. You call the function and tell it just two things — your LLM and your retriever — and all the work happens automatically behind the scenes.
 
-Here is the same PDF reader built with it (23:04). Loading, splitting, the vector store, the retriever and the LLM are unchanged. The manual semantic search, the text joining and the hand-written prompt are gone. `RetrievalQA.from_chain_type` takes the LLM and the retriever, and `qa_chain.run(query)` returns the answer.
+Here is the same PDF reader built with it. Loading, splitting, the vector store, the retriever and the LLM are unchanged. The manual semantic search, the text joining and the hand-written prompt are gone. `RetrievalQA.from_chain_type` takes the LLM and the retriever, and `qa_chain.run(query)` returns the answer.
 
 ```python title="retrievalQAchain.py"
 from langchain.document_loaders import TextLoader

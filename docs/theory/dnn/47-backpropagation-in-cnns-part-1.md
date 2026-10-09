@@ -16,8 +16,8 @@ Backpropagation in a CNN is the same chain rule as in any neural network — the
 
 Backpropagation through a conv layer requires computing: (1) the gradient of the loss with respect to the input (to continue backprop to earlier layers) and (2) the gradient with respect to the filter weights (to update the filters).
 
-![Learned first-layer filters in AlexNet — the gradients during training tune these from random noise into edge and color detectors](https://cs231n.github.io/assets/cnn/weights.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford) — Krizhevsky et al., 2012*
+![Learned first-layer filters in AlexNet — the gradients during training tune these from random noise into edge and color detectors](https://cs231n.stanford.edu/assets/cnn/weights.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford) — Krizhevsky et al., 2012*
 
 ## The forward pass (recap)
 

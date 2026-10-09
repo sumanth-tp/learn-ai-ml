@@ -16,8 +16,8 @@ ImageNet is a 1.2-million-image, 1000-class dataset that became the standard ben
 
 Pretrained CNNs are models whose weights have been optimized on ImageNet. They can be adapted to new tasks via fine-tuning or feature extraction, providing a massive head start over random initialization.
 
-![Learned filters in the first conv layer of AlexNet — pretrained models encode these features so downstream tasks get them for free](https://cs231n.github.io/assets/cnn/weights.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford) — Krizhevsky et al., 2012*
+![Learned filters in the first conv layer of AlexNet — pretrained models encode these features so downstream tasks get them for free](https://cs231n.stanford.edu/assets/cnn/weights.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford) — Krizhevsky et al., 2012*
 
 ## The ImageNet benchmark
 

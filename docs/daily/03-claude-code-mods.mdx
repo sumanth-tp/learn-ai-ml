@@ -4,13 +4,13 @@ title: "Claude Code Just Dropped MODS. (Master it in 10 Minutes)."
 sidebar_label: "3 · Claude Code mods"
 sidebar_position: 3
 slug: /daily/claude-code-mods
-description: "What Claude Code mods are, how a mod listens to events and changes the screen, the six mods built in the video, how to describe, reload, save and share your own, and a tested example mod."
+description: "What Claude Code mods are, how a mod listens to events and changes the screen, six example mods, how to describe, reload, save and share your own, and a tested example mod."
 tags: [daily, claude-code, mods, plugins, hooks, agents, tooling]
 ---
 
 import Infographic from '@site/src/components/Infographic';
 
-> **Source:** [Tristen O'Brien: Claude Code Just Dropped MODS. (Master it in 10 Minutes).](https://youtu.be/LDn7rQKIFro) A 10-minute video. The notes follow it section by section, then add a clearly marked section on how a mod is built.
+> **Source:** [Tristen O'Brien: Claude Code Just Dropped MODS. (Master it in 10 Minutes).](https://youtu.be/LDn7rQKIFro) The notes cover the mods in the order they are introduced, then add a clearly marked section on how a mod is built.
 
 **In one line.** A mod is a small add-on that runs inside Claude Code and changes what you see and how it behaves, and you create one by describing the feature you want.
 
@@ -24,7 +24,7 @@ You should know how to:
 
 **Time:** about 30 minutes to read. The example mod takes five more to try.
 
-**After this chapter you can** explain what a mod is and how it differs from a skill or a connector, describe the five mods shown in the video, build and keep a mod of your own, and read the code of a small mod.
+**After this chapter you can** explain what a mod is and how it differs from a skill or a connector, describe five example mods, build and keep a mod of your own, and read the code of a small mod.
 :::
 
 ## In 30 seconds
@@ -63,7 +63,7 @@ Everything you read in a Claude Code session is drawn by Claude Code. If a featu
 
 Every time Claude Code does something, such as running a command or editing a file, it sends out a small signal called an **event**. A mod is a small piece of code that **listens** for those events. When one arrives, the mod can do one of three things:
 
-| The mod can... | What that means | Example from the video |
+| The mod can... | What that means | Example |
 | --- | --- | --- |
 | **Watch** it | Let it carry on unchanged, and note what happened | Counting how many tool calls ran |
 | **Change** it | Alter the event, so everything after the mod sees the new version | Trimming a command before it runs |
@@ -71,7 +71,7 @@ Every time Claude Code does something, such as running a command or editing a fi
 
 <Infographic src="/img/daily/claude-code-mods/event-flow.svg" alt="An event reaches a mod hook. The hook passes it on with next, or edits it, or handles it itself so the normal behaviour never runs." caption="The hook always gets the first look. The three boxes at the bottom are its only choices." />
 
-In the video, the mod called Clean View does the third thing. Whenever Claude Code is about to show one of those technical rows (a tool call), the mod steps in and hides it. When the step finishes, the mod ticks it off a list.
+The mod called Clean View does the third thing. Whenever Claude Code is about to show one of those technical rows (a tool call), the mod steps in and hides it. When the step finishes, the mod ticks it off a list.
 
 ## Worked example, step by step
 
@@ -85,9 +85,9 @@ Suppose you type **“build me a weather dashboard for New York City”** with C
 
 The work is identical in both views. Only the drawing changed. That is the point of a mod: it alters presentation and behaviour without changing the model.
 
-## The mods built in the video
+## Example mods
 
-The creator built several mods in one week and shows them from a toolbar at the bottom right of the screen, which carries the creator's own name. Treat these as examples of what is possible. None of them is a built-in feature, and they are not distributed in the video, so you would describe your own versions.
+These mods were built within a single week and are switched on from a toolbar at the bottom right of the screen. Treat them as examples of what is possible. None of them is a built-in feature and none is distributed, so you would describe your own versions.
 
 ### Mod 1: Clean View
 
@@ -109,55 +109,51 @@ Clean View suits tasks where you trust the process and want a calm screen. Turn 
 
 **What it does.** Click the toolbar at the bottom of the screen and the model and effort controls are right there. When you change them, the status bar below updates straight away.
 
-<Infographic src="/img/daily/claude-code-mods/control-panel.svg" alt="Left, the slash command route: type slash model, then slash effort. Right, a toolbar with model and effort pickers and an instantly updated status bar." caption="Same two settings, fewer steps. The speaker calls it small but says it makes the day easier." />
-
-:::note Name check
-The automatic transcript renders this mod's name as “employee control panel”, which looks like a speech-to-text slip. “Control Panel” describes what it does and is used here.
-:::
+<Infographic src="/img/daily/claude-code-mods/control-panel.svg" alt="Left, the slash command route: type slash model, then slash effort. Right, a toolbar with model and effort pickers and an instantly updated status bar." caption="Same two settings, fewer steps. A small change, but it makes the working day easier." />
 
 ### Mod 3: Agent Dock
 
 **Problem it solves.** When you give Claude a big job, it can hand pieces to **helper agents**, which are extra copies of Claude that each take a small slice of the work. Normally you cannot see what each agent is doing, and you cannot choose how many to use.
 
-**What it does.** Type the dock command (heard as `/doc` in the transcript; the mod's name is Agent Dock, so `/dock` is the likely spelling). You then pick how many agents you want on the next prompt, up to **50**. In the toolbar you also choose the helper type:
+**What it does.** Type the dock command (`/dock`, matching the mod's name, Agent Dock). You then pick how many agents you want on the next prompt, up to **50**. In the toolbar you also choose the helper type:
 
 | Helper type | When to choose it |
 | --- | --- |
 | Fast and cheap | Many small, simple tasks; you want low cost |
-| Same model as the lead (the video uses Opus 5.5) | Tasks where quality matters more than cost |
+| Same model as the lead (Opus 5.5 in the demonstration) | Tasks where quality matters more than cost |
 
 **The demonstration.** The test job is a new bakery called Golden Crumb. The prompt asks for a dashboard tracking **50 tasks before the grand opening**. Each agent gets its own **card**, with its own task and progress bar. Of 50 chosen, 20 cards were visible at once, 10 were working and the rest were waiting their turn. When all are done, Claude pulls everything together into one dashboard.
 
 <Infographic src="/img/daily/claude-code-mods/agent-dock.svg" alt="The dock lets you choose a team size and helper type. Cards for individual bakery tasks show progress bars, with more waiting in a queue, and a final box gathers results into one dashboard." caption="The left column is what you choose before prompting. The dashed area is the live dock." />
 
 :::warning It spends your plan faster
-A team of 50 agents uses your plan's usage much faster than one agent. The creator's mod warns before the team gets too big. If you build your own, build that warning in.
+A team of 50 agents uses your plan's usage much faster than one agent. A well-built mod warns before the team gets too big. If you build your own, build that warning in.
 :::
 
-**Why a pane suits this.** Each card is persistent, live state, so it needs a place of its own on the screen. The next section shows that Claude Code has exactly that: a pane.
+**Why a pane suits this.** Each card is persistent, live state, so it needs a place of its own in the interface. The next section shows that Claude Code has exactly that: a pane.
 
 ### A side note: the session bar
 
-Partway through, the video shows a bar on the left-hand side that lists which sessions are running and lets you jump to any of them. It is built by the creator and used daily, but the video gives no build steps. The creator offers a separate video if enough people comment “session bar”.
+A bar on the left-hand side can list which sessions are running and let you jump to any of them. It is used daily by its author, but no build steps are given here; describe it to Claude and iterate, as with any other mod.
 
-<Infographic src="/img/daily/claude-code-mods/session-bar.svg" alt="A left-hand bar lists live sessions with one-click jumping. The video gives no build steps." caption="Shown but not explained. It is the likely sixth mod, because the intro promises six and the numbering reaches five." />
+<Infographic src="/img/daily/claude-code-mods/session-bar.svg" alt="A left-hand bar lists live sessions with one-click jumping. No build steps are given." caption="A sixth mod, mentioned in passing: five are numbered and this one is not." />
 
 :::note Counting the mods
-The intro says six mods and the closing says five. Counting the session bar as the sixth reconciles both: five are numbered, one is shown in passing.
+Five mods are numbered below. The session bar is a sixth, shown in passing, which is why both "five" and "six" appear in different places.
 :::
 
 ### Mod 4: Claude Photos
 
-**Problem it solves.** Claude cannot make images or videos by itself. The usual workaround is to leave and use another tool. The creator instead uses one service, Higgsfield, which offers many image, video and audio models in one place and has a **connector inside Claude**. A mod built on that connector keeps everything in one window.
+**Problem it solves.** Claude cannot make images or videos by itself. The usual workaround is to leave and use another tool. A mod can instead use one service, Higgsfield, which offers many image, video and audio models in one place and has a **connector inside Claude**. A mod built on that connector keeps everything in one window.
 
 :::note Sponsorship disclosure
-The video says Higgsfield sponsored it and that this mod runs on top of Higgsfield. The mechanism is general, though: any connector can sit underneath a mod that gives it a nicer interface.
+Higgsfield sponsored the original demonstration, and this mod runs on top of Higgsfield. The mechanism is general, though: any connector can sit underneath a mod that gives it a nicer interface.
 :::
 
 **What the flow looks like**, from typing `/create`:
 
 1. A full photo and video studio opens. The top right shows your remaining Higgsfield credits.
-2. You describe what you want in one sentence. The demo asks for a photo of the creator riding a train, leaving outfit and expression to the model.
+2. You describe what you want in one sentence. The demonstration asks for a photo of a person riding a train, leaving outfit and expression to the model.
 3. You choose **photo or video**, then the **model** (Nano Banana Pro in the demo), the **image size** (16 by 9) and the **resolution** (4K).
 4. Extra settings include uploading a photo of yourself so the result looks like you.
 5. Claude turns your one sentence into a **much longer, detailed prompt** written for the model you chose. You may edit it.
@@ -167,20 +163,20 @@ The video says Higgsfield sponsored it and that this mod runs on top of Higgsfie
 <Infographic src="/img/daily/claude-code-mods/claude-photos.svg" alt="Seven steps from the create command to a saved photo, with a confirmation gate before any credits are spent." caption="The yellow diamond is the part to copy into any mod that spends money: ask first, generate second." />
 
 :::danger Put the spending check in every paid mod
-The creator paused for approval on purpose, to avoid credits being used without consent. Any mod that calls a paid service should show the cost and wait. Without that gate, one mistyped prompt can burn credits.
+The mod pauses for approval on purpose, to avoid credits being used without consent. Any mod that calls a paid service should show the cost and wait. Without that gate, one mistyped prompt can burn credits.
 :::
 
 ### Mod 5: Roadtrip
 
-A mini racing game that plays inside Claude Code while Claude builds your project. Ask Claude to improve the weather dashboard, click play, and you drive while it works. Every so often the game asks you a **quiz question about Claude**. The creator built it for fun and uses it.
+A mini racing game that plays inside Claude Code while Claude builds your project. Ask Claude to improve the weather dashboard, click play, and you drive while it works. Every so often the game asks you a **quiz question about Claude**. It was built for fun.
 
 <Infographic src="/img/daily/claude-code-mods/roadtrip.svg" alt="Claude works on a task, the person clicks play on a racing game, and a quiz about Claude appears now and then." caption="Not every mod needs to be useful in the work sense. The wait is the only time the game occupies." />
 
 ## Build your own mod
 
-The recipe from the video is short:
+The recipe is short:
 
-1. **Update Claude Code.** The video says mods need version **2.1.287 or newer**, though the speaker adds “I believe”. Check your own with `claude --version`, and update if it is older.
+1. **Update Claude Code.** Mods need version **2.1.287 or newer**; treat the exact number as approximate. Check your own with `claude --version`, and update if it is older.
 2. **Open Claude Code and describe the mod you want**, in plain words. A built-in skill teaches Claude how to build mods, so you do not need to know the API.
 3. **Claude builds it**, then asks you to **reload**. Say yes.
 4. **The mod appears** when Claude finishes its turn.
@@ -204,9 +200,9 @@ Mods are free to use, but you need a **paid plan that includes Claude Code**. A 
 | Claude's work while a mod runs | Your Claude plan | More agents, longer tasks, background work |
 | A connector's service (such as image generation) | That service | Each generated image or video |
 
-## Beyond the video: what a mod is made of
+## Beyond the basics: what a mod is made of
 
-:::note Not from the video
+:::note Not from the source
 This section is an **addition**. It comes from Claude Code's own mod-authoring reference, so you can read a mod rather than only commission one. The interface is early access and may change between releases, so treat Claude Code's installed documentation as the authority.
 :::
 
@@ -255,13 +251,13 @@ That is the whole “watch, change, handle” idea in code:
 | Change or react to your prompt | a `prompt.submit` hook |
 | Do work later or repeatedly | `$.clock` timers |
 
-<Infographic src="/img/daily/claude-code-mods/mod-anatomy.svg" alt="Left, the three files of a mod. Right, a table matching what you ask for to the part of the API a mod uses." caption="Five of the video's mods are variations on the right-hand table: Clean View is a render hook, Agent Dock is a pane, Control Panel is a toolbar." />
+<Infographic src="/img/daily/claude-code-mods/mod-anatomy.svg" alt="Left, the three files of a mod. Right, a table matching what you ask for to the part of the API a mod uses." caption="Five of the example mods are variations on the right-hand table: Clean View is a render hook, Agent Dock is a pane, Control Panel is a toolbar." />
 
 The drawable components a render hook can replace include the tool row, the tool result, the group of tools, the progress line, the spinner, the area above the prompt, and the pane. That list is what makes Clean View possible: hiding a tool row means answering the render of that component with nothing.
 
 ## Code you can run
 
-The ZIP holds a small guard mod. It is not one of the video's mods; it shows a hook that **handles** an event (blocks an edit) and a hook that **changes and then watches** one (trims a command, then reports a failure). You can [download the example mod](/examples/daily/claude-code-mods.zip) or create the files yourself.
+The ZIP holds a small guard mod. It is not one of the example mods; it shows a hook that **handles** an event (blocks an edit) and a hook that **changes and then watches** one (trims a command, then reports a failure). You can [download the example mod](/examples/daily/claude-code-mods.zip) or create the files yourself.
 
 **`env-guard/.claude-plugin/plugin.json`**
 
@@ -351,14 +347,14 @@ The installed command-line build used while writing was older than the mod-autho
 | Hiding tool rows while debugging | You lose the evidence | Turn the clean view off |
 | Letting a mod spend credits silently | Surprise bills on a connected service | Show the cost and wait for yes |
 | Trusting a shared mod blindly | A mod can block, rewrite or read what Claude does | Read what a shared mod hooks before installing it |
-| Expecting a mod from only this video | The video shows them but gives no code | Describe each one to Claude and iterate |
+| Expecting a finished mod from a description alone | The examples are described, not shipped | Describe each one to Claude and iterate |
 
 ## Practice
 
 1. Describe, in two sentences, a mod that puts the current git branch in the status line. Name the event it would need to listen for.
 2. Write the prompt you would give Claude to build a mod that warns you when a turn has run for more than two minutes.
 3. Extend `env-guard` in your head: how would you also protect any file whose name ends in `.pem`? Which line would change?
-4. Pick one mod from the video and say whether it **watches**, **changes** or **handles** its events.
+4. Pick one example mod and say whether it **watches**, **changes** or **handles** its events.
 
 ## Test your understanding
 

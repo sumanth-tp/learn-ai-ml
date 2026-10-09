@@ -15,7 +15,7 @@ tags: [projects, security, guardrails, nemo-guardrails, colang, logfire, pii]
 import Infographic from '@site/src/components/Infographic';
 
 > **Module 1 of 4** ·
-> [Watch from 0:03:08](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=188s) ·
+> [Watch on YouTube](https://www.youtube.com/watch?v=rQE3w8Qjx98) ·
 > about 70 minutes of the 7h48m course ·
 > [Code](https://github.com/d-hackmt/guardrails-webinar) ·
 > [Demo app](https://guardthisrag.streamlit.app/)
@@ -60,7 +60,7 @@ through it. The mentor names two threats and one cost:
 <Infographic
   src="/img/ai-security/m1-why-guardrails.svg"
   alt="LLM guardrails lead to LLM security, which covers prompt injection, jailbreaks and cost saving."
-  caption="Redrawn from the mentor's whiteboard, 0:03 to 0:06."
+  caption="Redrawn from the whiteboard."
 />
 
 ### The two kinds of LLM application
@@ -72,7 +72,7 @@ documents, and answers from them.
 <Infographic
   src="/img/ai-security/m1-where-guardrail-sits.svg"
   alt="LLMs power agentic AI and RAG; a RAG app without a guard, the same app with a guardrail around the LLM, and why outputs need checking on 50 GB of data."
-  caption="Redrawn from the mentor's whiteboard, 0:06 to 0:13."
+  caption="Redrawn from the whiteboard."
 />
 
 ### A chatbot that already has guardrails
@@ -101,7 +101,7 @@ the rules and regulations the bodyguard was given by whoever hired them
 ("go with him to school, to the club, everywhere"). For an LLM, the guard
 sits in front of the model and the rails are rules you program.
 
-*Redrawn from the mentor's bodyguard sketch (0:14 to 0:16).*
+*Redrawn from the mentor's bodyguard sketch.*
 
 ```mermaid
 flowchart LR
@@ -123,7 +123,7 @@ guardrails:
 <Infographic
   src="/img/ai-security/m1-gateways-vs-guardrails.svg"
   alt="Robust and fault tolerant point to LLM gateways; secured points to guardrails, which enforce rules and regulatory constraints against a user who turns malicious."
-  caption="Redrawn from the mentor's whiteboard, 0:13 to 0:16."
+  caption="Redrawn from the whiteboard."
 />
 
 | Property | How it's met, per the session |
@@ -155,7 +155,7 @@ module surveys four and picks one:
 <Infographic
   src="/img/ai-security/m1-frameworks.svg"
   alt="Guardrails fan out to four frameworks: NeMo Guardrails (used in the demo), Guardrails AI, Llama Firewall and AWS Bedrock Guardrails."
-  caption="Redrawn from the mentor's whiteboard, 0:16 to 0:20."
+  caption="Redrawn from the whiteboard."
 />
 
 The module uses **NeMo Guardrails**. The mentor is clear it's "what we
@@ -337,7 +337,7 @@ goes to the model, and "tell me a joke" is still refused by the topic guard.
 <Infographic
   src="/img/ai-security/m1-dialog-rails.svg"
   alt="The Classroom app's message flow: an intent check sends a message to one of five branches (off-topic, jailbreak, sensitive refusals, scripted dialog, or the LLM answer), each added by one experiment."
-  caption="Redrawn from the NeMo Guardrails Classroom app's message-flow diagrams, 0:24 to 0:33."
+  caption="Redrawn from the NeMo Guardrails Classroom app's message-flow diagrams."
 />
 
 ```colang
@@ -390,7 +390,7 @@ run on **every** message, before any intent check.
 <Infographic
   src="/img/ai-security/m1-pii-urgency.svg"
   alt="Experiment 6: every message passes a PII detector and an urgency detector, both Python actions, before the intent check; PII stops the request, urgency warns and continues."
-  caption="Redrawn from the Classroom app's Experiment 6 flow, 0:57 to 0:58."
+  caption="Redrawn from the Classroom app's Experiment 6 flow."
 />
 
 ### Experiment 7: output sanitiser
@@ -444,7 +444,7 @@ It isn't a programming language but an expression language, written in
 <Infographic
   src="/img/ai-security/m1-colang.svg"
   alt="NeMo Guardrails, rails and rules lead to Colang .co files; Colang sits between natural language and a programming language, with define user, define bot and define flow blocks."
-  caption="Redrawn from the mentor's whiteboard, 0:38 to 0:44."
+  caption="Redrawn from the whiteboard."
 />
 
 It has very few keywords:
@@ -482,7 +482,7 @@ logs.
 <Infographic
   src="/img/ai-security/m1-intent-matching.svg"
   alt="The user's query is embedded with FastEmbed, compared with the example vectors from the .co file, and the guard LLM decides the intent from the closest match."
-  caption="Redrawn from the mentor's whiteboard, 0:46 to 0:50."
+  caption="Redrawn from the whiteboard."
 />
 
 :::note Correction to the session
@@ -509,7 +509,7 @@ The metric? Chetan asks whether it's cosine similarity. The mentor thinks it
 likely is, and points to the documentation to confirm; the repository's
 README says cosine.
 
-### Doubts · What if a question isn't in the examples? · 0:46
+### Doubts · What if a question isn't in the examples?
 
 **Praveen:** What if the incoming question isn't one of the listed
 examples?
@@ -532,7 +532,7 @@ Rails are rules and regulations, and they can sit in three places:
 <Infographic
   src="/img/ai-security/m1-three-rails.svg"
   alt="Rails split into input rails, output rails and custom systematic rails; a phone number is the example of PII a custom regex rail catches."
-  caption="Redrawn from the mentor's whiteboard, 0:55 to 0:57."
+  caption="Redrawn from the whiteboard."
 />
 
 | Type | Where it runs | Written as | Example here |
@@ -1146,7 +1146,7 @@ security layer** and **Pydantic Logfire as the observability layer**.
 <Infographic
   src="/img/ai-security/m1-observability.svg"
   alt="NeMo Guardrails as the security layer and Pydantic Logfire as the observability layer, with the LangChain and Pydantic ecosystems they come from."
-  caption="Redrawn from the mentor's whiteboard, 0:51 to 0:55."
+  caption="Redrawn from the whiteboard."
 />
 
 The history explains it. LangChain, AutoGen, CrewAI and FastAPI all use
@@ -1165,7 +1165,7 @@ Pydantic AI, and then the observability layer, Logfire, to complete the set.
 The mentor finishes on the vocabulary, using the Enterprise RAG project's
 trace as the example: embed query, retrieve documents, generate answer.
 
-*Redrawn from the mentor's explanation (1:10 to 1:11).*
+*Redrawn from the mentor's explanation.*
 
 ```mermaid
 flowchart LR
@@ -1222,7 +1222,7 @@ token. The mentor walks the class through both.
 <Infographic
   src="/img/ai-security/m1-keys.svg"
   alt="The demo needs two keys: a Groq API key for the chat and guard models, and a Pydantic Logfire token for tracing."
-  caption="Redrawn from the mentor's whiteboard, 0:58 to 1:03."
+  caption="Redrawn from the whiteboard."
 />
 
 **Groq (free):**

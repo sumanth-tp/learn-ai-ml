@@ -13,25 +13,84 @@ import DataQualityRulesLab from '@site/src/components/viz/DataQualityRulesLab';
 
 **In one line.** Data quality becomes useful when a rule says what to measure and what happens when it fails.
 
+
+:::tip Before you start
+
+**You should already know**
+
+- What a column, a null value and a primary key are.
+- How a file format fixes a schema: [data representations](/docs/mlops/data/representations-for-ml).
+- Basic pandas: filtering a DataFrame with a boolean mask.
+
+**Reading time.** About 40 minutes, plus a second to run the experiment.
+
+**After this chapter you can**
+
+- compute a completeness score and compare it with a threshold,
+- measure the precision and recall of a quality rule against defects you injected,
+- explain why a coercing schema can hide the very errors it was meant to catch.
+
+:::
+
+## In 30 seconds
+
+A delivery company checks every parcel label before the van leaves. Is the postcode there (completeness)? Is it a real postcode (validity)? Is it the postcode the customer actually lives at (accuracy)? Is the same parcel listed twice (uniqueness)? Each question catches a different mistake, and a label can pass three and fail the fourth. Data quality rules are those label checks, written as code so a pipeline can run them on every batch and act on the answer.
+
+## Words you will meet
+
+| Term | Plain meaning | Tiny example |
+| --- | --- | --- |
+| Completeness | Share of required values that are present | 950 of 1,000 present = 95% |
+| Validity | A value obeys a declared rule | A country code is one of GB, IN, US, DE |
+| Uniqueness | A key appears once | One row per `order_id` |
+| Accuracy | A value matches the real world | The amount equals what the customer paid |
+| Precision of a rule | Of the rows it flags, the share that are real defects | 180 flagged, 180 real = 1.0 |
+| Recall of a rule | Of the real defects, the share it flags | 180 of 200 real = 0.9 |
+| Coercion | Converting a value to the declared type, even if it loses information | 19.99 becomes 19 |
+| Quarantine | Setting failed rows aside with a reason, instead of dropping them | A `rejected` table |
+
 ## The idea in plain words
 
 A model trained on wrong, missing or delayed records can produce plausible predictions for the wrong population. Data quality is therefore **fitness for a particular use**, not a single property that a dataset either has or lacks. A postcode that is absent may be tolerable in one analysis and disqualifying in a delivery task. A purchase event arriving five minutes late may be fine for monthly reporting and too late for a real-time fraud decision.
 
-The lecture names six dimensions: **accuracy, completeness, consistency, timeliness, validity and uniqueness**. Each asks a different question. Validity asks whether a value obeys a declared rule, such as a date being parsable; accuracy asks whether that date matches what happened. A valid but fabricated date is inaccurate. Completeness asks whether required values exist, while uniqueness asks whether records that should have one identity are duplicated. A row can pass one dimension and fail another.
+Six dimensions describe quality: **accuracy, completeness, consistency, timeliness, validity and uniqueness**. Each asks a different question. Validity asks whether a value obeys a declared rule, such as a date being parsable; accuracy asks whether that date matches what happened. A valid but fabricated date is inaccurate. Completeness asks whether required values exist, while uniqueness asks whether records that should have one identity are duplicated. A row can pass one dimension and fail another.
 
 <Infographic src="/img/dm/quality-dimensions.svg" alt="Six data-quality dimensions ask about truth, missingness, agreement, freshness, rules and duplicate keys; 950 of 1,000 present values give 95 per cent completeness." caption="Measure separate failure modes before deciding whether data is fit for a consumer." />
 
-The lecture's 1,000-row example has 50 nulls in a required field. Completeness is (1,000 − 50)/1,000 = **95%**. If the contract requires 99%, the batch fails. That result is meaningful only if we say which field and population were measured. A table-wide "95% quality" score would hide whether the missing values are in a critical label, an optional note or one data source that affects a vulnerable customer group.
+A 1,000-row example with 50 nulls in a required field gives: completeness is (1,000 − 50)/1,000 = **95%**. If the contract requires 99%, the batch fails. That result is meaningful only if we say which field and population were measured. A table-wide "95% quality" score would hide whether the missing values are in a critical label, an optional note or one data source that affects a vulnerable customer group.
 
-:::note Beyond the lecture
+:::note Added for this site
 
-The lecture introduces dimensions, scorecards and assertions. The sections below add denominator design, failure routing, delayed labels and the difference between schema checks and real-world truth checks.
+The course introduces dimensions, scorecards and assertions. The sections below add denominator design, failure routing, delayed labels, the difference between schema checks and real-world truth checks, and a measured test of what each rule type catches.
 
 :::
 
-The default lab reproduces the lecture: 50 null values among 1,000 rows give **95.0%** completeness and fail a **99%** requirement. Move either slider to see that a metric and a threshold together produce an action.
+The default lab reproduces this example: 50 null values among 1,000 rows give **95.0%** completeness and fail a **99%** requirement. Move either slider to see that a metric and a threshold together produce an action.
 
 <DataQualityRulesLab />
+
+**What each control does.**
+
+- **null values** sets how many of the 1,000 rows have a missing required value, 0 to 150.
+- **required completeness** sets the threshold in per cent, 90 to 100.
+
+**Try it yourself.**
+
+1. Defaults: 50 nulls gives 95.0% completeness, which fails the 99% requirement.
+2. Set nulls to 10. Completeness is exactly 99.0%, and the rule passes because the test is "at least".
+3. Set nulls to 150 and the requirement to 90. Completeness is 85.0%, so the rule still fails. Lowering a threshold changes the decision only if the data is close to it.
+
+## Worked example, step by step
+
+Twenty thousand orders, and we deliberately damage 200 of them in each of five ways. The question is how well each rule finds its own damage.
+
+1. Completeness first. If 50 of 1,000 required values are null, completeness is 950 / 1,000 = 95%, below a 99% requirement, so the batch fails.
+2. A `not null` rule on `amount` flags every null amount. All 200 flagged rows are the injected nulls, so precision is 200 / 200 = 1.0 and recall is 200 / 200 = 1.0.
+3. A range rule `0 <= amount <= 1000` is meant to catch rows whose amount was multiplied by 100 (pounds stored as pence). A 8.50 pound order becomes 850, which is still under 1,000, so the rule misses it. A 12.00 pound order becomes 1,200 and is caught. If 180 of 200 such rows exceed 1,000, precision is 180 / 180 = 1.0 and recall is 180 / 200 = 0.9.
+4. A uniqueness rule on `order_id` flags both copies of a duplicated key, because it cannot tell which is the original. With 200 duplicated keys that is about 400 rows flagged for 200 real extra rows, so precision is near 200 / 400 = 0.5.
+5. Add the precision and recall columns for every rule, and a rule that looks perfect on one defect type can still miss another type entirely.
+
+In words: precision says how many alarms are false, recall says how many real problems slip through, and a rule is only as good as the defect it was written for. The experiment below computes steps 2 to 4 on the 20,000 rows.
 
 ## How it works
 
@@ -62,7 +121,7 @@ Consider a daily customer-risk feature table. A transformation joins transaction
 
 ## Code you can run
 
-Start with the lecture's arithmetic. Count rows in the denominator and non-null values in the numerator. A threshold uses `>=` so exactly 99% passes a 99% rule.
+Start with the arithmetic. Count rows in the denominator and non-null values in the numerator. A threshold uses `>=` so exactly 99% passes a 99% rule.
 
 ```python
 rows = 1000
@@ -109,6 +168,108 @@ assert not check_batch([])["evaluated"]
 ```
 
 This output is a small scorecard, not a complete quality certificate. The duplicate C2 might be a true duplicate or two legitimate versions. The contract must say which one. `other` might be invalid today or a new status awaiting a schema change. Investigate before silently deleting rows.
+
+### Experiment: what each rule catches
+
+The experiment generates 20,000 synthetic orders, damages 200 rows in each of five ways, validates them with pandera 0.34.0 and scores every rule against the truth it knows. It then shows what happens when a schema coerces types instead of rejecting them. Run it with pandas 2.3.3 and NumPy 2.5.3. No external data is used.
+
+```python
+import numpy as np
+import pandas as pd
+import pandera.pandas as pa
+
+rng = np.random.default_rng(7)
+n = 20_000
+clean = pd.DataFrame({
+    "order_id": np.arange(n),
+    "country": rng.choice(["GB", "IN", "US", "DE"], n),
+    "amount": rng.gamma(2.0, 20.0, n).round(2),
+    "age": rng.integers(18, 90, n),
+})
+data = clean.copy()
+names = ["null_amount", "negative_amount", "bad_country", "duplicate_id", "pence_not_pounds"]
+truth = {name: np.zeros(n, bool) for name in names}
+for name, block in zip(names, np.array_split(rng.permutation(n)[:1000], 5)):
+    truth[name][block] = True
+data.loc[truth["null_amount"], "amount"] = np.nan
+data.loc[truth["negative_amount"], "amount"] *= -1
+data.loc[truth["bad_country"], "country"] = "UK"
+data.loc[truth["duplicate_id"], "order_id"] -= 1
+data.loc[truth["pence_not_pounds"], "amount"] *= 100
+
+schema = pa.DataFrameSchema({
+    "order_id": pa.Column(int, unique=True),
+    "country": pa.Column(str, pa.Check.isin(["GB", "IN", "US", "DE"])),
+    "amount": pa.Column(float, [pa.Check.ge(0), pa.Check.le(1000)], nullable=False),
+})
+try:
+    schema.validate(data, lazy=True)
+except pa.errors.SchemaErrors as err:
+    cases = err.failure_cases.dropna(subset=["index"])
+rows_for = lambda column, check: set(cases.loc[(cases["column"] == column) & (cases["check"] == check), "index"].astype(int))
+rules = {
+    "not_nullable": (rows_for("amount", "not_nullable"), ["null_amount"]),
+    "ge(0)": (rows_for("amount", "greater_than_or_equal_to(0)"), ["negative_amount"]),
+    "le(1000)": (rows_for("amount", "less_than_or_equal_to(1000)"), ["pence_not_pounds"]),
+    "isin": (rows_for("country", "isin(['GB', 'IN', 'US', 'DE'])"), ["bad_country"]),
+    "unique": (rows_for("order_id", "field_uniqueness"), ["duplicate_id"]),
+}
+print(f"{'rule':14s} {'flagged':>7s} {'precision':>9s} {'recall':>7s}")
+for rule, (flagged, targets) in rules.items():
+    wanted = set(np.flatnonzero(np.any([truth[t] for t in targets], axis=0)))
+    hit = len(flagged & wanted)
+    print(f"{rule:14s} {len(flagged):7d} {hit / max(len(flagged), 1):9.3f} {hit / len(wanted):7.3f}")
+
+pence = truth["pence_not_pounds"]
+log_amount = np.log(data["amount"].clip(lower=0.01))
+reference = np.log(clean["amount"])
+outlier = (log_amount - reference.median()).abs() > 4 * reference.std()
+print(f"log-outlier rule: catches {int((outlier & pence).sum())} of {int(pence.sum())} pence rows, {int((outlier & ~pence).sum())} false alarms")
+
+truncated = pa.DataFrameSchema({"amount": pa.Column(int, coerce=True)}).validate(clean[["amount"]])
+print(f"coerce to int: mean amount {clean['amount'].mean():.3f} becomes {truncated['amount'].mean():.3f}, {(truncated['amount'] != clean['amount']).mean():.1%} of rows changed")
+text = clean["amount"].astype(str).where(rng.random(n) > 0.03, clean["amount"].astype(str).str.replace(".", ",", regex=False))
+parsed = pd.to_numeric(text, errors="coerce")
+print(f"to_numeric(errors='coerce'): {parsed.isna().mean():.1%} become NaN, sum {parsed.sum():,.0f} against {clean['amount'].sum():,.0f}; fillna(0) hides it")
+try:
+    pa.DataFrameSchema({"amount": pa.Column(float, coerce=True)}).validate(pd.DataFrame({"amount": text}))
+except pa.errors.SchemaErrors as err:
+    print("pandera float coerce on the same text raises:", type(err).__name__)
+```
+
+**Reading the output.** The table has one row per rule. `flagged` is how many rows the rule marked, `precision` is the share of those that are real injected defects of the type the rule targets, and `recall` is the share of that type the rule found. Then come the extra distribution rule, and three lines about coercion.
+
+**Line by line.**
+
+- `schema.validate(data, lazy=True)` collects every failure instead of stopping at the first. Without `lazy=True` only the first failing check would appear in the exception.
+- `err.failure_cases` is a table of failing values with the row `index` and the `check` name, which is what lets the code score each rule separately.
+- `pa.Column(int, coerce=True)` is the dangerous line. It converts the column to integers before checking anything.
+- `to_numeric(..., errors='coerce')` turns text it cannot read into NaN, and the later `fillna(0)` idea would hide those NaNs entirely.
+
+The printed output:
+
+```text
+rule           flagged precision  recall
+not_nullable       200     1.000   1.000
+ge(0)              200     1.000   1.000
+le(1000)           180     1.000   0.900
+isin               200     1.000   1.000
+unique             396     0.500   0.990
+log-outlier rule: catches 186 of 200 pence rows, 240 false alarms
+coerce to int: mean amount 40.061 becomes 39.567, 99.1% of rows changed
+to_numeric(errors='coerce'): 3.1% become NaN, sum 777,725 against 801,225; fillna(0) hides it
+pandera float coerce on the same text raises: SchemaErrors
+```
+
+### Reading the experiment
+
+Four of the five rules are perfect on their own defect: null, negative and bad-country checks all show precision and recall of 1.000. The surprise is the range rule. It was written for the pounds-as-pence error and catches only 0.900 of it, because a cheap order multiplied by 100 still falls inside the allowed range. A rule that checks a legal range cannot see a wrong value that happens to be legal. This is the validity against accuracy distinction from earlier in the chapter, measured.
+
+The uniqueness rule has recall 0.990 but precision 0.500: it flagged 396 rows for 200 injected duplicates, since pandera marks every row sharing a repeated key. Precision here is a property of what you count as a defect, so decide whether the pipeline should quarantine both rows or keep the first. A distribution rule on log amounts recovers 186 of 200 pence rows, but at the price of 240 false alarms, a precision of 186 / 426 = 0.44.
+
+Coercion is the quiet danger. Coercing the amounts to integers moved the mean from 40.061 to 39.567 and altered 99.1% of the rows, with no error. Parsing text with `errors='coerce'` turned 3.1% of values into NaN and, once those become 0, understated the sum by 23,500 (777,725 against 801,225). The strict float coercion in pandera raised instead. Limits: synthetic defects, one seed, rules tuned by hand, and a single table.
+
+<Infographic src="/img/dm-enrich/quality-rule-recall.svg" alt="Bars show precision and recall of five validation rules against injected defects, with cards for the range rule's missed pence rows, the uniqueness rule's two flagged copies and the cost of silent coercion." caption="Look first at the le(1000) bar: a range rule catches 0.900 of the pounds-as-pence defects, not all of them." />
 
 ## Designing with it
 
@@ -167,6 +328,14 @@ Make remediation measurable. For every recurring failure, assign a source owner,
 
 :::
 
+## Common mistakes
+
+1. **Trusting a range rule to catch a unit error.** A legal range feels like a safety net. Pence stored as pounds still passed for 20 of 200 rows. Add a distribution check against a reference, or reconcile with a trusted source.
+2. **Using `coerce=True` to make a schema pass.** It feels tidy because validation stops failing. It truncated 19.99 to 19 for 99.1% of rows. Coerce only when you have checked what the conversion destroys, and prefer a strict check.
+3. **Parsing text with `errors='coerce'` and filling the gaps.** The pipeline stays green. 3.1% of values vanished and the sum fell by 23,500. Count the failed parses and fail the batch above a stated share.
+4. **Reading a uniqueness failure as one bad row.** The rule flags every copy. Decide in the contract which copy survives.
+5. **Reporting one overall score.** Four perfect rules and one weak rule average to a comfortable number. Keep each rule's precision, recall and affected rows.
+
 ## Practice questions
 
 <details>
@@ -204,10 +373,26 @@ Validity = conforms to format/range/rules (e.g. a date is well-formed); accuracy
 
 </details>
 
+<details>
+<summary><strong>Q6. (Medium)</strong> A range rule flagged 180 rows, all of them real unit errors, but 200 unit errors existed. Give its precision and recall and say what the missing 20 look like.</summary>
+
+Precision is 180 / 180 = 1.0 and recall is 180 / 200 = 0.9. The missing 20 are cheap orders whose amount multiplied by 100 is still inside the allowed range, such as 8.50 becoming 850. The rule checks legality, not correctness.
+
+</details>
+
+<details>
+<summary><strong>Q7. (Stretch)</strong> Coercing amounts to integers changed the mean from 40.061 to 39.567 without any error. Why is that a quality failure and how would you catch it?</summary>
+
+The conversion truncates every fractional amount, so values are systematically lower, and a downstream total or a feature mean is biased. No rule failed because the type check now passes. Catch it by keeping the column as float with a strict type check, or by comparing the column's mean and sum before and after the conversion and failing when they move.
+
+</details>
+
 ## Go deeper
 
 - [dbt data tests](https://docs.getdbt.com/docs/build/data-tests?version=1.12) documents the four built-in checks and their violating-row behaviour.
 - [Great Expectations uniqueness guide](https://docs.greatexpectations.io/docs/reference/learn/data_quality_use_cases/uniqueness/) gives examples of key and compound-key checks.
+- [pandera DataFrame schemas](https://pandera.readthedocs.io/en/stable/dataframe_schemas.html) (opened 2026-10-09) documents `coerce=True`, which coerces a column to the declared dtype before checks run, notes that integer columns cannot hold NaN, and describes `lazy=True` collection of errors.
+- Library versions run for the experiment: pandera 0.34.0, pandas 2.3.3, NumPy 2.5.3, Python 3.14.6.
 - Built from the course lecture "dm-s2-principles" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
@@ -217,9 +402,16 @@ Validity = conforms to format/range/rules (e.g. a date is well-formed); accuracy
 - **[Apache Airflow docs](https://airflow.apache.org/docs/)** `docs`
   Apache; How production data pipelines are scheduled and orchestrated.
 
-## Check your understanding
+## Check yourself
 
 - [ ] I can name the six dimensions and explain why validity and accuracy differ.
 - [ ] I can reproduce 950/1,000 = 95% and compare it with a 99% requirement.
 - [ ] I can state the denominator, population and missingness predicate behind a quality score.
 - [ ] I can route a failed rule to a proportionate action with an owner and evidence.
+- [ ] I can compute precision and recall for a validation rule against known defects.
+- [ ] I can explain why a legal-range rule misses a unit error that lands inside the range.
+- [ ] I can show what silent type coercion changes in a column and how to make it fail loudly.
+
+## Where to go next
+
+Next is [warehouses, lakes and lakehouses](/docs/mlops/data/warehouses-lakes-and-lakehouses), where these rules sit between bronze and silver layers. Chapter 8, [profiling, validation and drift](/docs/mlops/data/profiling-validation-drift), measures drift rules the same way.

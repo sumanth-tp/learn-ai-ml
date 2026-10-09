@@ -16,8 +16,8 @@ Applying a fully connected network (ANN) to images technically works — flatten
 
 ANNs connect every input to every neuron (global, no structure); CNNs connect each neuron to a small local patch and share weights across positions (local, structured).
 
-![Local connectivity in a CNN — each neuron connects only to a small 3D local region of the input, not the entire image](https://cs231n.github.io/assets/cnn/depthcol.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![Local connectivity in a CNN — each neuron connects only to a small 3D local region of the input, not the entire image](https://cs231n.stanford.edu/assets/cnn/depthcol.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## The parameter explosion problem
 

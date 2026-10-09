@@ -24,10 +24,9 @@ tags:
 import Infographic from '@site/src/components/Infographic';
 
 > **Part 3 of 9** ·
-> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=9312s) ·
-> 2:35:12 to 5:02:29 ·
+> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
 > Notebooks: `Agentic-LanggraphCrash-course/1-BasicChatbot/chatbot.ipynb` and
-> `2-HumanAssistance/humanintheloop.ipynb`. The MCP part (4:27:15 onwards) is
+> `2-HumanAssistance/humanintheloop.ipynb`. The MCP part is
 > typed live in a separate project that has no notebook, so its code is read
 > from the screen. Notes follow the video in order.
 
@@ -44,7 +43,7 @@ notebooks for debugging, multi-agent systems and multimodal RAG; they are covere
 under a clearly marked section for additions, so that nothing in the repository is left out.
 :::
 
-## What the LangGraph course covers (2:35:12)
+## What the LangGraph course covers
 
 The video starts on an Excalidraw page that lays out the whole plan. He splits the LangGraph crash course into
 three parts and tells you what to expect from each, so that you know what you are signing up for before the
@@ -53,7 +52,7 @@ first line of code.
 <Infographic
   src="/img/agentic-course/03-roadmap.svg"
   alt="Roadmap board with three parts: Part 1 LangGraph fundamentals, Part 2 advanced LangGraph, Part 3 LangGraph agents and end to end projects"
-  caption="Redrawn from the instructor's roadmap page at 2:35:15 to 2:38:00."
+  caption="Redrawn from the roadmap page."
 />
 
 | Part | What it teaches | His size estimate |
@@ -65,7 +64,7 @@ first line of code.
 He asks viewers to download the material from the description, practise along, and share their learning on
 LinkedIn and Twitter and tag him, because these are long recordings that depend on viewer support.
 
-## Project setup with uv (2:38:40)
+## Project setup with uv
 
 He starts from an empty folder, which will be the project workspace, opens a command prompt there and launches
 VS Code from it. Every project, he reminds you, begins with an environment. In his earlier videos he created
@@ -180,7 +179,7 @@ Almost every cell later in the video needs an API key. Create a `.env` file next
 video's tool section, treat it as exposed and generate a new one.
 :::
 
-## The three building blocks: nodes, edges and state (2:45:20)
+## The three building blocks: nodes, edges and state
 
 Before any code, he sets the scene for the whole course: from here on LangGraph's **Graph API** is used.
 LangGraph also has a **Functional API**, which he says you will meet later, but in his experience the Graph API is
@@ -205,7 +204,7 @@ becomes: can LLMs solve this workflow using LangGraph? To answer it he draws the
 <Infographic
   src="/img/agentic-course/03-blog-workflow.svg"
   alt="Whiteboard of a YouTube to blog workflow: YT URL, START, transcript node, title generator node, content generator node, END, with edges between them"
-  caption="Redrawn from the instructor's whiteboard at 2:46:00 to 2:57:00."
+  caption="Redrawn from the whiteboard."
 />
 
 ### Nodes
@@ -245,7 +244,7 @@ graph can see them.
 <Infographic
   src="/img/agentic-course/03-state-shared.svg"
   alt="Three nodes inside a StateGraph, each writing to or reading from one shared state with transcript, title and content"
-  caption="Redrawn from the instructor's whiteboard at 2:55:00 to 2:57:30."
+  caption="Redrawn from the whiteboard."
 />
 
 This is why a whole graph of this kind is called a **StateGraph**: it keeps the state available at every node. He
@@ -259,7 +258,7 @@ simply what the nodes share while one run of the graph is in progress.
 | Edge | A connection that says which node runs next | arrows from `START` to `END` |
 | State | Shared variables every node can read and write | `transcript`, `title`, `content` |
 
-## Build a basic chatbot (2:57:20)
+## Build a basic chatbot
 
 With those three ideas in place he moves to the first real build. The graph is deliberately tiny: `START`, one
 node called the chatbot, and `END`. The chatbot node will contain an LLM (and a prompt), take the user's input
@@ -269,10 +268,10 @@ ReAct part is more impressive than the basic bot, but first you must understand 
 <Infographic
   src="/img/agentic-course/03-chatbot-state.svg"
   alt="Whiteboard with a State holding a messages list that is appended to, and a StateGraph going START to chatbot to END, with Reducers noted"
-  caption="Redrawn from the instructor's whiteboard at 3:00:30 to 3:14:15."
+  caption="Redrawn from the whiteboard."
 />
 
-### Imports (2:58:40)
+### Imports
 
 He adds a markdown heading, "Build A Basic Chatbot With Langgraph (GRAPH API)", and starts with the imports:
 
@@ -299,7 +298,7 @@ What each import is for:
   entire graph you drew; `START` and `END` are the special first and last nodes.
 - `add_messages` is a **reducer**, the function you attach to a state key to say how new values are merged in.
 
-### Reducers and why the state class uses one (3:00:00)
+### Reducers and why the state class uses one
 
 He explains reducers with the chatbot itself. The state of this chatbot needs a variable, say `messages`, that
 holds the conversation. The type of that variable should be a **list**, because every time the user speaks and
@@ -324,7 +323,7 @@ It also converts plain strings such as `"Hi"` into `HumanMessage` objects, which
 below.
 :::
 
-### The State class (3:03:20)
+### The State class
 
 Now the state itself:
 
@@ -356,7 +355,7 @@ Output: `<langgraph.graph.state.StateGraph at 0x...>`. This cell is only on scre
 the graph in one later cell). It shows that `graph_builder` is just a `StateGraph` object; passing `State`
 tells it the shape of the state that every node will receive. Nothing can run yet.
 
-### API key, environment and the LLM (3:06:00)
+### API key, environment and the LLM
 
 To call a model he needs an API key. He uses Groq in this course because it is quick, though he says you can use
 OpenAI or any other provider. First he adds two libraries to `requirements.txt`, `python-dotenv` and
@@ -406,7 +405,7 @@ from the provider's model list and keep the rest of the code unchanged. The same
 in the MCP section.
 :::
 
-### The chatbot node (3:11:20)
+### The chatbot node
 
 A node needs a function. He types it in stages (first returning an empty list as a stub, then filling it in):
 
@@ -425,7 +424,7 @@ How to read it:
   `messages` key has the `add_messages` reducer, this reply is appended to the existing list, which is exactly what
   we wanted.
 
-### Building the graph: nodes, edges, compile (3:13:20)
+### Building the graph: nodes, edges, compile
 
 ```python
 graph_builder=StateGraph(State)
@@ -448,7 +447,7 @@ graph=graph_builder.compile()
 - `compile()` turns the blueprint into something you can run. He stresses that until you compile, you cannot
   execute the graph.
 
-### Visualising the graph (3:16:00)
+### Visualising the graph
 
 ```python
 ## Visualize the graph
@@ -468,10 +467,10 @@ by default a network call to render the picture); if it fails, the rest still wo
 <Infographic
   src="/img/agentic-course/03-rendered-graphs.svg"
   alt="Three small rendered graphs: basic chatbot, streaming demo SuperBot, and human in the loop with chatbot and tools"
-  caption="Redrawn from the graph images the notebooks render at 3:17:00, 4:10:00 and 4:24:00."
+  caption="Redrawn from the graph images the notebooks render."
 />
 
-### Running it, and two errors (3:16:40)
+### Running it, and two errors
 
 To run a compiled graph you call `invoke`. His first attempt passes a plain string:
 
@@ -515,7 +514,7 @@ Output: `"Hi! It's nice to meet you. Is there something I can help you with or w
 the last message and `.content` is its text. He says that if you understand this, you will be able to execute any
 graph or workflow you can imagine.
 
-### Streaming the response (3:21:20)
+### Streaming the response
 
 `invoke` returns the final state. The other way to run a graph is `stream`, which yields results as the graph goes
 through its nodes. He first prints each event as it arrives:
@@ -541,7 +540,7 @@ the default streaming mode reports the update each node produced, and the human 
 node. He promises a full explanation of the streaming modes later in the video; it is in the section "Streaming
 in LangGraph" below.
 
-## Chatbot with tools (3:24:00)
+## Chatbot with tools
 
 The next step is to connect the chatbot to the outside world. He motivates it with a question: suppose the
 chatbot is just an LLM with a prompt, wired as `START` to chatbot to `END`, and the user asks, "Provide me the
@@ -551,7 +550,7 @@ trained on recent data, so it needs an **external tool**.
 <Infographic
   src="/img/agentic-course/03-tool-need.svg"
   alt="Whiteboard: user asks for the recent AI news, the chatbot LLM cannot answer, so it makes a tool call to a ToolNode holding Tavily, add, subtract and custom tools, then END"
-  caption="Redrawn from the instructor's whiteboard at 3:24:15 to 3:28:45."
+  caption="Redrawn from the whiteboard."
 />
 
 What should happen instead is that the chatbot recognises it cannot answer and makes a **tool call**. The tool
@@ -573,14 +572,14 @@ This is the question he spends the most time on. The answer has two parts:
 He adds a third piece, a **tool condition**, which routes the flow to the tool node when the LLM made a tool call
 and to `END` otherwise. All three are implemented in the code that follows.
 
-### The target graph (3:29:20)
+### The target graph
 
 Before writing code he shows the graph he is going to build: a tool-calling LLM node, a tools node, and `END`.
 
 <Infographic
   src="/img/agentic-course/03-tool-calling-graph.svg"
   alt="Graph with start, tool_calling_llm, tools and end, annotated: node is LLM plus tools, tool node holds Tavily search and custom tools, the LLM reads each tool's doc string"
-  caption="Redrawn from the instructor's graph image and annotations at 3:38:00 to 3:45:00."
+  caption="Redrawn from the graph image and annotations."
 />
 
 - `tool_calling_llm` is the first node. Its implementation is **an LLM with the tools bound to it**.
@@ -590,7 +589,7 @@ Before writing code he shows the graph he is going to build: a tool-calling LLM 
 - The LLM decides by reading each tool's doc string. His analogy for binding: imagine the LLM holds weapons to
   solve your input; binding tells it which weapons it has, and the tool node is the act of actually using one.
 
-### Add Tavily (3:32:00)
+### Add Tavily
 
 First `langchain-tavily` goes into `requirements.txt` and is installed again with `uv add -r requirements.txt`.
 Then he opens `tavily.com` (an internet search service built for LLMs and RAG), logs in, copies the key it
@@ -610,7 +609,7 @@ runs one search. Output: a dictionary with the keys `query`, `follow_up_question
 is a DataCamp tutorial titled "LangGraph Tutorial: What Is LangGraph and How to Use It?" and the second is a
 GeeksforGeeks article. So the tool works on its own before the LLM is involved.
 
-### Add a custom tool and write its doc string (3:35:20)
+### Add a custom tool and write its doc string
 
 To show that any Python function can be a tool, and how the LLM learns about it, he writes one:
 
@@ -660,7 +659,7 @@ request. Output: `RunnableBinding(bound=ChatGroq(...), kwargs={'tools': [{'type'
 ...'}}, ...]})`. He points out that you can read from the output exactly which functions the model is connected to: `tavily_search`
 and `multiply`.
 
-### Build the tool-calling graph (3:37:20)
+### Build the tool-calling graph
 
 ```python
 ## Stategraph
@@ -734,7 +733,7 @@ Because he typed the cell live after restarting the kernel, three small errors a
 All are one-line fixes: re-run the missing cell.
 :::
 
-### Running it (3:46:45)
+### Running it
 
 First the Tavily path:
 
@@ -816,7 +815,7 @@ nothing until you rebuild. After that the answer is 10. He tries a compound requ
 by 2 and then multiply 10"), and the model issues two `multiply` calls, getting 10 and then 20 (the second
 argument pair it picks is `a: 10, b: 2`).
 
-### A request with two parts, and why it fails (3:51:45)
+### A request with two parts, and why it fails
 
 Finally the case that exposes the design's limit:
 
@@ -833,7 +832,7 @@ He stops to think about why. The sentence contains two requests. The LLM correct
 one and the Tavily tool answered, but the graph then went from `tools` straight to `END`. Nothing ever gave the
 LLM a second turn to look at what was left. That sets up the next section.
 
-## The ReAct agent architecture (3:53:15)
+## The ReAct agent architecture
 
 His fix is to feed the tool's output **back to the LLM** instead of ending. Then the LLM becomes the main
 decision-maker: after the search result arrives it still holds the second request (multiply 5 by 10), so it can make
@@ -842,7 +841,7 @@ a second tool call, get that result, and only then combine everything into a fin
 <Infographic
   src="/img/agentic-course/03-react-brain.svg"
   alt="Whiteboard with natural input flowing into an LLM labelled brain with binding tools, which calls a ToolNode and receives the output back until it ends"
-  caption="Redrawn from the instructor's whiteboard at 3:53:15 to 4:00:30."
+  caption="Redrawn from the whiteboard."
 />
 
 He draws it on a fresh page: a natural input arrives ("AI news" and "multiply 5 by 5") at an LLM labelled **the
@@ -867,7 +866,7 @@ One more precision: a model does not literally split the sentence in two. It may
 a single message, and the loop in the graph is what lets it keep going until it stops asking for tools.
 :::
 
-### Changing one edge (3:59:15)
+### Changing one edge
 
 How should the graph change? He copies the previous cell into a new section (markdown heading "ReAct Agent
 Architecture") and asks you to say where the change is. The answer is a single line: instead of `tools` going to
@@ -912,7 +911,7 @@ a loop. It repeats until the LLM answers without a tool call, at which point `to
 <Infographic
   src="/img/agentic-course/03-react-graph.svg"
   alt="Two graphs side by side: before, tools goes to END; after, tools goes back to tool_calling_llm, forming a ReAct loop"
-  caption="Redrawn from the two rendered graphs the notebook shows at 3:46:45 and 3:59:45."
+  caption="Redrawn from the two rendered graphs the notebook shows."
 />
 
 Run the same compound request again:
@@ -929,7 +928,7 @@ says it will multiply 5 by 10, ending with `50`. The tool output went back to th
 second request, and the loop ended on its own. You can attach any number of tools; the LLM is the one deciding
 which to call.
 
-## Adding memory to the agentic graph (4:00:40)
+## Adding memory to the agentic graph
 
 Memory solves what he calls persistent checkpointing. To show why it is needed, he starts with the graph he already
 has (the ReAct one, with no memory) and holds a conversation.
@@ -978,7 +977,7 @@ empty state, so the earlier turn is simply gone. There is also a small comedy in
 bound sometimes reaches for a tool even when none is relevant, here a meaningless `multiply(1, 0)`. His main
 point, though, is that nothing persisted between the two calls.
 
-### The checkpointer (4:02:40)
+### The checkpointer
 
 LangGraph's remedy is a **checkpointer**. He copies the graph cell and adds memory:
 
@@ -1029,7 +1028,7 @@ because the platform supplies one. In recent LangGraph releases `MemorySaver` is
 work.
 :::
 
-### Threads (4:04:30)
+### Threads
 
 A checkpointer needs to know which conversation to restore. For that you give each session a unique **thread ID**
 through the run's `config`:
@@ -1086,7 +1085,7 @@ session, and the saved memory looks after the rest.
 | Checkpointer, same `thread_id` | The earlier turns are restored: `Your name is Krish.` |
 | Checkpointer, a different `thread_id` | A fresh conversation with no history |
 
-## Streaming in LangGraph (4:08:40)
+## Streaming in LangGraph
 
 Until now he has mostly used `graph.invoke`, with one early look at `stream`. This section is about the different
 ways to get the response back while a graph runs. He builds a very small graph just for this, with a memory
@@ -1137,7 +1136,7 @@ Output: a state with the human message and the AI's reply ("Hi Krish! Nice to me
 sport, isn't it? Who's your favorite cricketer or team? ..."). He starts here because it shows the result as a
 whole before comparing the streaming options.
 
-### The two methods and the two modes (4:10:40)
+### The two methods and the two modes
 
 There are two methods, `.stream()` (synchronous) and `.astream()` (asynchronous), both for streaming results back. He
 says that if you know Python you know what sync versus async means, and the part he cares about is the **stream
@@ -1151,7 +1150,7 @@ To make it concrete he draws a graph with Node 1, Node 2 and Node 3.
 <Infographic
   src="/img/agentic-course/03-streaming-modes.svg"
   alt="Graph with Node 1, Node 2 and Node 3, the message each node writes, and what stream mode updates versus values emits at each step"
-  caption="Redrawn from the instructor's whiteboard at 4:11:15 to 4:18:45."
+  caption="Redrawn from the whiteboard."
 />
 
 Suppose Node 1 runs and the messages variable becomes `Hi`; Node 2 then makes it `My name is`; Node 3 makes it
@@ -1164,7 +1163,7 @@ He adds the multi-turn case: on a second input, `updates` again reports only the
 reports the entire conversation, old turns first. In a streaming loop `values` therefore gives you the human message
 again, with the previous conversation attached, while `updates` gives only the newest AI message.
 
-### Seeing it in code (4:14:40)
+### Seeing it in code
 
 ```python
 # Create a thread
@@ -1219,7 +1218,7 @@ is useful when you want detailed information. `updates` is leaner.
 | `"updates"` | Only what the node that just ran changed, keyed by node name | Showing just the newest reply |
 | `"values"` | The full state after each step | Seeing the whole conversation or debugging state |
 
-### astream_events (4:19:00)
+### astream_events
 
 A third technique gives much more detail:
 
@@ -1236,7 +1235,7 @@ the whole graph, `LangGraph`, then for the `SuperBot` node), then chat-model eve
 `' to'`, and so on). He suggests this when you need much more detail for debugging each step, or token-by-token
 output. In a notebook you can use `async for` directly; in a normal script it must run inside an `async` function.
 
-## Human in the loop (4:19:30)
+## Human in the loop
 
 The last LangGraph topic is **human in the loop**, which he also calls human feedback. The idea is that while a graph is
 running you can **interrupt** it, ask a person, and then let it continue with the person's answer. He opens a new
@@ -1245,7 +1244,7 @@ whiteboard page titled "Human Feedback In the Loop".
 <Infographic
   src="/img/agentic-course/03-human-loop.svg"
   alt="Whiteboard: START to Chatbot with LLM plus tools, a ToolNode holding Tavily and human assistance with feedback returning to the chatbot, then END, and a complex workflow with an interrupt"
-  caption="Redrawn from the instructor's whiteboard at 4:20:00 to 4:22:00."
+  caption="Redrawn from the whiteboard."
 />
 
 The graph is the one you already know: `START`, a chatbot (an LLM with tools bound), a tool node, and `END`. The
@@ -1257,7 +1256,7 @@ Why would you want this? His example is a complex workflow with two steps in whi
 a person agrees. Between them you place an **interrupt**; if the human gives good feedback ("yes, continue"), the
 workflow proceeds.
 
-### The code (4:22:00)
+### The code
 
 He works in a new notebook, `2-HumanAssistance/humanintheloop.ipynb`, and the first cell loads the model as before:
 
@@ -1373,7 +1372,7 @@ because the decorator was already used on the line above; do not use `@tool` aga
 notebook.
 :::
 
-### First run: the LLM picks Tavily instead (4:24:00)
+### First run: the LLM picks Tavily instead
 
 ```python
 user_input = "I need some expert guidance and assistance for building an AI agent. Could you request assistance for me?"
@@ -1413,7 +1412,7 @@ Tool Calls:
 The graph now stops after that AI message. The tool call was made and the interrupt fired, so it is waiting for a human.
 There is no tool message yet.
 
-### Resuming with the human's answer (4:26:00)
+### Resuming with the human's answer
 
 The human writes a reply, and then the script sends it back with a `Command`:
 
@@ -1477,7 +1476,7 @@ On screen, the same thread was reused while he re-ran the first cell several tim
 runs. If a re-run produces something confusing, use a new `thread_id` for a clean experiment.
 :::
 
-## Building MCP servers and an MCP client from scratch (4:27:15)
+## Building MCP servers and an MCP client from scratch
 
 The video then cuts to a separate recording whose goal is to **build your own MCP servers** and plug them into an
 app. It is introduced with a slide with three components.
@@ -1485,7 +1484,7 @@ app. It is introduced with a slide with three components.
 <Infographic
   src="/img/agentic-course/03-mcp-architecture.svg"
   alt="Slide redrawn: MCP servers on the left offering tools, MCP clients in the middle keeping one to one connections, apps on the right including Claude desktop and a LangGraph agent, joined by load_mcp_tools"
-  caption="Redrawn from the instructor's slide at 4:27:30."
+  caption="Redrawn from the slide."
 />
 
 - **MCP servers** provide context, tools and prompts to clients. Think of third-party companies building services
@@ -1497,7 +1496,7 @@ app. It is introduced with a slide with three components.
 
 He says he has covered MCP in depth in an earlier module and here focuses on building it from scratch.
 
-### The application we will build (4:28:45)
+### The application we will build
 
 On the whiteboard he draws the app. It is a chatbot application, built with LangChain or LangGraph, containing an LLM.
 A user gives an input and the LLM must decide whether an MCP server call is needed. The MCP server has
@@ -1508,7 +1507,7 @@ Bangalore, the LLM cannot answer by itself because it has no live data, so it ma
 <Infographic
   src="/img/agentic-course/03-mcp-app-board.svg"
   alt="Whiteboard: an application with chatbot, LLM and MCP client sends input over the MCP protocol to an MCP server offering add, multiplication and a weather call API, with stdio and http transports"
-  caption="Redrawn from the instructor's whiteboard at 4:28:45 to 4:41:15."
+  caption="Redrawn from the whiteboard."
 />
 
 He describes the conversation in order. The input arrives; the MCP server provides the list of its tools and information
@@ -1520,7 +1519,7 @@ returns the result. Then he lists what he will build:
 3. Two different **transports**, because the way a client talks to a server depends on the transport. He will run one
    tool with `stdio` (standard input and output) and another with HTTP, and explain how they differ.
 
-### Set up the project (4:32:40)
+### Set up the project
 
 He opens a new empty folder (`mcpdemolangchain`) in the Cursor IDE and initialises it with uv, exactly as in the first
 section:
@@ -1564,7 +1563,7 @@ files below fail with an `ImportError`. To follow the video exactly, pin the ver
 `mcp<2` before running `uv add -r requirements.txt`. The improvements chapter lists this under dependency drift.
 :::
 
-### The first server: math over stdio (4:38:40)
+### The first server: math over stdio
 
 He creates `mathserver.py` and builds the server:
 
@@ -1610,7 +1609,7 @@ tool is exposed to the LLM as `multiple`. It still works, because the doc string
 a clearer pair is `add` and `multiply` with a doc string such as "Add two numbers".
 :::
 
-### What `stdio` really means (4:41:20)
+### What `stdio` really means
 
 He stops to explain the transport, because he says many people write this code without being able to explain it.
 `stdio` means the server uses **standard input and output** to receive and respond to tool calls. Picture the server running in a
@@ -1618,7 +1617,7 @@ command prompt: a client that wants to talk to it writes a request into the prom
 its output. It does not listen on any port and has no URL. This is very helpful when you are testing locally: the server runs on your
 own machine and the client talks to it directly through the command line.
 
-### The second server: weather over HTTP (4:44:00)
+### The second server: weather over HTTP
 
 For the second server he creates `weather.py`. In real life this would call a third-party weather API; for the demo it
 returns a constant:
@@ -1642,7 +1641,7 @@ The shape is identical to the first server, with three differences. The server i
 `"streamable-http"`. He says this is only a placeholder (it may not be true weather, he jokes) and that the point is the
 structure: you can put any API-calling code inside the tool.
 
-### Seeing the difference when you run them (4:46:40)
+### Seeing the difference when you run them
 
 He runs the weather file first:
 
@@ -1687,7 +1686,7 @@ HTTP service and prints no URL. It is meant to be started by a client, not by yo
 | Who starts it | The client, from a command and arguments | You, before the client connects |
 | Best for | Local testing on your machine | A server that runs as a service, possibly elsewhere |
 
-### The client: one client, two servers (4:48:40)
+### The client: one client, two servers
 
 Now the piece that ties it together. He creates `client.py` and imports what he needs. The first import builds the
 client:
@@ -1773,7 +1772,7 @@ The server says `transport="streamable-http"` (with a hyphen) while the client c
 appears. Copy both exactly as written.
 :::
 
-### Running the client (4:57:30)
+### Running the client
 
 With the weather server still running in another terminal, he runs the client:
 
@@ -1816,7 +1815,7 @@ MCP code. He simply runs it again and it passes. If you see this, retry; if it k
 different model or rename the tool and sharpen its doc string.
 :::
 
-### What you have just built (5:00:40)
+### What you have just built
 
 He closes with a recap. One client talks to two independent MCP servers, each running on its own: the math server
 over **stdio**, so the traffic goes through the command line, and the weather server over **HTTP**, where it runs at a

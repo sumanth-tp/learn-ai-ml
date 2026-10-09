@@ -16,8 +16,8 @@ Applying a $K \times K$ kernel to an $H \times W$ image without padding shrinks 
 
 Padding adds zeros (or other values) around the input to control output size; stride sets the step size of the kernel, trading spatial resolution for computation.
 
-![Stride-1 vs stride-2 convolution — with stride 2 the filter jumps 2 pixels at each step, halving the output spatial dimensions](https://cs231n.github.io/assets/cnn/stride.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![Stride-1 vs stride-2 convolution — with stride 2 the filter jumps 2 pixels at each step, halving the output spatial dimensions](https://cs231n.stanford.edu/assets/cnn/stride.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## Output size formula
 

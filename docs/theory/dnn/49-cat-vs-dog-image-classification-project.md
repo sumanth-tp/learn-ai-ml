@@ -12,8 +12,8 @@ tags: [cnn, image-classification, project, pytorch, training-loop, deep-learning
 
 Binary image classification — distinguishing cats from dogs — is the standard "hello world" for CNNs. It combines all the concepts from the CNN module into one complete pipeline: data loading, preprocessing, augmentation, model design, training loop, validation, and debugging. This project uses the Kaggle Dogs vs. Cats dataset but the pipeline applies to any binary classification task.
 
-![A full ConvNet architecture — activations flowing through conv, pooling, and FC layers as in this cat vs dog pipeline](https://cs231n.github.io/assets/cnn/convnet.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![A full ConvNet architecture — activations flowing through conv, pooling, and FC layers as in this cat vs dog pipeline](https://cs231n.stanford.edu/assets/cnn/convnet.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## Problem setup
 

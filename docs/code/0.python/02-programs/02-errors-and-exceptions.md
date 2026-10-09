@@ -12,7 +12,7 @@ tags: [python, exceptions, error-handling, eafp, custom-exceptions, logging]
 
 ## Start here: classify the failure
 
-> **Video connection:** [error handling, 3:39:39](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=13179s).
+> **Video connection:** error handling in [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 | Failure | Example | What to do |
 | --- | --- | --- |

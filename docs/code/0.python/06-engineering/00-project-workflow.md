@@ -8,7 +8,7 @@ description: "Start, configure, check and recreate a Python project with Git, en
 tags: [python, beginner, git, github, dotenv, ruff, uv]
 ---
 
-> **Video:** [developer tools from 4:09:44](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=14984s), culminating in the [workflow exercise at 5:09:01](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=18541s).
+> **Video:** the developer tools section, ending in the workflow exercise, of [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 Create a project that another person can open, install and run from your instructions.
 

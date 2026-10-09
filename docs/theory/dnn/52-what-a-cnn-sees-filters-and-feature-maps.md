@@ -16,8 +16,8 @@ Training a CNN is not a black box from the perspective of the feature maps. Each
 
 A CNN filter is a learned pattern detector. The feature map it produces is a heatmap showing where and how strongly that pattern appears in the input.
 
-![First-layer filters learned by AlexNet on ImageNet — oriented edges, color blobs, and Gabor-like patterns emerge automatically](https://cs231n.github.io/assets/cnn/weights.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![First-layer filters learned by AlexNet on ImageNet — oriented edges, color blobs, and Gabor-like patterns emerge automatically](https://cs231n.stanford.edu/assets/cnn/weights.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## Filters as pattern detectors
 

@@ -23,8 +23,8 @@ tags:
 import Infographic from '@site/src/components/Infographic';
 
 > **Part 4 of 9** ·
-> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=18149s) ·
-> 5:02:29 to 7:10:43 · Notebooks and files from the RAG tutorial folder:
+> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
+> Notebooks and files from the RAG tutorial folder:
 > `notebook/document.ipynb`, `notebook/pdf_loader.ipynb`,
 > `notebook/1-langchain-document-components.svg`, `src/data_loader.py`,
 > `src/embedding.py`, `src/vectorstore.py`, `src/search.py` and `app.py`. The
@@ -35,7 +35,7 @@ import Infographic from '@site/src/components/Infographic';
 
 This chapter takes you from the question "why does an LLM need a knowledge base?" to a working retrieval augmented generation (RAG) system: you load PDFs and text files into LangChain `Document` objects, cut them into chunks, turn the chunks into vectors, store the vectors, retrieve the best matches for a question, and hand them to a Groq-hosted model that writes the answer. You build it twice: first as a notebook, then as a small modular Python package you can reuse.
 
-## What this section builds (5:02:29)
+## What this section builds
 
 The instructor opens by listing what the next two hours cover. You will see the whole path a document travels: **data ingestion**, then the **retrieval pipeline**, then **output generation**. Along the way you will use an LLM and an embedding model, and you will meet the question that decides how good a RAG system is, namely how to chunk the data. He promises both sides of the subject, the theory and the code.
 
@@ -43,7 +43,7 @@ He also describes the teaching order. First comes the basic implementation, writ
 
 He makes two remarks that are worth keeping in perspective. First, he says that most LLM use cases being built inside companies today are RAG use cases, so this crash course is aimed at the most commercially common pattern. That is his estimate, not a measured figure, but the direction is fair: question answering over private documents is one of the most requested applications. Second, he sets a light-hearted target of a thousand likes and five hundred comments for the video. It is an aside, not part of the technical material.
 
-## What RAG is (5:03:20)
+## What RAG is
 
 Before drawing anything he reads a short definition from a slide. Put in plain words, it says:
 
@@ -54,14 +54,14 @@ Before drawing anything he reads a short definition from a slide. Put in plain w
 
 Hold on to two phrases from that definition, because everything else in the chapter is a consequence of them: "outside its training data" and "without retraining". The rest of the lecture shows what problems those phrases solve.
 
-## Problem 1: the model only knows its training data (5:05:20)
+## Problem 1: the model only knows its training data
 
 To motivate RAG he first draws the ordinary generative AI application. A user sends a **query**. Before the query reaches the **LLM** the application adds a **prompt**, which is just a set of instructions telling the model how to behave. The model then produces an **output**. In this design the LLM's only job is to generate content from whatever it absorbed during training, and that is where the first weakness comes from.
 
 <Infographic
   src="/img/agentic-course/04-llm-limits.svg"
   alt="A plain LLM app with a query and prompt feeding an LLM that produces output, with two disadvantages: hallucination because of a training cut-off, and private startup data that fine-tuning handles badly compared with a RAG pipeline"
-  caption="Redrawn from the instructor's whiteboard at 5:05:00 to 5:10:00."
+  caption="Redrawn from the whiteboard."
 />
 
 His example uses dates. Imagine today is 31 August and the model in your app is GPT-5, the recent OpenAI model. Suppose its training data stopped on 1 August. The model has no idea what happened in the world between 1 and 31 August. Now a user asks about an event from that gap. A model that is only an LLM does not reply "I do not know". It **hallucinates**: it produces a fluent, confident answer that is made up. The instructor's joke is that the model does not want to look like a fool, so it invents something convincing, and the answer is written so persuasively that you may believe it. Hallucination is the first major disadvantage of using an LLM on its own.
@@ -70,7 +70,7 @@ His example uses dates. Imagine today is 31 August and the model in your app is 
 The 1 August and 31 August dates are invented to make the idea concrete; they are not a claim about when any real model was trained. The lesson is general: every model has a **knowledge cut-off**, and anything after it is invisible to the model unless you supply it.
 :::
 
-## Problem 2: private and changing data (5:08:00)
+## Problem 2: private and changing data
 
 The second disadvantage is about data the model never saw because it was never public. Suppose you run a startup and you want a chatbot that answers questions about your company: HR policies, finance policies, and similar internal documents. These are protected, so they cannot have been part of any public training set. Yet you want your LLM to use them.
 
@@ -84,17 +84,17 @@ The alternative he draws next to the fine-tuning option is a **RAG pipeline** th
 | Fine-tuning | The model's parameters | Repeat the training run each time | Valid, but expensive and tedious |
 | RAG | Nothing in the model; the knowledge base is added beside it | Re-ingest the changed documents | The route this course takes |
 
-## Drawing the RAG pipeline (5:10:30)
+## Drawing the RAG pipeline
 
 He restates the definition, "optimise the output of a language model by referencing an authoritative knowledge base outside its training data", and then draws how that works. The drawing builds up in stages across the next ten minutes, and the finished version is the board below.
 
 <Infographic
   src="/img/agentic-course/04-rag-whiteboard.svg"
   alt="A RAG whiteboard with a data ingestion pipeline from data through parsing and embedding into a vector DB, and a retrieval pipeline where a user query is embedded, searched against the vector DB, combined with a prompt and sent to an LLM"
-  caption="Redrawn from the instructor's whiteboard at 5:11:00 to 5:19:15."
+  caption="Redrawn from the whiteboard."
 />
 
-### The data ingestion pipeline (5:11:20)
+### The data ingestion pipeline
 
 On the board there is a user, an LLM, and now a new box: an **external vector database**. The LLM already carries what it learned in training. Your own data, whether it is HR policies, finance rules or anything else, is fed through a **data ingestion pipeline** whose job is to fill that vector database. The pipeline has three steps.
 
@@ -104,7 +104,7 @@ On the board there is a user, an LLM, and now a new box: an **external vector da
 
 The embedded chunks are written into the **vector store** (also called a vector DB), one record per chunk. At the end of this pipeline your company's text exists as vectors in a database. The instructor labels that database the **knowledge base**, and he points out that the LLM itself does not hold this knowledge; at most it has fragments of similar material from training.
 
-### The retrieval pipeline (5:15:20)
+### The retrieval pipeline
 
 Now the user asks a question, for example "What is the leave policy of my company?". In RAG the query does **not** go straight to the LLM. It is first converted into a vector, using the same kind of embedding step, because the vector store can only compare vectors with vectors. The vector store then runs a **similarity search** and returns the stored chunks that are most similar to the question. The instructor calls that returned material the **context**.
 
@@ -112,7 +112,7 @@ The context is then combined with a prompt. The prompt tells the model to answer
 
 Compare it with the plain app from the start of the lecture. The prompt and LLM are still there. What has been added is a step that fetches relevant private text and places it in front of the model, so the model does not have to guess.
 
-### Perplexity and a founder's aside (5:17:20)
+### Perplexity and a founder's aside
 
 He is clear that RAG does not remove hallucination completely. If the answer is present in the vector database, the model gets the right context and answers well. If the data is **not** in the vector database, the model can still hallucinate. So RAG reduces the problem rather than abolishing it.
 
@@ -120,14 +120,14 @@ As a real-world example he points to **Perplexity**. It is a RAG application at 
 
 He also mentions that he is planning to start a company within a couple of weeks, and that the product is itself a RAG application aimed at a problem developers have. That is why he has not been publishing many videos lately. He also promises that later parts of the course will cover other kinds of RAG, in particular **agentic RAG**, "from basic to advanced with implementation". Agentic RAG is not taught in this section, though the repository holds a small notebook on it, which is summarised near the end of this chapter.
 
-## The two pipelines, tidied up (5:19:15)
+## The two pipelines, tidied up
 
 On a fresh page he redraws the idea cleanly as two large boxes: a **data ingestion pipeline** on the left and a **retrieval pipeline** on the right, with a vector store joining them. Study this board, because the rest of the chapter is simply an implementation of it.
 
 <Infographic
   src="/img/agentic-course/04-two-pipelines.svg"
   alt="Two pipelines: data ingestion with data ingest, data parsing and embedding feeding a vector store, and a retrieval pipeline where a user query is embedded, matched to context, combined with a prompt and sent to an LLM to produce output"
-  caption="Redrawn from the instructor's whiteboard at 5:19:30 to 5:23:00."
+  caption="Redrawn from the whiteboard."
 />
 
 The left box has three stages. **Data ingest** reads PDF, HTML, Excel or database files and, in his words, "reads the data into a document". **Data parsing** performs the chunking. **Embedding** turns the text into vectors. In the data-ingestion part he also notes that embeddings can be **open source or paid**, and he scribbles the word "optimisation" because choosing and tuning these stages is a topic of its own.
@@ -144,7 +144,7 @@ He gives names to the stages of the right-hand box because you will hear them co
 
 He closes this first lecture by previewing the next one. It will start from the files, PDF, HTML, Excel, SQL or anything else, and show document parsing into a **document** data structure that can be chunked and stored in a vector store. After that it will use both open-source and paid embeddings and wire up a retriever. He says he prefers making larger videos that cover many things at once, so that you do not have to follow a playlist of fifty small ones. He also lists topics he will return to when he reaches data parsing: chunking strategies, the **semantic chunker**, optimisation and **context engineering**.
 
-## How the course approaches the code (5:22:00)
+## How the course approaches the code
 
 A new lecture begins here. He recaps what is already established: what RAG is, which weaknesses it addresses, and the two pipelines. He then explains the order of the coding.
 
@@ -155,14 +155,14 @@ His agenda page lists two items:
 1. **The document structure.** Anything that goes into a vector database must first be in this structure, so it must be understood first.
 2. **The complete RAG pipeline**, split into the data ingestion pipeline and the query retrieval pipeline.
 
-## Ingestion in more detail: parsing, chunking, embedding, storing (5:24:00)
+## Ingestion in more detail: parsing, chunking, embedding, storing
 
 Here he zooms into the left box of the earlier board and explains what each step is for, using a second drawing.
 
 <Infographic
   src="/img/agentic-course/04-ingestion-detail.svg"
   alt="From files to a vector store: data ingest, data parsing into the document structure, four chunks, an embedding step, a vector DB and similarity search, with context size limits for both the embedding model and the LLM"
-  caption="Redrawn from the instructor's whiteboard at 5:25:45 to 5:29:15."
+  caption="Redrawn from the whiteboard."
 />
 
 **Data ingestion** can start from any kind of file. The aim of the first step is to read the file contents and convert them into a structure that supports chunking, embedding and storage. That structure is the **document structure**, and it has two parts: **content** and **metadata**. He stresses that parsing quality affects everything downstream. A cleaner parse gives a vector store that returns more accurate results during retrieval.
@@ -177,7 +177,7 @@ The model used later in this chapter, `all-MiniLM-L6-v2`, only reads about 256 w
 
 He then sets you an **assignment**. In the video he builds the pipeline with PDF and text files. You should repeat the same pipeline for another format, such as Excel or CSV, and he asks you to do it, because working with a second format is how you check that you understood the pattern.
 
-## Project setup with uv (5:30:00)
+## Project setup with uv
 
 He starts from an empty folder, opens a command prompt there, and launches VS Code with `code .`. (The recording is on Windows, in a folder called `YTRAG`, so paths in his terminal look like `E:\YTRAG`.) In the VS Code terminal he does the following.
 
@@ -213,7 +213,7 @@ The tutorial repository's final `requirements.txt` also lists `typesense`, `lang
 
 He gives one piece of advice before coding: you must be comfortable with Python, because from here on the code is more advanced and he cannot type every line slowly. He says never skip Python, and he will move at a brisker pace and explain rather than dictate.
 
-## The LangChain Document (5:33:00)
+## The LangChain Document
 
 He returns to the earlier board. In the data ingestion pipeline the first stage is loading data, then chunking, then embedding, then storing. Whatever the source, the thing that comes out of the loading and chunking stages is a **Document**, so the first lesson is to understand what a Document is.
 
@@ -227,7 +227,7 @@ He opens the SVG that sits in the repository's `notebook` folder, `1-langchain-d
 <Infographic
   src="/img/agentic-course/04-document-components.svg"
   alt="A LangChain Document has page_content as text and metadata as a dictionary, with typical metadata fields, a row of loaders that return Documents and a row of text splitters that turn Documents into smaller Documents"
-  caption="Redrawn from the notebook picture the instructor opens at 5:34:15 to 5:36:45, with up-to-date import paths."
+  caption="Redrawn from the notebook picture the instructor opens, with up-to-date import paths."
 />
 
 :::note Import paths in the picture
@@ -247,7 +247,7 @@ He lists the loaders you will meet, noting that each one reads a particular kind
 
 Why does this matter? Because the very next steps, chunking and embedding, and the final vector store searches, all operate on Documents. The loader can differ; the output type does not.
 
-### Creating a Document by hand (5:37:20)
+### Creating a Document by hand
 
 To prove how simple it is, he creates one manually. In the first notebook cell he imports the class from `langchain_core.documents` and, hovering over it, shows the tooltip: it is a "class for storing a piece of text and associated metadata".
 
@@ -284,7 +284,7 @@ The file name is spelled `exmaple.txt` in the notebook. It is only a label, so t
 
 **Why metadata is worth the effort.** Once this Document has been chunked, embedded and stored, similarity search can be combined with **filters** on metadata. Suppose you search for "the main text content for building RAG" and add a filter that the author is Krish Naik. The vector database then restricts the search to records whose metadata matches, instead of searching everything. Metadata is therefore not decoration. It is how you narrow searches, trace a result back to its file and page, and later show citations. His point is simple: more useful metadata means better retrieval.
 
-## Loading text files (5:40:30)
+## Loading text files
 
 Next he wants real files to load. He creates a folder and two small text files with Python, rather than by hand, simply to show more code. The notebook lives inside `notebook/`, so everything is addressed relative to the parent folder with `../`.
 
@@ -343,7 +343,7 @@ print("✅ Sample text files created!")
 
 **An error on camera and its fix.** The first run raised `FileNotFoundError: No such file or directory: 'data/text_files/machine_learning.txt'`. The cause was the same relative-path problem: he had edited only one of the two dictionary keys to start with `../`, so the other key still pointed at a folder that does not exist from inside `notebook/`. Making both keys start with `../data/text_files/` fixed it. After that the cell printed its success message and the Explorer panel showed `machine_learning.txt` and `python_intro.txt`. He admits that he could simply have created the two files by hand.
 
-### `TextLoader` (5:43:00)
+### `TextLoader`
 
 He loads the Python introduction using LangChain's `TextLoader`. Two imports appear in the notebook, and he comments on why.
 
@@ -373,7 +373,7 @@ Output (shortened):
 
 He points out two things. The loader gave back the data **already in Document form**, with `page_content` and `metadata`, simply because it is a LangChain loader. And the metadata was filled in automatically with a `source` key holding the file path. You are free to add more keys later, but even the default is useful.
 
-### `DirectoryLoader` (5:45:20)
+### `DirectoryLoader`
 
 Loading file after file is tedious. If all the important files sit in a directory, `DirectoryLoader` reads them in one go. It needs a folder path, a **glob pattern** for the files to match, a **loader class** for how to read each file, and optional **loader keyword arguments** that are passed to that class. Because the pattern is a parameter, you could also pass a list of patterns.
 
@@ -408,7 +408,7 @@ documents
 
 With the flag off, the cell returns two Documents, one for `machine_learning.txt` and one for `python_intro.txt`. Their `source` metadata shows the path (on Windows with backslashes, such as `..\data\text_files\machine_learning.txt`). You now have a list of Documents, one per file, and chunking can be applied to that list afterwards.
 
-## Loading PDFs: `PyPDFLoader` and `PyMuPDFLoader` (5:47:45)
+## Loading PDFs: `PyPDFLoader` and `PyMuPDFLoader`
 
 He copies a few PDFs into a new `data/pdf` folder: the "Attention Is All You Need" paper (`attention.pdf`), a technical report about embedding models (`emneddings.pdf`, the spelling in the repository), a computer vision paper (`objectdetection.pdf`), and a one-page `proposal.pdf`. The aim is to read the text files **and** the PDFs.
 
@@ -452,13 +452,13 @@ langchain_core.documents.base.Document
 
 So the element is a `Document`, and `pdf_documents` is a list of them. That is the key idea of the section: **whatever you load, the result is a list of Documents**.
 
-## Other file types, and the loaders catalogue (5:51:15)
+## Other file types, and the loaders catalogue
 
 His next instruction is another assignment. Having seen text and PDF, you can work out Excel, databases and other formats. The way to do it is to search for "LangChain document loaders" and open the integrations page. It lists loaders for an enormous range of sources, grouped by provider and type. He opens the entry for **AWS S3 Directory** as an example: you install the extra library, supply the bucket details after authenticating, and the loader then reads the files in that bucket. The method is always the same: pick the loader, load, inspect the Document structure that comes back, and judge whether it is good for your use.
 
 With that, he declares data ingestion complete: any source can be turned into the Document data structure. Next come chunking, embedding and the vector store. He has also shown how to read text and PDF files, and he points you to the documentation for the rest.
 
-## Notebook 2: from ingestion to a vector database (5:52:40)
+## Notebook 2: from ingestion to a vector database
 
 He creates a second notebook, `pdf_loader.ipynb`, whose first markdown cell is "RAG Pipelines: Data Ingestion to Vector DB Pipeline". It builds the whole left-hand pipeline: loading, chunking, embeddings and storage. He starts from the PDF folder he already has.
 
@@ -477,7 +477,7 @@ from pathlib import Path
 The video imports the splitter from `langchain.text_splitter`. That module has been moved to its own package. In a new project install `langchain-text-splitters` and write `from langchain_text_splitters import RecursiveCharacterTextSplitter`. The class and its arguments are identical.
 :::
 
-### Reading every PDF in a folder (5:56:00)
+### Reading every PDF in a folder
 
 He writes a function that reads a whole directory of PDFs and adds extra metadata of his own.
 
@@ -549,7 +549,7 @@ Total documents loaded: 64
 
 So there are 64 page-sized Documents. Inspecting `all_pdf_documents` shows a list of Documents. For each one you see PDF's built-in metadata (author, keywords, modification date and so on), plus the keys he added (`source`, `source_file`, `file_type`, `total_pages`), and the page text in `page_content`.
 
-## Chunking with `RecursiveCharacterTextSplitter` (5:59:20)
+## Chunking with `RecursiveCharacterTextSplitter`
 
 A page can still be long, and it is the wrong unit for search. He writes a function that takes the list of Documents and returns smaller ones.
 
@@ -613,7 +613,7 @@ Metadata: {'producer': 'pdfTeX-1.40.25', 'creator': 'LaTeX with hyperref', 'crea
 
 64 page Documents became **359 chunks**. He reminds you that before chunking there was one Document per page, so 64 pages, and afterwards there is one Document per chunk, with the metadata carried along. The embedding stage that follows now works on these 359 pieces.
 
-## Embeddings with `EmbeddingManager` (6:03:20)
+## Embeddings with `EmbeddingManager`
 
 Two stages remain on his board: **embedding generation** and the **vector store DB**. For these he deliberately writes classes, one per job, with a few methods each, because he wants to demonstrate modular code and later link the pieces. He chooses open-source models so that everyone can follow without paying.
 
@@ -708,7 +708,7 @@ Model loaded successfully. Embedding dimension: 384
 
 The constructor ran, the model downloaded (the first time) and loaded, and the manager is ready to turn text into 384-number vectors.
 
-## The vector store: a ChromaDB class (6:10:30)
+## The vector store: a ChromaDB class
 
 The second class wraps the database. A vector store is where the vectors from the embedding layer are saved, so that similarity search can be run on them later.
 
@@ -828,7 +828,7 @@ Existing documents in collection: 0
 
 The collection is empty because nothing has been added yet. (The repository's saved copy of the notebook shows `718` because the author re-ran the notebook, and that is the reason for the next warning.)
 
-## Embedding the chunks and storing them (6:16:40)
+## Embedding the chunks and storing them
 
 Now he joins the pieces. The chunks are already in the variable `chunks`. He extracts the text of every chunk, embeds all the texts, and stores both.
 
@@ -873,7 +873,7 @@ With that, the whole left-hand pipeline from the board exists: documents, chunks
   caption="Explanatory board (not shown in the video): how the notebook's pieces link."
 />
 
-## Retrieval with `RAGRetriever` (6:18:40)
+## Retrieval with `RAGRetriever`
 
 He now builds the rest of the first board: when a user asks a question, convert the question to an embedding, hit the vector store, and get the context. The tool for this is a **retriever**. He describes a retriever as a simple **interface** built on top of a vector store: you give it a query, and it gives you back the matching content.
 
@@ -1002,7 +1002,7 @@ self.collection = self.client.get_or_create_collection(
 Recent Chroma releases prefer the `configuration={"hnsw": {"space": "cosine"}}` spelling for the same setting, so check the version you installed. With cosine distance, `1 - distance` is a true cosine similarity and thresholds such as 0.2 behave as intended. You must delete and rebuild the collection after changing the space.
 :::
 
-## From retrieval to an answer: augmented generation (6:32:40)
+## From retrieval to an answer: augmented generation
 
 A new lecture starts here, and he recaps. The whole data ingestion pipeline is finished: loading, chunking, converting text to vectors, storing them in a vector DB and persisting that on disk. A retrieval from the user's query also works. What remains is the **query retrieval pipeline with an LLM**, and that is where the "augmented generation" in the name of RAG happens.
 
@@ -1011,7 +1011,7 @@ He draws the board again, this time keeping only the retrieval half.
 <Infographic
   src="/img/agentic-course/04-augmented-generation.svg"
   alt="Retrieval, augmentation and generation: a query is turned into a vector and sent to the vector DB, the returned context is combined with a prompt, and the LLM generates the output"
-  caption="Redrawn from the instructor's whiteboard at 6:33:15 to 6:35:45."
+  caption="Redrawn from the whiteboard."
 />
 
 Read it from left to right.
@@ -1024,7 +1024,7 @@ Read it from left to right.
 
 He asks you to be sure you understand these three words and the order they happen in before moving on, because every RAG variant you meet later is a modification of this sequence.
 
-## Setting up the Groq model (6:35:45)
+## Setting up the Groq model
 
 For the LLM he uses **Groq**, a hosted inference service that serves open models quickly. He has already stored a Groq API key in the `.env` file at the project root. He appends two packages to `requirements.txt`: `langchain-groq`, which gives LangChain's `ChatGroq` class, and `python-dotenv`, which loads `.env` files, and installs them.
 
@@ -1113,7 +1113,7 @@ First, `gemma2-9b-it` was a Groq-hosted model when the video was recorded, but G
 `llm.invoke([prompt.format(context=context, query=query)])` calls `.format` on a string that already has the context and query substituted by the f-string. If a PDF page contains a curly brace, which maths-heavy papers often do, `.format` treats it as a placeholder and raises a `KeyError` or `ValueError`. The prompt is already complete, so pass it directly: `llm.invoke(prompt)`. A string is accepted as a human message.
 :::
 
-## The enhanced pipeline: sources and confidence (6:42:40)
+## The enhanced pipeline: sources and confidence
 
 The simple function returns only text. A real application also needs to show **where** the answer came from and **how sure** the retriever was. He pastes in a richer function, `rag_advanced`, and walks through it.
 
@@ -1187,7 +1187,7 @@ training. ...
 
 He calls this an "enhanced RAG pipeline" because the caller now receives the answer plus its sources, a page number and a confidence figure.
 
-## The advanced pipeline: streaming, citations, history, summarising (6:46:40)
+## The advanced pipeline: streaming, citations, history, summarising
 
 He pastes a third version and asks you to read it yourself. It is a class, `AdvancedRAGPipeline`, that adds four features: a streaming display of the answer, citations appended to the answer, a history of past queries, and an optional short summary.
 
@@ -1288,7 +1288,7 @@ Also, the "streaming" in `AdvancedRAGPipeline` is a simulation. It prints the **
   caption="Explanatory board (not shown in the video): how the modular files link up. The instructor only names the files and wires them in code."
 />
 
-## The modular pipeline in `src/` (6:48:45)
+## The modular pipeline in `src/`
 
 Up to now everything lives in one notebook. He now rebuilds the same idea as a package, which is the shape code takes in a real project. He reminds you that the notebook already covered ingestion, storage and querying, and mentions that he has also shown Typesense, an open-source search engine that can act as a vector store, in the same project. Here, though, the goal is to integrate the stages **as a pipeline**.
 
@@ -1303,7 +1303,7 @@ Inside the `src/` folder he creates an empty `__init__.py`, which makes `src` a 
 
 He then writes them in order of the pipeline: `data_loader.py`, `embedding.py`, `vectorstore.py`, `search.py`, testing each from a small `app.py`.
 
-### `data_loader.py` (6:51:20)
+### `data_loader.py`
 
 He begins with imports, one loader for each file type, and a function that gathers all supported files from a data directory.
 
@@ -1440,7 +1440,7 @@ Running `python app.py` from the project root prints the debug lines (`Found 4 P
 Only the PDF branch is exercised in the video. The other branches are not ready to run on a clean install. `Docx2txtLoader` needs the `docx2txt` package, `UnstructuredExcelLoader` needs `unstructured` and `openpyxl`, and `JSONLoader` **requires** a `jq_schema` argument (and the `jq` package), so `JSONLoader(str(json_file))` as written will fail and print an `[ERROR]` line. The `try`/`except` hides the crash, but the file is skipped. Treat those blocks as the starting point of your assignment rather than finished code.
 :::
 
-### `embedding.py` (6:56:40)
+### `embedding.py`
 
 The next stage chunks the loaded Documents and embeds the chunks. It repeats what the notebook did, but as a class.
 
@@ -1515,7 +1515,7 @@ He forgot at first to call `chunk_documents` before `embed_chunks`, added it, an
 `EmbeddingPipeline()` is written twice in that test, so the embedding model is loaded twice, which you can see as two `Loaded embedding model` lines. Assign it to a variable (`pipe = EmbeddingPipeline()`) and call both methods on it.
 :::
 
-### `vectorstore.py` (7:01:20)
+### `vectorstore.py`
 
 Next the vectors need a home that survives restarts. Here he switches from Chroma to **FAISS**, Meta's open-source library for fast vector search, and stores the index and the chunk text in a folder.
 
@@ -1646,7 +1646,7 @@ if __name__ == "__main__":
 
 He explains that you only rebuild when you have new documents, and he suggests you could add a condition for that. Running it prints `Loaded Faiss index and metadata from faiss_store` followed by `Querying vector store for: 'What is attention mechanism?'` and a list of three hits. In the video the top hit was index 12 with a distance of about 0.73 and the text `3.2 Attention ... An attention function can be described as mapping a query and a set of key-value pairs to an output ...`, the second was index 49 with a distance of about 0.86, and so on. The best match is the chunk you saw in the notebook, which confirms the two stores agree.
 
-### `search.py` and the final `app.py` (7:08:15)
+### `search.py` and the final `app.py`
 
 The last stage joins retrieval to an LLM. He says he will not go line by line, because the idea is the one from the notebook, and points you to the notebook for the details.
 
@@ -1729,7 +1729,7 @@ Running it prints the model load lines and `Loaded Faiss index and metadata from
 
 (You will see `Loaded embedding model` twice in the log. `app.py` builds its own `FaissVectorStore`, and `RAGSearch` builds another inside itself, and each one loads the embedding model. The `store` created in `app.py` is no longer needed once `RAGSearch` is used.)
 
-## Wrap up, and what comes next (7:10:00)
+## Wrap up, and what comes next
 
 He closes by calling this a complete crash course on RAG. He repeats his belief that RAG is one of the most important use cases, because most companies are building RAG applications, which is why he thinks it is a super cool topic. He then moves directly to the next topic in the long course, **vectorless RAG**, a trending approach that retrieves without a vector database. Instead of chunking, embedding and storing in a vector DB, it uses a different retrieval method, which the next chapter covers.
 
@@ -1753,7 +1753,7 @@ The chapter flagged these as it went. This table collects them in one place.
 ## Also in the repository, not taught in this section
 
 :::note Not from this part of the video
-Everything under this heading is an **addition** drawn from the repository files `agenticrag/1-agenticrag.ipynb`, `typesense.ipynb` and `books.jsonl`. The instructor promises agentic RAG for a later part of the course, and at about 6:49 he has `typesense.ipynb` open on screen for a few seconds and remarks that he has also shown Typesense, but he does not teach either notebook in the 5:02:29 to 7:10:43 recording. They are included so the chapter covers the folder it is based on.
+Everything under this heading is an **addition** drawn from the repository files `agenticrag/1-agenticrag.ipynb`, `typesense.ipynb` and `books.jsonl`. The instructor promises agentic RAG for a later part of the course, and `typesense.ipynb` is also open briefly, but neither notebook is taught in this part of the course. They are included so the chapter covers the folder it is based on.
 :::
 
 ### Agentic RAG with LangGraph

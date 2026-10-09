@@ -32,7 +32,7 @@ Consider a 224×224 RGB image:
 
 ## Visual Reference
 
-![Full CNN architecture — Conv, Pool, FC layers stacked](https://cs231n.github.io/assets/cnn/convnet.jpeg)
+![Full CNN architecture — Conv, Pool, FC layers stacked](https://cs231n.stanford.edu/assets/cnn/convnet.jpeg)
 
 This is the full CNN pipeline: stacked Conv+ReLU blocks detect local patterns, pooling layers downsample the spatial dimensions, and fully-connected layers at the end map the learned feature maps to class scores. The same filter weights slide across every spatial position (weight sharing), which is why CNNs need far fewer parameters than fully-connected networks for images.
 

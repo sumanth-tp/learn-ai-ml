@@ -26,8 +26,8 @@ tags:
 import Infographic from '@site/src/components/Infographic';
 
 > **Part 1 of 9** ·
-> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=0s) · 0:00:00
-> to 1:06:40 (introduction, then the first hour of the LangChain section) ·
+> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
+> introduction, then the first hour of the LangChain section ·
 > Notebooks: `updatedlangchain/1-langchainintro.ipynb`,
 > `updatedlangchain/2-modelintegration.ipynb`,
 > `updatedlangchain/3-tools.ipynb` in the Langchain-V1-Crash-Course repository.
@@ -43,7 +43,7 @@ you set it up with `uv`, build a first agent, call three different model
 providers, stream and batch their answers, and wire a Python function to a
 model as a tool.
 
-## About the whole course (0:00 to 2:31)
+## About the whole course
 
 The video opens with the instructor, Krish, explaining what the next ten and a
 half hours contain and why he made them. The short version: in the previous
@@ -53,22 +53,22 @@ single recording is his attempt to cover the important parts of that change
 
 He lays out the plan aloud. Nine sections follow one another in a single video:
 
-| #   | Section                                                   | Starts                                                                              | What he says it covers                                                                                    |
+| #   | Section                                                   | What he says it covers                                                                                    |
 | --- | --------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| 1   | Introduction                                              | [0:00:00](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=0s)                         | This plan, and who the course is for                                                                      |
-| 2   | LangChain                                                 | [0:02:31](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=151s)                       | Generative AI and agentic AI with the new LangChain version 1: agents, models, tools, messages, memory, middleware |
-| 3   | LangGraph                                                 | [2:35:12](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=9312s)                      | A complete LangGraph crash course, focused on building agentic AI applications                           |
-| 4   | RAG                                                       | [5:02:29](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=18149s)                     | How to implement RAG, covering traditional RAG and also agentic RAG                                       |
-| 5   | Vectorless RAG                                            | [7:10:43](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=25843s)                     | RAG without a vector search step, and how it differs from traditional vector RAG                          |
-| 6   | Deep Agents                                               | [8:02:11](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=28931s)                     | Deep research agents, with a practical implementation                                                     |
-| 7   | Guardrails                                                | [8:45:43](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=31543s)                     | The AI security side: keeping an LLM application inside rules                                             |
-| 8   | LLM Evaluation                                            | [9:22:55](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=33775s)                     | Techniques for evaluating LLM applications, using open-source libraries                                   |
-| 9   | LLM Gateways                                              | [10:30:25](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=37825s)                    | About 30 to 40 minutes on what an LLM gateway is, plus its implementation                                 |
+| 1   | Introduction                                              | This plan, and who the course is for                                                                      |
+| 2   | LangChain                                                 | Generative AI and agentic AI with the new LangChain version 1: agents, models, tools, messages, memory, middleware |
+| 3   | LangGraph                                                 | A complete LangGraph crash course, focused on building agentic AI applications                           |
+| 4   | RAG                                                       | How to implement RAG, covering traditional RAG and also agentic RAG                                       |
+| 5   | Vectorless RAG                                            | RAG without a vector search step, and how it differs from traditional vector RAG                          |
+| 6   | Deep Agents                                               | Deep research agents, with a practical implementation                                                     |
+| 7   | Guardrails                                                | The AI security side: keeping an LLM application inside rules                                             |
+| 8   | LLM Evaluation                                            | Techniques for evaluating LLM applications, using open-source libraries                                   |
+| 9   | LLM Gateways                                              | About 30 to 40 minutes on what an LLM gateway is, plus its implementation                                 |
 
 <Infographic
   src="/img/agentic-course/01-course-map.svg"
-  alt="The nine sections of the course grouped into building agents, giving agents knowledge, and making them safe and shippable, each with its start time."
-  caption="Explanatory board (not shown in the video): the nine sections from the instructor's plan, grouped by purpose, with the start times he gives."
+  alt="The nine sections of the course grouped into building agents, giving agents knowledge, and making them safe and shippable."
+  caption="Explanatory board: the nine sections of the plan, grouped by purpose."
 />
 
 A few points he makes along the way, in his order:
@@ -91,7 +91,7 @@ A few points he makes along the way, in his order:
 
 ### Who it is for, and what comes with it
 
-The section at 2:31 makes the audience clearer. If you have been following his
+The LangChain section makes the audience clearer. If you have been following his
 LangChain and LangGraph playlists, where he has uploaded many videos and built
 end-to-end projects, this course is the refreshed, one-shot version. The reason
 for refreshing is LangChain's new major version, **v1**. It changes how agents
@@ -111,7 +111,7 @@ Python (functions, f-strings, `for` loops, dictionaries) is the one thing you
 need. Everything about LangChain, agents and tools is taught from zero below.
 :::
 
-## LangChain version 1 and a tour of the docs (2:31 to 5:00)
+## LangChain version 1 and a tour of the docs
 
 LangChain recently released **version 1**, and its documentation changed a lot
 with it. The first thing he does is open the LangChain site, click through to
@@ -123,7 +123,7 @@ the platform for observing, evaluating, prompting and deploying what you build.
 <Infographic
   src="/img/agentic-course/01-docs-map.svg"
   alt="The LangChain docs home page with LangChain, LangGraph and Deep Agents, and the LangChain sidebar of core components with the ones covered in chapter 1 highlighted."
-  caption="Redrawn from the LangChain docs pages shown at 3:45 to 5:00. The highlighted entries are the ones this chapter covers."
+  caption="Redrawn from the LangChain docs pages. The highlighted entries are the ones this chapter covers."
 />
 
 His plan is to cover all three modules, in an updated way, so that you always
@@ -152,7 +152,7 @@ previous generation. Also, because functionality is moved between packages
 across releases, his advice, repeated below, is to work with recent versions.
 :::
 
-## Tools for the course: uv and an IDE (5:00 to 7:20)
+## Tools for the course: uv and an IDE
 
 Two choices before any code.
 
@@ -171,7 +171,7 @@ project manager written in Rust. If you have used `pip` and `venv`, uv does both
 jobs and also keeps a record of which versions you installed. The next sections
 walk through it step by step.
 
-## Install uv (7:20 to 9:20)
+## Install uv
 
 He googles "uv package manager", opens the Astral installation page, and picks the
 command for his system. The page offers a standalone installer for macOS and
@@ -193,7 +193,7 @@ the rest of the video he then switches that same terminal to Command Prompt,
 which is why the screen shows `cmd` paths such as `E:\agenticAI\langchainupdated>`;
 the commands are identical in any shell.
 
-## Create the project and the virtual environment (9:20 to 12:40)
+## Create the project and the virtual environment
 
 First he creates an empty folder called `langchainupdated` and opens it in the
 IDE. A virtual environment is "always a good practice for any project": it keeps
@@ -248,7 +248,7 @@ Once it works, the terminal prompt gets the project name in front of it, here
 <Infographic
   src="/img/agentic-course/01-uv-setup-flow.svg"
   alt="Eight steps for setting up a uv project: install uv, uv init, uv venv, activate, requirements.txt, uv add -r, the .env file, and uv add ipykernel."
-  caption="Explanatory board (not shown in the video): the terminal walkthrough from 5:00 to 20:00 as one flow, with the commands he typed."
+  caption="Explanatory board: the terminal walkthrough as one flow, with the commands typed."
 />
 
 :::tip A shortcut he does not show
@@ -258,7 +258,7 @@ file.py` runs code inside it without activating anything. The manual
 kernel in the IDE needs to find that `.venv`.
 :::
 
-## Install the libraries (12:40 to 16:00)
+## Install the libraries
 
 Installing used to mean `pip install` and then separately remembering which
 versions you got. With uv the dependency list is stored in `pyproject.toml`
@@ -334,7 +334,7 @@ functions get deprecated or moved to other libraries as the ecosystem evolves.
 Because the `pyproject.toml` also has a `description` line, he mentions you may
 fill that in if you like. It is not required.
 
-## API keys and the .env file (16:00 to 18:00)
+## API keys and the .env file
 
 He needs three keys, one per provider. He creates each in the provider's own
 console, shown briefly:
@@ -365,7 +365,7 @@ before the first commit, and never paste a real key into a notebook cell. The
 chapter code below always reads keys from the environment.
 :::
 
-## Jupyter kernel (17:20 to 19:20)
+## Jupyter kernel
 
 Notebooks need a **kernel**, the process that actually runs your Python. For the
 notebook to see this project's packages, the project needs `ipykernel`:
@@ -387,7 +387,7 @@ The section summary he gives: a virtual environment, a `requirements.txt` with
 the recent libraries, one command to install them all, and `pyproject.toml`
 showing exactly what you got. Next he starts on the LangChain docs and agents.
 
-## The first notebook: 1-langchainintro (19:20 to 22:00)
+## The first notebook: 1-langchainintro
 
 Inside the project he creates a folder `updatedlangchain` (he deletes an earlier
 empty one first) and a new notebook in it, `1-langchainintro.ipynb`. Two things
@@ -430,9 +430,9 @@ or the notebook is not running from a folder where `load_dotenv()` can find the
 file.
 :::
 
-## Your first agent (22:00 to 37:20)
+## Your first agent
 
-### What an agent is, drawn on the whiteboard (22:00 to 27:20)
+### What an agent is, drawn on the whiteboard
 
 Before writing the agent he switches to an Excalidraw page headed "Agents" and
 builds a picture in steps. This is the foundation for everything that follows,
@@ -468,7 +468,7 @@ needs what, and how to solve the task.
 <Infographic
   src="/img/agentic-course/01-agent-whiteboard.svg"
   alt="Two-step whiteboard: a plain LLM turning input into output, then the same LLM with a tool that returns context, forming a basic agent."
-  caption="Redrawn from the instructor's Excalidraw page, drawn between 22:15 and 29:30 (final state at 29:30, shown here in two steps)."
+  caption="Redrawn from the Excalidraw page (final state, shown here in two steps)."
 />
 
 He also writes **ReAct** in the corner of the board. Before LangChain v1, building
@@ -485,7 +485,7 @@ a compiled **LangGraph** graph, which the notebook draws for you a few minutes
 later. So "ReAct" names the pattern, and `create_agent` is how you get it ready-made.
 :::
 
-### Creating the agent with `create_agent` (27:20 to 29:20)
+### Creating the agent with `create_agent`
 
 He opens a new cell and imports the factory function:
 
@@ -556,7 +556,7 @@ also draws it. The picture matches the whiteboard: a `__start__` node, a `model`
 node and an `__end__` node. With no tools, the agent is just input, LLM and
 output.
 
-### Adding a tool, and the graph changes (29:20 to 32:00)
+### Adding a tool, and the graph changes
 
 He defines a plain Python function, `get_weather`. It takes a city as a string
 and returns a string:
@@ -596,7 +596,7 @@ directions.
 <Infographic
   src="/img/agentic-course/01-agent-graph.svg"
   alt="Two agent graphs: with no tools the flow is start, model, end; with get_weather there is also a tools node the model can loop through before ending."
-  caption="Redrawn from the graph the notebook renders at 29:15 (no tools) and 31:45 (with get_weather)."
+  caption="Redrawn from the graphs the notebook renders, first without tools and then with get_weather."
 />
 
 The meaning, as he explains it: when a question about the weather arrives, the
@@ -605,7 +605,7 @@ the model, and only then does the agent finish. The edges to `tools` and to
 `__end__` are the model's choice at run time, which is why the diagram shows two
 exits from `model`.
 
-### Running the agent, and the error on the way (32:00 to 36:40)
+### Running the agent, and the error on the way
 
 To run it you call `agent.invoke`. He deliberately tries the most obvious thing
 first and leaves the mistake in the video. Here is the sequence, because each
@@ -712,7 +712,7 @@ in your code saying "if the question is about weather". He points out that this
 is one tool, and you can create as many as you like (the next sections show how
 tools are really defined).
 
-### Which version are we on? (36:40 to 37:20)
+### Which version are we on?
 
 Last, he checks the library version in a cell at the top of the notebook:
 
@@ -729,7 +729,7 @@ This is the "LangChain 1.1.0" he mentioned from `pyproject.toml`. Agents work
 autonomously on the task assigned to them. That closes notebook 1. The next video
 section, he says, will cover how to integrate different models and messages.
 
-## Model integration (37:20 to 50:00)
+## Model integration
 
 Notebook 2, `2-modelintegration.ipynb`, is headed "Models Integration With
 OpenAI, Google Gemini and GROQ". The question it answers: how do you call a
@@ -757,7 +757,7 @@ All three names must exist in `.env`. The cell prints nothing.
   caption="Explanatory board (not shown in the video): the six model cells of this notebook as one table, and why they behave the same."
 />
 
-### OpenAI, using `init_chat_model` (40:00 to 43:20)
+### OpenAI, using `init_chat_model`
 
 `init_chat_model` is LangChain's general-purpose way to create a chat model from
 a name. Import it from `langchain.chat_models`. He first mistypes the model name,
@@ -823,7 +823,7 @@ response.content
 "Hello! I'm just a program, but I'm here and ready to help you. How can I assist you today?"
 ```
 
-### Gemini, using `init_chat_model` (42:40 to 45:00)
+### Gemini, using `init_chat_model`
 
 For Google, he reuses the same function, with a **provider prefix**. The string
 has the form `provider:model`:
@@ -862,7 +862,7 @@ change often (older ones are retired), so when a name errors, check the
 provider's current model list. The pattern, not the exact name, is the lesson.
 :::
 
-### The other way: provider classes (44:40 to 47:20)
+### The other way: provider classes
 
 `init_chat_model` is a convenience. Each provider package also exports its own
 class, and you can construct it directly.
@@ -907,7 +907,7 @@ answer. He sums up the two ways: use `init_chat_model` with the provider prefix,
 or use the provider's own class (`ChatOpenAI` for OpenAI, `ChatGoogleGenerativeAI`
 for Gemini).
 
-### Groq (47:20 to 49:20)
+### Groq
 
 The third provider, Groq, follows the same two routes. The first uses
 `init_chat_model` with a `groq:` prefix, here with Alibaba's open-source
@@ -976,7 +976,7 @@ response = model.invoke("Why do parrots talk?")
 response.content
 ```
 
-## Streaming and batch (50:00 to 57:20)
+## Streaming and batch
 
 Next heading in the notebook: "Streaming And Batch". It contains two ideas that
 you will use constantly once you build a chatbot.
@@ -1125,7 +1125,7 @@ service. Also, `max_concurrency` is a cap on simultaneous calls, not a rule that
 requests are grouped in fives.
 :::
 
-## Tools (57:20 to 1:06:00)
+## Tools
 
 He says: "we move one step ahead and talk about tools". Recall the whiteboard: an
 agent is an LLM connected to a tool, and a tool is just a piece of functionality.
@@ -1207,7 +1207,7 @@ for when you call `bind_tools` yourself, and when you want to control the tool's
 name, description or argument schema explicitly.
 :::
 
-### Asking a question: the model requests a tool call (1:03:00 to 1:04:00)
+### Asking a question: the model requests a tool call
 
 ```python
 response = model_with_tools.invoke("What's the weather like in Boston?")
@@ -1239,7 +1239,7 @@ are directly creating an agent, define the function and pass it to `create_agent
 with a model name and the tool list. Either way the model decides *which* function
 to call and *with what arguments*.
 
-### The tool execution loop (1:04:00 to 1:06:00)
+### The tool execution loop
 
 Binding only produces the request. Someone has to run the function and show the
 model its result. He calls the full procedure the **tool execution loop**, and he
@@ -1328,9 +1328,9 @@ His closing remarks on tools:
   only reason over what the tool hands back, so a tool that returns clear, useful
   text produces a better answer.
 
-## What comes next (1:06:00)
+## What comes next
 
-At 1:06:40 he moves to the next topic, **messages**: the system message, the AI
+The next topic is **messages**: the system message, the AI
 message and the human message, and how their `role`, `content` and metadata work.
 You have already met three of them in this chapter without naming them all:
 `HumanMessage` (your question), `AIMessage` (the model's reply or tool request)

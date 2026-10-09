@@ -16,8 +16,8 @@ The convolution operation is the computational engine of a CNN. A small matrix o
 
 2D convolution slides a learned $K \times K$ filter over a spatial input, computing element-wise dot products at each position to produce a feature map that encodes the presence and location of the pattern the filter has learned to detect.
 
-![96 learned filters in the first conv layer of AlexNet — each filter detects a different local pattern (edge, color, texture); convolution slides each filter across the full input to produce a feature map](https://cs231n.github.io/assets/cnn/weights.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford) — Krizhevsky et al., 2012*
+![96 learned filters in the first conv layer of AlexNet — each filter detects a different local pattern (edge, color, texture); convolution slides each filter across the full input to produce a feature map](https://cs231n.stanford.edu/assets/cnn/weights.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford) — Krizhevsky et al., 2012*
 
 ## Why this topic matters
 

@@ -19,7 +19,7 @@ import ContextRecallLab from '@site/src/components/viz/ContextRecallLab';
 import AnswerCorrectnessLab from '@site/src/components/viz/AnswerCorrectnessLab';
 
 > **Module 2 of 4** ·
-> [Watch from 1:13:30](https://www.youtube.com/watch?v=rQE3w8Qjx98&t=4410s) ·
+> [Watch on YouTube](https://www.youtube.com/watch?v=rQE3w8Qjx98) ·
 > about 95 minutes of the 7h48m course ·
 > [Code](https://github.com/divesh-sse/ragas) ·
 > [Demo app](https://ragasz.streamlit.app/)
@@ -37,7 +37,7 @@ module builds that scoring pipeline end to end.
 
 ## A RAG app with no evals
 
-The module opens on a plain RAG chatbot in Streamlit (1:13 to 1:16). Upload
+The module opens on a plain RAG chatbot in Streamlit. Upload
 a PDF, here *Attention Is All You Need*, and the app extracts it, splits it
 into chunks and ingests them into a vector store. Ask "What is attention?"
 and the LLM answers from the retrieved chunks, which the app lists with
@@ -57,7 +57,7 @@ check before users find the problem.
 ## The demo you're building towards
 
 Before any theory, Yash shows where the module ends up: the **TechNest RAG
-Evaluator** (1:17 to 1:23). TechNest is a made-up online electronics shop.
+Evaluator**. TechNest is a made-up online electronics shop.
 The app has four tabs:
 
 | Tab | What it holds |
@@ -83,7 +83,7 @@ case so the fix is checked from then on.
 
 ## What evaluation is: hiring a candidate
 
-Yash starts from an analogy (1:23 to 1:28). No genuine company hires
+Yash starts from an analogy. No genuine company hires
 without an interview, but every candidate arrives with two kinds of
 evidence.
 
@@ -104,7 +104,7 @@ review loop to catch it.
 <Infographic
   src="/img/ai-security/m2-hiring.svg"
   alt="A candidate applying to Google has past scores and an interview; LLM evaluation likewise has benchmarks and a human or LLM judge."
-  caption="Redrawn from the mentor's whiteboard, 1:23 to 1:28."
+  caption="Redrawn from the whiteboard."
 />
 
 The same two layers show up in how you build an LLM application:
@@ -120,7 +120,7 @@ The same two layers show up in how you build an LLM application:
 
 ## Two things you can evaluate
 
-The slide at 1:28 makes the distinction explicit, and Yash brackets the
+The slide makes the distinction explicit, and Yash brackets the
 left-hand column as "a research point": useful to know, not where you'll
 spend your time. About 90% of a developer's evaluation work is on the
 right-hand side, and so is the rest of this module.
@@ -137,7 +137,7 @@ right-hand side, and so is the rest of this module.
 <Infographic
   src="/img/ai-security/m2-two-things.svg"
   alt="Two things you can evaluate: the model (benchmarks, leaderboards, reference metrics) or the application (golden dataset, task-specific metrics, LLM-as-judge, frameworks)."
-  caption="Redrawn from the slide on the mentor's board, 1:28 to 1:30."
+  caption="Redrawn from the slide on the mentor's board."
 />
 
 Building a custom evaluation needs three things from that right-hand
@@ -147,7 +147,7 @@ frameworks exist.
 
 ## Goldens: the truth you test against
 
-A **golden** is the truth an answer is checked against (1:30 to 1:40). You
+A **golden** is the truth an answer is checked against. You
 ask "What is attention?" and the app answers, but somebody has to define
 what the right answer is.
 
@@ -171,7 +171,7 @@ XGBoost, the training data fits the model and the held-out validation data
 tells you whether it behaves as expected. Goldens play the validation
 role for an LLM application.
 
-*Redrawn from the mentor's whiteboard (1:33 to 1:35).*
+*Redrawn from the mentor's whiteboard.*
 
 ```mermaid
 flowchart LR
@@ -246,7 +246,7 @@ the app says so.
 ## Phase 1: run the pipeline on every golden
 
 Goldens are the truth, but to evaluate anything you need what your RAG
-pipeline *actually* produces (1:40 to 1:47). Yash's analogy is marking
+pipeline *actually* produces. Yash's analogy is marking
 exam papers for ten students. You first need the master sheet: question 1
 is A, question 2 is B. That is the golden. Then you take each student's
 answers and compare them with it. For the RAG pipeline, the student's
@@ -259,7 +259,7 @@ the Groq console (API Keys → Create API key, name it, set an expiry) and
 runs it again. Five queries means five retrievals and five LLM calls, so it
 takes a while.
 
-*Redrawn from the mentor's whiteboard (1:45 to 1:47).*
+*Redrawn from the mentor's whiteboard.*
 
 ```mermaid
 flowchart LR
@@ -283,7 +283,7 @@ the query, then the reference answer from the golden. That completes
 **phase 1: run your application** to collect the real answer and the real
 retrieved context. Phase 2 compares them against the truth.
 
-### Doubts · Isn't this time-consuming? · 1:42
+### Doubts · Isn't this time-consuming?
 
 **Krishna:** Doesn't running all this take a long time?
 
@@ -449,7 +449,7 @@ async def run_phase1(
 
 ## Phase 2: why you need a judge
 
-With both halves in hand, Phase 2 is the comparison (1:47 to 1:53). Given
+With both halves in hand, Phase 2 is the comparison. Given
 the query, the expected answer and the actual answer, anyone can spot the
 defects: "what is X company's return policy", here is the correct answer,
 here is what the app said. The **expected answer** is what you want the
@@ -469,7 +469,7 @@ impossible. So the check is handed to an **LLM as a judge**.
 <Infographic
   src="/img/ai-security/m2-goldens-judge.svg"
   alt="Goldens (queries, expected answers, expected context) and the RAG pipeline's actual answers and retrieved contexts both go to a judge LLM, which scores five metrics."
-  caption="Redrawn from the mentor's whiteboard as it stood by 2:04, built up from 1:33."
+  caption="Redrawn from the mentor's whiteboard, built up."
 />
 
 An LLM on its own is just a general intelligence that can read an expected
@@ -484,7 +484,7 @@ version; the open-source library runs locally in your project.
 
 ### The judge and the cooldowns
 
-The Phase 2 panel shows three settings (1:55 to 2:03).
+The Phase 2 panel shows three settings.
 
 - **Judge model:** `llama-3.1-8b-instant` on Groq. Any other model can be
   used.
@@ -496,7 +496,7 @@ goldens and five metrics, with a judge call for each pair, comes to 25 or
 more LLM calls. Fire them all at once at Groq's free tier and you hit the
 rate limit. So the code pauses between calls to let the limit recover.
 
-### Doubts · Why not score everything in one LLM call? · 1:59
+### Doubts · Why not score everything in one LLM call?
 
 **From the chat:** Why not send all the metrics in a single call?
 
@@ -734,7 +734,7 @@ first. He explains each one while the next is scoring.
 ## Metric 1: Faithfulness (groundedness)
 
 Faithfulness asks whether the answer the LLM gives at the end of the
-pipeline is **based on the retrieved context** (2:04 to 2:12). If the
+pipeline is **based on the retrieved context**. If the
 context is factually correct and the answer sticks to it, the answer is
 correct too. It is the metric for catching hallucination.
 
@@ -749,7 +749,7 @@ context, yes or no?*
 <Infographic
   src="/img/ai-security/m2-faithfulness.svg"
   alt="Faithfulness worked example: four atomic claims from the answer checked against two chunks; three grounded, one hallucinated, score 0.75 against a 0.8 threshold."
-  caption="Redrawn from the faithfulness infographic on the mentor's board, 2:05 to 2:08."
+  caption="Redrawn from the faithfulness infographic on the mentor's board."
 />
 
 *Interactive exercise added to these notes.*
@@ -766,12 +766,12 @@ pass. Faithfulness ignores the reference answer completely. It only checks
 whether the generated text stays inside the context. In the app, the
 TechNest run scores 0.97.
 
-### Doubts · Who sets the threshold? · 2:08
+### Doubts · Who sets the threshold?
 
 **Yash:** You do, as the developer, based on how much correctness the use
 case demands. Treat it as a hyperparameter.
 
-### Doubts · How are atomic claims judged? · 2:09
+### Doubts · How are atomic claims judged?
 
 **From the chat:** The judge's question is yes or no, but how are the
 claims themselves produced and judged?
@@ -782,8 +782,7 @@ the answer into claims and verdict each one.
 
 ## Metric 2: Answer relevancy
 
-Answer relevancy asks whether the **answer addresses the query** (2:12 to
-2:18). It needs two inputs: the query (`user_input`, from the golden) and
+Answer relevancy asks whether the **answer addresses the query**. It needs two inputs: the query (`user_input`, from the golden) and
 the actual answer (`response`).
 
 The judge doesn't compare them directly. It works backwards:
@@ -802,7 +801,7 @@ original.
 <Infographic
   src="/img/ai-security/m2-answer-relevancy.svg"
   alt="Answer relevancy: the judge invents questions the answer would answer, compares them with the input by embedding similarity, and averages; off-topic, padded or incomplete answers score low."
-  caption="Redrawn from the answer relevancy infographic on the mentor's board, 2:12 to 2:17."
+  caption="Redrawn from the answer relevancy infographic on the mentor's board."
 />
 
 Three things pull the score down.
@@ -826,7 +825,7 @@ know"); a noncommittal answer scores 0 however similar its questions are.
 
 ## The RAG triad
 
-Before the next metric, Yash steps back to the **RAG triad** (2:18). The
+Before the next metric, Yash steps back to the **RAG triad**. The
 two metrics so far judged the answer. A RAG system has three pieces, the
 query, the context and the response, and three relationships between them.
 Cover all three and every aspect is covered.
@@ -834,7 +833,7 @@ Cover all three and every aspect is covered.
 <Infographic
   src="/img/ai-security/m2-rag-triad.svg"
   alt="The RAG triad: query, context and response, linked by context relevance, groundedness and answer relevance."
-  caption="Redrawn from the RAG triad slide on the mentor's board, 2:18 to 2:19."
+  caption="Redrawn from the RAG triad slide on the mentor's board."
 />
 
 | Edge | Metric in this module |
@@ -847,7 +846,7 @@ Cover all three and every aspect is covered.
 
 Retrieval returns a **ranked** list, the top *k*. Context precision asks
 whether that ranking is good: are the relevant chunks at the top and the
-noise at the bottom (2:19 to 2:24)?
+noise at the bottom?
 
 The example query is "What is the minimum balance for my savings
 account?". Five chunks come back. The judge LLM, Llama 3.1 in this app,
@@ -863,7 +862,7 @@ only, skipping the noisy ones.
 <Infographic
   src="/img/ai-security/m2-context-precision.svg"
   alt="Context precision worked example: five ranked chunks with one noisy chunk at rank 3; precision at each relevant rank averages to 0.89."
-  caption="Redrawn from the context precision infographic on the mentor's board, 2:19 to 2:23."
+  caption="Redrawn from the context precision infographic on the mentor's board."
 />
 
 *Interactive exercise added to these notes.*
@@ -908,7 +907,7 @@ reference answer.
 ## Metric 4: Context recall
 
 Context recall asks whether retrieval **fetched everything the ideal answer
-needs** (2:24 to 2:30). Its inputs are the `reference`, the expected answer
+needs**. Its inputs are the `reference`, the expected answer
 from the golden, and the `retrieved_contexts`.
 
 1. **Extract claims.** The judge reads the reference and splits it into
@@ -924,7 +923,7 @@ back.
 <Infographic
   src="/img/ai-security/m2-context-recall.svg"
   alt="Context recall worked example: four reference claims, three supported by retrieved chunks and the rural minimum missing, recall 0.75, with causes of low scores and score bands."
-  caption="Redrawn from the context recall infographic on the mentor's board, 2:24 to 2:28."
+  caption="Redrawn from the context recall infographic on the mentor's board."
 />
 
 *Interactive exercise added to these notes.*
@@ -954,18 +953,18 @@ judges the *reference's* claims, so it tests the retriever.
 The TechNest run scores 0.9, which Yash calls a bit low.
 
 :::note
-At 2:27 Yash sums recall up as checking whether "the actual response is
+Yash sums recall up as checking whether "the actual response is
 covered by the context". It's the **reference**, the expected answer,
 whose claims are checked against the context. The response isn't an input
 to this metric at all, as the `EXPERIMENTS` list above shows.
 :::
 
-### Doubts · Who produces the claims? · 2:27
+### Doubts · Who produces the claims?
 
 **Yash:** The judge LLM does. It is capable enough to break the ground
 truth into claims.
 
-### Doubts · If a claim isn't supported, is the answer hallucinating? · 2:29
+### Doubts · If a claim isn't supported, is the answer hallucinating?
 
 **Yash:** No. The claims come from the reference, which is the golden:
 your ideal answer, and you don't change it. What's being tested is the
@@ -976,8 +975,7 @@ cover every aspect of the ideal answer. That's why the metric is called
 ## Metric 5: Answer correctness
 
 Answer correctness asks whether the answer is **factually right**, and it
-differs from answer relevancy: an answer can be on topic and still wrong
-(2:30 to 2:37). It takes three inputs: `user_input`, the `response` from
+differs from answer relevancy: an answer can be on topic and still wrong. It takes three inputs: `user_input`, the `response` from
 the pipeline, and the `reference` from the golden.
 
 It blends two components.
@@ -993,7 +991,7 @@ It blends two components.
 <Infographic
   src="/img/ai-security/m2-answer-correctness.svg"
   alt="Answer correctness: claims sorted into true positives, false positives and false negatives give a factual F1 of 0.50, blended with 0.72 semantic similarity for a score of about 0.55."
-  caption="Redrawn from the answer correctness infographic on the mentor's board, 2:30 to 2:36."
+  caption="Redrawn from the answer correctness infographic on the mentor's board."
 />
 
 *Interactive exercise added to these notes.*
@@ -1017,14 +1015,14 @@ it's the same local sentence-transformer.
 Yash uses this metric to answer the earlier "why not one call?" question:
 look how many steps just this metric takes.
 
-### Doubts · How do you choose the weights? · 2:36
+### Doubts · How do you choose the weights?
 
 **Yash:** You decide, per use case, based on what matters more. They're
 another hyperparameter.
 
 ## Reviewing the results
 
-Yash recaps the metrics with the class (2:37 to 2:39): faithfulness,
+Yash recaps the metrics with the class: faithfulness,
 answer relevancy, context precision, context recall and answer
 correctness. The [Ragas documentation](https://docs.ragas.io) lists many
 more, with the formula and implementation for each.
@@ -1034,7 +1032,7 @@ Yash says "six" metrics were explained. The module covers **five**; the
 triad's context relevance was shown but not worked through.
 :::
 
-The Results tab (2:40 to 2:43) has three parts.
+The Results tab has three parts.
 
 - **Overall averages.** One card per metric, with a badge: green at 0.75
   or above, amber from 0.50, red below.

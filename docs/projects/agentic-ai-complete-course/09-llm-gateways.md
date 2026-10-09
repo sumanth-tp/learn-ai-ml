@@ -22,8 +22,7 @@ tags:
 import Infographic from '@site/src/components/Infographic';
 
 > **Part 9 of 9** ·
-> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=37825s) ·
-> 10:30:25 to 11:13:25 (the end of the video) ·
+> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
 > Notebook: `llm_gateway_tutorial.ipynb` (the Langchain-V1-Crash-Course repo).
 > Notes follow the video in order.
 
@@ -44,7 +43,7 @@ names from each provider's current model list. Nothing about the gateway pattern
 depends on a specific model.
 :::
 
-## Why a gateway at all (10:30:25)
+## Why a gateway at all
 
 He opens by saying that this is the newest piece in the course and that almost
 every production AI application in industry now sits behind an LLM gateway. The
@@ -52,7 +51,7 @@ plan for the segment is: define a gateway, explain what extra value it brings,
 build one with code, plug it into LangChain, and finish with a small chatbot that
 uses most of the features together.
 
-### The startup story (10:31:15)
+### The startup story
 
 To define it he draws a picture first. Imagine you run a start-up and you have
 built several AI products for clients:
@@ -69,10 +68,10 @@ provider and the integration code multiplies.
 <Infographic
   src="/img/agentic-course/09-no-gateway.svg"
   alt="Three apps (chatbot, RAG, another app) each wired by an arrow to its own provider box (OpenAI, Google Gemini, Claude API); an outage card points at OpenAI; three cost cards underneath."
-  caption="Redrawn from the instructor's whiteboard at 10:31:15 (the outage card and the three cost cards are added to show what the picture implies)."
+  caption="Redrawn from the whiteboard (the outage card and the three cost cards are added to show what the picture implies)."
 />
 
-### What happens when one provider goes down (10:32:00)
+### What happens when one provider goes down
 
 Now suppose one of those APIs fails. His example is the OpenAI outage of 8
 November 2023, which he describes as a four-hour outage of the whole API. Any
@@ -95,7 +94,7 @@ checked here.
 His reframing is the heart of the segment: what if the same outage happened and
 your application kept running? That is what an LLM gateway buys you.
 
-### What a gateway is (10:34:00)
+### What a gateway is
 
 An **LLM gateway** is smart middleware that sits between your applications and
 the LLM providers. Your apps no longer talk to OpenAI or Anthropic directly. They
@@ -107,7 +106,7 @@ code per provider.
 <Infographic
   src="/img/agentic-course/09-gateway-middleware.svg"
   alt="App side (chatbot, RAG, app) sends every request to an LLM gateway box listing routing, fallbacks, caching, rate limiting, guardrails and cost tracking, which forwards to providers OpenAI, Google, Anthropic and Groq; a config box feeds the gateway."
-  caption="Redrawn from the instructor's whiteboard at 10:34:15 (the response arrow is added)."
+  caption="Redrawn from the whiteboard (the response arrow is added)."
 />
 
 On the board he lists what the middle box does: routing, fallbacks, caching, rate
@@ -121,7 +120,7 @@ API is down, the gateway's fallback feature quietly tries the next provider
 (Google, Anthropic or Groq) so there is no outage from the application's point of
 view.
 
-### A word from the sponsor (10:35:20)
+### A word from the sponsor
 
 Mid-explanation he thanks **BetterDB** for sponsoring the video. BetterDB is an
 observability tool that sits on top of a Redis database. If you build an agentic
@@ -130,7 +129,7 @@ BetterDB gives you a dashboard of what has been stored, the time-to-live (TTL) o
 each key, and more. He shows its web page on screen; it is a product page, not a
 diagram, so it is described here rather than redrawn.
 
-### The three reasons it is useful (10:36:40)
+### The three reasons it is useful
 
 He gives three short reasons to adopt one:
 
@@ -142,7 +141,7 @@ He gives three short reasons to adopt one:
    (identical or very similar requests are answered from a cache), then cost
    tracking, security, guardrails and evaluation.
 
-## Core capabilities (10:37:20)
+## Core capabilities
 
 He then writes the capabilities down one by one on the whiteboard, numbered. Here
 they are, with what each means in practice.
@@ -150,7 +149,7 @@ they are, with what each means in practice.
 <Infographic
   src="/img/agentic-course/09-core-capabilities.svg"
   alt="Eight numbered cards: unified API, automatic fallbacks, smart routing, load balancing, caching, observability, guardrails, evals."
-  caption="Redrawn from the instructor's whiteboard list at 10:37:45 to 10:41:30."
+  caption="Redrawn from the whiteboard list."
 />
 
 | # | Capability | What it means | Where it appears in the demos |
@@ -192,7 +191,7 @@ The app asks for an answer; the gateway decides who gives it, remembers what it
 has already answered, and writes down what it cost.
 :::
 
-## LiteLLM, the gateway used here (10:42:00)
+## LiteLLM, the gateway used here
 
 For the implementation he uses **LiteLLM** (`litellm.ai`). It is an open-source
 LLM gateway that also has an enterprise offering, but he stresses that you can do
@@ -206,7 +205,7 @@ the OpenAI format.
 <Infographic
   src="/img/agentic-course/09-litellm-site.svg"
   alt="A user sends an OpenAI-format request into a LiteLLM box listing cost tracking, batches API, guardrails, model access, budgets, LLM observability, rate limiting, prompt management, s3 logging and pass-through endpoints; arrows go on to OpenAI, Anthropic and Azure OpenAI."
-  caption="Redrawn from the LiteLLM home page the instructor shows at 10:42:00 to 10:42:45."
+  caption="Redrawn from the LiteLLM home page the instructor shows."
 />
 
 Reading the box on that page, you will find cost tracking, a batches API,
@@ -215,7 +214,7 @@ management, S3 logging and pass-through endpoints. In this chapter you use the
 Python library for the first few; the standalone server (the "proxy") is where
 budgets and virtual keys live and is only mentioned at the end.
 
-### The plan and the notebook (10:42:40)
+### The plan and the notebook
 
 He opens the notebook, titled *LLM Gateway Explained: Build One With LiteLLM +
 LangChain*. Its stated learning outcomes are: what an LLM gateway is and the
@@ -238,7 +237,7 @@ observability) and then reads the notebook's before and after comparison.
 | Hard to switch models without rewriting code | Swap models with a config change, no code rewrite |
 | No caching, so you pay twice for the same query | Cache repeated queries and save tokens; no need to hit the LLM again for the same thing |
 
-## Installation and setup (10:44:00)
+## Installation and setup
 
 The libraries are LiteLLM itself, LangChain, `langchain-community`,
 `langchain-openai` and `python-dotenv` for API keys. The first code cell
@@ -291,7 +290,7 @@ Cell 6 repeats the first lines of cell 4. It is harmless duplication left in the
 notebook. He runs both on camera, so both are shown.
 :::
 
-### API keys with a .env file (10:45:15)
+### API keys with a .env file
 
 He opens his `.env` file next to the notebook. It holds three keys: an OpenAI key,
 a Groq key and a Google key. (The notebook's own comment lists an Anthropic key
@@ -335,7 +334,7 @@ Anthropic key loaded:  ❌
 Groq key loaded:       ✅
 ```
 
-## The simplest LiteLLM example: one API (10:46:00)
+## The simplest LiteLLM example: one API
 
 The biggest pain point, he says, is that every provider ships a different SDK.
 LiteLLM gives you one function, `completion()`, that works with all of them. The
@@ -380,7 +379,7 @@ LiteLLM normalises every provider's reply to OpenAI's chat-completion format.
 That is why one `choices[0].message.content` line works for all of them.
 :::
 
-### Looping over providers (10:47:45)
+### Looping over providers
 
 Next he makes the idea even more obvious by putting a list of labelled model
 names in a loop. The only configuration is a list of strings; the same
@@ -431,7 +430,7 @@ project behind it is suspended. Separately, the model named here,
 healthy key. Both are reasons to substitute a current Gemini model.
 :::
 
-## Automatic fallbacks (10:49:20)
+## Automatic fallbacks
 
 This is the capability he calls the most important. The notebook restates the
 story: OpenAI had a four-hour outage, apps that hard-coded `gpt-4` went dark, and
@@ -493,7 +492,7 @@ Gemini attempt and can be ignored.
   caption="Explanatory board (not shown in the video): how the two fallback demos behave."
 />
 
-### A second primary that does not exist (10:51:20)
+### A second primary that does not exist
 
 To make the same point with a failure he fully controls, he changes the primary to
 `openai/fake-nonexistent-model-9999`. The fallbacks are unchanged. LiteLLM raises a
@@ -534,7 +533,7 @@ whole provider is unavailable, the fallback list keeps the app answering, and th
 markdown under the cell says plainly that this is the number-one reason teams
 adopt a gateway.
 
-## Cost tracking (10:51:50)
+## Cost tracking
 
 LiteLLM ships a built-in pricing table, so it can compute the price of any call.
 You call `completion`, then pass the response to `completion_cost`. The response
@@ -580,7 +579,7 @@ says next: run this over thousands of calls per day, tag each by team or project
 and you immediately know who is spending the budget. Pair the numbers with a
 dashboard or an observability tool and you have analytics.
 
-## Caching (10:52:40)
+## Caching
 
 If hundreds of similar requests come in, the gateway can recognise a repeat and
 return the stored answer instead of calling the model again. Before the demo he
@@ -673,7 +672,7 @@ unless you use one of LiteLLM's semantic cache types, which are a separate setup
 that the video does not cover.
 :::
 
-## Smart routing (10:55:20)
+## Smart routing
 
 "The right model for the right job." He reads the notebook's list, which has the
 shape of a routing policy:
@@ -759,7 +758,7 @@ editing the list, with zero change to the code that calls it.
   caption="Explanatory board (not shown in the video): Router aliases and the deployments behind them."
 />
 
-## Load balancing across keys and providers (10:58:00)
+## Load balancing across keys and providers
 
 What if you hit the rate limit of one API key? Add more deployments under the same
 alias and the router spreads the requests. The notebook's wording is "more keys to
@@ -844,7 +843,7 @@ deployments (for example several keys for the same model, or the same model on
 two clouds) behind one alias.
 :::
 
-### Strategy: least-busy (11:00:00)
+### Strategy: least-busy
 
 The notebook explains it as the express-checkout pattern: like picking the
 shortest line at a supermarket, the router tracks how many requests are in flight
@@ -904,7 +903,7 @@ every decision both deployments have zero requests in flight and the router
 simply takes the first. `least-busy` only shows its value when requests overlap,
 for instance threads, async code or a server handling many users at once.
 
-### Strategy: latency-based routing (11:00:40)
+### Strategy: latency-based routing
 
 With `latency-based-routing` the router measures each deployment's response time
 over recent calls and sends new requests to the fastest. The first calls are
@@ -1094,7 +1093,7 @@ and the user, which is what you need for chargebacks, debugging and security
 review.
 :::
 
-## Integrating the gateway with LangChain (11:01:30)
+## Integrating the gateway with LangChain
 
 LangChain is the orchestration layer (agents, chains, RAG) and LiteLLM is the
 unified LLM backend. LangChain has a wrapper, `ChatLiteLLM`, that you drop in like
@@ -1143,7 +1142,7 @@ The notebook adds the payoff: change `model="gpt-4o-mini"` to a Claude name or t
 `groq/llama-3.3-70b-versatile` and the whole chain runs on another provider with
 no other change.
 
-### Fallbacks in LangChain (11:02:40)
+### Fallbacks in LangChain
 
 His next question is where fallbacks fit in a LangChain chain. LangChain has its
 own mechanism, `.with_fallbacks([...])`, which works on any runnable, so you can
@@ -1210,7 +1209,7 @@ the skipped observability cell, which is still active; it is not part of
 LangChain.) The notebook text under the cell sums it up: if the primary fails the
 chain retries with the next, and downstream code never knows.
 
-## A mini end-to-end demo: a task-aware chatbot (11:04:40)
+## A mini end-to-end demo: a task-aware chatbot
 
 To put features together he builds a small smart router. The scenario: three
 models, one good at code, one for summaries, one for general chat. When an input
@@ -1351,7 +1350,7 @@ mapped yet"). Groq's free tier probably means you did pay nothing, but `n/a`
 means "unknown", not "zero".
 :::
 
-## Guardrails inside callbacks (11:08:45)
+## Guardrails inside callbacks
 
 The last feature is guardrails. LiteLLM offers callback hooks, and he describes two
 that matter:
@@ -1365,7 +1364,7 @@ should never see the sensitive text in the first place. Inside the hook you can
 write any Python: regular expressions, keyword matching, or even another LLM call
 to classify. No external guardrail library is needed.
 
-### Guardrail 1: PII redaction (11:09:15)
+### Guardrail 1: PII redaction
 
 He defines a dictionary of regular expressions for personal information, then a
 function that replaces each match with a placeholder.
@@ -1478,7 +1477,7 @@ regulated, use a dedicated PII detector as well, and keep the original text out 
 your logs.
 :::
 
-### Guardrail 2: prompt injection (11:12:00)
+### Guardrail 2: prompt injection
 
 Prompt injection is when user text tries to override the system's instructions.
 He had a chat assistant generate a list of typical injection phrases and turned
@@ -1699,7 +1698,7 @@ for q in queries:
 Output: the safe questions answer; for "How do I hack into a server?" it prints
 `🚨 FORBIDDEN TOPIC: 'hack' detected`, then the model's own refusal.
 
-## Closing remarks (11:12:40)
+## Closing remarks
 
 He ends by saying that this was an LLM gateway with many useful features, and
 that viewers should go and use it. LiteLLM is one of several libraries that do

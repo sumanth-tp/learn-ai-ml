@@ -12,7 +12,7 @@ tags: [python, oop, classes, dunder, inheritance, composition, properties]
 
 ## Start here: one class, two independent objects
 
-> **Video connection:** [classes and objects, 3:45:31](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=13531s), with stateful validation around [4:00](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=14400s).
+> **Video connection:** classes and objects, with stateful validation, in [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 The video's dog example separates a blueprint from the dogs created with it. This original example applies the same idea to validation: each validator remembers its own errors.
 

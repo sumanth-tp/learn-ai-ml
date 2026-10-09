@@ -133,7 +133,7 @@ Start from `stage-3-rerank-memory`. The walkthrough revisits ingestion, the plan
 <Infographic
   src="/img/enterprise-rag/s2-recap-implementation.svg"
   alt="The Kubernetes chatbot must find useful evidence among 95% noisy data and use guardrails, a gateway and Qdrant to become fault tolerant, robust, secure and reliable."
-  caption="Redrawn from the session's whiteboard, 0:47 to 0:48."
+  caption="Redrawn from the whiteboard."
 />
 
 ```mermaid
@@ -144,15 +144,15 @@ flowchart LR
     A --> T["Answer + trace + stored conversation"]
 ```
 
-At 0:50, the application renders the compiled LangGraph:
+The application renders the compiled LangGraph:
 
 <Infographic
   src="/img/enterprise-rag/s2-langgraph-graph.svg"
   alt="The LangGraph the app renders"
-  caption="Redrawn from the app's GET /graph browser render, 0:50 (revisited 2:01)."
+  caption="Redrawn from the app's GET /graph browser render."
 />
 
-### The recap boards · 0:17 to 0:31
+### The recap boards
 
 Three whiteboard pages carry the recap before any new code is written.
 
@@ -161,7 +161,7 @@ Three whiteboard pages carry the recap before any new code is written.
 <Infographic
   src="/img/enterprise-rag/s2-recap-advanced-rag.svg"
   alt="Advanced RAG · what we already built"
-  caption="Redrawn from the session's whiteboard, 0:17 to 0:20 and 0:23 to 0:24."
+  caption="Redrawn from the whiteboard."
 />
 
 **What "scalable" means.** The board splits scale into two axes. Users grow from ten to a hundred thousand, and a million users should see the same latency as ten. Data grows from megabytes to gigabytes, at which point ingestion becomes a big-data ETL or ELT job. The Kubernetes corpus is scraped web content, so part of it is clean and part is noise. The target is written underneath: an accurate system in a highly noisy environment.
@@ -169,7 +169,7 @@ Three whiteboard pages carry the recap before any new code is written.
 <Infographic
   src="/img/enterprise-rag/s2-recap-scalability.svg"
   alt="Scalability, K8s data and the goal"
-  caption="Redrawn from the session's whiteboard, 0:20 to 0:23."
+  caption="Redrawn from the whiteboard."
 />
 
 **Why the reranker exists.** Qdrant scores chunks by cosine similarity, which the board labels "maths": it measures how close two vectors are, not whether a chunk answers the question. The 15 candidates it returns go to FlashRank, a cross-encoder that reads the query and a chunk together through attention, so it scores meaning. Five chunks survive to the responder.
@@ -177,12 +177,12 @@ Three whiteboard pages carry the recap before any new code is written.
 <Infographic
   src="/img/enterprise-rag/s2-recap-rerank-observability.svg"
   alt="Retrieval is math, reranking is meaning"
-  caption="Redrawn from the session's whiteboard, 0:28 to 0:31."
+  caption="Redrawn from the whiteboard."
 />
 
 The same page closes the recap with the three observability terms used for the rest of the day. A **span** is one timed operation, such as a Qdrant search. A **trace** groups every span of one request. The **waterfall** view lays the spans out on a timeline, so the slow step is visible at a glance.
 
-### Doubts · Should a repeated question use memory? · 00:56
+### Doubts · Should a repeated question use memory?
 
 **Host prompt:** If the same technical question is asked again, what should happen?
 
@@ -192,7 +192,7 @@ The same page closes the recap with the three observability terms used for the r
 
 **`NOT from session`** Moving checkpoints from RAM to Postgres fixes durability, not planner consistency. A response cache and a planner decision are separate mechanisms. Test repeated questions explicitly instead of assuming memory implies zero model or retrieval calls.
 
-### Doubts · What should improve when the answer is wrong? · 00:59
+### Doubts · What should improve when the answer is wrong?
 
 **Naveen:** How can an incorrect answer be improved?
 
@@ -200,14 +200,14 @@ The same page closes the recap with the three observability terms used for the r
 
 **`NOT from session`** The recap describes recursive chunks of 2000 words with overlap, but the reviewed teaching function packs blank-line paragraphs with a 1500-character target and no overlap. Reproduce the function, not the inconsistent recap numbers.
 
-### Aside · API models versus LLM engineering · 1:04 to 1:11
+### Aside · API models versus LLM engineering
 
 The discussion then turns to provider dependency, fine-tuning and distillation. Calling a hosted model through an API is the fast route, but the board crosses out two things. The model is built for generic use cases, and the organisation's data leaves for a third party. The alternative the host calls "LLM engineering" starts from an open-source model trained on general data and fine-tunes it on the organisation's own data to build a private assistant. That route is costly.
 
 <Infographic
   src="/img/enterprise-rag/s2-api-vs-llm-engineering.svg"
   alt="API models vs LLM engineering"
-  caption="Redrawn from the session's whiteboard, 1:04 to 1:08."
+  caption="Redrawn from the whiteboard."
 />
 
 Knowledge distillation is the second idea on the board. A huge teacher model produces predictions, and a small student model is trained to reproduce them. The host's analogy: what the teacher needed fifteen days, or a month, to learn, the student picks up in a day, or sixteen hours, because it learns from the teacher's answers instead of from scratch.
@@ -215,7 +215,7 @@ Knowledge distillation is the second idea on the board. A huge teacher model pro
 <Infographic
   src="/img/enterprise-rag/s2-knowledge-distillation.svg"
   alt="Knowledge Distillation"
-  caption="Redrawn from the session's whiteboard, 1:08 to 1:11."
+  caption="Redrawn from the whiteboard."
 />
 
 These are model-strategy choices; the implemented work here remains RAG integration. Distillation transfers behaviour from a teacher model through a training procedure; it is not inherently reinforcement learning.
@@ -229,24 +229,24 @@ These are model-strategy choices; the implemented work here remains RAG integrat
 
 ## 2. Integrate the NeMo gate
 
-The host groups the next two integrations under one heading, LLM security (0:35). Guardrails decide what the assistant will talk about. Gateways control how each model call is made and which provider serves it. This section adds the first; section 3 adds the second.
+The host groups the next two integrations under one heading, LLM security. Guardrails decide what the assistant will talk about. Gateways control how each model call is made and which provider serves it. This section adds the first; section 3 adds the second.
 
 <Infographic
   src="/img/enterprise-rag/s2-llm-security.svg"
   alt="LLM security"
-  caption="Redrawn from the session's whiteboard, 0:35 to 0:36."
+  caption="Redrawn from the whiteboard."
 />
 
 The complete replacement files in sections 2–3 use teaching commit `52b771cbdea2e2215c823cc1ae522183b77a85b7`. Keep the Session 1 files that are not replaced. Save all replacement files before restarting the API; `main.py` imports the gateway-backed graph, so the whole integration is installed as one coherent checkpoint.
 
 ### 2.1 Define the intent and dialogue rules
 
-On the board (0:38 to 0:41), guardrails are the rules and regulations of the conversation. NVIDIA's NeMo Guardrails writes them in Colang, in `.co` files, using three kinds of block. `define user` lists example messages for an intent, such as off-topic requests. `define bot` gives the canned reply, such as "I am an IT assistant". `define flow` joins the two: when the user's message matches that intent, the bot answers that way. The file below follows exactly this pattern, for off-topic, jailbreak, greeting and farewell intents.
+On the board, guardrails are the rules and regulations of the conversation. NVIDIA's NeMo Guardrails writes them in Colang, in `.co` files, using three kinds of block. `define user` lists example messages for an intent, such as off-topic requests. `define bot` gives the canned reply, such as "I am an IT assistant". `define flow` joins the two: when the user's message matches that intent, the bot answers that way. The file below follows exactly this pattern, for off-topic, jailbreak, greeting and farewell intents.
 
 <Infographic
   src="/img/enterprise-rag/s2-colang-define.svg"
   alt="Guardrails → NeMo → Colang"
-  caption="Redrawn from the session's whiteboard, 0:38 to 0:41."
+  caption="Redrawn from the whiteboard."
 />
 
 #### Complete file: `app/guardrails/colang_rules.py`
@@ -385,7 +385,7 @@ RAIL_INDICATORS = [
 
 The greeting rule handles “hi”, “hello” and similar inputs. The off-topic rule covers examples such as jokes, restaurant recommendations and history questions. The jailbreak rule includes attempts to replace or ignore the system instructions.
 
-### Doubts · Will unseen off-topic questions bypass the gate? · 01:21
+### Doubts · Will unseen off-topic questions bypass the gate?
 
 **Host prompt:** Suggest questions that are outside the supplied examples.
 
@@ -497,18 +497,18 @@ rails = LLMRails(config, llm=guard_llm)
 
 The YAML contains an OpenAI model placeholder, but the explicit `llm=guard_llm` supplies the model used by this initialisation. Read both configuration and constructor before concluding which provider is called.
 
-### Doubts · Why does a guardrail need an LLM? · 01:32
+### Doubts · Why does a guardrail need an LLM?
 
 **Mo:** If rules are defined, why is a language model used inside NeMo?
 
 **Response:** Free-form language needs to be mapped to canonical intents before a corresponding flow can run. Similar examples help that classification. Rules govern the subsequent dialogue behaviour, but user wording is not restricted to the exact examples.
 
-The board used for this answer (1:22 to 1:24, extended at 1:33) contrasts two ways to build a guard. **Llama Guard** has been fine-tuned to recognise unsafe and off-topic input, so its knowledge lives in its weights. **NeMo Guardrails** is open source and is not trained on your rules. It uses FastEmbed to find the defined example scenarios closest to the message, then asks an LLM to decide the intent. If the LLM decides the message matches a rail, the rail's reply is returned; otherwise the message goes on to the RAG graph. The crosses on the board mark the weak spot: phrasings unlike any of your examples.
+The board used for this answer contrasts two ways to build a guard. **Llama Guard** has been fine-tuned to recognise unsafe and off-topic input, so its knowledge lives in its weights. **NeMo Guardrails** is open source and is not trained on your rules. It uses FastEmbed to find the defined example scenarios closest to the message, then asks an LLM to decide the intent. If the LLM decides the message matches a rail, the rail's reply is returned; otherwise the message goes on to the RAG graph. The crosses on the board mark the weak spot: phrasings unlike any of your examples.
 
 <Infographic
   src="/img/enterprise-rag/s2-guard-approaches.svg"
   alt="Two ways to build a guard"
-  caption="Redrawn from the session's whiteboard, 1:22 to 1:24 and 1:33."
+  caption="Redrawn from the whiteboard."
 />
 
 ### 2.3 Understand what `guard()` returns
@@ -663,7 +663,7 @@ This snippet exposes the gate branch; the repository's endpoint supplies the gra
 
 **`NOT from session`** This integration has no post-generation output rail around the final RAG answer. The input/output capabilities of the demonstration should not be confused with controls actually wired into `main.py`.
 
-### Doubts · Are the model calls now free because the gateway count did not move? · 02:29–02:34
+### Doubts · Are the model calls now free because the gateway count did not move?
 
 **Observed demonstration:** A greeting or refusal skips the RAG pipeline and does not add the expected planner/responder gateway traffic.
 
@@ -679,28 +679,28 @@ This snippet exposes the gate branch; the repository's endpoint supplies the gra
 
 ## 3. Integrate Portkey into planner and responder
 
-The gateway board (0:41 to 0:44) starts from the problem. With 100,000 users calling a provider's API directly, the provider's rate limits and slow responses become the user's problem. A gateway such as Portkey sits between the application and the providers. If OpenAI is unavailable, the request moves to Anthropic, and then to Gemini. The same layer can front MCP servers and their tools, and it hands out **virtual keys**, so the application refers to a key stored in the gateway instead of holding each provider's real key.
+The gateway board starts from the problem. With 100,000 users calling a provider's API directly, the provider's rate limits and slow responses become the user's problem. A gateway such as Portkey sits between the application and the providers. If OpenAI is unavailable, the request moves to Anthropic, and then to Gemini. The same layer can front MCP servers and their tools, and it hands out **virtual keys**, so the application refers to a key stored in the gateway instead of holding each provider's real key.
 
 <Infographic
   src="/img/enterprise-rag/s2-gateway.svg"
   alt="Gateways → Portkey"
-  caption="Redrawn from the session's whiteboard, 0:41 to 0:44."
+  caption="Redrawn from the whiteboard."
 />
 
-The next page (0:44 to 0:45) makes the key-management point on its own. Without a gateway, ten models mean ten API keys to store and rotate inside the application. With one, the application holds a single key and endpoint, and the gateway maps it to all ten.
+The next page makes the key-management point on its own. Without a gateway, ten models mean ten API keys to store and rotate inside the application. With one, the application holds a single key and endpoint, and the gateway maps it to all ten.
 
 <Infographic
   src="/img/enterprise-rag/s2-gateway-keys.svg"
   alt="10 LLMs, one API"
-  caption="Redrawn from the session's whiteboard, 0:44 to 0:45."
+  caption="Redrawn from the whiteboard."
 />
 
-Before writing the integration (1:48), the host opens Portkey's demo app, *LLM Gateway Explorer*, which has one page per gateway feature: a baseline with no gateway, routing and observability, metadata and tracking, automatic retries, request timeouts, fallback routing, retry plus timeout plus fallback, load balancing, response caching, rate limiting, streaming, and a production config. Its streaming page shows the request path. Only the first two arrows are on screen; the return arrows below follow Portkey's documented behaviour (**`NOT from session`**).
+Before writing the integration, the host opens Portkey's demo app, *LLM Gateway Explorer*, which has one page per gateway feature: a baseline with no gateway, routing and observability, metadata and tracking, automatic retries, request timeouts, fallback routing, retry plus timeout plus fallback, load balancing, response caching, rate limiting, streaming, and a production config. Its streaming page shows the request path. Only the first two arrows are on screen; the return arrows below follow Portkey's documented behaviour (**`NOT from session`**).
 
 <Infographic
   src="/img/enterprise-rag/s2-gateway-explorer-streaming.svg"
   alt="LLM Gateway Explorer · Streaming"
-  caption="Redrawn from Portkey's LLM Gateway Explorer demo app, 1:48. Grey return arrows are an explanatory addition, not shown in the recording."
+  caption="Redrawn from Portkey's LLM Gateway Explorer demo app. Grey return arrows are an explanatory addition, not shown in the recording."
 />
 
 ### 3.1 Define the gateway policy
@@ -1098,7 +1098,7 @@ The client factory lets the planner retain its model interface while changing wh
 
 **`NOT from session`** The reason for using this client is the gateway's compatible protocol and headers. It is not correct to make a blanket claim that a Groq client cannot have a custom base URL. The provider's protocol, model naming and header requirements still need to match the endpoint.
 
-### Doubts · Why change only the responder? · 01:58–02:00
+### Doubts · Why change only the responder?
 
 **Host prompt:** What must change in the responder?
 
@@ -1151,7 +1151,7 @@ The repository's `extract_cache_status` probes response attributes and defaults 
 
 **`NOT from session`** Treat unavailable cache metadata as unknown rather than proof of a miss. Compare with gateway request logs when validating the cache. A repeated natural-language question may have a different full prompt because conversation history changed.
 
-### Doubts · Must a small or self-hosted model use a gateway? · 02:14–02:17
+### Doubts · Must a small or self-hosted model use a gateway?
 
 **Shivani:** Does an SLM need a gateway?
 
@@ -1171,22 +1171,22 @@ Use the same sequence as the demonstration: greeting, farewell, capabilities, an
 
 ## 4. Define what an evaluation measures
 
-The need for evaluation is first raised much earlier, at 0:36 to 0:38. Classical ML and deep learning hold back a test split and score it with accuracy, precision and recall: deterministic arithmetic over labels. A chatbot's output is, in the host's words, "the most random thing", so a RAG system needs its own stage after ingestion and retrieval, with metrics built for generated text.
+The need for evaluation is first raised much earlier. Classical ML and deep learning hold back a test split and score it with accuracy, precision and recall: deterministic arithmetic over labels. A chatbot's output is, in the host's words, "the most random thing", so a RAG system needs its own stage after ingestion and retrieval, with metrics built for generated text.
 
 <Infographic
   src="/img/enterprise-rag/s2-why-evaluate.svg"
   alt="Why a RAG system needs evals"
-  caption="Redrawn from the session's whiteboard, 0:36 to 0:38."
+  caption="Redrawn from the whiteboard."
 />
 
-The evaluation board proper (2:37 onwards) opens with a definition. Evaluation is the systematic process of **measuring and assessing** how well a system performs against predefined objectives, criteria or expected outcomes, to judge its quality, effectiveness and reliability. It then splits the subject into two approaches.
+The evaluation board proper opens with a definition. Evaluation is the systematic process of **measuring and assessing** how well a system performs against predefined objectives, criteria or expected outcomes, to judge its quality, effectiveness and reliability. It then splits the subject into two approaches.
 
 **LLM evals** test the model alone: a prompt goes in, a response comes out, and the response is scored on qualities such as correctness, hallucination, reasoning, safety, bias, coherence, relevance, faithfulness, toxicity, helpfulness and consistency.
 
 <Infographic
   src="/img/enterprise-rag/s2-evaluation-approaches.svg"
   alt="Two approaches to AI evaluation"
-  caption="Redrawn from the session's evaluation board, 2:37 to 2:59."
+  caption="Redrawn from the evaluation board."
 />
 
 **AI application evals** test the whole path a user experiences: the question, retrieval from the knowledge base, the prompt, the LLM, any tools or agents, and the answer. They end with one question the model-only view cannot ask: was the user's goal achieved? This project needs the second kind.
@@ -1195,12 +1195,12 @@ An answer can be fluent yet irrelevant, correct yet unsupported by the retrieved
 
 The examples move from documentation assistants and travel-booking questions to the [evaluation demonstration](https://ragasz.streamlit.app/). One demo uses the *Attention Is All You Need* paper. Another uses a TechNest product/policy knowledge base: returns, ProBook X1 specifications, SoundPods Pro battery life, shipping and product price. These make it possible to compare a known reference with an actual response.
 
-The examination analogy explains the parts (3:01 to 3:04, revisited at 3:15). The student is the RAG pipeline: it writes the exam, producing real answers on real data. The teacher is the evaluation pipeline: it knows the correct answers and how to award marks, scores each answer, and adds the marks up into the evaluation result.
+The examination analogy explains the parts. The student is the RAG pipeline: it writes the exam, producing real answers on real data. The teacher is the evaluation pipeline: it knows the correct answers and how to award marks, scores each answer, and adds the marks up into the evaluation result.
 
 <Infographic
   src="/img/enterprise-rag/s2-exam-analogy.svg"
   alt="Evaluation analogy · examination"
-  caption="Redrawn from the session's evaluation board, 3:01 to 3:04."
+  caption="Redrawn from the evaluation board."
 />
 
 | In the exam | In RAG evaluation |
@@ -1219,15 +1219,15 @@ Two side panels break each role into steps. Before the exam, the teacher sets it
 <Infographic
   src="/img/enterprise-rag/s2-exam-roles.svg"
   alt="Set up the exam, then write it"
-  caption="Redrawn from the side panels of the session's evaluation board, 3:05 to 3:16."
+  caption="Redrawn from the side panels of the session's evaluation board."
 />
 
-After the exam (3:17 to 3:18), the teacher's checklist is the evaluation loop in miniature.
+After the exam, the teacher's checklist is the evaluation loop in miniature.
 
 <Infographic
   src="/img/enterprise-rag/s2-exam-marking.svg"
   alt="B · Evaluating the exam"
-  caption="Redrawn from the session's evaluation board, 3:17 to 3:18."
+  caption="Redrawn from the evaluation board."
 />
 
 A model leaderboard evaluates a model on its benchmark. An application evaluation also depends on your corpus, parsers, chunks, prompts, routing, tool results and user tasks. The session mentions [Artificial Analysis](https://artificialanalysis.ai/) in the benchmark discussion; its model comparisons do not replace application-specific evaluation.
@@ -1256,22 +1256,22 @@ The first evaluation diagram shows dataset construction. Golden questions enter 
 <Infographic
   src="/img/enterprise-rag/s2-dataset-flow.svg"
   alt="Build an evaluation dataset from real RAG runs"
-  caption="Redrawn from the session's whiteboard, 3:05 to 3:16 (revisited 4:32)."
+  caption="Redrawn from the session's whiteboard."
 />
 
-The second diagram evaluates those records (3:17 to 3:36, revisited at 4:36). The judge reads one test case at a time and applies each metric's own criteria. Only after many cases does an aggregate score mean anything, which is why the presenter writes "1000 questions" under the test-case box.
+The second diagram evaluates those records. The judge reads one test case at a time and applies each metric's own criteria. Only after many cases does an aggregate score mean anything, which is why the presenter writes "1000 questions" under the test-case box.
 
-The evaluation poster lists **context relevancy** alongside answer relevancy, faithfulness, context precision and context recall. Section 7 implements a different set of five metrics, replacing context relevancy with answer correctness. Its score box lists metric-wise score, overall score, pass or fail, and feedback with a reason. At about 3:21 the presenter covers the judge box with "Human Reviewer Expert" to show that the grader can be a person; at 3:28 the LLM judge is circled again.
+The evaluation poster lists **context relevancy** alongside answer relevancy, faithfulness, context precision and context recall. Section 7 implements a different set of five metrics, replacing context relevancy with answer correctness. Its score box lists metric-wise score, overall score, pass or fail, and feedback with a reason. The judge box can be covered with "Human Reviewer Expert" to show that the grader can be a person, and the LLM judge is then circled again.
 
 <Infographic
   src="/img/enterprise-rag/s2-judge-flow.svg"
   alt="Evaluation flow · LLM as judge"
-  caption="Redrawn from the session's evaluation board, 3:17 to 3:36."
+  caption="Redrawn from the evaluation board."
 />
 
 A judge should receive the inputs required by the metric. Sending every available field to every metric can accidentally change what is being judged. For example, faithfulness checks response claims against retrieved context; it does not need the reference answer to decide whether those claims were supported.
 
-### Doubts · Is a larger judge automatically better? · 03:23
+### Doubts · Is a larger judge automatically better?
 
 **Host prompt:** Should an 8B answer model be judged by a 70B model?
 
@@ -1279,7 +1279,7 @@ A judge should receive the inputs required by the metric. Sending every availabl
 
 **`NOT from session`** Parameter count is not a validation method. Compare judge decisions with domain-expert labels, inspect disagreements and measure consistency. A larger model can still misread evidence or apply the rubric incorrectly.
 
-### Doubts · What about judge bias? · 03:28
+### Doubts · What about judge bias?
 
 **Krishna:** Can the judge be biased?
 
@@ -1287,24 +1287,24 @@ A judge should receive the inputs required by the metric. Sending every availabl
 
 **`NOT from session`** It does not eliminate bias. Keep the rubric explicit, test known supported/unsupported claims, and calibrate the judge against human-reviewed examples. Preserve the judge model and prompt version with results.
 
-### Doubts · Who creates the golden dataset? · 03:29
+### Doubts · Who creates the golden dataset?
 
 <Infographic
   src="/img/enterprise-rag/s2-goldens-metrics.svg"
   alt="Goldens and metrics"
-  caption="Redrawn from the session's whiteboard, 3:14 and 3:29 to 3:33."
+  caption="Redrawn from the whiteboard."
 />
 
 **Discussion:** Domain experts define what a correct answer means. Airline cancellation/refund tasks and LCEL documentation questions require different references and success criteria.
 
 DeepEval's [synthetic data generation](https://deepeval.com/docs/synthesizer-introduction) is introduced as a way to generate candidate goldens from documents or contexts. Those candidates still need review; a generated reference can contain the same mistakes the evaluation is meant to detect.
 
-The DeepEval pages shown (4:09 to 4:10, again at 4:28) list four routes: generate goldens from documents, from contexts, from existing goldens, or from scratch. The first two share one path.
+The DeepEval pages shown list four routes: generate goldens from documents, from contexts, from existing goldens, or from scratch. The first two share one path.
 
 <Infographic
   src="/img/enterprise-rag/s2-golden-synthesizer.svg"
   alt="Generate synthetic goldens"
-  caption="Redrawn from DeepEval's Golden Synthesizer documentation as shown in the session, 4:09 to 4:10."
+  caption="Redrawn from DeepEval's Golden Synthesizer documentation as shown in the session."
 />
 
 **Summary**
@@ -1318,19 +1318,19 @@ The DeepEval pages shown (4:09 to 4:10, again at 4:28) list four routes: generat
 
 The annual-exam versus unit-test analogy leads to two evaluation sizes. Small suites give quick feedback on ordinary changes. Larger suites provide broader coverage before major releases or on a schedule.
 
-The board for this (3:36 to 3:42) has two rows. The top row places evaluation beside the running application. The RAG application answers users. A golden dataset is prepared in advance, carrying tags and metadata as well as questions and expected answers. An **offline** evaluation pipeline runs the application on the golden inputs, collects outputs and retrieved context, scores them with an LLM judge and reports. Two kinds of run come out of it, and both feed the same outcomes.
+The board for this has two rows. The top row places evaluation beside the running application. The RAG application answers users. A golden dataset is prepared in advance, carrying tags and metadata as well as questions and expected answers. An **offline** evaluation pipeline runs the application on the golden inputs, collects outputs and retrieved context, scores them with an LLM judge and reports. Two kinds of run come out of it, and both feed the same outcomes.
 
 <Infographic
   src="/img/enterprise-rag/s2-evaluation-schedule.svg"
   alt="Where evaluation fits and when to run"
-  caption="Redrawn from the session's evaluation board, 3:36 to 3:42."
+  caption="Redrawn from the evaluation board."
 />
 
 The bottom row puts the same decision into CI/CD. The type of change picks the suite, results land on a dashboard with alerts, and a comprehensive run feeds back into the pipeline.
 
 The session gives an illustrative small suite of about 50 essential cases. That number is not a universal threshold. A new retrieval filter should include cases that would reveal incorrect filtering; a new refusal rule should include both attacks and legitimate questions that might be blocked.
 
-### Doubts · Is evaluation a separate pipeline? · 04:15
+### Doubts · Is evaluation a separate pipeline?
 
 **Hardik:** Should this run separately, perhaps on a schedule?
 
@@ -1405,7 +1405,7 @@ flowchart LR
 
 The teaching implementation supplies `user_input` and `response` to `AnswerRelevancy`, along with a judge and an embedding model. It does not pass retrieved contexts to that metric, despite the diagram showing context as optional. [Ragas response relevancy](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/answer_relevance/).
 
-### Doubts · Is this HyDE? · 03:57
+### Doubts · Is this HyDE?
 
 **Student question:** Is generating hypothetical questions the same as HyDE?
 
@@ -1431,7 +1431,7 @@ flowchart LR
     YES & MISS --> REC["Context recall = 3 / 4 = 0.75"]
 ```
 
-### Doubts · How is recall different from faithfulness? · 04:04–04:07
+### Doubts · How is recall different from faithfulness?
 
 **Students:** Both compare claims with context. What is different?
 
@@ -3493,20 +3493,20 @@ Document batches use `retrieval.passage`; queries use `retrieval.query`. The emb
 
 **Host explanation:** Retrieval narrows the collection first. The reranker receives those candidates, typically 15 in this application, and chooses the final context. That is how the more expensive relevance calculation remains practical.
 
-Jina's reranker page, shown at 5:26, draws this in three steps. First-stage search, BM25 or vector, cuts the full database down to a relevant top N and discards the rest. The reranker then reads the query against each of those N documents, looking at how the query terms interact with each document's content. It returns them re-sorted, keeping a top k no larger than N.
+Jina's reranker page draws this in three steps. First-stage search, BM25 or vector, cuts the full database down to a relevant top N and discards the rest. The reranker then reads the query against each of those N documents, looking at how the query terms interact with each document's content. It returns them re-sorted, keeping a top k no larger than N.
 
 <Infographic
   src="/img/enterprise-rag/s2-jina-reranking.svg"
   alt="Retrieve broadly, then rerank"
-  caption="Redrawn from Jina AI's reranker page as shown in the session, 5:26 to 5:27."
+  caption="Redrawn from Jina AI's reranker page as shown in the session."
 />
 
-Voyage AI's page (5:28) draws the same pipeline as a loop. The host's point is that every production retrieval system has a reranker stage, and switching ecosystem, from Jina to MongoDB's Voyage for example, changes the vendor but not the shape.
+Voyage AI's page draws the same pipeline as a loop. The host's point is that every production retrieval system has a reranker stage, and switching ecosystem, from Jina to MongoDB's Voyage for example, changes the vendor but not the shape.
 
 <Infographic
   src="/img/enterprise-rag/s2-voyage-ecosystem.svg"
   alt="Search and retrieval ecosystem"
-  caption="Redrawn from the Voyage AI page shown in the session, 5:28."
+  caption="Redrawn from the Voyage AI page shown in the session."
 />
 
 **Naveen's question:** Should the most-downloaded model be selected?
@@ -5650,12 +5650,12 @@ The deployed unit is the same image already exercised with Docker. ECS runs it w
 
 A successful deployment has three independent proofs: containers remain healthy, requests reach the application, and a real query retrieves the intended collection. A green ECS service alone proves none of the answer-quality requirements.
 
-The board (6:33 to 6:38, revisited at 6:47 and 7:14) labels every connection. The load balancer splits on path: `/query`, `/health`, `/ready` and `/metrics` go to the API task, and `/ui*` goes to the Streamlit task, which reaches the API through `BACKEND_URL`. Each outbound dependency has its protocol written on the edge. Portkey routes to OpenAI `gpt-5-mini` first and falls back to Anthropic `claude-haiku-4-5`. At 7:14 the presenter shades the compute group to make the security point: all traffic reaches the Fargate cluster through the load balancer.
+The board labels every connection. The load balancer splits on path: `/query`, `/health`, `/ready` and `/metrics` go to the API task, and `/ui*` goes to the Streamlit task, which reaches the API through `BACKEND_URL`. Each outbound dependency has its protocol written on the edge. Portkey routes to OpenAI `gpt-5-mini` first and falls back to Anthropic `claude-haiku-4-5`. The compute group is shaded to make the security point: all traffic reaches the Fargate cluster through the load balancer.
 
 <Infographic
   src="/img/enterprise-rag/s2-aws-architecture.svg"
   alt="Enterprise RAG on AWS · deployment board"
-  caption="Redrawn from the session's deployment board, 6:33 to 6:38 and 6:47 to 6:51."
+  caption="Redrawn from the deployment board."
 />
 
 The lower half of the board is the AWS management plane. GitHub Actions builds the image and pushes it to ECR, both tasks pull it, and each task reads its secrets, assumes an IAM role, writes logs and exposes metrics.
@@ -6852,12 +6852,12 @@ Here, *parsing* means recovering document content and structure for later indexi
 
 The figure below separates these into three coloured vertical paths, each running from the same PDF page to its output.
 
-The board itself (7:34 to 7:40, reused at 8:04, 8:11 and 8:15 to 8:18) names alternatives at every stage, not only the models demonstrated. All three paradigms start from the same page image rendered from the PDF.
+The board itself names alternatives at every stage, not only the models demonstrated. All three paradigms start from the same page image rendered from the PDF.
 
 <Infographic
   src="/img/enterprise-rag/s2-parsing-paradigms.svg"
   alt="Three paradigms for visual documents"
-  caption="Redrawn from the session's parsing board, 7:34 to 7:40."
+  caption="Redrawn from the parsing board."
 />
 
 Paradigm 1's key step is the routing in the middle: each cropped region is sent to the recogniser with a prompt chosen by its type. Paradigm 2 does everything in one forward pass. Paradigm 3 does not produce text at all; it embeds the page image and retrieves pages.
@@ -6866,7 +6866,7 @@ Visual page retrieval can select a page without transcribing it. The OCR paths c
 
 **`NOT from session`** “One model” does not mean “one failure mode”: OCR can still miss text, misread characters or lose table relationships. Likewise, a two-stage pipeline can recover from some errors by replacing one component, but a layout miss can still remove a region before OCR sees it. Compare them on documents and questions from your own corpus.
 
-### Doubts · Does a document image remove the need to parse? · 07:39–07:50
+### Doubts · Does a document image remove the need to parse?
 
 **Host question:** What happens if we pass a whole PDF page into a visual encoder?
 
@@ -6895,12 +6895,12 @@ For a two-term query, imagine the first term matches a table heading at 0.9 and 
 
 The session first surveys [ColPali](https://arxiv.org/abs/2407.01449), [ColBERT](https://arxiv.org/abs/2004.12832) and [SPLADE](https://arxiv.org/abs/2107.05720), then selects [`vidore/colqwen2.5-v0.2`](https://huggingface.co/vidore/colqwen2.5-v0.2). ColBERT introduced late interaction for text token vectors; ColPali adapts the idea to visual document retrieval. SPLADE is a sparse term expansion method, so it should not be treated as the same MaxSim scoring rule.
 
-The ColPali README's architecture figure (7:40 to 7:41) splits the work in two. **Offline**, each page image is cut into patches and passed through a vision encoder and a language model; a projection layer turns each patch's output into a vector, giving one multi-vector per page. **Online**, the query's tokens go through the same language model and projection. The score is late interaction: for each query token, take its best match (MaxSim) over the page's patch vectors, then add those maxima up. A student asks what "projection" means here: a learned linear layer that maps each hidden state to a smaller vector in the shared scoring space.
+The ColPali README's architecture figure splits the work in two. **Offline**, each page image is cut into patches and passed through a vision encoder and a language model; a projection layer turns each patch's output into a vector, giving one multi-vector per page. **Online**, the query's tokens go through the same language model and projection. The score is late interaction: for each query token, take its best match (MaxSim) over the page's patch vectors, then add those maxima up. A student asks what "projection" means here: a learned linear layer that maps each hidden state to a smaller vector in the shared scoring space.
 
 <Infographic
   src="/img/enterprise-rag/s2-colpali-architecture.svg"
   alt="ColPali architecture · late interaction"
-  caption="Redrawn from the ColPali repository's README as shown in the session, 7:40 to 7:41."
+  caption="Redrawn from the ColPali repository's README as shown in the session."
 />
 
 ### 13.1 Reproduce the page-level experiment
@@ -6986,7 +6986,7 @@ The expected result is **a ranked page list and an image containing the relevant
 
 **`NOT from session`** To reproduce the notebook's image transport step, `base64.b64encode(output.read_bytes()).decode()` produces a string; `base64.b64decode(...)` restores the bytes. Base64 is an encoding of the page image, not a new embedding or a proof of relevance.
 
-### Doubts · Can the model live in a container? · 07:57
+### Doubts · Can the model live in a container?
 
 **Student:** Can the visual model be included in Docker?
 
@@ -7020,12 +7020,12 @@ The inspection step matters more than a pleasing demo screenshot. On the shared 
 
 Use the exact companion repository at revision [`c8d91fe`](https://github.com/sourangshupal/nemotron-parse-mistral-ocr/tree/c8d91fe0f5d474aa331dcdcde03da930ce212a9b). It targets Python 3.12 and keeps this work separate from the Python 3.11 application environment. The source repository's `pyproject.toml` is included below so package requirements stay next to the commands.
 
-The README's architecture tree (8:39 to 8:40) describes the pipeline this repository implements. A parse script rasterises each PDF page to a JPEG, sends it to `nvidia/nemotron-parse` through NVIDIA NIM and saves raw JSON and Markdown. An ingest script then chunks by semantic type, captions figures with a vision model, embeds everything through NIM and indexes it into Qdrant. Only the top of the tree is on screen; the ingest phases are summarised from the README's opening description.
+The README's architecture tree describes the pipeline this repository implements. A parse script rasterises each PDF page to a JPEG, sends it to `nvidia/nemotron-parse` through NVIDIA NIM and saves raw JSON and Markdown. An ingest script then chunks by semantic type, captions figures with a vision model, embeds everything through NIM and indexes it into Qdrant. Only the top of the tree is on screen; the ingest phases are summarised from the README's opening description.
 
 <Infographic
   src="/img/enterprise-rag/s2-ocr-repository.svg"
   alt="Nemotron-Parse + Mistral OCR · repository architecture"
-  caption="Redrawn from the repository README as shown in the session, 8:39 to 8:40."
+  caption="Redrawn from the repository README as shown in the session."
 />
 
 ```bash
@@ -9168,7 +9168,7 @@ if __name__ == "__main__":
 
 The live review found a missed text region and a missed table region even when many boxes looked good. The host's “97% correct” comment was a visual impression, not a measured benchmark. Do not enter it as an evaluation score. To measure a real corpus, annotate fields or regions in a representative sample and report detection recall and text accuracy separately.
 
-### Doubts · Can an existing text RAG backend support multimodal documents? · 08:06
+### Doubts · Can an existing text RAG backend support multimodal documents?
 
 **Student:** Can the existing backend accept pages with tables and figures?
 
@@ -9200,24 +9200,24 @@ flowchart LR
 
 This structure matches the local viewer: a saved or live parser result supplies elements, the PDF renderer supplies the page image, and the visualiser paints each element box using its label. A label such as `table` is a routing decision for a region. The text and cell order inside that box still need inspection.
 
-The PP-DocLayoutV3 model card (8:14 to 8:15) shows why the layout model can output reading order as well as boxes. A PP-HGNetV2 backbone and transformer layers feed four heads: class, box, mask and order. Each head's raw logits are post-processed, filtered and merged into the final layout. The figure's lower row, which details the order head, is too small to read in the recording and is left out here.
+The PP-DocLayoutV3 model card shows why the layout model can output reading order as well as boxes. A PP-HGNetV2 backbone and transformer layers feed four heads: class, box, mask and order. Each head's raw logits are post-processed, filtered and merged into the final layout. The figure's lower row, which details the order head, is too small to read in the recording and is left out here.
 
 <Infographic
   src="/img/enterprise-rag/s2-layout-model.svg"
   alt="PP-DocLayoutV3 · model architecture"
-  caption="Redrawn from the PP-DocLayoutV3 model card as shown in the session, 8:14 to 8:15."
+  caption="Redrawn from the PP-DocLayoutV3 model card as shown in the session."
 />
 
 ### 15.1 Set up the dual-stage repository
 
 Use the companion [`multi-modal-rag`](https://github.com/sourangshupal/multi-modal-rag/tree/2e004a1abdb60ff4b6b38ccf850ed032d7abfe8f) revision. This repo targets Python 3.12 and includes a local `ollama/` demonstration. The application may run slowly on CPU; a GPU or Apple Silicon acceleration can shorten processing. The video loads **saved JSON** for its visual comparison near the end, so seeing boxes in that demonstration does not mean a fresh OCR run occurred at that moment.
 
-The README (8:59 to 9:00) sums the repository up as "raw PDF → clean Markdown → hybrid vector search → re-ranked answers", in four phases. It also claims first place on OmniDocBench V1.5; that is the repository's own claim, not something the session measures. Phases 2 to 4 go further than the live demonstration, which stops after parsing.
+The README sums the repository up as "raw PDF → clean Markdown → hybrid vector search → re-ranked answers", in four phases. It also claims first place on OmniDocBench V1.5; that is the repository's own claim, not something the session measures. Phases 2 to 4 go further than the live demonstration, which stops after parsing.
 
 <Infographic
   src="/img/enterprise-rag/s2-multimodal-pipeline.svg"
   alt="Multimodal RAG · four repository phases"
-  caption="Redrawn from the repository README as shown in the session, 8:59 to 9:00."
+  caption="Redrawn from the repository README as shown in the session."
 />
 
 ```bash
@@ -9939,7 +9939,7 @@ The session inspects the same report page by page. The live observations include
 
 **`NOT from session` · Repeatable review worksheet.** For each sampled page, write the region type, expected text/box, each parser's observed output and whether the missing fact would change an answer. Use the same sample for all three parsers. Do not turn the host's rough “97%” impression into a measured score. For 10,000 documents, the mentioned 500-document manual sample is an example from the discussion, not a universal sample size; select a sample large enough to represent your document types and rare high-risk layouts.
 
-### Doubts · Which parser should go into production? · 09:06–09:09
+### Doubts · Which parser should go into production?
 
 **Student question:** Of the three approaches, which are used in real deployments?
 

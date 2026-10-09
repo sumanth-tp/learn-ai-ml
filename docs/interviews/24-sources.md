@@ -72,7 +72,7 @@ Supports production retrieval, tracing, multi-turn RAG, context management, rera
 
 [Alexey Grigorev, YouTube, 3 March 2026](https://www.youtube.com/watch?v=qjKAqMSD4Vw) and [the creator's written webinar notes](https://github.com/alexeygrigorev/ai-engineering-field-guide/blob/main/webinars/03-the-interview-process.md).
 
-Reviewed the description, chapter list, and author notes. Relevant chapters: [question collection at 15:56](https://www.youtube.com/watch?v=qjKAqMSD4Vw&t=956s), [coding at 43:13](https://www.youtube.com/watch?v=qjKAqMSD4Vw&t=2593s), [project defence at 52:50](https://www.youtube.com/watch?v=qjKAqMSD4Vw&t=3170s), and [system design at 1:00:43](https://www.youtube.com/watch?v=qjKAqMSD4Vw&t=3643s). Timestamps come from the publisher's chapter list. This is a research webinar, not a filmed employer interview.
+Reviewed the description, chapter list, and author notes. Relevant chapters from the publisher's chapter list: question collection, coding, project defence and system design. This is a research webinar, not a filmed employer interview.
 
 ### V2 · ML interview rounds, April 2025 {#v2}
 

@@ -8,7 +8,7 @@ description: "Learn assignment, names, comments, indentation and tracebacks befo
 tags: [python, beginner, syntax, variables, debugging]
 ---
 
-> **Video:** [51:36–1:10:12](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=3096s).
+> **Video:** [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc), covering programming basics, syntax and variables.
 
 A program stores information, calculates results and chooses which instructions to run.
 

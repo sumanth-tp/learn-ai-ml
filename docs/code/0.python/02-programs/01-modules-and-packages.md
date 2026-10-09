@@ -12,7 +12,7 @@ tags: [python, modules, packages, imports, project-layout, sys-path]
 
 ## Start here: installing and importing are different steps
 
-> **Video connection:** [external tools, around 2:38](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=9495s) and [helper modules, 3:34:05](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=12845s).
+> **Video connection:** external tools and helper modules in [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 | Term | Beginner model | Example |
 | --- | --- | --- |

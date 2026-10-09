@@ -16,8 +16,8 @@ PyTorch provides two parallel APIs for neural network operations: `torch.nn` mod
 
 `torch.nn.functional` (imported as `F`) provides stateless functions for neural network operations. `torch.nn` provides stateful module wrappers that own their parameters. In a well-structured model, parameters live in modules and operations use functional calls.
 
-![Neuron arrangement in a ConvNet — `nn.Module` layers stack to form the network graph; `F.*` operations execute within each layer's `forward()`](https://cs231n.github.io/assets/cnn/cnn.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![Neuron arrangement in a ConvNet — `nn.Module` layers stack to form the network graph; `F.*` operations execute within each layer's `forward()`](https://cs231n.stanford.edu/assets/cnn/cnn.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## `nn.Module` vs `torch.nn.functional`
 

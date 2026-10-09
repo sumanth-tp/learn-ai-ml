@@ -26,28 +26,28 @@ The first goal is a script you can explain, run again and share with its depende
 
 ## Video coverage and reading order
 
-The links below use approximate topic starts checked against the transcript. Some published YouTube chapter labels differ from what is on screen, particularly around strings, control flow and data analysis.
+The table below maps each topic in the video to the chapter that covers it, in reading order.
 
-| Video location | What to learn | Read and practise here |
-| --- | --- | --- |
-| [00:00](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=0s) | Course purpose, handbook and practice habits | This guide |
-| [03:58](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=238s) | Python installation on Windows/macOS, VS Code, extensions, workspace, first file | [Setup and first run](./02-setup-and-interactive-python.md) |
-| [31:07](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=1867s) | Environments, pip, imports, Anaconda context, interactive Python | [Environment and kernel setup](./02-setup-and-interactive-python.md#one-environment-for-this-project) |
-| [51:36](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=3096s) | Programming, syntax, PEP 8, errors, variables and comments | [Your first Python program](./03-first-program.md) |
-| [1:10:12](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=4212s) | Numbers, strings, booleans, operators, f-strings and string methods | [Types and data structures](../01-core-language/01-types-and-data-structures.md#start-here-values-expressions-and-containers) |
-| [1:36:00](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=5760s) | Conditions, indentation, loops and `range` | [Control flow](../01-core-language/02-control-flow-and-comprehensions.md#start-here-choose-a-branch-then-repeat-an-action) |
-| [1:47:45](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=6465s) | Lists, indexing, dictionaries, tuples and sets | [Container practice](../01-core-language/01-types-and-data-structures.md#four-containers-you-can-create-and-change) |
-| [2:05:51](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=7551s) | Defining/calling functions, parameters, scope and returned values | [Functions](../01-core-language/03-functions-and-scope.md#start-here-input-work-result) |
-| [2:38:15](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=9495s) | Standard library, external packages, import forms and requirements | [Imports](../02-programs/01-modules-and-packages.md#start-here-installing-and-importing-are-different-steps), [setup](./02-setup-and-interactive-python.md#install-import-and-recreate) |
-| [2:57:00](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=10620s) | HTTP requests, JSON and a reusable weather function | [First API and weather report](../02-programs/06-first-api-and-weather-report.md) |
-| [3:06:20](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=11180s) | Dates, pandas tables, Matplotlib charts, PNG and CSV output | [Weather report lab](../02-programs/06-first-api-and-weather-report.md#from-json-to-a-table-and-chart) |
-| [3:20:30](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=12030s) | Project structure, paths, CSV/JSON/Excel and helper modules | [Sales analysis lab](../02-programs/07-sales-analysis.md), [file paths](../02-programs/03-files-and-context-managers.md#start-here-where-is-python-looking) |
-| [3:39:39](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=13179s) | Syntax/runtime errors and `try/except` | [Errors and recovery](../02-programs/02-errors-and-exceptions.md#start-here-classify-the-failure) |
-| [3:45:31](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=13531s) | Classes, instances, `self`, methods, inheritance and state | [First class](../02-programs/04-oop-and-the-data-model.md#start-here-one-class-two-independent-objects) |
-| [4:09:44](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=14984s) | Git, GitHub, authentication, clone, commit, push and VS Code UI | [Complete project workflow](../06-engineering/00-project-workflow.md#git-and-github-step-by-step) |
-| [4:44:05](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=17045s) | Environment variables, `.env` and `python-dotenv` | [Configuration and secrets](../06-engineering/00-project-workflow.md#configuration-and-env-files) |
-| [4:55:45](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=17745s) | Ruff formatting, linting and import sorting | [Ruff in the editor and terminal](../06-engineering/00-project-workflow.md#format-lint-and-sort-imports) |
-| [5:01:10](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=18070s) | uv, dependency management, rebuilding a project and final exercise | [uv workflow and final exercise](../06-engineering/00-project-workflow.md#start-a-project-with-uv) |
+| What to learn | Read and practise here |
+| --- | --- |
+| Course purpose, handbook and practice habits | This guide |
+| Python installation on Windows/macOS, VS Code, extensions, workspace, first file | [Setup and first run](./02-setup-and-interactive-python.md) |
+| Environments, pip, imports, Anaconda context, interactive Python | [Environment and kernel setup](./02-setup-and-interactive-python.md#one-environment-for-this-project) |
+| Programming, syntax, PEP 8, errors, variables and comments | [Your first Python program](./03-first-program.md) |
+| Numbers, strings, booleans, operators, f-strings and string methods | [Types and data structures](../01-core-language/01-types-and-data-structures.md#start-here-values-expressions-and-containers) |
+| Conditions, indentation, loops and `range` | [Control flow](../01-core-language/02-control-flow-and-comprehensions.md#start-here-choose-a-branch-then-repeat-an-action) |
+| Lists, indexing, dictionaries, tuples and sets | [Container practice](../01-core-language/01-types-and-data-structures.md#four-containers-you-can-create-and-change) |
+| Defining/calling functions, parameters, scope and returned values | [Functions](../01-core-language/03-functions-and-scope.md#start-here-input-work-result) |
+| Standard library, external packages, import forms and requirements | [Imports](../02-programs/01-modules-and-packages.md#start-here-installing-and-importing-are-different-steps), [setup](./02-setup-and-interactive-python.md#install-import-and-recreate) |
+| HTTP requests, JSON and a reusable weather function | [First API and weather report](../02-programs/06-first-api-and-weather-report.md) |
+| Dates, pandas tables, Matplotlib charts, PNG and CSV output | [Weather report lab](../02-programs/06-first-api-and-weather-report.md#from-json-to-a-table-and-chart) |
+| Project structure, paths, CSV/JSON/Excel and helper modules | [Sales analysis lab](../02-programs/07-sales-analysis.md), [file paths](../02-programs/03-files-and-context-managers.md#start-here-where-is-python-looking) |
+| Syntax/runtime errors and `try/except` | [Errors and recovery](../02-programs/02-errors-and-exceptions.md#start-here-classify-the-failure) |
+| Classes, instances, `self`, methods, inheritance and state | [First class](../02-programs/04-oop-and-the-data-model.md#start-here-one-class-two-independent-objects) |
+| Git, GitHub, authentication, clone, commit, push and VS Code UI | [Complete project workflow](../06-engineering/00-project-workflow.md#git-and-github-step-by-step) |
+| Environment variables, `.env` and `python-dotenv` | [Configuration and secrets](../06-engineering/00-project-workflow.md#configuration-and-env-files) |
+| Ruff formatting, linting and import sorting | [Ruff in the editor and terminal](../06-engineering/00-project-workflow.md#format-lint-and-sort-imports) |
+| uv, dependency management, rebuilding a project and final exercise | [uv workflow and final exercise](../06-engineering/00-project-workflow.md#start-a-project-with-uv) |
 
 ## What the review added
 

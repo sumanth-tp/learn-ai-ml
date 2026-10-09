@@ -12,7 +12,7 @@ tags: [python, data-structures, list, dict, set, tuple, mutability]
 
 ## Start here: values, expressions and containers
 
-> **Video connection:** [numbers and strings, around 1:10](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=4212s), then [containers, around 1:48](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=6480s). These introductory examples prepare you for the deeper material below.
+> **Video connection:** numbers and strings, then containers, in [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc). These introductory examples prepare you for the deeper material below.
 
 ### Numbers, conversion and arithmetic
 

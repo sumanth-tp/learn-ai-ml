@@ -10,7 +10,7 @@ tags: [agentic-ai, langchain, messages, structured-output, pydantic, middleware,
 
 import Infographic from '@site/src/components/Infographic';
 
-> **Part 2 of 9** · [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=4000s) · 1:06:40 to 2:35:12 ·
+> **Part 2 of 9** · [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
 > Notebooks: `updatedlangchain/4-messages.ipynb`, `updatedlangchain/5-structuredoutput.ipynb`,
 > `updatedlangchain/6-middleware.ipynb` (the tab `langchain_middleware_examples.ipynb` is open in the editor but he never runs it).
 > Notes follow the video in order.
@@ -19,11 +19,11 @@ By the end of this chapter you can build a conversation out of typed messages, m
 
 The chapter has three parts, exactly as the instructor teaches them:
 
-1. **Messages** (1:06:40 to 1:22:40): the four message types and how a list of them becomes a conversation.
-2. **Structured output** (1:22:40 to 1:52:00): getting objects back instead of text, with Pydantic, `TypedDict` and dataclasses.
-3. **Middleware** (1:52:00 to 2:35:12): the airport security analogy, the hooks of an agent, summarisation middleware with three different triggers, and human-in-the-loop middleware with approve, edit and reject.
+1. **Messages**: the four message types and how a list of them becomes a conversation.
+2. **Structured output**: getting objects back instead of text, with Pydantic, `TypedDict` and dataclasses.
+3. **Middleware**: the airport security analogy, the hooks of an agent, summarisation middleware with three different triggers, and human-in-the-loop middleware with approve, edit and reject.
 
-## Where we are (1:06:40)
+## Where we are
 
 The previous part covered tools: how to bind a function to a chat model and let the model decide to call it. Everything so far has produced a *generative AI application* in the simplest sense, a prompt goes in and an answer comes out. This part adds the vocabulary and the control surfaces you need to build something sturdier.
 
@@ -47,7 +47,7 @@ OPENAI_API_KEY=...
 - `GROQ_API_KEY` powers the Qwen model on Groq that the messages and structured-output notebooks use for most examples.
 - `OPENAI_API_KEY` powers the OpenAI models (`gpt-5`, `gpt-4o`, `gpt-4o-mini`) used for the agent examples and all of the middleware demos, because middleware belongs to `create_agent`.
 
-## Messages (1:07:20)
+## Messages
 
 ### What a message is
 
@@ -69,7 +69,7 @@ He then points back at something you have already been seeing without the name: 
   caption="Explanatory board (not shown in the video): what a message is, the four kinds, and text prompt versus message prompt."
 />
 
-### Initialise the model (1:08:40)
+### Initialise the model
 
 He starts from a fresh notebook, `4-messages.ipynb`. The first cell is the model setup you already know: import `init_chat_model`, copy the Groq key from the environment, and create the Qwen3 32B reasoning model. The string `"groq:qwen/qwen3-32b"` means *provider, colon, model name*.
 
@@ -87,7 +87,7 @@ Line by line:
 - `os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")` makes sure the key is present in the environment where the Groq client looks for it. In this notebook the value is already in the environment (from the shell or a `.env` loaded earlier); if it is not set at all, `os.getenv` returns `None` and assigning that to `os.environ` raises a `TypeError`. If you rely on a `.env` file alone, call `load_dotenv()` first, as the middleware notebook does.
 - `init_chat_model("groq:qwen/qwen3-32b")` returns a chat model object. Every later cell reuses the variable `model`.
 
-### Text prompts (1:09:20)
+### Text prompts
 
 The simplest call is to hand the model a plain string.
 
@@ -119,7 +119,7 @@ Here he deliberately says nothing about *how* the model should behave. There is 
 - you do not need conversation history;
 - you want minimal code.
 
-### Message prompts (1:11:20)
+### Message prompts
 
 The alternative is to pass **a list of message objects**. A list lets you describe a whole conversation, not just the latest question, and lets you say which role each line comes from. He first reads the four types off the notebook:
 
@@ -162,7 +162,7 @@ He reads the start of the output aloud to prove both messages arrived: the model
 
 He adds that you could also put AI messages into this list. That is exactly what he does a little later.
 
-### A second system message example (1:15:20)
+### A second system message example
 
 Next he swaps in a different one-line system prompt and a technical question.
 
@@ -188,7 +188,7 @@ First, they need to understand the fundamentals. REST stands for Representationa
 ... I can list popular options: Python (Flask, Django), Node.js (Express), Ruby (Sinatra), Java (Spring Boot), etc.
 ```
 
-### Detailed system messages (1:16:00)
+### Detailed system messages
 
 His point here: a one-liner works, but when you want a more specific answer you give the model **more context in the system message**. He keeps the user question identical, and changes only the system prompt.
 
@@ -214,7 +214,7 @@ The triple-quoted string defines a richer persona: a senior Python developer who
 
 Take-away he states: the more precise information you put in the system message, the more precise the response.
 
-### Role, content, metadata in practice (1:18:00)
+### Role, content, metadata in practice
 
 He now returns to the three-part definition and shows the **metadata** on a human message. `name` identifies which user is speaking and `id` gives the message a unique identifier, handy for tracing.
 
@@ -249,7 +249,7 @@ AIMessage(content='<think>\nOkay, the user said "Hello!" so I should respond in 
 `name` and `id` are bookkeeping fields for your application, such as telling users apart in a multi-user log or tracing one message through a system. They do not change what the model is told to do. Whether a provider also uses `name` in the prompt depends on the provider.
 :::
 
-### Writing an AI message by hand (1:19:20)
+### Writing an AI message by hand
 
 You can also *author* an AI message yourself. It does not have to come from the model. That is useful for rebuilding a conversation history, for example when you load a past chat from a database.
 
@@ -280,7 +280,7 @@ Read the list like a script:
 
 The model sees the whole exchange and answers the last question. Because Qwen3 is a reasoning model, the answer is again wrapped in a long think block ("2 plus 2 is 4, that's straightforward, but should I explain it?").
 
-### Token usage on the response (1:20:00)
+### Token usage on the response
 
 Back on the real response, he looks at the metadata.
 
@@ -300,7 +300,7 @@ It tells you how many tokens went in, how many came out and the total, which is 
 He says "response dot metadata" while explaining. There is no attribute with that exact name. The two attributes that exist are `response.usage_metadata` (the token counts shown above, the one he types) and `response.response_metadata` (provider details such as model name, finish reason and a provider-specific token usage block).
 :::
 
-### The tool message (1:20:40)
+### The tool message
 
 The last of the four types links back to the tools part. When a model needs a tool, it does not run it. It produces an AI message that contains a **tool call**, your code runs the tool, and the result goes back to the model inside a **tool message**.
 
@@ -376,9 +376,9 @@ He draws attention to two things: printing `tool_message` shows it really is a `
 
 He closes the section by saying he will keep covering the updated LangChain topics as they appear, and signposts the next one: structured output with Pydantic, nested structures and `TypedDict`.
 
-## Structured output (1:22:40)
+## Structured output
 
-### Why you need it (1:23:20)
+### Why you need it
 
 So far every answer has been a block of prose. That is fine for chat, but not for software. Suppose you ask a model for an essay or for details of a film and you want the program that receives the answer to read specific fields, such as a title or a year, without scraping paragraphs. You need the model to respond **in a format that matches a schema you define**.
 
@@ -398,7 +398,7 @@ The notebook's definition: models can be asked to answer in a given schema. That
 | Nested structures | Yes (`cast: list[Actor]`) | Yes, without validation inside | Yes |
 | He describes it as | "the richest feature set" | "a simpler alternative using built-in typing" | "a class that mostly holds data" |
 
-### Pydantic (1:24:40)
+### Pydantic
 
 He begins with Pydantic, which gives you field validation, descriptions and nested structure. First he loads the same Qwen model in `5-structuredoutput.ipynb`.
 
@@ -463,7 +463,7 @@ RunnableBinding(bound=ChatGroq(profile={...}, model_name='qwen/qwen3-32b', ...),
 
 Reading it: for this Groq model, structured output is implemented by **tool calling**. The `Movie` schema is registered as a tool called `Movie` (with your field descriptions), the model is made to call it, and the parser turns the tool-call arguments into a real `Movie` object. You do not have to do any of that by hand.
 
-### With and without a schema (1:31:20)
+### With and without a schema
 
 To see the difference, he asks the same question twice. First against the plain model.
 
@@ -488,7 +488,7 @@ Movie(title='Inception', year=2010, director='Christopher Nolan', rating=8.8)
 
 This is a real Python object with exactly the four fields, ready to use anywhere in your code, `response.year`, `response.director`, and so on. He also notes that these details come from whatever the model absorbed during training, so trust the *shape* of the answer more than every detail in it.
 
-### Why validation matters (1:34:00)
+### Why validation matters
 
 He pauses on the part that makes Pydantic different. Because the schema says `title: str`, `year: int` and `rating: float`, **the values are checked**. A number where a string is required, or text where an integer is required, raises an error. This runtime *field validation* is the main reason to pick Pydantic when you will rely on the data afterwards.
 
@@ -496,7 +496,7 @@ He pauses on the part that makes Pydantic different. Because the schema says `ti
 Pydantic's default mode is forgiving about harmless conversions. A string such as `"2010"` is accepted and converted to the integer 2010, but a value that cannot be converted (for instance `"abc"`) is rejected. If you need strict behaviour, Pydantic has a strict mode.
 :::
 
-### Message output alongside the parsed structure (1:35:20)
+### Message output alongside the parsed structure
 
 Sometimes you want the parsed object **and** the raw model message (to read its token usage or its reasoning). The option for that is `include_raw=True`.
 
@@ -539,7 +539,7 @@ The result is a dictionary with three keys:
 While reading the cell he calls the `Field(...)` fields "optional". It is the other way round: the `...` (Ellipsis) means the field is **required**. To make a field optional you give it a default, as the `budget` field below does with `= Field(None, ...)`.
 :::
 
-### Nested structures (1:36:40)
+### Nested structures
 
 Real data nests. A movie has actors, and each actor has a name and a role. Pydantic models can contain other Pydantic models.
 
@@ -593,7 +593,7 @@ He points out the list of actors in `cast`, the list of genres, and the budget o
 The model's output here is not fully accurate. Tom Hardy played Eames in *Inception*, not "Bane" (that is a different Nolan film). A schema guarantees the **shape** of the answer, not its truth.
 :::
 
-### TypedDict (1:39:20)
+### TypedDict
 
 The second route is `TypedDict`, from Python's typing tools. It is a simpler alternative for when you do **not** need runtime validation: a `TypedDict` is, at runtime, just a plain dictionary, with type hints for humans and tools.
 
@@ -668,7 +668,7 @@ In the last line of the `MovieDetails` class, the notebook writes `budget: float
 The correct way to describe and optionalise a field in a `TypedDict` is `budget: Annotated[float | None, ..., "Budget in millions USD"]`.
 :::
 
-### Model profile (1:44:00)
+### Model profile
 
 Before leaving the Groq model, he shows a handy property. If you ask the *structured* wrapper for its profile, you get an `AttributeError`, because the wrapper is a runnable, not the model. Ask the **original** model.
 
@@ -693,7 +693,7 @@ model.profile
 
 Read it as a capability sheet for Qwen3 32B: it takes about 131 thousand input tokens, can produce up to about 16 thousand, does **not** accept images, audio or video, **does** produce reasoning output and **does** support tool calling. These are the facts you check when choosing a model for a task.
 
-### Dataclasses, and structured output inside agents (1:45:20)
+### Dataclasses, and structured output inside agents
 
 The third route is the **dataclass**. Dataclasses have been in Python since version 3.7. A dataclass is a class that mostly stores data and is created with the `@dataclass` decorator. By itself it has no input validation.
 
@@ -837,7 +837,7 @@ In the `TypedDict` and dataclass versions the `# The name of the person` comment
 
 His summary of the section: you now know how to get structured output from a model with Pydantic, `TypedDict` and dataclasses. These are just different ways of doing the same job and you can pick whichever suits you. The next topics he mentions are streaming and short-term memory, then he turns to middleware.
 
-## Middleware (1:52:00)
+## Middleware
 
 ### What middleware is for
 
@@ -850,7 +850,7 @@ Middleware, in the notebook's definition, is a way to **more tightly control wha
 
 He admits that the definition alone leaves most people confused, so he explains it with an analogy.
 
-### The airport security analogy (1:53:20)
+### The airport security analogy
 
 > Instructor's analogy: think of an airport.
 
@@ -865,12 +865,12 @@ Each checkpoint does its own inspection:
 <Infographic
   src="/img/agentic-course/02-airport-security.svg"
   alt="Board of the airport security analogy: passenger goes through security check, immigration and boarding to flight 18, each with a numbered middleware, and the same idea applied around an agent"
-  caption="Redrawn from the instructor's whiteboard at 1:53:45 to 1:58:00 (the lower strip, middleware around an agent, is the mapping he describes aloud)."
+  caption="Redrawn from the whiteboard (the lower strip, middleware around an agent, is the mapping he describes aloud)."
 />
 
 Now map it to software. Replace the passenger with a **request**, and the flight with the **agent**. Before the request reaches the agent, it passes through checkpoints, and each can do something: a plain check, logging, exception handling, a model call, anything. That is why he says middleware lets you control *what happens inside the agent* so tightly. You can create middleware 1, middleware 2, middleware 3 and put any logic you need in each.
 
-### An agent with and without middleware (1:56:40)
+### An agent with and without middleware
 
 Next he recalls what an agent is. It contains a **model** and **tools**, which is the ReAct pattern: the request goes to the model, the model decides whether a tool is needed, the tool runs and gives context back, and eventually you get the result.
 
@@ -879,7 +879,7 @@ With middleware, the same agent looks different. He shows the diagram from the L
 <Infographic
   src="/img/agentic-course/02-agent-hooks.svg"
   alt="Two diagrams side by side. Left: request, model, tools loop, result. Right: the same agent with before_agent, before_model, wrap_model_call, wrap_tool_call, after_model and after_agent hooks"
-  caption="Redrawn from the LangChain docs diagram that he annotates with the word 'hooks' at 1:56:40 to 1:58:00."
+  caption="Redrawn from the LangChain docs diagram that he annotates with the word 'hooks'."
 />
 
 A **hook** is a trigger point: a moment in the agent's run at which your middleware gets called. The diagram marks them:
@@ -895,14 +895,14 @@ A **hook** is a trigger point: a moment in the agent's run at which your middlew
 
 His list of what you might do at a hook: logging, summarisation, and many other things.
 
-### Built-in middleware (1:58:00)
+### Built-in middleware
 
 LangChain ships ready-made middleware for common jobs. He starts with the most common one, **summarisation middleware**, and sketches it on the board.
 
 <Infographic
   src="/img/agentic-course/02-builtin-summarization.svg"
   alt="Board listing built-in middleware (summarization, human in the loop, model call limit) next to a diagram of an agent whose message list is summarised by an LLM when it reaches ten messages"
-  caption="Redrawn from the instructor's whiteboard at 1:58:30 to 2:00:30."
+  caption="Redrawn from the whiteboard."
 />
 
 Imagine an agent connected to a tool, with an input on one side and an output on the other. Each turn adds messages to the conversation list, so the list keeps growing. Summarisation middleware watches that list. Once it reaches a size you choose, say **10 messages**, it asks an LLM to summarise the whole stack and replaces the old messages with the summary. The agent then carries on with a short context instead of an ever-growing one.
@@ -930,7 +930,7 @@ Two more entries on his list: **human in the loop** (a human gives feedback or a
 
 His plan: cover the most important ones with working examples so that you can apply any of the others independently, since in the end which one you use depends on your use case.
 
-### Notebook setup (2:01:20)
+### Notebook setup
 
 He switches to `6-middleware.ipynb`, restates the definition bullets in the first markdown cell, and loads the environment with the OpenAI key. Middleware belongs to `create_agent`, and these demos run on OpenAI models.
 
@@ -944,7 +944,7 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 `load_dotenv()` reads the `.env` file, and the last line copies the key into the environment. (The same setup is why the earlier notebooks could use `os.getenv`.)
 
-### Summarisation middleware (2:02:00)
+### Summarisation middleware
 
 The notebook's definition: summarisation middleware **automatically summarises conversation history when approaching token limits, preserving recent messages while compressing older context**. It is useful for:
 
@@ -954,7 +954,7 @@ The notebook's definition: summarisation middleware **automatically summarises c
 
 There are several kinds of **trigger** for when summarising should start: a number of **messages**, a number of **tokens**, and a **fraction** of the model's context window. He demonstrates all three, starting with messages.
 
-#### Trigger on message count (2:03:20)
+#### Trigger on message count
 
 First the imports and the agent.
 
@@ -1065,7 +1065,7 @@ This is the key property of middleware, he says: you attach a rule to the agent 
   caption="Explanatory board (not shown in the video): message counts after each turn for the three runs in his notebook."
 />
 
-#### Trigger on token count (2:11:20)
+#### Trigger on token count
 
 The second trigger uses **tokens**. For this run he adds a tool, because tool results are big and fill the context quickly.
 
@@ -1151,7 +1151,7 @@ The size climbs, 149, 302, 456, and then **falls** at New York to 396 tokens and
 The helper counts only message text and rounds crudely, while the middleware counts every message including the tool-call arguments and per-message overhead. So the threshold fires while his printed estimate is still a little below 550. Treat his figure as a rough indicator.
 :::
 
-#### Trigger on a fraction of the context window (2:16:40)
+#### Trigger on a fraction of the context window
 
 The third option expresses the trigger as a **fraction of the model's context window**. That is handy because the same configuration then adapts to whichever model you use. He pastes this cell.
 
@@ -1230,13 +1230,13 @@ He recaps the three: by **message count**, by **token size**, and by **fraction*
 The trigger and keep tuples shown here are the current API. Older LangChain 1.0 pre-release posts used separate arguments called `max_tokens_before_summary` and `messages_to_keep`. If you meet them in an older tutorial, they map onto `trigger` and `keep`. The middleware also accepts a list of triggers if you want, for example, "messages or tokens, whichever comes first"; check the docs page for your version.
 :::
 
-#### Other built-ins (2:19:20)
+#### Other built-ins
 
 He ends the section by mentioning two other built-ins he will not demonstrate. **Tool call limit** is applied the same way, by putting it in the `middleware` list. **Model fallback** switches to another model when the first fails, for instance when the API key stops working or the provider is down. Human in the loop is next.
 
-## Human-in-the-loop middleware (2:20:00)
+## Human-in-the-loop middleware
 
-### What it is and why (2:20:00)
+### What it is and why
 
 Notebook definition: human-in-the-loop (HITL) middleware **pauses agent execution so a human can approve, edit or reject a tool call before it runs**. It suits:
 
@@ -1249,12 +1249,12 @@ He opens his scribble page to explain why. An agent has an input and an output. 
 <Infographic
   src="/img/agentic-course/02-hitl-scribble.svg"
   alt="Board with an autonomous agent taking input and producing output, a human intervention arrow into the agent, and a side chain from financial transaction to stock buy to critical task"
-  caption="Redrawn from the instructor's whiteboard at 2:20:40 to 2:22:40."
+  caption="Redrawn from the whiteboard."
 />
 
 So you cannot depend completely on the autonomous agent. Instead you put a **human** into the loop. Whenever the agent decides on a critical action, it first requests confirmation from the human, and the task does not complete until the human gives feedback. That is the origin of the name *human in the loop*. For any critical task, he says, human intervention is needed, because LLMs make mistakes.
 
-### Build the agent (2:22:40)
+### Build the agent
 
 Continuing in the same notebook, the imports:
 
@@ -1314,7 +1314,7 @@ agent=create_agent(
   caption="Explanatory board (not shown in the video): the pause and resume cycle the next three examples follow."
 />
 
-### Approve (2:27:20)
+### Approve
 
 First the request. A thread id of `test-approve` identifies this run.
 
@@ -1390,7 +1390,7 @@ Printing `result` again shows what happened underneath: after the AI tool-call m
 result
 ```
 
-### Reject (2:31:20)
+### Reject
 
 The agent definition is the same, so he copies it down and only changes the thread id and the decision.
 
@@ -1484,7 +1484,7 @@ The tool message now reads `User rejected the tool call for send_email_tool with
 The reject decision also accepts an optional `message`, such as `{"type": "reject", "message": "Wrong recipient, ask the user again"}`. The agent sees that text, so it can respond sensibly instead of guessing. (From the LangChain human-in-the-loop docs; he does not use it in the video.)
 :::
 
-### Edit (2:32:40)
+### Edit
 
 The third decision fixes a mistake instead of cancelling. Again the agent definition is repeated.
 
@@ -1592,7 +1592,7 @@ The tool call that actually ran used the human's arguments, and its tool message
 `decisions` is a list with **one entry per pending action, in the same order** as `action_requests`. Here there is only one tool call, so the list has one item. If an agent asked for two risky calls at once you would send two decisions.
 :::
 
-### More built-in middleware (2:34:00)
+### More built-in middleware
 
 He closes the middleware section by pointing at the rest of the docs page for you to explore on your own.
 
@@ -1620,7 +1620,7 @@ agent = create_agent(
 
 `thread_limit=10` limits the total model calls across the whole conversation thread. `run_limit=5` limits calls within one run of the agent. `exit_behavior="end"` makes the agent finish gracefully when a limit is reached instead of raising an error. You choose which middleware to use depending on your application, and the same `middleware=[...]` list takes them all.
 
-## What comes next (2:34:40)
+## What comes next
 
 That ends the LangChain crash course. In the final minutes of this section he starts the next course in the video, a **LangGraph** crash course on building agentic AI applications, split into three parts of roughly two to three hours each. The next chapter picks that up.
 

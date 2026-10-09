@@ -13,25 +13,74 @@ import FreshnessBudgetLab from '@site/src/components/viz/FreshnessBudgetLab';
 
 **In one line.** Data observability turns a consumer's trust requirement into measurable signals and a response path.
 
+:::tip Before you start
+
+**You should already know**
+
+- What a pipeline run and a partition are ([Lecture 10, orchestration and recovery](/docs/mlops/data/orchestration-and-recovery)).
+- What a null rate and a quantile are, and what profiling and drift checks do ([Session 8, profiling, validation and drift](/docs/mlops/data/profiling-validation-drift)).
+
+**Reading time:** about 45 minutes, plus a few seconds to run the code.
+
+**After this chapter you can**
+
+- Work out a freshness breach and a volume change by hand, and say why the baseline matters.
+- Compare monitors by what they catch, how fast, and how often they cry wolf.
+- Choose a threshold knowing the cost of false alarms.
+
+:::
+
+## In 30 seconds
+
+A delivery that arrives is not the same as a delivery that is right. Data observability is the set of checks that tell you the data is recent, the right size, the right shape and the right kind of values, before somebody downstream makes a decision with it.
+
+Think of a smoke alarm. If it is too sensitive it goes off every time you make toast, and soon nobody listens. If it is too dull it misses the fire. Every data monitor sits somewhere on that line.
+
+## Words you will meet
+
+| Term | Plain meaning | Tiny example |
+| --- | --- | --- |
+| Freshness | How old the newest data is | Last approved load was 90 minutes ago |
+| Volume | How much data arrived | 600 rows against 1,000 expected |
+| Schema | The columns and their types | `amount` changed from number to text |
+| Distribution | The spread of values, nulls and categories | Null rate jumped from 2% to 12% |
+| Baseline | What "normal" looks like for comparison | Same hour, last four weeks |
+| False alarm | An alert when nothing is wrong | A volume alert at the daily peak |
+| Detection delay | Time from the start of a problem to the first alert | 1 hour |
+| Watermark | The newest event time present in the data | Events through 09:30 |
+
+
 ## The idea in plain words
 
 A pipeline can finish without producing usable data. It may load an old partition, omit half of a source, change a type, duplicate rows or publish values from an unexpected population. Job success tells operators that code reached a terminal state; **data observability** asks whether the resulting data still serves its consumers. It combines measurements, context and incident response so that a problem is detected before a dashboard or model quietly makes a wrong decision.
 
-The lecture organises data health into five pillars: **freshness, volume, schema, distribution and lineage**. Freshness asks whether data is recent enough for a decision. Volume asks whether the expected amount arrived. Schema checks structural compatibility. Distribution observes values, nulls and proportions. Lineage explains upstream origins and downstream impact. This five-pillar framing is a useful taxonomy associated with Monte Carlo's data-observability work, not a universal standard or a complete proof of quality. Correctness against reality, labels and business meaning may need additional checks.
+Data health is often organised into five pillars: **freshness, volume, schema, distribution and lineage**. Freshness asks whether data is recent enough for a decision. Volume asks whether the expected amount arrived. Schema checks structural compatibility. Distribution observes values, nulls and proportions. Lineage explains upstream origins and downstream impact. This five-pillar framing is a useful taxonomy associated with Monte Carlo's data-observability work, not a universal standard or a complete proof of quality. Correctness against reality, labels and business meaning may need additional checks.
 
 <Infographic src="/img/dm/data-observability.svg" alt="Five data-health dimensions are freshness, volume, schema, distribution and lineage; a 90-minute data age against a 60-minute limit is a 30-minute breach." caption="Signals diagnose different failure modes; the data contract determines which response is appropriate." />
 
-The source's worked example says the latest data load was **90 minutes** ago against a **60-minute** freshness limit. Under a contract measuring age since the last approved load, **90 > 60**, so the limit is breached by **30 minutes** and an alert should fire. That calculation does not reveal how old the source events are. A job could load now but contain events from yesterday. For a live model, track a source event-time watermark and the approved publication timestamp so that ingest lag and pipeline lag are distinguishable.
+In a worked example the latest data load was **90 minutes** ago against a **60-minute** freshness limit. Under a contract measuring age since the last approved load, **90 > 60**, so the limit is breached by **30 minutes** and an alert should fire. That calculation does not reveal how old the source events are. A job could load now but contain events from yesterday. For a live model, track a source event-time watermark and the approved publication timestamp so that ingest lag and pipeline lag are distinguishable.
 
-:::note Beyond the lecture
+:::note Correction
 
-The source says breaches alert and quarantine, and links observability to retrain or rollback. The sections below make response conditional on the consumer contract and incident cause. A freshness breach may require an alert or fallback; it does not automatically justify quarantining otherwise valid data. Input drift is one signal, but model retraining requires outcome evidence and a cause analysis.
+It is common to say that every breach should alert and quarantine, and that observability should trigger retraining or rollback. That is too blunt, and the sections below make the response conditional on the consumer contract and incident cause. A freshness breach may require an alert or fallback; it does not automatically justify quarantining otherwise valid data. Input drift is one signal, but model retraining requires outcome evidence and a cause analysis.
 
 :::
 
-The lab starts with the lecture's **90-minute age** and **60-minute limit**, reporting a **30-minute breach**. Change either control to see the state change. It measures time since the approved load; a source watermark is still needed to tell whether the loaded records themselves are current.
+The lab starts with a **90-minute age** and **60-minute limit**, reporting a **30-minute breach**. Change either control to see the state change. It measures time since the approved load; a source watermark is still needed to tell whether the loaded records themselves are current.
 
 <FreshnessBudgetLab />
+
+## Worked example, step by step
+
+An hourly feed normally carries 1,000 rows on a weekday, with a daily cycle: 1,000 x (1 + 0.5 sin(x)), so 1,500 at the busiest hour and 500 at the quietest. The last approved load is stamped 10:30 and the time now is 12:00.
+
+1. **Freshness.** 12:00 - 10:30 = 90 minutes against a 60-minute limit: breached by 30.
+2. **A flat volume band.** Compare each hour with the plain average of 1,000 and alert at 20% off, so outside 800 to 1,200. That means the cycle term must satisfy |0.5 sin(x)| <= 0.2, which is |sin(x)| <= 0.4. The share of the day inside is 4 x arcsin(0.4) / (2 x pi) = 4 x 0.4115 / 6.283 = 26%. So about 74% of perfectly healthy hours raise an alert.
+3. **A same-hour baseline.** Compare 6 pm with the median of the previous four 6 pm values. Row counts fluctuate by about the square root of 1,000, which is 32 or 3.2%. A 15% band is 0.15 / 0.032 = 4.7 times that noise, so healthy hours almost never alert.
+4. **A p-value threshold.** A test with p below 0.05 flags 5% of healthy batches by design: 24 x 0.05 = 1.2 false alarms per day on hourly batches.
+5. **Detection delay.** If an incident starts in hour 100 and the first alert fires on the batch of hour 101, the delay is 1 hour.
+
+In words: a monitor is only as good as its baseline, and a threshold on a p-value is a promise of false alarms. The first block below prints steps 1 to 4.
 
 ## How it works
 
@@ -62,7 +111,7 @@ Neither tool can infer a business definition by itself. A volume monitor may see
 
 ## Code you can run
 
-The lecture's freshness arithmetic is simple, but the clock must be named. This code measures minutes since the last approved load at a chosen observation time.
+The freshness arithmetic is simple, but the clock must be named. This code measures minutes since the last approved load at a chosen observation time.
 
 ```python
 from datetime import datetime, timedelta, timezone
@@ -105,6 +154,138 @@ assert relative_change == -0.4
 ```
 
 A seven-day average can be a useful starting baseline, but a weekday, holiday or product launch may need separate expected ranges. Thresholds should be tested against normal history and the cost of missed or noisy alerts.
+
+### The worked example in code
+
+This block reproduces steps 1 to 4 of the worked example.
+
+```python
+import numpy as np
+
+age, limit = 90, 60
+print("breach", age - limit)
+x = np.linspace(0, 2 * np.pi, 100_000, endpoint=False)
+volume = 1000 * (1 + 0.5 * np.sin(x))
+outside = (np.abs(volume / 1000 - 1) > 0.20).mean()
+print("flat band: inside", round(1 - outside, 3), "alerts", round(outside, 3), "closed form", round(4 * np.arcsin(0.4) / (2 * np.pi), 3))
+noise = 1000 ** 0.5 / 1000
+print("poisson noise", round(noise, 4), "15% band in noise units", round(0.15 / noise, 2))
+print("false alarms per day at p < 0.05", 24 * 0.05)
+```
+
+**Reading the output.** It prints a breach of 30, then inside 0.262 and alerts 0.738 against a closed form of 0.262, then Poisson noise 0.0316 with a band of 4.74 noise units, then 1.2 false alarms per day.
+
+### An experiment on a simulated stream
+
+Which monitors catch a problem, how soon, and how often do they alarm when nothing is wrong? The block below simulates 120 days of hourly batches with a daily and weekly volume cycle, then injects 36 incidents of four hours each: late publication, partial volume and a distribution change (more nulls and a shifted amount). Each kind appears 12 times at three severities, one quarter, one half and full strength. Ten monitors watch the stream. The first four weeks are warm-up for the baselines, and false alarms are counted on the remaining healthy batches.
+
+Versions used: Python 3.14.6, SciPy 1.18.1, pandas 2.3.3, NumPy 2.5.3. Everything is simulated, including the incident sizes. It runs in about five seconds.
+
+```python
+import numpy as np
+import pandas as pd
+from scipy.stats import ks_2samp
+
+rng = np.random.default_rng(16)
+hours, warm = 24 * 120, 24 * 28
+t = np.arange(hours)
+expected = 1000 * (1 + 0.5 * np.sin((t % 24 - 14) * 2 * np.pi / 24)) * np.where((t // 24) % 7 >= 5, 0.6, 1.0)
+rows = rng.poisson(expected).astype(float)
+delay = rng.lognormal(np.log(8), 0.5, hours)
+null_rate = np.full(hours, 0.02)
+scale = np.ones(hours)
+kind = np.zeros(hours, int)
+starts = np.sort(rng.choice(np.arange(warm + 24, hours - 12, 40), 36, replace=False))
+incidents = []
+for i, start in enumerate(starts):
+    label, severity, span = i % 3 + 1, (0.25, 0.5, 1.0)[(i // 3) % 3], slice(start, start + 4)
+    kind[span] = label
+    incidents.append((label, severity, start))
+    if label == 1:
+        delay[span] += 90 * severity
+    elif label == 2:
+        rows[span] *= 1 - 0.5 * severity
+    else:
+        null_rate[span], scale[span] = 0.02 + 0.10 * severity, 1 + 0.25 * severity
+
+reference = rng.lognormal(3.0, 0.6, 5000)
+ks_p, ks_d, batch_null = np.zeros(hours), np.zeros(hours), np.zeros(hours)
+for h in range(hours):
+    sample = rng.lognormal(3.0, 0.6, min(int(rows[h]), 1000)) * scale[h]
+    result = ks_2samp(sample, reference)
+    ks_p[h], ks_d[h] = result.pvalue, result.statistic
+    batch_null[h] = rng.binomial(int(rows[h]), null_rate[h]) / rows[h]
+
+trailing = pd.Series(rows).shift(1).rolling(168).mean().to_numpy()
+same_hour = np.full(hours, np.nan)
+for h in range(168 * 4, hours):
+    same_hour[h] = np.median(rows[[h - 168 * k for k in range(1, 5)]])
+off = lambda tolerance: np.abs(rows / same_hour - 1) > tolerance
+twice = lambda alarm: alarm & np.r_[False, alarm[:-1]]
+monitors = {
+    "delay over 60 min": (delay > 60, 1),
+    "delay over 20 min": (delay > 20, 1),
+    "volume 20% off trailing mean": (np.abs(rows / trailing - 1) > 0.20, 2),
+    "volume 30% off same hour": (off(0.30), 2),
+    "volume 15% off same hour": (off(0.15), 2),
+    "volume 15% off, twice in a row": (twice(off(0.15)), 2),
+    "KS p below 0.05": (ks_p < 0.05, 3),
+    "KS p below 1e-6": (ks_p < 1e-6, 3),
+    "KS statistic over 0.10": (ks_d > 0.10, 3),
+    "null rate over 6%": (batch_null > 0.06, 3),
+}
+healthy = (kind == 0) & (t >= 168 * 4)
+print("batches", hours, "incidents", len(incidents), "healthy batches scored", int(healthy.sum()))
+print(f"{'monitor':32}{'sev 0.25':>9}{'sev 0.5':>9}{'sev 1.0':>9}{'delay h':>9}{'false/1000':>12}")
+for name, (alarm, wanted) in monitors.items():
+    caught, delays = {0.25: 0, 0.5: 0, 1.0: 0}, []
+    for label, severity, start in incidents:
+        hits = np.flatnonzero(alarm[start:start + 4])
+        if label == wanted and len(hits):
+            caught[severity] += 1
+            delays.append(hits[0])
+    row = "".join(f"{caught[s]:7d}/4" for s in (0.25, 0.5, 1.0))
+    print(f"{name:32}{row}{np.mean(delays) if delays else float('nan'):9.2f}{1000 * alarm[healthy].mean():12.1f}")
+```
+
+The output of the run:
+
+```text
+batches 2880 incidents 36 healthy batches scored 2064
+monitor                          sev 0.25  sev 0.5  sev 1.0  delay h  false/1000
+delay over 60 min                     0/4      2/4      4/4     0.83         0.5
+delay over 20 min                     4/4      4/4      4/4     0.00        29.1
+volume 20% off trailing mean          3/4      4/4      4/4     0.45       712.2
+volume 30% off same hour              0/4      0/4      4/4     0.00         0.0
+volume 15% off same hour              3/4      4/4      4/4     0.27         2.4
+volume 15% off, twice in a row        1/4      4/4      4/4     1.22         0.0
+KS p below 0.05                       4/4      4/4      4/4     0.50        50.4
+KS p below 1e-6                       0/4      2/4      4/4     0.33         0.0
+KS statistic over 0.10                0/4      3/4      4/4     0.00         1.0
+null rate over 6%                     0/4      4/4      4/4     0.25         0.0
+```
+
+**Reading the output.** The three severity columns show how many of the 4 incidents of that severity, for the monitor's own incident kind, were caught inside their four hours. `delay h` is the mean hour of the first alarm after the incident began, over caught incidents. `false/1000` is alarms per 1,000 healthy batches.
+
+**Line by line.**
+
+- `rows[span] *= 1 - 0.5 * severity` removes up to half of the rows in a partial-load incident. At severity 0.25 it removes 12.5%.
+- `same_hour[h] = np.median(rows[[h - 168 * k for k in range(1, 5)]])` is the seasonal baseline: the same hour of the week, four weeks back, 168 hours apart.
+- `twice = lambda alarm: alarm & np.r_[False, alarm[:-1]]` requires two alarms in a row, which removes one-off blips at the price of an hour's delay.
+
+### What the numbers say
+
+Baseline choice mattered most. The volume monitor that compares each hour with the trailing 7-day average and alerts at 20% raised 712.2 false alarms per 1,000 healthy batches, 71% of them. The daily cycle swings volume by half, so the monitor was alarming on the cycle. Comparing with the same hour of previous weeks at 15% cut that to 2.4 per 1,000 and still caught 3 of 4 of the weakest incidents.
+
+Statistical tests cry wolf by design. `KS p below 0.05` caught every incident, including the weakest, but it raised 50.4 false alarms per 1,000 batches, about one every 20 hours. Tightening to p below 1e-6 removed the false alarms (0.0) and also lost all four of the weakest incidents. A fixed effect-size rule, KS statistic over 0.10, had 1.0 false alarm per 1,000 and caught 3 of 4 at half strength. The plain null-rate rule, over 6%, caught every incident at half strength or more with no false alarm.
+
+Freshness shows the same trade. A 60-minute limit raised 0.5 false alarms per 1,000 but missed the weakest delays (0 of 4); a 20-minute limit caught all of them and raised 29.1.
+
+Requiring two alarms in a row removed the remaining false alarms and added about an hour of delay (1.22 against 0.27 hours) and lost 2 of the 3 weak catches. The same-hour monitor at 30% missed everything except the full-strength incidents.
+
+Limits: simulated incidents with a convenient shape, one seed, four-hour incidents, and a Poisson volume that is steadier than many real feeds. The ranking of thresholds will move with your data.
+
+<Infographic src="/img/dm-enrich/dm2-monitor-tradeoff.svg" alt="False alarms per 1,000 healthy batches and incidents caught for nine monitors on a simulated stream." caption="Look first at the 712 bar: a flat baseline on a cyclical feed alarms most of the time." />
 
 ## Designing with it
 
@@ -168,6 +349,16 @@ Use lineage to limit blast radius. A source correction should identify which par
 
 :::
 
+## Common mistakes
+
+| Mistake | Why it feels right | What to do instead |
+| --- | --- | --- |
+| Using a flat trailing average as the volume baseline | A seven-day average is easy | Compare with the same hour of previous weeks. The flat baseline raised 712.2 false alarms per 1,000 batches |
+| Alerting on a p-value below 0.05 | It is the standard threshold | A threshold of 0.05 alarms on 5% of healthy batches. Use an effect size or a far smaller p-value, and check what you lose |
+| Counting only the strong incidents | The monitor caught the outage | Test the weak ones too. A p-value of 1e-6 missed all four incidents at quarter strength |
+| Treating job success as data health | The run was green | Watch the data: freshness, volume and null rate caught every full-strength incident here, while no job failed |
+| Retraining the model after a freshness alert | The data changed, so the model must | A late or partial batch needs a pipeline repair. Retrain only with outcome evidence |
+
 ## Practice questions
 
 <details>
@@ -205,11 +396,27 @@ Verifying the expected amount of data arrived (e.g. row count within ±20% of th
 
 </details>
 
+<details>
+<summary><strong>Q6.</strong> (Medium) A feed with a daily cycle between 500 and 1,500 rows is monitored with a flat band of 20% around 1,000. What share of healthy hours alarm, and why?</summary>
+
+About 74%. The band covers 800 to 1,200, so the cycle term 0.5 sin(x) must lie within plus or minus 0.2, which holds for 4 x arcsin(0.4) / (2 x pi) = 26% of the day. The rest of the day the monitor is alarming on the cycle itself. A same-hour baseline fixes it.
+
+</details>
+
+<details>
+<summary><strong>Q7.</strong> (Stretch) Hourly batches are tested at p below 0.05. How many false alarms per day should a team expect, and what are two ways to cut them?</summary>
+
+24 x 0.05 = 1.2 per day. One way is to use a much smaller p-value, which loses weak incidents (in the experiment 1e-6 missed all four at quarter strength). Another is to alarm on an effect size such as the KS statistic over 0.10, or to require two alarms in a row, which adds about an hour of delay.
+
+</details>
+
 ## Go deeper
 
 - [Monte Carlo's original five-pillar explanation](https://www.montecarlodata.com/wp-content/uploads/2021/10/OReilly-Data-Quality-Fundamentals-early-release.pdf) defines the taxonomy.
 - [Elementary documentation](https://docs.elementary-data.com/) describes data monitors and test results.
 - [Great Expectations Checkpoint actions](https://docs.greatexpectations.io/docs/core/trigger_actions_based_on_results/create_a_checkpoint_with_actions/) describes configurable responses.
+- [Elementary documentation](https://docs.elementary-data.com/), opened 2026-10-09: anomaly tests for freshness, volume and custom data metrics in dbt models, and schema-change validation.
+- [scipy.stats.ks_2samp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html), opened 2026-10-09: the two-sample Kolmogorov-Smirnov test, whose statistic is the largest gap between the two empirical distribution functions. SciPy 1.18.1 was run.
 - Built from the course lecture "dm-l16-observability" (Lecture Library series).
 
 - **[Made With ML](https://madewithml.com/)** `course`
@@ -219,9 +426,16 @@ Verifying the expected amount of data arrived (e.g. row count within ±20% of th
 - **[Apache Airflow docs](https://airflow.apache.org/docs/)** `docs`
   Apache; How production data pipelines are scheduled and orchestrated.
 
-## Check your understanding
+## Check yourself
 
 - [ ] I can distinguish freshness, volume, schema, distribution and lineage signals.
 - [ ] I can calculate a 30-minute breach from a 90-minute age and a 60-minute limit.
 - [ ] I can separate source watermark age from approved-load age and trace a missing feed.
 - [ ] I can route a data incident by consumer impact before choosing repair, fallback or model action.
+- [ ] I can compute the share of healthy hours a flat volume band will flag on a cyclical feed.
+- [ ] I can explain why a p-value threshold of 0.05 produces about 1.2 false alarms a day on hourly batches.
+- [ ] I can read a table of detection rate, delay and false alarms and choose a monitor for a stated consumer cost.
+
+## Where to go next
+
+Next: the [question bank](/docs/mlops/data/question-bank), which tests the whole data management course. Related: [Lecture 9, analytics engineering and history](/docs/mlops/data/analytics-engineering-history), whose validity-window checks are one more kind of monitor.

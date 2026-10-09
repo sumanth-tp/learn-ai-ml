@@ -16,8 +16,8 @@ Convolutional neural networks are not purely an engineering invention. Their cor
 
 A convolutional neural network encodes the inductive bias that visual information is spatially local and hierarchically composable, mirroring the organization discovered in the mammalian visual cortex.
 
-![Local receptive field — each CNN neuron connects only to a small 3D patch of the input, mirroring the way V1 neurons respond only to stimuli within a limited visual field](https://cs231n.github.io/assets/cnn/depthcol.jpeg)
-*Source: [CS231n — Convolutional Neural Networks](https://cs231n.github.io/convolutional-networks/) (Stanford)*
+![Local receptive field — each CNN neuron connects only to a small 3D patch of the input, mirroring the way V1 neurons respond only to stimuli within a limited visual field](https://cs231n.stanford.edu/assets/cnn/depthcol.jpeg)
+*Source: [CS231n — Convolutional Neural Networks](https://cs231n.stanford.edu/convolutional-networks/) (Stanford)*
 
 ## Why this topic matters
 

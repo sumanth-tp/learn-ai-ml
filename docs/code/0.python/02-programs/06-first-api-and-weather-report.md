@@ -8,7 +8,7 @@ description: "Use Requests, nested JSON, pandas and Matplotlib to turn weather d
 tags: [python, beginner, api, requests, pandas, matplotlib, project]
 ---
 
-> **Video:** [weather API near 2:57](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=10620s) and [data analysis from 3:06:20](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=11180s).
+> **Video:** the weather API and data analysis sections of [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc).
 
 Fetch structured data, inspect it, turn it into a table and save a report someone else can use.
 

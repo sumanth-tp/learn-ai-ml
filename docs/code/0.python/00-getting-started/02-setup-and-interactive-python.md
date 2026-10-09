@@ -8,7 +8,7 @@ description: "Install Python, create a virtual environment, align VS Code and Ju
 tags: [python, beginner, vscode, venv, pip, jupyter]
 ---
 
-> **Video:** [03:58–51:36](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=238s), with package management revisited near [2:48:48](https://www.youtube.com/watch?v=ygXn5nV5qFc&t=10128s).
+> **Video:** [Python for AI - Full Beginner Course](https://www.youtube.com/watch?v=ygXn5nV5qFc), covering installation, environments and package management.
 
 Make the editor, terminal and interactive window run the same Python before installing packages.
 

@@ -11,8 +11,8 @@ tags: [agentic-ai, rag, vectorless-rag, pageindex, tree-index, openai, retrieval
 import Infographic from '@site/src/components/Infographic';
 
 > **Part 5 of 9** ·
-> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k&t=25843s) ·
-> 7:10:43 to 8:02:11 · Notebook:
+> [Watch on YouTube](https://www.youtube.com/watch?v=rV3HJ4LEZ7k) ·
+> Notebook:
 > `RAG-Tutorials/PageIndex_Vectorless_RAG_CrashCourse (1).ipynb`. Notes follow
 > the video in order.
 
@@ -27,7 +27,7 @@ how to choose between vectorless, vector and hybrid retrieval for a real project
 
 :::note What this part of the video is
 The section opens mid-way through a longer lesson (the instructor has just
-finished the RAG section and is introducing a bonus topic). At 7:40 he wraps up
+finished the RAG section and is introducing a bonus topic). The instructor wraps up
 the notebook demo and says goodbye, then the recording carries on with a second,
 separately recorded segment (he is in a different shirt) that recaps the idea and
 walks through a slide deck comparing the two approaches. The chapter keeps the
@@ -36,7 +36,7 @@ in code, then on slides. The second pass adds the storage question, the strength
 and weaknesses, the decision guide and the hybrid advice.
 :::
 
-## Meet PageIndex (7:10:43)
+## Meet PageIndex
 
 The instructor opens by promising to show, line by line, how **vectorless RAG**
 works, and says he has built some practical applications around it that are worth
@@ -57,8 +57,8 @@ the video moves between them:
 | Offering | What it is | Where it shows up in this chapter |
 | --- | --- | --- |
 | The open-source repository | The tree-building and retrieval code you can run yourself with your own OpenAI key | Mentioned as the self-hosted option; not run on camera |
-| The hosted API and Python SDK (`pageindex` package) | You upload a PDF, PageIndex builds the tree in its cloud, you fetch the JSON | The notebook demo (7:28 onwards) |
-| PageIndex Chat | A ready-made chat page that answers questions over uploaded PDFs | A short live demo at 7:26 |
+| The hosted API and Python SDK (`pageindex` package) | You upload a PDF, PageIndex builds the tree in its cloud, you fetch the JSON | The notebook demo |
+| PageIndex Chat | A ready-made chat page that answers questions over uploaded PDFs | A short live demo |
 
 :::note Open source versus hosted
 He says it is "not completely open source, but you get some free requests". That
@@ -68,7 +68,7 @@ platform are a hosted service with a free allowance and paid tiers. Limits and
 prices change, so check the dashboard rather than trusting a number from a video.
 :::
 
-## Recap: how traditional vector RAG works (7:12:40)
+## Recap: how traditional vector RAG works
 
 Before showing the new idea he rebuilds the old one on a whiteboard, for anyone
 who has not watched his earlier RAG videos (he has a whole playlist on them on his channel). The whiteboard page he uses is a
@@ -98,7 +98,7 @@ content and generation. He draws over it in red and green as he talks.
 <Infographic
   src="/img/agentic-course/05-compare-pipelines.svg"
   alt="Two pipelines side by side: traditional vector RAG (chunk, embed, vector database, ANN search, flat chunks) and PageIndex (LLM tree builder, JSON tree index, LLM tree search, named sections)."
-  caption="Redrawn from the instructor's whiteboard page at 7:13:00 to 7:20:00, including his red marks (the query going into the vector database, the context coming out, and the cross over the vector database on the vectorless side)."
+  caption="Redrawn from the whiteboard page, including his red marks (the query going into the vector database, the context coming out, and the cross over the vector database on the vectorless side)."
 />
 
 His summary of the left-hand pipeline is: it is a *similarity search*, it finds
@@ -107,8 +107,7 @@ in mind, because the rest of the chapter is a response to it.
 
 ## Why vector RAG struggles on long documents
 
-The instructor spreads this argument across several moments (7:23, 7:41, 7:50 and
-7:51). It is easier to learn in one place, so here it is, with a worked example
+The instructor spreads this argument across several moments. It is easier to learn in one place, so here it is, with a worked example
 for each failure. The numbers in the second example are illustrative, not
 measurements.
 
@@ -137,8 +136,7 @@ they should be read.
   caption="Explanatory board (not shown in the video). The scores are illustrative."
 />
 
-There are three more weaknesses that he lists on a slide at 7:47 and explains at
-7:51. They are summarised here and drawn in the slide redraw later in the chapter.
+There are three more weaknesses that he lists on a slide and explains afterwards. They are summarised here and drawn in the slide redraw later in the chapter.
 
 | Failure mode | What it means in practice |
 | --- | --- |
@@ -155,7 +153,7 @@ worst case of naive fixed-size chunking. Treat "chunking destroys context" as
 always to abandon vectors, as the hybrid section below shows.
 :::
 
-## Vectorless RAG: the LLM tree builder (7:15:20)
+## Vectorless RAG: the LLM tree builder
 
 Now he switches to the right-hand column. The first thing he stresses is the
 headline benefit: **there is no vector database at all**. Start again from the
@@ -201,7 +199,7 @@ reasoning call that returns a list of node ids, not a crawl over the nodes.
 <Infographic
   src="/img/agentic-course/05-tree-builder.svg"
   alt="A table of contents becomes a tree of nodes with summaries, which is stored as a JSON tree index; at question time the LLM receives the tree as context, walks to the DL node and answers."
-  caption="Redrawn from the instructor's whiteboard scribble at 7:16:00 to 7:21:30 (the TOC list, the AI/ML/DL tree, the JSON tree index and the LLM box)."
+  caption="Redrawn from the whiteboard scribble (the TOC list, the AI/ML/DL tree, the JSON tree index and the LLM box)."
 />
 
 Two things follow from this design, and he points out both:
@@ -224,7 +222,7 @@ and reads them. What the LLM has on top of a human is a ready-made summary on
 every node. This is why he describes the approach as retrieval that "navigates the
 document like a human expert".
 
-## What if the PDF has no table of contents? (7:22:00)
+## What if the PDF has no table of contents?
 
 Many real PDFs have no table of contents. The instructor's second whiteboard page
 shows what PageIndex does then. Read it as a flowchart.
@@ -255,10 +253,10 @@ splitter would never respect.
 <Infographic
   src="/img/agentic-course/05-toc-flow.svg"
   alt="Flowchart: raw PDF, TOC detection, parse existing TOC or LLM reads pages, section-aware splitting, LLM summarises each section, assemble hierarchical tree, with a financial-stability node and two child nodes as output."
-  caption="Redrawn from the instructor's slide at 7:22:15 to 7:26:00. The orange note on the right is his own margin scribble about even splitting."
+  caption="Redrawn from the slide. The orange note on the right is his own margin scribble about even splitting."
 />
 
-### Evenly split versus split by section (7:23:20)
+### Evenly split versus split by section
 
 While walking down this chart he draws a second scribble, in orange, to make the
 difference with chunking visible. Under chunking, the document is cut into evenly
@@ -273,7 +271,7 @@ logical boundaries, not token counts.**
 <Infographic
   src="/img/agentic-course/05-chunk-vs-section.svg"
   alt="The same three-section document cut at fixed token intervals, tearing the AI section across four chunks, versus split at section boundaries into three whole nodes."
-  caption="Redrawn from the instructor's orange evenly-split scribble at 7:24:45 to 7:25:15, with a worked example added."
+  caption="Redrawn from the orange evenly-split scribble, with a worked example added."
 />
 
 :::note Sections are whole, within limits
@@ -285,7 +283,7 @@ headings and logical boundaries) and *what is kept* (title, page and a summary
 around every piece), not that cutting never happens.
 :::
 
-## The retrieval process (7:25:20)
+## The retrieval process
 
 The third board is the retrieval loop. It is the most useful picture in the
 section, because it shows that retrieval here is an *iterative reasoning process*,
@@ -309,7 +307,7 @@ is an instruction to go somewhere, not a phrase that resembles the question.
 <Infographic
   src="/img/agentic-course/05-retrieval-loop.svg"
   alt="Retrieval loop: user query, read tree index, reason and select node, extract section content, sufficiency check that loops back or proceeds to generate a cited answer, with a dashed cross-reference branch."
-  caption="Redrawn from the instructor's slide at 7:25:30, titled Retrieval Process."
+  caption="Redrawn from the slide, titled Retrieval Process."
 />
 
 He closes the idea with the human-expert point once more: reasoning-based
@@ -319,7 +317,7 @@ a page number. The notebook you are about to read implements steps 1 to 3 and 4
 but not the "loop back" arrow: it makes a single selection pass. Treat the loop as
 what the full product can do, and a good extension if you build this yourself.
 
-## PageIndex Chat: a live demo (7:26:30)
+## PageIndex Chat: a live demo
 
 Before the code, he opens `chat.pageindex.ai` to show what the technology looks
 like as a product. He selects an uploaded PDF (a long pattern-recognition
@@ -344,7 +342,7 @@ a UI.
 <Infographic
   src="/img/agentic-course/05-pageindex-chat.svg"
   alt="PageIndex Chat flow: the user's question, a get-document-structure tool call, a get-page-content tool call with page ranges, raw page text, and a streamed answer."
-  caption="Redrawn from the PageIndex Chat screen at 7:26:45 to 7:28:00. The exact page ranges in the tool call are too small to read in the 360p video, so they are described rather than copied."
+  caption="Redrawn from the PageIndex Chat screen. The exact page ranges in the tool call are too small to read in the 360p video, so they are described rather than copied."
 />
 
 He adds a disclaimer: this is not a sponsored video. You can use the PageIndex
@@ -353,7 +351,7 @@ coding assistant such as Claude once you understand the concept. His advice is t
 understand the concepts first and then try it. The notebook is exactly that: a
 small amount of Python on top of the hosted tree builder.
 
-## The crash-course notebook (7:28:00)
+## The crash-course notebook
 
 He then opens a notebook he prepared, titled **PageIndex Vectorless RAG Crash
 Course**, in his editor (a notebook in a `.venv` with Python 3.13.2). Its opening
@@ -391,7 +389,7 @@ below reads it from the environment instead, which is the one deliberate change 
 the cell. If you ever paste a real key into a notebook, revoke it.
 :::
 
-### Section 1: install and set up (7:29:15)
+### Section 1: install and set up
 
 **Get the two API keys.** The PageIndex key comes from the PageIndex dashboard
 (the notebook links `https://dash.pageindex.ai/api-keys`): sign in, open API keys
@@ -481,7 +479,7 @@ PageIndex client ready
 OpenAI client ready
 ```
 
-### Section 2: upload and index a PDF (7:30:40)
+### Section 2: upload and index a PDF
 
 The instructor's sample document is an advanced course syllabus: the "Advanced Route
 of Learning AI" programme his academy is about to launch for working professionals who
@@ -566,7 +564,7 @@ Building tree index...
 Tree index ready!
 ```
 
-### Section 3: inspect the tree (7:33:00)
+### Section 3: inspect the tree
 
 Before using the tree, the notebook explains what is in it, with a small example
 tree and a list of the fields on every node:
@@ -730,7 +728,7 @@ Total nodes in tree: 40
 Each node is one retrievable unit. He then says, in effect, that he is not here to
 teach Python: read the code and you will follow it, since it is plain recursion.
 
-### Section 4: LLM tree search, the core of PageIndex (7:34:40)
+### Section 4: LLM tree search, the core of PageIndex
 
 The next cell of text states the contrast the whole lesson turns on. Vector RAG
 retrieval is `query -> embed -> cosine similarity against all chunk vectors ->
@@ -866,7 +864,7 @@ instructor's point, which he stresses, is that he set up no vector database and 
 embeddings. Also notice the model's own explanation: this is the "thinking" that
 makes the retrieval explainable, which a cosine score cannot be.
 
-### Section 5: the full end-to-end pipeline (7:36:40)
+### Section 5: the full end-to-end pipeline
 
 Choosing nodes is only half the job. The model still has to be given the *content*
 of those nodes and asked to answer. The notebook splits the rest into three steps:
@@ -1130,7 +1128,7 @@ the tree itself goes into every prompt, so a single huge document (or a corpus o
 thousands) can outgrow the model's context window. That is one reason the slides
 later say the approach suits tens to thousands of documents, not millions.
 
-## Where do you save the JSON tree? (7:42:40)
+## Where do you save the JSON tree?
 
 The video now moves into the second recording. After a short "see my earlier
 video" aside (he points viewers to his previous PageIndex tutorial, titled
@@ -1163,7 +1161,7 @@ query time the LLM walks the tree and returns names, pages and summaries that
 become the context for the answer. Whenever you are unsure of a step, re-read the
 retrieval loop above.
 
-## Slides: vectorless RAG, reasoning through structure (7:46:00)
+## Slides: vectorless RAG, reasoning through structure
 
 He then switches to a PowerPoint deck (titled *Vectorless RAG versus Traditional
 RAG*). Its first relevant slide, labelled "Approach 2", restates the idea with a
@@ -1186,7 +1184,7 @@ The right-hand side lists how the LLM navigates, in five steps:
 <Infographic
   src="/img/agentic-course/05-reasoning-slide.svg"
   alt="An Annual Report 2024 tree with Business, Risks and Financials, Risks expanded into Market, Credit and Operational with Credit highlighted, beside five numbered steps of how the LLM navigates."
-  caption="Redrawn from the instructor's slide at 7:46:15, Vectorless RAG: Reasoning Through Structure."
+  caption="Redrawn from the slide, Vectorless RAG: Reasoning Through Structure."
 />
 
 Notice how this differs slightly from the notebook: the slide describes a *top-down
@@ -1196,7 +1194,7 @@ version needs more LLM calls on a deep tree (which is the "higher latency" cost
 below), while the notebook's version needs one big prompt (which is the "tree must
 fit in context" cost).
 
-## Traditional RAG: the real picture (7:47:00)
+## Traditional RAG: the real picture
 
 The next slide is called "The Real Picture", with the subtitle "powerful, but it has
 known failure modes". It has two panels, strengths and weaknesses. He goes through
@@ -1205,7 +1203,7 @@ every item, and several of his explanations add useful detail.
 <Infographic
   src="/img/agentic-course/05-traditional-real-picture.svg"
   alt="Traditional RAG strengths: massive scale, mature ecosystem, cheap retrieval, great for factoids, domain agnostic. Weaknesses: chunking destroys context, similarity is not relevance, no cross-section reasoning, hard to explain, embedding drift."
-  caption="Redrawn from the instructor's slide at 7:47:00 (Traditional RAG: The Real Picture)."
+  caption="Redrawn from the slide (Traditional RAG: The Real Picture)."
 />
 
 ### Strengths
@@ -1247,7 +1245,7 @@ questions should be in your head.
   different information), you must embed everything again with the new model before
   you can use it.
 
-## Vectorless RAG: the real picture (7:48:15)
+## Vectorless RAG: the real picture
 
 The matching slide has the subtitle "Different tradeoffs, better for some workloads,
 worse for others". He introduces the idea once more: here the LLM navigates the
@@ -1256,7 +1254,7 @@ document like a human, the way you flip through books and pages.
 <Infographic
   src="/img/agentic-course/05-vectorless-real-picture.svg"
   alt="Vectorless RAG strengths: preserves document context, cross-section reasoning, explainable retrieval, no embedding pipeline, plays well with structure. Weaknesses: higher per-query cost, higher latency, does not scale to millions, needs structured docs, less mature tooling."
-  caption="Redrawn from the instructor's slide at 7:48:15 (Vectorless RAG: The Real Picture)."
+  caption="Redrawn from the slide (Vectorless RAG: The Real Picture)."
 />
 
 ### Strengths
@@ -1299,13 +1297,13 @@ the data has structure or belongs to a specific domain.
   it being very handy for domain-specific use cases.
 
 :::note A slip in the video
-At 7:56:40 he says that for unstructured documents "it is no use to use vector
+He says that for unstructured documents "it is no use to use vector
 rag". The slide beside it says the tree "adds little value" for random blog posts,
 so the intended word is *vectorless*. The correct rule is: unstructured, mixed
 material belongs with vector RAG.
 :::
 
-## Side-by-side: the honest comparison (7:58:00)
+## Side-by-side: the honest comparison
 
 The comparison slide has eight rows, which he reads out to settle the decision. It
 is the centrepiece of the section, so it is reproduced both as a picture and as a
@@ -1314,7 +1312,7 @@ table.
 <Infographic
   src="/img/agentic-course/05-side-by-side.svg"
   alt="A table of eight dimensions comparing traditional RAG and vectorless RAG: scale, latency, cost, cross-section reasoning, explainability, best for, setup complexity, ecosystem maturity."
-  caption="Redrawn from the instructor's slide at 7:58:00 (Side-by-Side: The Honest Comparison)."
+  caption="Redrawn from the slide (Side-by-Side: The Honest Comparison)."
 />
 
 | Dimension | Traditional RAG | Vectorless RAG |
@@ -1362,14 +1360,14 @@ small evaluation on your own documents before deciding. The cell also claims the
 hallucinate over perfectly relevant sections.
 :::
 
-## When to use which (7:59:15)
+## When to use which
 
 Two more slides turn the trade-offs into a decision guide.
 
 <Infographic
   src="/img/agentic-course/05-when-to-use.svg"
   alt="Two panels of four cards each: use traditional RAG for massive heterogeneous corpora, latency-critical apps, short factoid queries and cost-sensitive scale; use vectorless RAG for long structured documents, reasoning over similarity, explainability and when chunking destroys meaning."
-  caption="Redrawn from the instructor's slides at 7:59:15 (Use Traditional RAG when) and 8:00:30 (Use Vectorless RAG when)."
+  caption="Redrawn from the slides "Use Traditional RAG when" and "Use Vectorless RAG when"."
 />
 
 **Use traditional RAG when:**
@@ -1395,7 +1393,7 @@ is the document **structured**? Second, **how many documents** are there (tens o
 thousands, say) and is the use case **domain-specific**? Together with latency and
 cost, those are the factors to decide on.
 
-## Hybrid RAG and the key takeaways (8:00:40)
+## Hybrid RAG and the key takeaways
 
 His closing point is where the field is heading. People are starting to build
 **hybrid RAG**, which combines the strongest feature of vectorless RAG with the
@@ -1423,10 +1421,10 @@ with citations.
 <Infographic
   src="/img/agentic-course/05-hybrid-pattern.svg"
   alt="A hybrid pipeline: vector search narrows the corpus to a few documents, tree reasoning picks sections inside them, and a cited answer is produced; below, a guide to picking by document type."
-  caption="Explanatory board (not shown in the video), drawn from his takeaways 4 and 5 at 8:01:00."
+  caption="Explanatory board (not shown in the video), drawn from his takeaways 4 and 5."
 />
 
-He signs off at 8:02, and the recording moves straight into the next topic, Deep
+He signs off here, and the recording moves straight into the next topic, Deep
 Agents.
 
 ## Notebook cells he did not run (an addition)
@@ -1642,7 +1640,7 @@ pipeline, evaluation and quantization.
 
 If you do not want to manage OpenAI calls yourself, PageIndex has its own LLM and an
 OpenAI-style chat endpoint: you pass the question and the `doc_id`, with no OpenAI
-key. This is what powers the hosted chat page he showed at 7:26.
+key. This is what powers the hosted chat page he showed.
 
 ```python
 # ── Single question with Chat API ────────────────────────────────────────────
