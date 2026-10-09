@@ -216,6 +216,7 @@ track N without the owner's decision.
   video frames.
 - No video timestamps, no narration of the speaker or video, no remarks on what
   the speaker got wrong. One source line at the top.
+- Chapters built from a transcript must cover every statement in the lecture's own order and sentence structure; Codex has repeatedly skipped passages and reordered. Use `coverage_check.py` before accepting any transcript-based chapter.
 - Notes must teach in depth like the capstone chapter: real-library experiment,
   hand-worked example, "Reading the output", "Line by line", failure cases,
   honest limits.
@@ -259,6 +260,7 @@ track N without the owner's decision.
 | `.codex/senior-ai-plan.md`                                          | The 150-chapter plan, gates G1 to G10 (section 6), visuals (section 11).                                                                                           |
 | `.lecture-import/track-c/quality_gate.py`                           | Structure and house-style gate.                                                                                                                                    |
 | `.lecture-import/track-c/link_check.py`                             | Internal link and static asset checker.                                                                                                                            |
+| `.lecture-import/track-c/coverage_check.py` | Compares an English working transcript with a chapter and reports transcript blocks that look skipped or moved (`.codex/AGENTS.md` section 5, "Complete and in order"). Self-tested on a synthetic transcript with known gaps; the thresholds (`--min 0.18`, `--window 3`) may need tuning on real data. |
 | `.lecture-import/track-c/readability_audit.py`                      | Readability table; baseline file beside it.                                                                                                                        |
 | `.lecture-import/track-c/ENRICH-PROMPT.md`, `ENRICH-ASSIGNMENTS.md` | The enrichment brief and its nine assignments (all completed). Useful as the template for any future enrichment batch.                                             |
 | `.lecture-import/track-b/AGENT-PROMPT.md`                           | Older author brief: venv notes, runner notes, practice-question format.                                                                                            |

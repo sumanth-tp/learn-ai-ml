@@ -136,9 +136,36 @@ A one-line `<details>` breaks hydration.
 
 Mirror the lecture's shape with plain headings that name the idea (never a time, never "the instructor"): why the thing is needed, what it is, the plan, each demo named by what it teaches, what comes next. Keep their examples, analogies (the load-bearing teaching device), warnings and order. Their code is kept, made correct and runnable; if it has a bug, ship the working code and explain the correct behaviour in a `:::note`. Do not skip a section because it seems minor, reorder for tidiness, or swap their example for one you prefer.
 
-### Own words
+### Complete and in order (the most common failure)
 
-Read the transcript, understand the point, write the explanation yourself. Never paste, never lightly paraphrase line by line. Short quotations of a definition are fine. The test: could someone read the chapter instead of watching and learn the same thing? Could they reconstruct the speaker's words, or tell who the speaker was? That fails.
+The owner has found, more than once, that conversions from a transcript skip passages and do not follow the lecture's own order and sentences. The rule is: **every statement the lecturer makes appears in the notes, in the order and in the sentence structure the lecturer used.** Statement 1 of the lecture is statement 1 of the notes. The notes do not merge, drop, reorder, summarise away or "improve" statements.
+
+What must survive, each in its original place:
+
+- every definition, example, analogy, rule of thumb, number, parameter, command, name and warning;
+- every aside and every correction the lecturer makes, as teaching content (a correction goes in a `:::note Correction`, neutral, section 2);
+- every demo step and every line of demo code, in the order shown, with the same variable names;
+- the lecturer's own phrasing for definitions, analogies and memorable lines, as a short quotation or a very close rendering, because that wording is part of what is being taught.
+
+What may be dropped, and only these: greetings and sign-offs, pure filler ("right?", "okay so"), requests to like or subscribe, sponsor and course promotions, repetition of a sentence already written, and talk about the recording itself. List what you dropped, by block, in your report.
+
+The method:
+
+1. Build the English working transcript first (private file under `.lecture-import/`), with its blocks numbered. For another language, translate every block; do not summarise while translating.
+2. Make a coverage ledger: one line per statement, example, number, command and warning in the block, in order. Write the notes block by block against the ledger.
+3. Write each statement in clear English, one note sentence for one lecture sentence where you can, adding explanation after the statement and never in place of it. Explanation, worked examples, code output and diagrams are added around the lecture's content, not instead of it.
+4. Run the coverage check and fix every line it reports:
+
+```bash
+python3 .lecture-import/track-c/coverage_check.py <english_transcript.txt> <chapter.md>
+```
+
+   `SKIPPED?` means no passage of the chapter matches that transcript block. `MOVED?` means the passage appears earlier in the chapter than the blocks before it. Each is a lead, not a verdict: either fix the chapter, or explain in the report why the block is filler. A clean run is required before you report the chapter done.
+5. Finish with a manual walk: read the transcript block by block next to the chapter and tick each ledger line. Report the block count, how many are covered, and the dropped filler blocks.
+
+### Own words, without losing the lecture
+
+Notes are written in your own words and must still teach. That does not allow skipping or re-ordering. Never paste whole transcript passages and never reproduce a long stretch of the lecturer's speech; render each statement in clear English, close to the lecturer's phrasing, and keep short quotations of defining sentences. The test: could someone read the chapter instead of watching and meet every point the lecturer made, in the same order, and learn the same thing? Could they tell who the speaker was or how the screen looked? That fails (section 2).
 
 ### Source line and frontmatter
 
