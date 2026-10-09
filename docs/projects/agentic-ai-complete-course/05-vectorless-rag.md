@@ -1367,7 +1367,7 @@ Two more slides turn the trade-offs into a decision guide.
 <Infographic
   src="/img/agentic-course/05-when-to-use.svg"
   alt="Two panels of four cards each: use traditional RAG for massive heterogeneous corpora, latency-critical apps, short factoid queries and cost-sensitive scale; use vectorless RAG for long structured documents, reasoning over similarity, explainability and when chunking destroys meaning."
-  caption="Redrawn from the slides "Use Traditional RAG when" and "Use Vectorless RAG when"."
+  caption="Redrawn from the slides 'Use Traditional RAG when' and 'Use Vectorless RAG when'."
 />
 
 **Use traditional RAG when:**

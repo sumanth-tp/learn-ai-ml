@@ -75,7 +75,7 @@ The lab starts with a **90-minute age** and **60-minute limit**, reporting a **3
 An hourly feed normally carries 1,000 rows on a weekday, with a daily cycle: 1,000 x (1 + 0.5 sin(x)), so 1,500 at the busiest hour and 500 at the quietest. The last approved load is stamped 10:30 and the time now is 12:00.
 
 1. **Freshness.** 12:00 - 10:30 = 90 minutes against a 60-minute limit: breached by 30.
-2. **A flat volume band.** Compare each hour with the plain average of 1,000 and alert at 20% off, so outside 800 to 1,200. That means the cycle term must satisfy |0.5 sin(x)| <= 0.2, which is |sin(x)| <= 0.4. The share of the day inside is 4 x arcsin(0.4) / (2 x pi) = 4 x 0.4115 / 6.283 = 26%. So about 74% of perfectly healthy hours raise an alert.
+2. **A flat volume band.** Compare each hour with the plain average of 1,000 and alert at 20% off, so outside 800 to 1,200. That means the cycle term must satisfy |0.5 sin(x)| ≤ 0.2, which is |sin(x)| ≤ 0.4. The share of the day inside is 4 x arcsin(0.4) / (2 x pi) = 4 x 0.4115 / 6.283 = 26%. So about 74% of perfectly healthy hours raise an alert.
 3. **A same-hour baseline.** Compare 6 pm with the median of the previous four 6 pm values. Row counts fluctuate by about the square root of 1,000, which is 32 or 3.2%. A 15% band is 0.15 / 0.032 = 4.7 times that noise, so healthy hours almost never alert.
 4. **A p-value threshold.** A test with p below 0.05 flags 5% of healthy batches by design: 24 x 0.05 = 1.2 false alarms per day on hourly batches.
 5. **Detection delay.** If an incident starts in hour 100 and the first alert fires on the batch of hour 101, the delay is 1 hour.

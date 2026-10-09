@@ -1,0 +1,115 @@
+[   34383ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:28002
+[   34465ms] [ERROR] [webpack-dev-server] Errors while compiling. Reload prevented. @ webpack-internal:///./node_modules/webpack-dev-server/client/modules/logger/index.js:607
+[   34465ms] [ERROR] [webpack-dev-server] ERROR in ./docs/mlops/data/03-getting-data-ready/03-analytics-engineering-and-history.md
+Module build failed (from ./node_modules/@docusaurus/mdx-loader/lib/index.js):
+Error: MDX compilation failed for file "/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/docs/mlops/data/03-getting-data-ready/03-analytics-engineering-and-history.md"
+Cause: Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 115,
+  "file": "",
+  "message": "Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`",
+  "line": 85,
+  "name": "85:115",
+  "place": {
+    "_bufferIndex": 111,
+    "_index": 0,
+    "line": 85,
+    "column": 115,
+    "offset": 5557
+  },
+  "reason": "Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micromark-extension-mdx-jsx#unexpected-character-at-expected-expect"
+}
+
+    at compileToJSX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/utils.js:93:15)
+    at async loadMDX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:22:20)
+    at async Object.mdxLoader (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:157:24) @ webpack-internal:///./node_modules/webpack-dev-server/client/modules/logger/index.js:607
+[   34465ms] [ERROR] [webpack-dev-server] ERROR in ./docs/mlops/data/03-getting-data-ready/04-features-and-point-in-time-correctness.md
+Module build failed (from ./node_modules/@docusaurus/mdx-loader/lib/index.js):
+Error: MDX compilation failed for file "/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/docs/mlops/data/03-getting-data-ready/04-features-and-point-in-time-correctness.md"
+Cause: Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 53,
+  "file": "",
+  "message": "Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`",
+  "line": 81,
+  "name": "81:53",
+  "place": {
+    "_bufferIndex": 49,
+    "_index": 0,
+    "line": 81,
+    "column": 53,
+    "offset": 5793
+  },
+  "reason": "Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micromark-extension-mdx-jsx#unexpected-character-at-expected-expect"
+}
+
+    at compileToJSX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/utils.js:93:15)
+    at async loadMDX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:22:20)
+    at async Object.mdxLoader (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:157:24) @ webpack-internal:///./node_modules/webpack-dev-server/client/modules/logger/index.js:607
+[   34465ms] [ERROR] [webpack-dev-server] ERROR in ./docs/mlops/data/05-trust-and-observability/03-observing-data-in-production.md
+Module build failed (from ./node_modules/@docusaurus/mdx-loader/lib/index.js):
+Error: MDX compilation failed for file "/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/docs/mlops/data/05-trust-and-observability/03-observing-data-in-production.md"
+Cause: Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`
+Details:
+{
+  "column": 178,
+  "file": "",
+  "message": "Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`",
+  "line": 78,
+  "name": "78:178",
+  "place": {
+    "_bufferIndex": 174,
+    "_index": 0,
+    "line": 78,
+    "column": 178,
+    "offset": 5850
+  },
+  "reason": "Unexpected character `=` (U+003D) before name, expected a character that can start a name, such as a letter, `$`, or `_`",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micromark-extension-mdx-jsx#unexpected-character-at-expected-expect"
+}
+
+    at compileToJSX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/utils.js:93:15)
+    at async loadMDX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:22:20)
+    at async Object.mdxLoader (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:157:24) @ webpack-internal:///./node_modules/webpack-dev-server/client/modules/logger/index.js:607
+[   34465ms] [ERROR] [webpack-dev-server] ERROR in ./docs/projects/agentic-ai-complete-course/05-vectorless-rag.md
+Module build failed (from ./node_modules/@docusaurus/mdx-loader/lib/index.js):
+Error: MDX compilation failed for file "/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/docs/projects/agentic-ai-complete-course/05-vectorless-rag.md"
+Cause: Unexpected character `"` (U+0022) in attribute name, expected an attribute name character such as letters, digits, `$`, or `_`; `=` to initialize a value; whitespace before attributes; or the end of the tag
+Details:
+{
+  "column": 61,
+  "file": "",
+  "message": "Unexpected character `\"` (U+0022) in attribute name, expected an attribute name character such as letters, digits, `$`, or `_`; `=` to initialize a value; whitespace before attributes; or the end of the tag",
+  "line": 1370,
+  "name": "1370:61",
+  "place": {
+    "_bufferIndex": 60,
+    "_index": 137,
+    "line": 1370,
+    "column": 61,
+    "offset": 65679
+  },
+  "reason": "Unexpected character `\"` (U+0022) in attribute name, expected an attribute name character such as letters, digits, `$`, or `_`; `=` to initialize a value; whitespace before attributes; or the end of the tag",
+  "ruleId": "unexpected-character",
+  "source": "micromark-extension-mdx-jsx",
+  "url": "https://github.com/micromark/micromark-extension-mdx-jsx#unexpected-character-at-expected-expect"
+}
+
+    at compileToJSX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/utils.js:93:15)
+    at async loadMDX (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:22:20)
+    at async Object.mdxLoader (/Users/sumanth.tp/Resources/ai-ml/learn-ai-ml/node_modules/@docusaurus/mdx-loader/lib/loader.js:157:24) @ webpack-internal:///./node_modules/webpack-dev-server/client/modules/logger/index.js:607
+[  473991ms] [ERROR] WebSocket connection to 'ws://localhost:3001/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ webpack-internal:///./node_modules/webpack-dev-server/client/clients/WebSocketClient.js:24
+[  473992ms] [ERROR] [webpack-dev-server] Event @ webpack-internal:///./node_modules/webpack-dev-server/client/modules/logger/index.js:607
+[  476079ms] [ERROR] WebSocket connection to 'ws://localhost:3001/ws' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ webpack-internal:///./node_modules/webpack-dev-server/client/clients/WebSocketClient.js:24
+[  476079ms] [ERROR] [webpack-dev-server] Event @ webpack-internal:///./node_modules/webpack-dev-server/client/modules/logger/index.js:607
+[  483725ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:28002

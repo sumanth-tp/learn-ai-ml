@@ -82,8 +82,8 @@ One customer has an original region and three moves. Orders arrive on days 5, 15
 | 30 | open | West |
 
 1. **Count the rows.** One original value plus three changes gives 4 rows.
-2. **Half-open join.** The order on day 15 needs `valid_from <= 15 < valid_to`. Only South qualifies, because 10 <= 15 < 20. The order on day 30 qualifies for West (30 <= 30, open end). East fails because 30 < 30 is false. One match each.
-3. **Closed join (`BETWEEN`).** Now East qualifies for day 30 as well, because 30 <= 30 is true for the closed end. The £25 order matches two rows. Revenue for the three orders of £10, £40 and £25 becomes 10 + 40 + 25 + 25 = £100 instead of £75.
+2. **Half-open join.** The order on day 15 needs `valid_from <= 15 < valid_to`. Only South qualifies, because 10 ≤ 15 < 20. The order on day 30 qualifies for West (30 ≤ 30, open end). East fails because 30 < 30 is false. One match each.
+3. **Closed join (`BETWEEN`).** Now East qualifies for day 30 as well, because 30 ≤ 30 is true for the closed end. The £25 order matches two rows. Revenue for the three orders of £10, £40 and £25 becomes 10 + 40 + 25 + 25 = £100 instead of £75.
 4. **Latest-row join.** Every order takes West, the current region. Day 5 should be North and day 15 should be South, so 2 of 3 orders are wrong.
 
 In words: the boundary day belongs to exactly one version, and the current row answers a different question from the historical one. The first code block below prints these numbers.

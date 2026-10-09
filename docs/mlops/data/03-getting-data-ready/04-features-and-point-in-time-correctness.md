@@ -78,7 +78,7 @@ A fraud model scores a payment on day 4. Published `refund_count_30d` values: 4 
 
 1. **Standardise.** z = (80 - 70) / 5 = 2.0. If a live batch with mean 75 were used instead, z = (80 - 75) / 5 = 1.0. The same raw value now means something else.
 2. **Latest-value join.** The newest value is 12 (day 5). It did not exist on day 4, so this join leaks the future.
-3. **Event-time cutoff.** Keep rows with event day <= 4. That leaves day 1 (4) and day 3 (8). The newest is 8. Its age is 4 - 3 = 1 day, within a TTL of 3, so the answer is 8.
+3. **Event-time cutoff.** Keep rows with event day ≤ 4. That leaves day 1 (4) and day 3 (8). The newest is 8. Its age is 4 - 3 = 1 day, within a TTL of 3, so the answer is 8.
 4. **Availability cutoff.** Suppose the day-3 value was published only on day 5. Now day 3 is not available on day 4. Day 1 is: its age is 4 - 1 = 3, which is within the TTL of 3, so the answer is 4.
 5. **No value.** With TTL 0 nothing qualifies and the lookup returns missing.
 
