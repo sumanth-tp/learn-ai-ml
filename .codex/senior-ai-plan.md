@@ -1,8 +1,7 @@
 # Senior AI engineer curriculum: master plan
 
-Owner: Claude. Written 2026-10-01. Companion files: `senior-ai-codex-brief.md` (Codex's tasks) and
-`senior-ai-progress.md` (live status, source ledger). Rules for every chapter: `.claude/AGENTS.md`
-(identical to `.codex/AGENTS.md`).
+Owner: Claude. Written 2026-10-01. Companion files: `senior-ai-progress.md` (current state, pending work, handoff). Rules for every chapter:
+`.codex/AGENTS.md` (`.claude/AGENTS.md` is a symlink to it).
 
 ## 1. The bar
 
@@ -198,8 +197,8 @@ and track N if chosen), Reference shelf.
 - **Interactive labs** are React components on `VizPanel` in `src/components/viz/`. One for every concept that
   moves, and one for every interactive widget the original lecture had, so a reader never needs the source.
   Projected volume: about 70 labs.
-- **Specs first.** Each track writes `.codex/visuals/<track>.md`: per lab the name, controls and ranges,
-  defaults, what is drawn and the expected numbers (taken from the chapter's own verified code).
+- **Lab design.** Per lab: name, controls and ranges, defaults, what is drawn and the expected numbers
+  (taken from the chapter's own verified code); see `.codex/AGENTS.md` section 6.
 - **Who draws.** The track owner draws its own boards and builds its own labs. Claude fans these out to
   sub-agents per chapter group. Codex does its own for B1 and C1.
 - **Shared files stay read-only**: `board.py`, `VizPanel*`, `palette.ts`, `CourseLab*`, `Infographic/`.

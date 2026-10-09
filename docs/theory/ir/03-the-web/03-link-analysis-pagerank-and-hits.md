@@ -426,7 +426,7 @@ A hyperlink is an endorsement (vote); pages linked by many/important pages are m
 <details>
 <summary><strong>Q2.</strong> Write the PageRank formula and explain damping/teleport.</summary>
 
-PR(p) = (1−d)/N + d·Σ_\{q→p\} PR(q)/L(q). The surfer follows links with prob d and teleports with 1−d, guaranteeing every page some rank (handling dangling nodes).<br /><em>Session 11 · conceptual</em>
+PR(p) = (1−d)/N + d·Σ_\{q→p\} PR(q)/L(q). The surfer follows links with prob d and teleports with 1−d, guaranteeing every page some rank and the walk a single stationary distribution. Pages with no out-links are a separate case: their rank is redistributed explicitly, as the correction note above explains.<br /><em>Session 11 · conceptual</em>
 
 </details>
 
@@ -447,7 +447,7 @@ HITS computes query-dependent hub and authority scores that reinforce each other
 <details>
 <summary><strong>Q5.</strong> Why include a teleport term in PageRank?</summary>
 
-To handle dangling nodes (no out-links) and disconnected components, ensuring the Markov chain is ergodic with a unique stationary distribution.<br /><em>Session 11 · conceptual</em>
+To keep the walk well-behaved on graphs with disconnected parts or cycles, so the Markov chain is ergodic with a unique stationary distribution. Dangling nodes (no out-links) are a separate problem: their rank is redistributed explicitly.<br /><em>Session 11 · conceptual</em>
 
 </details>
 

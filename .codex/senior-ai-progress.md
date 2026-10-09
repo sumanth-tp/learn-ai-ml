@@ -1,984 +1,307 @@
-# Senior AI curriculum: progress and source ledger
-
-Both agents update this file. Add rows; do not rewrite other people's. Dates are absolute.
-
-## Phase status
-
-| Phase | State | Updated |
-| --- | --- | --- |
-| 0 Foundation | Plan, brief, ledger written. Venv rebuilt. bansal ML, IR, DM, DML, CV crawled (84 pages) and converted cleanly. Decisions confirmed by the user. Stage scaffolding done in code (10 stages, "Coming soon" for empty ones), not yet built. | 2026-10-01 |
-| 1 P0 core | Claude: Track A finished and independently verified in the browser; Track B authors active. Codex: B1 16/16 and C1 18/18 complete. P1 open; H started with CV sources converted. | 2026-10-02 |
-
-## Tracks
-
-| Track | Owner | State | Chapters done / planned | Cross-reviewed | Notes |
-| --- | --- | --- | --- | --- | --- |
-| A Classical ML | Claude | RESUMED 2026-10-01. all five authors done, 16 chapters, 31 boards, about 20 labs. Site build and browser checks PASSED (Claude, 2026-10-01) | 0 / 16 | | |
-| B1 IR | Codex | complete | 16 / 16 | Awaiting Claude's first-three review | All chapters' Python blocks, typecheck, isolated build and browser checks passed; generated output cleaned after review. |
-| B2 Advanced RAG | Claude | not started | 0 / 4 | | |
-| C1 Data management | Codex | complete | 18 / 18 | Claude requested to review first three | All lecture and practice pages passed code, typecheck, isolated build and browser checks. |
-| C2 Platform ops | Claude | not started | 0 / 5 | | |
-| D1 Distributed ML | Claude | not started | 0 / 14 | | |
-| D2 Training at scale | Claude | not started | 0 / 4 | | |
-| E Adapting models | Claude | WRITTEN and browser-verified 2026-10-02 | 7 / 7 | | |
-| F Inference and serving | Claude | WRITTEN, browser-verified 2026-10-02 (agents F1, F2; their final reports were lost to the rate limit) | 9 / 9 | | |
-| G Agent frontier | Claude | not started | 0 / 5 | | |
-| H Computer vision | Codex | complete | 17 / 17 | First three ready for Claude | All chapters pass code, typecheck, isolated build and browser checks; generated output cleaned after review. |
-| K1 Time series | Codex | complete 2026-10-03 | 5 / 5 | First three ready for Claude | Five original boards and labs; 10/10 independent Python blocks, typecheck, isolated build and browser checks passed. |
-| K2 Recommenders | Codex | complete 2026-10-03 | 4 / 4 | First three ready for Claude | Four original boards and labs; 8/8 independent Python blocks, typecheck, isolated build and browser checks passed. |
-| K3 Causal, graph, speech | unclaimed | not started | 0 / 10 | | |
-| L Governance | Claude | WRITTEN; browser-verified 2026-10-05 | 5 / 5 | | |
-| M Senior craft | Claude | WRITTEN; browser-verified 2026-10-05 | 12 / 12 | | |
-
-## Chapter log
-
-One row per finished chapter.
-
-| File | Words | Python blocks run | Boards | Labs | G1 to G10 | Reviewer | Date |
-| --- | ---: | ---: | ---: | ---: | --- | --- | --- |
-| theory/ml/01-ml-foundations/01-what-machine-learning-is.md | 3,911 | 4 | 3 | 1 | authors' runs pass; site build pending | A1, then Claude | 2026-10-01 |
-| theory/ml/01-ml-foundations/02-data-preprocessing.md | 3,889 | 5 | 3 | 1 | as above | A1, then Claude | 2026-10-01 |
-| theory/ml/01-ml-foundations/03-features-leakage-and-imbalance.md | 5,792 | 10 | 3 | 2 | as above | A1, then Claude | 2026-10-01 |
-| theory/ml/02-supervised-learning/01-regression-and-gradient-descent.md | 4,535 | 6 | 3 | 1 | as above | A2, then Claude | 2026-10-01 |
-| theory/ml/02-supervised-learning/02-classification-and-logistic-regression.md | 4,204 | 6 | 3 | 1 | as above | A2, then Claude | 2026-10-01 |
-| theory/ml/02-supervised-learning/03-decision-trees.md | 4,890 | 6 | 4 | 1 | as above | A2, then Claude | 2026-10-01 |
-| theory/ml/03-ensembles-and-unsupervised-learning/01-ensemble-learning.md | 3,930 | 7 | 2 | 2 | authors' runs pass; site build pending | A4, then Claude | 2026-10-01 |
-| theory/ml/03-ensembles-and-unsupervised-learning/02-gradient-boosting-in-practice.md | 4,923 | 7 (+2 not run) | 2 | 1 | as above | A4, then Claude | 2026-10-01 |
-| theory/ml/03-ensembles-and-unsupervised-learning/03-unsupervised-learning.md | 3,867 | 7 | 3 | 2 | as above | A4, then Claude | 2026-10-01 |
-| theory/ml/04-evaluation-and-practice/01-model-evaluation.md | 4,761 | 9 | 4 | 3 | as above | A5, then Claude | 2026-10-01 |
-| theory/ml/04-evaluation-and-practice/02-explaining-predictions.md | 3,845 | 4 | 2 | 1 | as above | A5, then Claude | 2026-10-01 |
-| theory/ml/04-evaluation-and-practice/03-capstone-tabular-pipeline.md | 3,682 | 4 | 1 | 0 | as above | A5, then Claude | 2026-10-01 |
-| theory/ml/04-evaluation-and-practice/04-question-bank.md | 5,396 | 0 | 1 | 0 | 55 questions kept | A5, then Claude | 2026-10-01 |
-| theory/ml/02-supervised-learning/04-instance-based-learning.md | 3,818 | 4 | 2 | 1 | G2 re-run by Claude (all pass); G1, G9, G10 pending site build | Claude | 2026-10-01 |
-| theory/ml/02-supervised-learning/05-support-vector-machines.md | 3,514 | 4 | 2 | 1 | as above | Claude | 2026-10-01 |
-| theory/ml/02-supervised-learning/06-bayesian-learning.md | 3,583 | 5 | 2 | 1 | as above | Claude | 2026-10-01 |
-| `docs/theory/ir/01-foundations/01-what-information-retrieval-is.md` | 2524 | 2 | 1 | 1 | pass | Claude requested | 2026-10-01 |
-| `docs/theory/ir/01-foundations/02-boolean-retrieval.md` | 2594 | 2 | 1 | 1 | pass | Claude requested | 2026-10-01 |
-| `docs/theory/ir/01-foundations/03-dictionaries-and-tolerant-search.md` | 2628 | 2 | 1 | 1 | pass | Claude requested | 2026-10-01 |
-| `docs/theory/ir/01-foundations/04-index-construction-and-compression.md` | 2583 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/02-ranking/01-vector-space-and-term-weighting.md` | 2593 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/02-ranking/02-document-classification-and-clustering.md` | 2569 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/02-ranking/03-evaluating-ranked-retrieval.md` | 2997 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/03-the-web/01-web-search-at-scale.md` | 2825 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/03-the-web/02-web-crawling-and-distributed-indexes.md` | 2918 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/03-the-web/03-link-analysis-pagerank-and-hits.md` | 2831 | 2 | 2 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/03-the-web/04-cross-language-retrieval.md` | 2740 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/04-modern-retrieval/01-multimodal-retrieval-and-clip.md` | 2702 | 2 | 2 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/04-modern-retrieval/02-recommendation-as-personalised-retrieval.md` | 2821 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/04-modern-retrieval/03-neural-retrieval-and-reranking.md` | 3176 | 2 | 1 | 1 | pass | Pending | 2026-10-01 |
-| `docs/theory/ir/99-practice/01-question-bank.md` | 2503 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/theory/ir/99-practice/02-midsem-solved.md` | 1712 | 4 | 1 | 0 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/01-data-foundations/01-data-representations-for-ml.md` | 2509 | 2 | 1 | 1 | pass | Claude requested | 2026-10-02 |
-| `docs/mlops/data/01-data-foundations/02-data-quality-rules.md` | 2505 | 2 | 1 | 1 | pass | Claude requested | 2026-10-02 |
-| `docs/mlops/data/01-data-foundations/03-warehouses-lakes-and-lakehouses.md` | 2550 | 2 | 1 | 0 | pass | Claude requested | 2026-10-02 |
-| `docs/mlops/data/02-pipelines-and-infrastructure/01-building-reliable-data-pipelines.md` | 2509 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/02-pipelines-and-infrastructure/02-dataops-and-reliability.md` | 2512 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/02-pipelines-and-infrastructure/03-data-through-the-ml-lifecycle.md` | 2548 | 2 | 1 | 0 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/03-getting-data-ready/01-collecting-and-ingesting-data.md` | 2502 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/03-getting-data-ready/02-profiling-validation-and-drift.md` | 2514 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/03-getting-data-ready/03-analytics-engineering-and-history.md` | 2527 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/03-getting-data-ready/04-features-and-point-in-time-correctness.md` | 2503 | 2 | 2 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/04-data-in-production/01-orchestration-and-recovery.md` | 2605 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/04-data-in-production/02-experiments-metadata-and-lineage.md` | 2534 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/04-data-in-production/03-distributed-processing-and-skew.md` | 2590 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/05-trust-and-observability/01-knowledge-base-data-pipelines.md` | 2733 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/05-trust-and-observability/02-data-privacy-and-governance.md` | 2967 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/05-trust-and-observability/03-observing-data-in-production.md` | 2817 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/99-practice/01-question-bank.md` | 1990 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/mlops/data/99-practice/02-midsem-solved.md` | 1312 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/theory/cv/01-image-fundamentals/01-what-computer-vision-is.md` | 2611 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-02 |
-| `docs/theory/cv/01-image-fundamentals/02-digital-image-formation-and-sampling.md` | 2513 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-02 |
-| `docs/theory/cv/01-image-fundamentals/03-colour-histograms-and-filtering.md` | 2520 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-02 |
-| `docs/theory/cv/02-features-and-geometry/01-image-gradients-and-edges.md` | 2522 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/02-features-and-geometry/02-canny-edges-and-hough-lines.md` | 2509 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/02-features-and-geometry/03-harris-corners-and-hog.md` | 2552 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/02-features-and-geometry/04-sift-keypoints-and-descriptors.md` | 2506 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/02-features-and-geometry/05-ransac-and-robust-geometry.md` | 2501 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/03-recognition/01-image-classification.md` | 2796 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/theory/cv/03-recognition/02-visual-bag-of-words.md` | 2725 | 2 | 1 | 1 | pass | Pending | 2026-10-02 |
-| `docs/theory/cv/04-segmentation-detection-tracking/01-classical-image-segmentation.md` | 2625 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/04-segmentation-detection-tracking/02-semantic-segmentation-and-mask-metrics.md` | 2741 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/04-segmentation-detection-tracking/03-object-detection-and-box-evaluation.md` | 2735 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/04-segmentation-detection-tracking/04-multiple-object-tracking.md` | 2589 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/05-deployment/01-vision-on-edge-devices.md` | 2543 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/99-practice/01-question-bank.md` | 2607 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/cv/99-practice/02-midsem-solved.md` | 2256 | 4 | 1 | 3 | pass in isolated copy | Pending | 2026-10-02 |
-| `docs/theory/timeseries/01-temporal-foundations.md` | 2678 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
-| `docs/theory/timeseries/02-classical-forecasting.md` | 2516 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
-| `docs/theory/timeseries/03-lagged-machine-learning.md` | 2515 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
-| `docs/theory/timeseries/04-pretrained-forecasting.md` | 2512 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-03 |
-| `docs/theory/timeseries/05-evaluation-and-operations.md` | 2547 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-03 |
-| `docs/theory/recsys/01-feedback-and-objectives.md` | 2590 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
-| `docs/theory/recsys/02-collaborative-filtering.md` | 2514 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
-| `docs/theory/recsys/03-retrieval-ranking-and-reranking.md` | 2615 | 2 | 1 | 1 | pass in isolated copy | Claude requested | 2026-10-03 |
-| `docs/theory/recsys/04-evaluation-and-feedback-loops.md` | 2647 | 2 | 1 | 1 | pass in isolated copy | Pending | 2026-10-03 |
-
-## Requests and findings
-
-Format: `Author -> Recipient: message`. Newest last.
-
-Claude subagent -> Codex and Claude: cross-review of Track B chapters and interview additions (2026-10-08). Stand-in for the unstarted Codex batch 2, tasks B and C. Every code block under "Code you can run" of the eight chapters was executed in `.lecture-import/venv-llm` (Python 3.14.6, torch 2.14.1, transformers 5.18.0, TRL 1.14.1, PEFT 0.21.2) and compared with the chapter's printed output. Factual corrections were made in place and are listed per chapter; nothing was committed.
-
-**EU AI Act chapter (`docs/governance/04-regulation-and-model-documentation.md`), checked line by line against the Official Journal texts.** Sources: the XHTML of Regulation (EU) 2024/1689 and Regulation (EU) 2026/1744 retrieved from the Publications Office (`publications.europa.eu/resource/celex/32024R1689` and `32026R1744`, `Accept: application/xhtml+xml`; the EUR-Lex HTML pages answer with a bot challenge and could not be read directly). Result: agree on every date and article number; three wording corrections.
-- Agree: Act in force 1 August 2024, OJ 12 July 2024 (Art 113, twentieth day). General date 2 August 2026. Omnibus is Regulation (EU) 2026/1744 of 8 July 2026, OJ 24.7.2026, Art 4: in force on the third day after publication, 27 July 2026 (recitals also say "from 27 July 2026").
-- Agree, Art 113 as amended: (a) Chapters I and II from 2 February 2025 except Art 5(1) first subparagraph points (ba) and (bb) and Art 5(1a), (1b) from 2 December 2026; (b) unchanged, Chapter III Section 4, Chapters V, VII, XII and Art 78 from 2 August 2025 except Art 101; (c) replaced: Chapter III Sections 1, 2 and 3 except Art 6(5) from 2 December 2027 for Art 6(2) and Annex III and from 2 August 2028 for Art 6(1) and Annex I (the original text had 2 August 2027 for Art 6(1)); (d) added: Arts 102 to 110 from 27 July 2026.
-- Agree: Art 111(2) as replaced (significant design changes; 2 August 2030 for systems intended for public authorities), Art 111(3) (GPAI models placed before 2 August 2025 by 2 August 2027), Art 111(4) as added (Art 50(2) for generative systems placed before 2 August 2026 by 2 December 2026). Art 6(5) guidelines were due "no later than 2 February 2026" in the original text and Art 6(5) is excluded from the delay. Not verified here: whether final guidelines exist (a law-firm search result says a draft was published on 19 May 2026; not an official source, not added to the chapter).
-- Agree: Art 5(1)(a) to (h) letters used by the triage code, Annex III points 1 to 8 and 5(b), (c), Art 6(3) last subparagraph (profiling is always high-risk), Art 6(4), Art 9 to 17 titles, Art 26(6) logs at least six months, Art 27 scope (public bodies, private entities providing public services, Annex III 5(b) and (c)), Art 43, 49, 51(2) (10^25), 53, 55, 72, 73 (immediately after causal link, at most 15 days; 10 days for death; 2 days for widespread infringement or Art 3(49)(b); initial incomplete report allowed), Art 99(3) 35m/7%, 99(4) 15m/3% (includes Art 50), 99(5) 7.5m/1%, 99(6) SMEs lower of the two, Art 101 3%/15m. The Omnibus also replaced Art 4 (AI literacy), which the chapter mentions only as "AI literacy".
-- Corrected: (1) the table cited the general date to "Art 113, first paragraph"; it is the second paragraph (the first is entry into force, the third holds points (a) to (c)). (2) "the Omnibus extends that rule to small mid-cap enterprises" now says it applies to fines under Art 99(4) and (5) (new Art 99(6a)), not the prohibition fines of Art 99(3). (3) "an extension to 2 December 2026 for older generative systems" now says it is the Art 50(2) marking duty only.
-- Agree on the voluntary-framework facts: NIST AI RMF 1.0 released 26 January 2023, page says it is being revised under the White House AI Action Plan and records the 7 April 2026 concept note; NIST AI 600-1 is dated July 2024 and lists twelve risks (2.1 to 2.12); ISO/IEC 42001:2023 on the IEC webstore: 2023-12-18, edition 1, 51 pages; model card paper has the nine sections; datasheets paper v1 23 March 2018, latest v8 1 December 2021, CACM December 2021. All three code blocks reproduce the printed output exactly.
-- Gate note: the quality gate reports "video timestamps at 1 line (first 459)" for this file. That is a false positive: line 459 is the IEC link containing "42001:2023".
-
-**`docs/llm-engineering/01-adapting-models/01-prompt-retrieve-or-fine-tune.md`.** All three blocks reproduce exactly (0/16, 15/16, 16/16 JSON; 7 and 11 right; break-evens 130,783 and 616,718). Sources checked: Anthropic prompt-caching page (reads 0.1x, 0.05x and 0.025x for named models, 1.25x and 2x writes), Ovadia et al. (v3, 30 January 2024), Gekhman et al. (v3, 1 October 2024), LIMA (65B, 1,000 examples). No edits. Internal links resolve.
-
-**`docs/llm-engineering/01-adapting-models/03-supervised-fine-tuning-with-lora.md`.** All four blocks reproduce exactly (loss 3.5810 to 0.0087, 0/23 to 23/23 valid, 13 and 19 right, parameter table, merge difference 2.30e-04, sweep losses 2.8097, 3.4644, 0.5242, 0.1132). Installed versions equal the stated ones; TRL defaults claimed in the industry box (learning rate 2e-5, gradient checkpointing on, chunked loss) are correct. Checked against abstracts and the blog: LoRA (10,000x, 3x), QLoRA (65B on 48 GB, 99.3% of ChatGPT on Vicuna, 1,000+ models), LoRA Learns Less (rank 10 to 100x), LoRA Without Regret (29 September 2025). Corrected: the 15x learning-rate multiplier for runs of about 100 steps or fewer is described by its authors as preliminary and anecdotal; the chapter stated it as a finding.
-
-**`docs/llm-engineering/02-inference-and-serving/02-kv-cache-and-paged-attention.md`.** All four blocks reproduce (128 KiB, 476 and 74 sequences, allocator table 74/916/907/895/867/765/497, block-table check 0.00e+00). PagedAttention figures confirmed in the paper text (20.4 to 38.2% utilisation, 800 KB and 1.6 GB for OPT-13B, 2 to 4x, 20 to 26% slower kernel, up to 55% saving, 26 GB and 65%); DeepSeek-V2 93.3% and 2.25 groups; GQA 5% uptraining. No edits. The use_cache timing block is load-sensitive: on a busy machine the speed-up at 192 tokens was 6.6x against the quoted 4.6 to 5.5x; the chapter already says to trust the shape. Not checked: the vLLM design-page example (16 tokens, head size 128).
-
-**`docs/llm-engineering/02-inference-and-serving/06-serving-engines.md`** (matrix checked against the opened pages, re-fetched 2026-10-08). Corrected two cells: (1) TensorRT-LLM speculative decoding caveat said the C++ backend supports the full list; the page lists MTP, Eagle3, NGram, DraftTarget, PARD, DFlash and SA and says only that "the PyTorch backend supports only Eagle3"; it never mentions a C++ backend. (2) TGI hardware sentence said guides exist for NVIDIA and AMD; the installation navigation lists NVIDIA, AMD, Intel Gaudi, AWS Trainium and Inferentia, Google TPUs and Intel GPUs. The chooser data and `ServingEngineChooserLab` (src, not edited) keep TGI's Intel GPU cell at "not established", which is conservative, not wrong. Agree: maintenance-mode caution text and recommended engines; vLLM `enable_prefix_caching=True` wording and the hardware list (CUDA, ROCm, Intel XPU, vLLM-Metal, CPUs); Ollama unsupported list (the page also marks `user` and image URL, which the chapter omits); TensorRT-LLM hardware (Ampere to Blackwell, NVIDIA only); xgrammar and llguidance; vLLM and SGLang LoRA flags; quantisation lists; Kubernetes probe values and `/dev/shm`; Dynamo-Triton "formerly"; SGLang 0.5.21 and TensorRT-LLM 1.2.1 (20 April 2026) on PyPI. PyPI shows vLLM 0.31.0 released 5 October 2026 (the chapter's 0.30.0 is right for 2 October). Weak citations, not wrong: the vLLM multi-GPU cell links the Kubernetes page, which only mentions tensor-parallel shared memory; the TensorRT-LLM multi-GPU cell links its PyPI page (the `trtllm-serve` page has `--tensor_parallel_size`). SGLang's home page also lists Moore Threads MUSA. Chooser block output equals the prose. The benchmark block was run while other agents were using the CPU: mean TTFT 0.19, 0.85 and 1.54 s, throughput 19.6, 15.7 and 23.6 tokens/s, outside the quoted ranges but with the same shape (TTFT grows with concurrency); not a chapter error.
-
-**`docs/senior/01-system-design-cases/01-enterprise-document-qa.md`.** All three blocks reproduce exactly (30,000,000 chunks, 122.9 and 30.7 GB, 9,037, 11,947 and 15,828 a month; hit rates; rerank 0.91 and 0.89 against 0.92; post-filter 3.7 and 0.94 against pre-filter 0.97; 242 and 137 tokens). Azure RRF page (k = 60 "performs best when you set k to a small value", Foundry IQ line, updated 17 September 2026) and OpenFGA (2 to 3x over-fetch) confirmed. Corrected: the prose said dense retrieval is "weaker at the top" than BM25, but the printed table has dense ahead at rank 1 (0.75 against 0.71) and BM25 ahead at ranks 5 and 10; the sentence now says so. Not verified: the Anthropic Contextual Retrieval percentages, BEIR and Lost in the Middle claims.
-
-**`docs/senior/02-engineering-craft/03-estimation-and-planning.md`.** All three blocks reproduce exactly (40 vs 47.2 vs 53.9/61.7/66.2 days, 0.6% and 14.6%, shared 59.6/58.1/70.9/81.2 vs independent 59.5/58.6/69.0/76.4, ratios 1.55 and 2.02, 62 and 81 days, bootstrap 1.51 to 2.30). Rules of ML page "last updated 2025-08-25" and rules 1, 4 and 16 confirmed. Corrected: the Flyvbjerg paragraph said the first application was "in the UK"; the abstract says only "large transportation infrastructure projects", so "in the UK" was removed. Not verified: the Wikipedia details on the cone of uncertainty (Boehm 1981, McConnell 1997) and PERT (Clark, 1958).
-
-**`docs/mlops/distributed/01-dist-foundations/03-data-parallelism.md`.** All four blocks reproduce exactly, including the real two-process gloo run (1.19e-07, 0.00e+00), scaling table and overlap table. PyTorch 2.14 DDP notes (rank 0 `state_dict()` broadcast, bucketed all-reduce) and FSDP "inspired by ZeRO Stage 3" confirmed; Goyal et al. figures (8192, 256 GPUs, one hour) confirmed. No factual edits. Style findings for the author, not edited: the file says "Built from the course lecture ...", "What the lecture leaves implicit" and "Beyond the lecture", which the gate flags under section 0 (narration of the source) at two lines; practice questions Q1 to Q5 are one-line recall answers.
-
-**Build and browser check (isolated copy, `docusaurus serve` on port 3125).** The live tree's build fails only on links from two pages other agents are still writing (`agentic-frontier/voice-and-realtime-agents` to `automatic-prompt-optimisation-and-dspy` and `theory/causal/quasi-experiments` to `causal-ml-uplift-and-dml`). In an isolated copy of the tree with `onBrokenLinks` set to `warn`, client and server compiled and the build succeeded with those two warnings only. In headless Chromium at 1280 and 390 px wide the new interview page shows 40 `<details>` blocks, opens Q25, has no console or page errors and no horizontal overflow; the regulation and serving-engines pages also load with no errors.
-
-**Not verified in task B:** boards, labs and their rendering in a browser, typecheck, the live full-site build, the vLLM design-page example, the Anthropic Contextual Retrieval post, Wikipedia-based history claims, GPU behaviour.
-
-**Task C: `docs/interviews/25-senior-ai-engineer-additions.md` (new, only file created).** id `interviews-senior-ai-engineer-additions`, slug `/interviews/senior-ai-engineer-additions`, sidebar_position 25. Forty questions in six groups (7 classical ML, 7 retrieval and RAG, 7 LLM adaptation and serving, 7 evaluation and governance, 6 system design, 6 senior craft), each a block-form `<details>` with a seeded code block, its printed output (re-run from the saved page: 40 of 40 outputs identical) and an answer quoting those numbers, plus links to the chapters that teach the idea (every `/docs/...` slug checked against frontmatter). Synthetic data throughout; prices and latencies are labelled placeholders or assumptions. Rules: no code comments, no em dashes, no GitHub links, no narration or timestamps. The quality gate fails the page only on boards, lab and the seven required sections, which do not apply. Libraries used: numpy 2.5.3, scipy 1.18.1, scikit-learn 1.9.1, fairlearn 0.14.0, all already in `venv-llm`; nothing installed. EU AI Act answers (Q25, Q26) restate the dates and Art 73 clocks verified above and say they are not legal advice.
-
-## Source ledger
-
-One row per outside source before it is used. "Checked" is the date you opened it.
-
-| Topic | URL | Type | Why chosen | Licence note | Checked | Used in |
-| --- | --- | --- | --- | --- | --- | --- |
-| CV foundations and imaging | https://szeliski.org/Book/ | Author's textbook site | Primary reference for inverse graphics, image formation and classical vision; second edition and 2025 errata page opened | Copyrighted textbook; original explanatory prose, no figures copied | 2026-10-02 | H foundations group |
-| Current OpenCV Python operations | https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html | Official library documentation | Checked the current 4.13.0 tutorial tree for pixel operations, processing and feature detection | OpenCV documentation; summarised in original prose | 2026-10-02 | H foundations and feature groups |
-| Camera calibration and 3D projection | https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html | Official OpenCV 4.13.0 tutorial | Camera intrinsics, distortion and correspondences provide a real image-to-scene geometry example | OpenCV documentation; explained in original prose | 2026-10-02 | H chapter 1 |
-| RGB and HSV conversion | https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html | Official OpenCV 4.13.0 tutorial | Verifies current colour-conversion workflow and finite channel ranges | OpenCV documentation; explained in original prose | 2026-10-02 | H chapter 3 |
-| Image resampling and interpolation | https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html | Official OpenCV 4.13.0 API documentation | Current resize and interpolation options, including area-based decimation | OpenCV documentation; explained in original prose | 2026-10-02 | H chapter 2 |
-| Histogram equalisation | https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html | Official OpenCV 4.13.0 tutorial | Current global and contrast-limited histogram equalisation behaviour | OpenCV documentation; explained in original prose | 2026-10-02 | H chapter 3 |
-| Stanford vision course notes | https://cs231n.github.io/ | University course notes | Checked the lecture's further-reading reference; current page has Spring 2026 assignments | Course materials; linked for further study, no text copied | 2026-10-02 | H chapters 1 to 3 |
-| Image gradients and signed derivatives | https://docs.opencv.org/4.x/d5/d0f/tutorial_py_gradients.html | Official OpenCV 4.13.0 tutorial | Sobel, Scharr and Laplacian behaviour; signed output avoids dropping negative edges | OpenCV documentation; original prose | 2026-10-02 | H Session 3 |
-| Canny and Hough lines | https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html and https://docs.opencv.org/4.x/d6/d10/tutorial_py_houghlines.html | Official OpenCV 4.13.0 tutorials | Current multi-stage edge detection and polar accumulator definitions | OpenCV documentation; original prose | 2026-10-02 | H Session 4 |
-| Harris corners | https://docs.opencv.org/4.x/dc/d0d/tutorial_py_features_harris.html | Official OpenCV 4.13.0 tutorial | Structure tensor response and local corner selection | OpenCV documentation; original prose | 2026-10-02 | H Session 6 |
-| SIFT and geometric matching | https://docs.opencv.org/4.x/da/df5/tutorial_py_sift_intro.html and https://docs.opencv.org/4.x/d1/de0/tutorial_py_feature_homography.html | Official OpenCV 4.13.0 tutorials | Scale-space descriptor stages, ratio filtering and robust homography workflow | OpenCV documentation; original prose | 2026-10-02 | H Sessions 7 and 8 |
-| HoG descriptor geometry | https://docs.opencv.org/4.x/d5/d33/structcv_1_1HOGDescriptor.html | Official OpenCV 4.13.0 API documentation | Confirms 64×128 window, 16×16 block, 8×8 stride and cell, nine bins, yielding 105 blocks and 3,780 values | OpenCV documentation; dimensions independently computed | 2026-10-02 | H Session 6 |
-| Current detector families | https://docs.pytorch.org/vision/stable/models/fcos.html and https://docs.pytorch.org/vision/stable/models/mask_rcnn.html and https://docs.ultralytics.com/models/yolo26 | Official Torchvision 0.29 and Ultralytics documentation | Live examples of anchor-free FCOS, two-stage Mask R-CNN and current YOLO detection and mask variants; no cross-family benchmark asserted | Project documentation; summarised in original prose | 2026-10-02 | H Sessions 12 and 13 |
-| Current segmentation families | https://docs.pytorch.org/vision/stable/models/deeplabv3.html and https://ai.meta.com/research/publications/sam-3-segment-anything-with-concepts/ | Official Torchvision 0.29 model guide and Meta research publication | Live examples of semantic DeepLabV3 and promptable concept segmentation/tracking with SAM 3 | Project documentation and original research summary; no model images copied | 2026-10-02 | H Sessions 11, 12 and 14 |
-| Current classification families and weight transforms | https://docs.pytorch.org/vision/stable/models.html#classification | Official Torchvision 0.29 documentation | Classification catalogue includes CNN and VisionTransformer families; each weight version has its own preprocessing transform | Project documentation; original prose, no benchmark copied | 2026-10-02 | H Sessions 9 and 10 |
-| Local feature and matching documentation | https://docs.opencv.org/4.x/da/df5/tutorial_py_sift_intro.html and https://docs.opencv.org/4.x/dc/dc3/tutorial_py_matcher.html | Official OpenCV 4.13.0 tutorials | SIFT descriptors and matching distances provide context for visual-word vocabulary design | Project documentation; original prose | 2026-10-02 | H Session 15 |
-| Classical image segmentation operations | https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html and https://docs.opencv.org/4.x/d1/d5c/tutorial_py_kmeans_opencv.html and https://docs.opencv.org/4.x/d3/db4/tutorial_py_watershed.html | Official OpenCV 4.13.0 tutorials | Fixed/adaptive/Otsu thresholds, k-means and marker-based watershed | Project documentation; original prose and independent toy arithmetic | 2026-10-02 | H Session 11 |
-| FCOS original paper | https://arxiv.org/abs/1904.01355 | Original 2019 research paper | Verifies FCOS is a one-stage anchor-box-free detector; no benchmark adopted | Paper abstract; original prose | 2026-10-02 | H Session 13 |
-| SORT and Deep SORT original papers | https://arxiv.org/abs/1602.00763 and https://arxiv.org/abs/1703.07402 | Original 2016 and 2017 research papers | Motion-and-assignment SORT and appearance-assisted Deep SORT scope; no historical benchmark adopted | Paper abstracts; original prose | 2026-10-02 | H Session 14 |
-| MobileNet and VGG parameter comparison | https://arxiv.org/html/1704.04861 and https://keras.io/api/applications/ | Original MobileNets research and current Keras Applications catalogue | Original table gives 4.2M MobileNet V1 1.0-224 and 138M VGG-16; current Keras lists packaged 4.3M and 138.4M variants | Primary paper and project documentation; counts attributed by variant | 2026-10-02 | H Session 16 and practice |
-| Edge quantisation and runtimes | https://developers.google.com/edge/litert/conversion/tensorflow/quantization/post_training_quantization and https://docs.pytorch.org/executorch/stable/index.html | Official LiteRT and ExecuTorch 1.5 documentation | Distinguishes weight-only and calibrated integer conversion, operator/device effects and a current on-device runtime | Official documentation; no conversion or benchmark claimed | 2026-10-02 | H Session 16 |
-| Lucas-Kanade optical flow | https://docs.opencv.org/4.x/d4/dee/tutorial_optical_flow.html | Official OpenCV 4.13.0 tutorial | Brightness constancy, local shared flow, over-determined least squares and pyramidal tracking | Official documentation; original synthetic least-squares example | 2026-10-02 | H mid-semester practice |
-| Forecasting textbook | https://otexts.com/fpp3/ and https://otexts.com/fpp3/stationarity.html and https://otexts.com/fpp3/simple-methods.html and https://otexts.com/fpp3/accuracy.html and https://otexts.com/fpp3/tscv.html and https://otexts.com/fpp3/prediction-intervals.html | Hyndman and Athanasopoulos, free online textbook updated 2026-09-28 | Primary source for patterns, differencing, baselines, temporal evaluation, MASE and intervals | Open educational source; original explanation and synthetic Python, no text/figures copied | 2026-10-02 | K1 all chapters |
-| Exponential smoothing and ARIMA implementation | https://otexts.com/fpp3/ses.html and https://otexts.com/fpp3/arima-r.html | Hyndman and Athanasopoulos, Forecasting: Principles and Practice | SES level recurrence and ARIMA model-selection workflow | Open educational source; original explanation and synthetic Python, no text/figures copied | 2026-10-02 | K1 chapter 2 |
-| Current lag-feature example | https://scikit-learn.org/stable/auto_examples/applications/plot_time_series_lagged_features.html | Official scikit-learn 1.9.1 documentation | Lagged and rolling features with temporal split for tabular forecasting | Project documentation; original prose and synthetic code | 2026-10-02 | K1 chapter 3 |
-| Current pretrained forecasting families | https://www.research.google/blog/timesfm-3-a-zero-shot-foundation-model-for-multivariate-forecasting/ and https://huggingface.co/autogluon/chronos-2 | Original Google Research 2026-08-31 publication and official Chronos-2 model card | Verifies TimesFM-3 multivariate/known-future-covariate scope and Chronos-2 2025 model scope; no benchmark claims adopted | Primary project sources; original summary, no model download | 2026-10-02 | K1 chapter 4 |
-| Recommendation course | https://developers.google.com/machine-learning/recommendation/overview/types and https://developers.google.com/machine-learning/recommendation/overview/candidate-generation and https://developers.google.com/machine-learning/recommendation/collaborative/basics and https://developers.google.com/machine-learning/recommendation/collaborative/matrix and https://developers.google.com/machine-learning/recommendation/dnn/scoring | Official Google for Developers recommendation course | Explicit/implicit feedback, candidate retrieval, matrix factors, scoring and reranking | Original explanations and toy arithmetic, no diagrams copied | 2026-10-02 | K2 all chapters |
-| Implicit-feedback factorisation | https://yifanhu.net/PUB/cf.pdf | Hu, Koren and Volinsky original 2008 paper | Preference and confidence separation for sparse implicit interactions | Original research source; synthetic worked example | 2026-10-02 | K2 chapters 1–2 |
-| Two-tower retrieval implementation | https://www.tensorflow.org/recommenders/api_docs/python/tfrs/tasks/Retrieval and https://www.tensorflow.org/recommenders/examples/basic_retrieval | Official TensorFlow Recommenders documentation | Factorised query/item towers and ANN index at serving | Project documentation; no model benchmark adopted | 2026-10-02 | K2 chapter 3 |
-| Published large-scale recommendation system | https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/ | Original 2016 Google Research paper | Historical candidate-generation and ranking separation; no claim about current YouTube internals | Original paper abstract, no figures copied | 2026-10-02 | K2 chapters 3–4 |
-| Recommendation reranking guidance | https://developers.google.com/machine-learning/recommendation/dnn/re-ranking | Official Google for Developers course | Re-ranking can enforce freshness, diversity and fairness after scoring | Original explanation and synthetic example | 2026-10-02 | K2 chapters 3–4 |
-| Columnar file layout | https://parquet.apache.org/docs/concepts/ and https://parquet.apache.org/docs/overview/motivation/ | Apache format documentation | Row groups, column chunks and per-column encoding explain why projections help analytical scans | Apache documentation; summarised in original prose | 2026-10-02 | C1 chapter 1 |
-| Parquet analytical queries | https://duckdb.org/docs/current/guides/performance/file_formats and https://duckdb.org/docs/stable/data/parquet/overview | Official database documentation | Production example of querying Parquet directly with projection and filter pushdown; cautions about joins and repeated reads | DuckDB documentation; summarised in original prose | 2026-10-02 | C1 chapter 1 |
-| Data quality tests | https://docs.getdbt.com/docs/build/data-tests?version=1.12 and https://docs.greatexpectations.io/docs/reference/learn/data_quality_use_cases/uniqueness/ | Official tool documentation | Named production examples of uniqueness, null, accepted-value and relationship rules | dbt and GX documentation; summarised in original prose | 2026-10-02 | C1 chapter 2 |
-| Lakehouse refinement | https://docs.databricks.com/aws/en/lakehouse/medallion | Official platform documentation | Current bronze, silver, gold pattern and where validation and modelling happen | Databricks documentation; summarised in original prose | 2026-10-02 | C1 chapter 3 |
-| Iceberg table snapshots | https://iceberg.apache.org/docs/latest/api/ and https://iceberg.apache.org/docs/latest/branching/ | Apache table-format documentation | Current table metadata, atomic transactions and snapshot retention | Apache Iceberg documentation; summarised in original prose | 2026-10-02 | C1 chapter 3 |
-| DAGs and backfills | https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/tasks.html and https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/backfill.html | Apache Airflow documentation | Current task dependencies, retries and historical runs for the pipeline chapter | Apache documentation; summarised in original prose | 2026-10-02 | C1 chapter 4 |
-| Infrastructure as code | https://developer.hashicorp.com/terraform/intro and https://developer.hashicorp.com/terraform/intro/core-workflow | Official Terraform documentation | Write, plan and apply workflow for reproducible data infrastructure | HashiCorp documentation; summarised in original prose | 2026-10-02 | C1 chapter 5 |
-| SLO error budgets | https://sre.google/workbook/error-budget-policy/ and https://sre.google/workbook/alerting-on-slos/ | Original SRE workbook | Interprets availability targets, error budgets and useful alerts | Google-owned publication; summarised in original prose | 2026-10-02 | C1 chapter 5 |
-| CRISP-DM process | https://www.ibm.com/docs/en/spss-modeler/saas?topic=dm-crisp-help-overview | Official methodology guide | Confirms iterative phases and planning structure | IBM documentation; summarised in original prose | 2026-10-02 | C1 chapter 6 |
-| Preprocessing leakage | https://scikit-learn.org/1.5/common_pitfalls.html | Official library documentation | Fit transforms on training data and preserve test isolation | scikit-learn documentation; summarised in original prose | 2026-10-02 | C1 chapter 6 |
-| Current MLflow registry workflow | https://mlflow.org/docs/latest/ml/model-registry/workflow | Official product documentation | Model version aliases and tags replace deprecated registry stages | MLflow documentation; summarised in original prose | 2026-10-02 | C1 chapter 6 |
-| Database change capture | https://debezium.io/documentation/reference/stable/index.html and https://debezium.io/documentation/reference/stable/transformations/event-flattening.html | Official project documentation | Row-level change events, source metadata and before/after state for ingestion | Debezium documentation; summarised in original prose | 2026-10-02 | C1 chapter 7 |
-| Validation actions | https://docs.greatexpectations.io/docs/core/trigger_actions_based_on_results/run_a_checkpoint/ | Official library documentation | Current validation, results and actions pattern | GX documentation; summarised in original prose | 2026-10-02 | C1 chapter 8 |
-| PSI thresholds | https://files.wmich.edu/s3fs-public/attachments/u730/2022/PSIfinal.pdf | Research paper | Examines statistical behaviour of conventional 0.10 and 0.25 PSI cutoffs; supports explaining why automatic retraining from a cutoff is unwarranted | Author publication; summarised in original prose | 2026-10-02 | C1 chapter 8 |
-| Analytics models and snapshots | https://docs.getdbt.com/docs/build/snapshots and https://docs.getdbt.com/docs/build/data-tests?version=1.12 | Official tool documentation | Type 2 history, tests and mutable source tables | dbt documentation; summarised in original prose | 2026-10-02 | C1 chapter 9 |
-| Semantic metrics | https://docs.getdbt.com/docs/use-dbt-semantic-layer/dbt-sl?version=2 | Official platform documentation | Shared metric definitions and downstream queries | dbt documentation; summarised in original prose | 2026-10-02 | C1 chapter 9 |
-| Feature views and point-in-time joins | https://docs.feast.dev/getting-started/concepts/feature-view and https://docs.feast.dev/getting-started/concepts/point-in-time-joins and https://docs.feast.dev/getting-started/components/online-store | Official project documentation | Offline historical joins, online latest-value serving and explicit time/TTL semantics | Feast documentation; summarised in original prose | 2026-10-02 | C1 chapter 11 |
-| StandardScaler semantics | https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html | Official library documentation | Training-only mean and standard deviation reused on later data | scikit-learn documentation; summarised in original prose | 2026-10-02 | C1 chapter 11 |
-| Orchestration and retries | https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/tasks.html and https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/sensors.html | Apache Airflow documentation | Current task dependencies, retry backoff and sensors | Apache documentation; summarised in original prose | 2026-10-02 | C1 chapter 10 |
-| Experiment tracking and registry | https://mlflow.org/docs/latest/ml/tracking/ and https://mlflow.org/docs/latest/ml/model-registry/workflow | Official MLflow documentation | Run metadata, data inputs, artefacts and current alias-based registry workflow | MLflow documentation; summarised in original prose | 2026-10-02 | C1 chapter 12 |
-| Data lineage model | https://openlineage.io/docs/spec/object-model/ and https://openlineage.io/docs/spec/facets/ | Open specification | Jobs, runs, datasets, versions and quality metadata for impact analysis | OpenLineage documentation; summarised in original prose | 2026-10-02 | C1 chapter 12 |
-| Spark execution and tuning | https://spark.apache.org/docs/latest/rdd-programming-guide and https://spark.apache.org/docs/latest/sql-performance-tuning | Apache Spark documentation | Lazy transformations, actions, shuffle, broadcast join and skew treatment | Apache documentation; summarised in original prose | 2026-10-02 | C1 chapter 13 |
-| Vector search and filtered indexing | https://qdrant.tech/documentation/manage-data/indexing/ and https://qdrant.tech/documentation/search/search/ | Official Qdrant documentation | HNSW, exact scans, payload filters, index build and recall-latency trade-offs for knowledge bases | Qdrant documentation; summarised in original prose | 2026-10-02 | C1 chapter 14 |
-| Personal data and minimisation | https://commission.europa.eu/law/law-topic/data-protection/information-business-and-organisations/application-gdpr_en and https://commission.europa.eu/law/law-topic/data-protection/reform/rules-business-and-organisations/principles-gdpr/overview-principles/what-data-can-we-process-and-under-which-conditions_en | European Commission guidance | Personal-data scope, pseudonymisation and purpose-limited collection | Official regulatory guidance; summarised in original prose | 2026-10-02 | C1 chapter 15 |
-| k-anonymity limitations | https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/data-sharing/anonymisation/how-do-we-ensure-anonymisation-is-effective/ | UK regulator guidance | Defines equivalence groups and warns that homogeneity and background knowledge defeat a blanket 1/k identity-risk claim | Official regulatory guidance; summarised in original prose | 2026-10-02 | C1 chapter 15 |
-| Differential privacy guarantees | https://csrc.nist.gov/pubs/sp/800/226/final and https://www.nist.gov/blogs/cybersecurity-insights/differential-privacy-privacy-preserving-data-analysis-introduction-our | NIST guidance | Explains neighbouring datasets, sensitivity, epsilon and composed privacy budget | US government publication; summarised in original prose | 2026-10-02 | C1 chapter 15 |
-| Data observability pillars | https://www.montecarlodata.com/wp-content/uploads/2021/10/OReilly-Data-Quality-Fundamentals-early-release.pdf | Original vendor-authored taxonomy | Five-pillar teaching model for freshness, volume, schema, distribution and lineage | Vendor publication; taxonomy attributed and summarised | 2026-10-02 | C1 chapter 16 |
-| Monitors and response actions | https://docs.elementary-data.com/ and https://docs.greatexpectations.io/docs/core/trigger_actions_based_on_results/create_a_checkpoint_with_actions/ | Official tool documentation | Concrete freshness/volume/schema checks and configurable validation actions | Project documentation; summarised in original prose | 2026-10-02 | C1 chapter 16 |
-| IR foundations, Boolean retrieval, tolerant retrieval | https://nlp.stanford.edu/IR-book/html/htmledition/irbook.html | University textbook | Primary reference for inverted indexes, postings intersection, vocabulary, spelling correction and evaluation | Copyright Cambridge University Press; summarised in original prose, no copied passages | 2026-10-01 | B1 chapters 1 to 3 |
-| Production inverted indexes | https://lucene.apache.org/core/10_3_1/core/org/apache/lucene/index/package-summary.html | Apache Lucene API documentation | Confirms term dictionary, postings, positions and stored-field distinctions in a real search library | Apache Software Foundation documentation; paraphrased | 2026-10-01 | B1 chapters 1 and 2 |
-| Boolean, wildcard and fuzzy query implementations | https://lucene.apache.org/core/10_5_0/core/org/apache/lucene/search/package-summary.html | Apache Lucene API documentation | Primary implementation reference for query classes and fuzzy matching in a current version | Apache Software Foundation documentation; paraphrased | 2026-10-01 | B1 chapters 2 and 3 |
-| Index construction and compression | https://nlp.stanford.edu/IR-book/html/htmledition/index-construction-1.html and https://nlp.stanford.edu/IR-book/html/htmledition/index-compression-1.html | University textbook | Primary reference for BSBI, SPIMI, vocabulary growth and gap coding | Copyright Cambridge University Press; summarised in original prose | 2026-10-01 | B1 chapter 4 |
-| Segment lifecycle and document IDs | https://lucene.apache.org/core/10_5_0/core/org/apache/lucene/index/package-summary.html | Apache Lucene API documentation | Confirms immutable segment cores, merging, reader refresh and mutable internal doc IDs | Apache Software Foundation documentation; paraphrased | 2026-10-01 | B1 chapters 1 and 4 |
-| Vector-space scoring and ranking | https://nlp.stanford.edu/IR-book/html/htmledition/scoring-term-weighting-and-the-vector-space-model-1.html | University textbook | Primary reference for tf-idf, cosine and ranked retrieval | Copyright Cambridge University Press; summarised in original prose | 2026-10-01 | B1 chapter 5 |
-| BM25 scoring | https://lucene.apache.org/core/10_5_0/core/org/apache/lucene/search/similarities/BM25Similarity.html | Apache Lucene API documentation | Checks current BM25 parameters and IDF convention against the illustrative implementation | Apache Software Foundation documentation; paraphrased | 2026-10-01 | B1 chapters 5, 7 and 15 |
-| Reciprocal rank fusion in hybrid search | https://learn.microsoft.com/en-us/azure/search/hybrid-search-ranking | Official product documentation | Current production example of rank fusion for lexical and vector results | Microsoft documentation; summarised in original prose | 2026-10-01 | B1 chapters 5, 7 and 15 |
-| Text classification and document clustering | https://nlp.stanford.edu/IR-book/html/htmledition/text-classification-and-naive-bayes-1.html and https://nlp.stanford.edu/IR-book/html/htmledition/flat-clustering-1.html | University textbook | Primary reference for supervised text categories, k-means and the cluster hypothesis | Copyright Cambridge University Press; summarised in original prose | 2026-10-01 | B1 chapter 6 |
-| Retrieval evaluation | https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-in-information-retrieval-1.html | University textbook | Primary reference for test collections, ranked measures and user utility | Copyright Cambridge University Press; summarised in original prose | 2026-10-01 | B1 chapter 7 |
-| Gmail's document classification example | https://blog.google/products-and-platforms/products/gmail/gmail-ai-features/ | Official product write-up | Named production example of assigning incoming messages to predefined tabs | Google-owned article; summarised in original prose | 2026-10-01 | B1 chapter 6 |
-| TREC test-collection workflow | https://trec.nist.gov/howto.html | Official evaluation programme documentation | Named real evaluation system with documents, topics and relevance judgements | NIST publication; summarised in original prose | 2026-10-01 | B1 chapter 7 |
-| AI Search retrieval quality evaluation | https://learn.microsoft.com/en-us/azure/databricks/ai-search/retrieval-quality-eval | Official product documentation | Current example that compares full-text, vector, hybrid and reranked results with graded relevance and confidence intervals | Microsoft documentation; summarised in original prose; feature documented as beta | 2026-10-01 | B1 chapter 7 |
-| Web search characteristics and index sampling | https://nlp.stanford.edu/IR-book/html/htmledition/web-search-basics-1.html | University textbook | Source for web graph, search intents, spam and index overlap estimation | Copyright Cambridge University Press; summarised in original prose | 2026-10-01 | B1 chapter 9 |
-| Current web search pipeline | https://developers.google.com/search/docs/fundamentals/how-search-works | Official product documentation | Named real system's crawling, indexing, canonicalisation and serving stages | Google documentation; summarised in original prose | 2026-10-01 | B1 chapters 9 and 10 |
-| Crawler architecture and frontier | https://nlp.stanford.edu/IR-book/html/htmledition/web-crawling-and-indexes-1.html | University textbook | Source for frontier, politeness and distributed index choices | Copyright Cambridge University Press; summarised in original prose | 2026-10-01 | B1 chapter 10 |
-| Robots Exclusion Protocol | https://www.rfc-editor.org/rfc/rfc9309.html | IETF standard | Current normative semantics for robots.txt matching, caching and failure handling | Public standard; summarised in original prose | 2026-10-01 | B1 chapter 10 |
-| Canonical page choice | https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls | Official product documentation | Distinguishes URL discovery and duplicate consolidation from robots directives | Google documentation; summarised in original prose | 2026-10-01 | B1 chapters 9 and 10 |
-| PageRank and HITS | https://nlp.stanford.edu/IR-book/html/htmledition/link-analysis-1.html | University textbook | Primary teaching reference for hyperlink graph, random surfer and authority/hub scores | Copyright Cambridge University Press; summarised in original prose | 2026-10-01 | B1 chapter 11 |
-| Original large-scale hypertext search | https://research.google/pubs/the-anatomy-of-a-large-scale-hypertextual-web-search-engine/ | Research paper | Historical production-system context for links and scalable crawling, clearly identified as 1998 work | Original paper; summarised in original prose | 2026-10-01 | B1 chapter 11 |
-| Multilingual search design | https://learn.microsoft.com/en-us/azure/search/search-language-support | Official product documentation | Current example of translated fields, language-specific analysers and vector option | Microsoft documentation; summarised in original prose | 2026-10-01 | B1 chapter 12 |
-| Cross-language sentence embeddings | https://arxiv.org/abs/2007.01852 | Original research paper | LaBSE's shared embedding method, without claiming the chapter toy vectors run the trained model | Paper authors' text; summarised in original prose | 2026-10-01 | B1 chapter 12 |
-| CLIP image-text alignment | https://openai.com/index/clip/ and https://cdn.openai.com/papers/Learning_Transferable_Visual_Models_From_Natural_Language.pdf | Original research and paper | Contrastive image-text training and zero-shot transfer example | OpenAI publication; summarised in original prose, no images reused | 2026-10-01 | B1 chapter 13 |
-| ALIGN image-text retrieval | https://arxiv.org/abs/2102.05918 | Original research paper | Independent dual-encoder example with noisy image alt-text pairs | Paper authors' text; summarised in original prose | 2026-10-01 | B1 chapter 13 |
-| Recommendation candidate and rank stages | https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/ | Original research paper | Named historical production example of two-stage recommendation | Google paper; summarised in original prose, 2016 system identified as historical | 2026-10-01 | B1 chapter 14 |
-| Content-based cold-start recommendation | https://research.google/pubs/content-based-related-video-recommendations/ | Original research paper | Content features for newly uploaded videos when co-watch evidence is sparse | Google paper; summarised in original prose, 2016 system identified as historical | 2026-10-01 | B1 chapter 14 |
-| Dense passage retrieval | https://arxiv.org/abs/2004.04906 | Original research paper | Dual-encoder passage retrieval design | Paper authors' text; summarised in original prose | 2026-10-01 | B1 chapter 15 |
-| Late-interaction retrieval | https://arxiv.org/abs/2004.12832 | Original research paper | Nuances the dual/cross-encoder speed-quality trade-off | Paper authors' text; summarised in original prose | 2026-10-01 | B1 chapter 15 |
-| Production hybrid and semantic reranking | https://learn.microsoft.com/en-us/azure/search/hybrid-search-ranking and https://learn.microsoft.com/en-us/azure/search/search-get-started-vector | Official product documentation | Current example of BM25/vector RRF then semantic reranking | Microsoft documentation; summarised in original prose | 2026-10-01 | B1 chapter 15 |
-| Retrieval-augmented generation | https://arxiv.org/abs/2005.11401 | Original research paper | Distinguishes passage retrieval from answer generation and evidence use | Paper authors' text; summarised in original prose | 2026-10-01 | B1 chapter 15 |
-
-Claude -> Codex (2026-10-01): your brief is `senior-ai-codex-brief.md`. Three things changed since the plan was first
-drafted, all in the brief: no links to the bansal site (plain-text credit), question banks and mid-semester papers
-come across as a `99-practice` group, and every chapter needs infographic boards and labs. The pipeline venvs and
-crawl are ready. Start with B1 (IR). When the first three chapters are done, write the results in the chapter log
-and the visual specs in `.codex/visuals/ir.md`.
-
-Codex -> Claude (2026-10-01): handoff received. I am taking B1 Information Retrieval first, followed by C1 Data
-Management, using the track-specific directories and isolated build output in the brief. I will update this file
-after the first three IR chapters with gate results and questions for cross-review. Please keep `docs/theory/ir/`,
-`docs/mlops/data/`, and the new IR/DM board and lab files under my ownership while those tracks are in progress.
-
-Codex -> Claude (2026-10-01): the first three B1 chapters are ready for cross-review in
-`docs/theory/ir/01-foundations/`. Each has one visually inspected board and one interactive lab; the lab specs
-are in `.codex/visuals/ir.md`. All six Python blocks passed with `run_ml.py`; `npm run typecheck` passed; a clean
-isolated Docusaurus build passed with no build warnings. Browser checks passed for all three routes in light and
-dark modes and at 390 px, including board loading and expansion, lab control changes and data views. The first
-cached build reported success but served 404s for the new paths; `DOCUSAURUS_NO_PERSISTENT_CACHE=1` fixed the
-stale route bundle. The final `.lecture-import/codex-build` has all three pages. I corrected the Session 2
-worked example: `x+y=10` is a worst-case bound, while the shown lists need six ID comparisons. Please review
-the chapter depth, lecture coverage and this correction; I am continuing with Session 4.
-
-Codex -> Claude (2026-10-01): B1 foundation group is complete through Session 4. Chapter 4 adds the
-index-construction board and `GapEncodingLab`; all eight Python blocks across the group pass, typecheck passes,
-and the isolated production build passes without warnings with persistent cache disabled. The Session 4 board
-was rendered and inspected; the lab's default three-byte result and changed four-byte result both worked in
-the browser, including the table view, dark mode and 390 px. I also clarified in Session 1 that the stable ID is
-the application's external ID, not Lucene's internal doc ID. I am continuing with the ranking group.
-
-Codex -> Claude (2026-10-01): B1 ranking group is complete through Session 7. All 14 Python blocks across the
-seven chapters pass with `run_ml.py`; typecheck and an isolated production build pass without warnings. Sessions
-5 to 7 each have a rendered and inspected SVG board and an operated lab, with light, dark and 390 px browser
-checks. Session 5 and 7 share a dependency-free six-document comparison of BM25, clearly illustrative dense
-vectors, RRF fusion and an intent-coverage reranker in `scripts/ir_comparison.py`; it is a teaching example, not
-a trained model or benchmark. The Session 6 k-means example now shows the actual transition from assignments
-`[0,1,1,1]` to `[0,0,1,1]`, matching the lab. I am continuing with Sessions 9 to 12.
-
-Codex -> Claude (2026-10-01): B1 web group is complete through Session 12, so 11/16 IR chapters are done. All
-22 runnable Python blocks across those chapters pass, typecheck passes, and an isolated production build passed
-without warnings. The five new boards were rendered and visually inspected; all four pages passed browser
-checks in light, dark and 390 px with operated labs and data views. Session 11 has two boards, one each for
-PageRank and HITS. User noticed thousands of generated Docusaurus files in the shared worktree, so I stopped
-my preview server and removed only my generated cache and build output. The remaining IR source files are in
-`docs/theory/ir/`, `src/components/viz/` and `static/img/ir/`. I am continuing with Sessions 13 to 15.
-
-Codex -> Claude (2026-10-01): All fourteen B1 lecture chapters are now complete, including the Session 8 and 16
-review content in Sessions 7 and 15 respectively. Session 8's source has an AP denominator inconsistency: it
-states four relevant documents but prints 0.756, which divides by only the three retrieved relevant documents.
-Standard AP for that premise is 0.567; the chapter preserves the review question and explains the correction.
-The 28 Python blocks pass, typecheck passes, and the modern group plus the Session 8 correction passed an
-isolated production build and browser checks in light, dark and at 390 px. The new boards were visually inspected
-and labs operated. Generated cache and build output were removed after the check to keep the shared tree clear.
-Question-bank and solved-midsem chapters are next.
-
-Codex -> Claude (2026-10-02): B1 is complete at 16/16. The final question bank keeps all 36 unique questions;
-the 15 questions in the comprehensive bank duplicate Q22 to Q36 exactly, so each appears once. The solved
-mid-semester chapter keeps all six questions and worked answers. Source inconsistencies are explained in place:
-Q11 needs six comparisons for the listed postings, Q20's AP is 0.567 when four relevant documents exist (or
-0.756 when exactly three do), and a cosine score alone cannot establish image rank. All 34 Python blocks pass,
-typecheck passes, and the isolated build passes. Both practice pages passed light, dark and 390 px browser checks,
-including board expansion, answer details and lab data view. I removed the isolated generated files immediately
-after the check because the user had noticed thousands of build artefacts in the shared worktree. I am starting
-C1 Data Management. The first three B1 chapters remain available for your cross-review.
-
-Codex -> Claude (2026-10-02): C1 Sessions 1 to 3 are ready in `docs/mlops/data/01-data-foundations/`
-for your cross-review. They have 2,509, 2,505 and 2,550 words; three visually inspected boards; two operated
-labs with specs in `.codex/visuals/dm.md`; and six Python blocks that pass `run_ml.py`. Typecheck and an
-isolated Docusaurus build pass. All three routes passed light, dark and 390 px browser checks, board expansion,
-practice answer presence, and lab control/data-view operation where present. The first build exposed a missing
-Infographic import in Session 3; this was fixed before the passing build. Source URLs were recorded in the ledger
-before use. Generated build output was removed immediately after the browser checks. I am continuing with
-Sessions 4 to 6.
-
-Codex -> Claude (2026-10-02): C1 Sessions 4 to 6 are complete in
-`docs/mlops/data/02-pipelines-and-infrastructure/`. The chapters have 2,509, 2,512 and 2,548 words,
-six passing Python blocks, three visually inspected boards and two operated labs. Typecheck and the isolated
-build pass; all three routes passed desktop light/dark and 390 px browser checks, board expansion, practice
-answer presence and lab controls/data views. I preserved the lecture's numeric exercises and corrected its
-overbroad ELT default and availability-cost claims. Session 6 records that MLflow fixed model-registry stages
-are deprecated and current workflows use aliases and tags. Generated build output was removed. I am continuing
-with Sessions 7, 8, Lecture 9 and Lecture 11.
-
-Codex -> Claude (2026-10-02): C1 getting-data-ready group is complete at 10/18 overall. Sessions 7 and 8 and
-Lectures 9 and 11 have 2,502, 2,514, 2,527 and 2,503 words; eight passing Python blocks; five visually
-inspected boards; and four operated labs. Typecheck and the isolated build pass. All four routes passed browser
-checks in light, dark and 390 px, board expansion, five source practice answers per chapter, and lab controls and
-data views. I corrected the source's "PSI >0.25 → retrain" and automatic-feature-store-correctness claims, and
-clarified that a feature must exist at the prediction cutoff rather than the later label timestamp. Generated
-output was removed after checks. Next is orchestration, experiment metadata and distributed processing.
-
-Codex -> Claude (2026-10-02): C1 data-in-production group is complete at 13/18 overall. Lectures 10, 12 and 13
-have 2,605, 2,534 and 2,590 words; six passing Python blocks; three visually inspected boards; and three
-operated labs. Typecheck and the isolated build pass. All routes passed desktop and 390 px browser checks,
-including board loads, source practice answers, lab controls and data views. I corrected the lecture's hourly
-cron assumption for daylight-saving days, its claim that a logged top F1 run is automatically trustworthy,
-deprecated MLflow fixed stages, and the conflation of 80 size-based partitions with 80 concurrent workers.
-User also requested richer end tables for the active `docs/genai/` topic files and a free voice reader; those
-site changes are being checked separately. Next for C1 are Lectures 14 to 16 and the two practice chapters.
-
-Codex -> Claude (2026-10-02): C1 is complete at 18/18. Lectures 14 to 16 have 2,733, 2,967 and 2,817 words,
-six Python blocks, three visually inspected boards and three operated labs. The two practice chapters have
-1,990 and 1,312 words, four passing Python blocks, two visually inspected boards and two operated labs. The
-question bank has 26 unique questions; its comprehensive source repeats main-bank Q11–Q26 exactly. The solved
-paper keeps all three scenario questions and supplied worked answers. Independent calculations verified the
-source's 5× compression, 4% of columns, 95% completeness, 20 in-flight events under Little's Law conditions,
-8.76 hours per 365-day year, z=2, 80 size-based pieces, cosine 2/3, k=4, a 30-minute freshness breach,
-and a 30 percentage-point rural representation gap. Source claims that did **not** follow from those numbers:
-4% of columns is not necessarily 4% of bytes; 80 pieces are not 80 simultaneous workers; cosine 2/3 does not
-prove retrieval; k=4 gives no general 25% re-identification-risk bound; PSI cutoffs do not command retraining;
-and an accuracy decline alone does not prove input drift. The paper's lake/warehouse absolutes and claim that
-Kappa cannot support history are corrected in labelled notes. `run_all.py` passed all 10 blocks in the final
-five chapters; typecheck passed, both practice routes loaded from an isolated production build, and light,
-dark, 390 px, board expansion, answer panels and lab controls/data views passed browser checks. The practice
-paper's scan images are unavailable in the converted text, so the essential scenario facts were redrawn as
-an original board; I did not verify any information present only in those scans. Screen-reader testing was
-not performed. Generated build output was removed after checks to avoid thousands of workspace artefacts.
-P1 H has begun: CV lecture and practice sources are converted, and OpenCV 5.0.0.93 was installed in
-`.lecture-import/venv-llm`.
-
-Codex -> Claude (2026-10-02): My isolated-output build of the CV foundations group compiled client and server,
-then failed its broken-link gate because the in-progress `docs/llm-engineering/quantisation-for-inference.md`
-links to `/docs/llm-engineering/speculative-decoding`, which is not present yet. This is outside my owned files.
-I am running the required clean-copy build without the in-progress Claude folders and will log its result.
-
-Codex -> Claude (2026-10-02): H first group is ready for cross-review in
-`docs/theory/cv/01-image-fundamentals/`: 2,611, 2,513 and 2,520 words, six Python blocks passing with
-`run_all.py`, three rendered and visually inspected boards, three operated labs, and clean typecheck. An
-isolated copy of the tree excluding Claude's in-progress folders built without warnings; the regular shared
-tree still has the unrelated LLM Engineering broken link noted above. All three CV pages passed browser
-checks in light, dark and at 390 px, including five source practice answers per page, board expansion,
-changed lab controls and data tables. The source's 786,432-byte example is 768 KiB, not 768 decimal kB;
-the note explains this correction. CV Session 2's converted HTML had collapsed Q2–Q5 into one line; I
-reconstructed those four practice panels from the visible source text. The first three CV pages are ready for
-your lecture-coverage and prose review. I did not perform screen-reader testing.
-
-Codex -> Claude (2026-10-02): H features-and-geometry group is complete, taking CV to 8/17.
-The five chapters have 2,522, 2,509, 2,552, 2,506 and 2,501 words; ten Python blocks pass with
-`run_all.py`; five original boards were rendered and inspected; five labs were operated with changed
-controls and data tables. Typecheck and the clean-copy production build pass without warnings. All five
-pages passed desktop light/dark and 390 px browser checks, including board expansion and five source
-practice answers each. The source RANSAC answer rounds 16.008 **down** to 16 trials for a 99% target;
-the correct whole-trial answer is **17** (16 yields 98.99774%). The source's unqualified Harris/HoG
-invariance wording is qualified in a note. The installed `opencv-python-headless` 5.0.0.93 Python binding
-does not expose `HOGDescriptor`, so I verified the 3,780-value geometry from the opened OpenCV 4.13.0
-documentation using independent arithmetic rather than claiming to run that API. No screen-reader or
-real-camera performance checks were performed. Current official detection and segmentation model-family
-sources are now opened and logged before the next CV groups.
-
-Codex -> Claude (2026-10-02): H recognition group is complete, taking CV to 10/17.
-The two chapters have 2,796 and 2,725 words; all four runnable blocks pass with no skips;
-two original boards were rendered and visually inspected; two labs were operated with changed controls,
-table view, dark mode and 390 px viewport. Typecheck and production build pass. The lecture's
-unqualified “ViT hardware-efficient” and visual-word-to-semantic-concept claims are qualified in
-labelled notes. Torchvision 0.29 classification and OpenCV 4.13.0 feature documentation were opened
-before the claims were written. No model benchmark, real image-search run or screen-reader check was
-performed. A mistaken build command briefly wrote generated output to the root despite a temp copy;
-those generated directories and the temp copy were removed after the browser checks.
-
-Codex -> Claude (2026-10-02): H segmentation, detection and tracking group is complete, taking CV to 14/17.
-The four chapters have 2,625, 2,741, 2,735 and 2,589 words. Eight of eight independent Python
-blocks pass without skips; one detection block initially relied on a variable from the prior block and
-was fixed before acceptance. Four original boards were rendered and visually inspected, and four labs
-were operated with changed controls, table views, dark mode and 390 px viewport. Typecheck and a
-production build from an isolated copy pass without warnings. Source caveats are labelled: classical
-segmentation is not always unsupervised, anchor boxes and NMS are not universal to one-stage detectors,
-AP needs a defined protocol, and an IoU gate does not establish a global tracking assignment. No
-trained detector, segmentation model, tracking video, model benchmark or screen-reader check was run.
-The isolated build copy was removed after review. A small fixed-size SVG style adjustment to the box
-lab was typechecked after the browser run and will be included in the next group build.
-
-Codex -> Claude (2026-10-02): H Computer Vision is complete at 17/17.
-The deployment chapter has 2,543 words and two passing Python blocks. The two practice chapters have
-2,607 and 2,256 words; their six blocks pass without skips. The question bank contains all 36 unique
-source Q&As; the comprehensive bank repeats Q20–Q36 exactly. Its notes correct “768 KB” to 768 KiB
-for 786,432 bytes and qualify softmax, AP, tracking and device-speed claims. RANSAC Q19 gives a
-continuous 71.355 trials and correctly rounds up to 72. The mid-semester transcript provides Q4–Q6
-but the three scan images and their exact grid, point and gradient values were not in the handover;
-the chapter preserves the available source panels and clearly labels each new board/code value as a
-synthetic illustration, not a verified exam answer. The original MobileNets paper confirms 138M/4.2M
-for the named variants (32.857×); the idealised 32-to-8-bit raw-weight factor is 4×, but no file-size,
-latency, power or accuracy claim is inferred. Three boards were rendered and visually inspected; five
-labs across the three pages were operated with changed controls, table view, dark mode and 390 px.
-Typecheck and isolated production build pass; the earlier box-lab SVG sizing adjustment is included in
-this build and browser-checked. No screen-reader or real-device check was done. The isolated copy and
-generated output were removed after review. Next: K1 time series, then K2 recommenders and A cross-review.
-
-Codex -> Claude (2026-10-03): K1 time series is complete at 5/5. All five chapters have 2,512–2,678 words,
-an original SVG board and an interactive lab whose default reproduces a printed code number. Ten of ten
-independent Python blocks run with `run_all.py` and the LLM venv, with no skips. TypeScript typecheck and an
-isolated production build pass. All five pages load; boards decode and were visually inspected, labs respond
-to changed and keyboard-driven controls, data tables render, dark mode works, and 390 px has no horizontal
-overflow. Sources are in the ledger above. The patch lab illustrates visibility and arithmetic; no pretrained
-weights, external dataset benchmark, interval calibration or screen-reader check was run. Please cross-review
-the first three chapters in `docs/theory/timeseries/`.
-
-Codex -> Claude (2026-10-03): K2 recommenders is complete at 4/4. All four chapters have 2,514–2,647 words,
-an original board and a lab with a code-matched default. Eight of eight independent Python blocks run with
-no skips. TypeScript typecheck and the isolated build pass. All four pages load; boards decode and were
-visually inspected, labs respond to changed and keyboard-driven controls, table and dark views render, and
-390 px has no horizontal overflow. The toy factor scores, candidate recall and slate bonus are illustrative,
-not trained-model or user-outcome results. No screen-reader check was run. Please cross-review the first three
-chapters in `docs/theory/recsys/`.
-
-Codex -> Claude (2026-10-03): Independent cross-review of Track A's first chapter in each of its four
-groups is complete. Compared each chapter with its corresponding converted lecture (`ml-m1`, `ml-m3`,
-`ml-m9`, `ml-m11`) for topic order, worked values and practice Q&A: the source's 6, 7, 6 and 6 questions
-are present. All 26 Python blocks across the four chapters ran independently with `run_all.py`, no skips.
-The four pages, 12 boards and seven labs load; sampled boards were visually inspected; every lab's first
-control works by keyboard, its data table opens, dark mode renders, and no page overflows at 390 px. No
-screen-reader test or exhaustive prose fact-check of every external claim was done. Findings for owner review:
-
-1. `02-supervised-learning/01-regression-and-gradient-descent.md` first presents the inverse normal
-   equation as an exact route that *needs* an inverse. Later code correctly demonstrates rank deficiency
-   and uses `lstsq`. Move that qualification to the first explanation so the initial rule is not misleading;
-   the [official `LinearRegression` documentation](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
-   describes a least-squares implementation, not an explicit matrix inverse.
-2. `03-ensembles-and-unsupervised-learning/01-ensemble-learning.md` generalises the “better than chance”
-   requirement and “boosting cuts bias” shorthand from the lecture to all ensembles. Qualify these as the
-   independent binary majority-vote example and typical weak-learner behaviour, respectively. The Netflix
-   production claim currently cites a secondary BGR article even though [Netflix's original account](https://medium.com/netflix-techblog/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429)
-   is available; cite it directly and retain its distinction between earlier algorithms deployed and later
-   Grand Prize gains not worth the engineering effort.
-3. `04-evaluation-and-practice/01-model-evaluation.md` repeats the lecture's “k-fold rotates the test
-   fold” wording immediately after recommending an untouched final test set. Call the rotating fold a
-   validation fold during model selection, then reserve the final test set. Its ROC-AUC imbalance caveat
-   and numerical examples are otherwise correctly qualified later in the chapter.
-
-`01-ml-foundations/01-what-machine-learning-is.md` had no actionable issue in this pass. These are
-editorial/source-precision findings; no Track A files were edited by Codex.
-
-Codex: P1 DONE (2026-10-03). The requested DM practice, H, K1, K2 and Track A cross-review are complete:
-28 chapters, 58 runnable Python blocks, 28 original boards and 30 lab embeds across the four authoring
-groups. Every runnable block passed its group check; final K1/K2 typecheck, isolated build and browser
-checks passed. Figures requiring correction or qualification from the lecture source: CV's 786,432 raw RGB
-bytes equal 768 KiB (not 768 decimal kB); the CV RANSAC 99% target needs 17 whole trials where the source
-rounded 16.008 down to 16; CV practice Q19 needs 72 trials after rounding 71.355 up. The DM practice
-paper and CV mid-semester paper refer to scan-only diagrams whose source details were unavailable in the
-converted text; their new illustrations are explicitly synthetic and are not claimed as reproduced exam
-figures. Other source-claim qualifications are recorded in the H and C1 notes above. The 667 MB isolated
-build tree and temporary browser files were removed after the final checks. No commit or push was made.
-
-## Wrap note (Claude, 2026-10-01)
-
-Stopped at the user's request. State left behind:
-
-- **Track A:** no chapters written; only `docs/theory/ml/` category files. Ten unverified lab drafts exist in
-  `src/components/viz/` from the stopped authors: BiasVarianceLab, ScalingOutlierLab, LeakageLab,
-  ImbalanceThresholdLab, GradientDescentLab, LogisticBoundaryLab, ImpurityLab, KnnLab, SvmMarginLab, RocPrLab.
-  Their specs are `.codex/visuals/ml-1.md` to `ml-4.md`. Treat them as drafts: typecheck and operate each one
-  before relying on it. A3 and A4 got as far as verifying sources and prototyping code; nothing from them is saved.
-- **Site code (Claude, done, not rebuilt since the last two edits):** 10-stage learning path in
-  `src/data/learningPath.ts`, `mlops` split in `stageSidebar.ts`, Explore sections, "Coming soon" handling in
-  `path.tsx`, homepage stage count from data. The last full build that passed was before the stage rewrite and
-  the DocCard work; run `npm run build` and `npx tsc --noEmit` before trusting it.
-- **Pipeline:** `.lecture-import/venv` and `venv-ml` ready; ML, IR, DM, DML and CV crawled; ML question banks
-  converted into `converted-ml-extras/`.
-- **Codex:** has started IR (`in-ir`, `converted-ir`, `scripts/infographics/ir.py`, `.codex/visuals/ir.md`,
-  four IR labs). No chapter log entries yet.
-- Nothing is committed.
-
-Update (Claude, 2026-10-01, later): the user said "resume". The five Track A authors were resumed from their own
-transcripts and are continuing; the lab drafts listed above are being checked by their authors. Nobody builds the
-site from the Claude side while Codex is building.
-
-Claude (2026-10-01): fixed `run_ml.py` so it no longer skips blocks that merely contain `sklearn.datasets`; only a real
-`import datasets` is skipped now. Earlier runs of the old filter skipped such blocks silently. Full A3 report and its
-source ledger are in `.lecture-import/track-a/report-3.md`.
-
-## Verification of Track A (Claude, 2026-10-01)
-
-- `npx tsc --noEmit`: clean. `npm run build`: passes, no errors or warnings. Route diff against the pre-work build:
-  one route removed (`/docs/category/theoretical-concepts`, a generated page nothing linked to), the rest additions
-  (the 16 chapters, category pages, tags, `/path`, plus Codex's in-progress IR pages).
-- Browser, all 16 chapters: 40 boards load (HTTP 200, `naturalWidth` above 0; images are lazy so they must be scrolled
-  into view first), 19 labs operated (slider, select, show data / show chart) with no page or console errors, no bansal
-  links, no horizontal scroll at 390 px, Expand lightbox opens, stage chip and sidebar stage present, path page lists
-  stage 2 with its notes, Explore has the section. Earlier suites for the path, chat and category cards also pass.
-- Not yet done: independent cross-review of the first three chapters per group by Codex; keyboard-only and screen-reader
-  checks of the labs; a read-through of the prose for accuracy (the authors verified numbers by running code, nobody has
-  re-read the claims about named systems). XGBoost and LightGBM snippets are labelled not run.
-
-Claude -> Codex: Track A is ready for your cross-review. Please read the first chapter of each group
-(`theory/ml/01-ml-foundations/01-*`, `02-supervised-learning/01-*`, `03-ensembles-and-unsupervised-learning/01-*`,
-`04-evaluation-and-practice/01-*`), check the G1 to G10 gates, and report in this file. Reports for each author are in
-`.lecture-import/track-a/report-1.md` to `report-5.md`.
-
-## Track B launched (Claude, 2026-10-02)
-
-User: "continue till you complete all". Eight authors started: E1, E2 (LLM adaptation), F1, F2 (inference and serving),
-L (governance), M1, M2, M3 (senior craft). Still to launch: B2 (advanced RAG), C2 (platform ops), D1a/b/c (distributed ML
-from bansal DML), D2 (training at scale), G (agent frontier), then K3 (causal, graph, speech).
-Instructions: `.lecture-import/track-b/AGENT-PROMPT.md` and `ASSIGNMENTS.md`. New folders and category files created:
-`docs/llm-engineering/`, `docs/governance/`, `docs/senior/`, `docs/agentic-frontier/`, `docs/genai/rag-advanced/`,
-`docs/mlops/` (with `platform/` and `distributed/`). Codex: `docs/mlops/data/` is yours; I created `docs/mlops/_category_.json`
-(label "MLOps and Data") because it did not exist, so do not recreate it.
-Environments: `.lecture-import/venv-llm` (torch 2.14 CPU, transformers 5.18, peft 0.21, trl 1.14, sentence-transformers,
-onnx, onnxruntime, fastapi, fairlearn, networkx, duckdb, pytest) is available to you too; `codetest/run_all.py` runs every
-block under the runnable headings with no skipping. `SmolLM2-135M-Instruct` loads and generates on CPU.
-
-## Claude's verification of Codex's P0 tracks (2026-10-02)
-
-- Built an isolated copy of the tree (without other agents' in-progress files): build passes, no errors or warnings.
-- Browser, all 32 chapters (IR 16, DM 16): every page loads, all 35 images render after scrolling, 29 labs operated
-  (sliders, selects, data table toggle) with no page or console errors, no bansal links, no horizontal scroll at 390 px.
-- `npx tsc --noEmit`: clean. Code: 34/34 IR blocks and 32/32 DM blocks run with `run_all.py` in `venv-llm`.
-- Findings: (1) DM `99-practice/` has only its category file; the question bank and the solved mid-semester paper
-  (sources in `.lecture-import/converted-dml`-style extras for DM: `dm-question-bank`, `dm-comprehensive-question-bank`,
-  `dm-midsem-2026`; run `convert.py` with the `extras` argument) were not written. (2) Prose and claim accuracy not re-read.
-
-Claude -> Codex (2026-10-02): **P1 OPEN.** Please do, in this order: (a) the two DM practice chapters (question bank,
-mid-semester solved) with boards and labs where they help; (b) track H, computer vision, 17 chapters in
-`docs/theory/cv/` per the brief; (c) K1 time series (5) and K2 recommenders (4); (d) if still free, the cross-review of
-Track A that I asked for earlier. Same rules and gates. Also read `.lecture-import/track-b/AGENT-PROMPT.md` for the
-lessons from Track A: report numbers you verified, label anything not run, and note any lecture figure that does not
-reproduce. For the vision track the lecture sources are `cv-s1` to `cv-s16` (crawled; convert into your own dir).
-
-Claude (2026-10-02): E1 delivered 4 chapters, 8 boards, 4 labs (`.lecture-import/track-b/report-E1.md`); unverified until the tree builds.
-Lesson recorded in the Track B prompt: if a Hub download stalls, run blocks with `HF_HUB_OFFLINE=1` once the model is cached.
-
-Claude (2026-10-02): E2 delivered chapters 05 to 07, 6 boards, 3 labs (`.lecture-import/track-b/report-E2.md`). Track E is fully written, not yet built or browser-checked.
-
-## Verification of tracks E and F (Claude, 2026-10-02)
-
-- Isolated build (tree without the folders other agents were still editing): typecheck clean, build passes with no errors or warnings.
-- Browser, all 16 `docs/llm-engineering` chapters: 33 images load, 16 labs operated, no console errors, no horizontal scroll at 390 px.
-- Defect found and fixed: the four F2 chapters (06 to 09) threw React hydration error #418 in the browser although the build passed. Cause: practice
-  questions written as `<details><summary>Answer</summary>...</details>` on one line right after a numbered list item, which nests the block inside a
-  paragraph. Fixed by converting all 26 questions to the block form used elsewhere. Rule added to `.lecture-import/track-b/AGENT-PROMPT.md`.
-  **Codex: use the block form** (`<details>`, newline, `<summary><strong>Q1.</strong> ...</summary>`, blank line, answer, blank line, `</details>`); your IR and DM
-  chapters already do.
-- Added the LLM engineering stage milestone to `learningPath.ts` (the LoRA chapter).
-- Not yet verified for E and F: code blocks (a background run was in progress), prose accuracy, keyboard-only and screen-reader use of the labs.
-
-Claude (2026-10-03): L delivered 5 governance chapters, 10 boards, 5 labs (`.lecture-import/track-b/report-L.md`). The EU AI Act dates (Omnibus Regulation 2026/1744) are read from the official texts by the author and not independently checked.
-
-Claude (2026-10-03): M2 delivered senior cases 4 to 6, 6 boards, 3 labs (`.lecture-import/track-b/report-M2.md`). I removed GitHub links and token strings from chapter 4 to honour the no-GitHub rule; chapters 06-serving-engines still link to NVIDIA's official TensorRT-LLM docs, which are hosted on github.io (left in place, see summary).
-
-Claude (2026-10-03): M3 delivered senior craft chapters 1 to 6, 12 boards, 5 labs and a shared helper `craftMath.ts` (`.lecture-import/track-b/report-M3.md`). Unverified in a browser.
-
-Claude (2026-10-03): M1 delivered senior cases 1 to 3, 6 boards, 3 labs (`.lecture-import/track-b/report-M1.md`). Track M is fully written, unverified in a browser. Notable finding recorded by the author: a small cross-encoder reranker lowered top-5 hit rate on SciFact.
-
-Claude (2026-10-03): D1a delivered distributed ML foundations (4 chapters, 8 boards, 3 labs; `.lecture-import/track-b/report-D1a.md`).
-
-## Claude's verification of everything finished by 2026-10-05
-
-- Isolated copy (without `docs/mlops/platform` and `docs/mlops/distributed/02-dist-challenges`, which authors were still writing): typecheck clean, build passes, no errors or warnings.
-- Browser: 49 chapters across CV, time series, recommenders, governance, senior, distributed-ML foundations and DM practice: all images load, 49 labs operated, no console errors.
-- Codex's three Track A cross-review findings (2026-10-03) were applied by Claude on 2026-10-05: normal equation qualified in the regression chapter; "better than chance" and
-  "boosting cuts bias" qualified, and the Netflix claim now cites Netflix's own post (read through a reader proxy because the page blocks automated fetching: the original says two
-  algorithms went into production and the grand-prize ensemble's gains did not justify the engineering effort); k-fold wording in the model-evaluation chapter now says validation fold.
-- Open: the rate limit blocked the rest of Track B. In progress or not started: C2 platform ops (3 chapters on disk, their 6 board images not yet drawn), B2 advanced RAG, D1b, D1c, D2 training at scale, G agent frontier.
-
-## Ownership change (Claude, 2026-10-05)
-
-Because of the API rate limit on Claude's authors, work was redistributed:
-- **Codex session A** (`.codex/codex-next-prompt-2.md`): K3 causal, graph and speech (10 chapters), cross-review of Claude's Track B, and one new interview-additions file.
-- **Codex session B** (`.codex/codex-next-prompt-3.md`): distributed ML `03-dist-learning` (3), `04-dist-federated` (2) and `99-practice` (2). Claude's `02-dist-challenges` folder was fully written by author D1b before the limit (3 chapters, 4 boards, StragglerLab and ParameterServerLab); it only needs verification.
-- **Claude's authors, when the limit lifts**: C2 platform ops (2 chapters left and 6 boards to draw), B2 advanced RAG (4), D2 training at scale (4), G agent frontier (5).
-- Two Codex sessions share this file: append a dated section at the end, never rewrite it.
-
-
-## Codex B coordination with Claude (2026-10-05)
-
-Codex B -> Claude and Codex A: the user asked this session to coordinate ownership before proceeding, after mentioning both next-prompt-2 and next-prompt-3. I have read both briefs and your 2026-10-05 ownership handover. This session is claiming only next-prompt-3: distributed ML 03-dist-learning (3 chapters), 04-dist-federated (2) and 99-practice (2), dist_4.py/dist_3.py, their distinct assets/specs, and five new assigned labs (the table specifies five labs; practice has none). Build names will be .docusaurus-codex-b and .lecture-import/codex-build-b. No commit or push.
-
-Please retain next-prompt-2 (causal, GNN, speech, Track B cross-review, interview additions) with Codex A, and Claude's platform/RAG/frontier/training folders with their existing authors, unless you explicitly hand them over. Please append any changed ownership or blockers here. D1b's 02-dist-challenges and D1a's foundations remain read-only to this session. I have no direct tool to send to the separate Claude process; this append-only file is the established coordination channel, and no live acknowledgement has been received.
-
-Initial audit: seven assigned chapter files and five lab names are absent. Converted sources are present. The converted DML mid-semester paper contains Q1-Q3, each 10 marks, with qualitative answers and no numeric worked answer; I will verify marks and any illustrative arithmetic added, without inventing missing scan data. No chapter, build or browser verification has happened yet.
-
-## Claude -> Codex A and Codex B: ownership confirmed (2026-10-05, 21:30 IST)
-
-**Confirmed, no changes.**
-- **Codex B owns** `docs/mlops/distributed/03-dist-learning` (3 chapters), `04-dist-federated` (2) and `99-practice` (2), with `scripts/infographics/dist_4.py` (03 group) and `dist_3.py` (04 and 99), specs `.codex/visuals/dist-4.md` and `dist-3.md`, and the five labs StaleGradientLab, GradientCompressionLab, LocalSgdLab, FedAvgLab, NonIidLab. Build names `.docusaurus-codex-b` and `.lecture-import/codex-build-b` are fine.
-- **Codex A owns** `docs/theory/causal` (4), `docs/theory/gnn` (3), `docs/theory/speech` (3), the cross-review of Claude's Track B, and the single new file `docs/interviews/25-senior-ai-engineer-additions.md`. Nobody has started this yet (no files on disk at 21:28).
-- **Claude's authors keep:** `docs/mlops/platform` (agent C2 resumed at 21:28 IST: it will draw its 6 missing boards, verify chapters 1 to 3 and write chapters 4 and 5), `docs/genai/rag-advanced` (B2), `docs/llm-engineering/03-training-at-scale` (D2) and `docs/agentic-frontier` (G). B2, D2 and G start when the API rate limit allows (it was announced to lift at 22:10 IST).
-- **Read-only for everyone except Claude:** `docs/mlops/distributed/01-dist-foundations` (D1a, verified) and `02-dist-challenges` (D1b, fully written before its stop: 3 chapters, 4 boards, StragglerLab, ParameterServerLab; Claude will verify it). Link to them freely.
-
-**Answers to Codex B's note.**
-- The DML mid-semester paper has Q1 to Q3 of 10 marks each with qualitative answers and no numeric worked answer. Your plan (verify marks and any arithmetic you add, invent no scan data) is right. Label every redrawn diagram as a redraw.
-- Link to D1a and D1b chapters by slug (`/docs/mlops/distributed/data-parallelism`, `/docs/mlops/distributed/programming-models`, `/docs/mlops/distributed/distributed-ml-challenges`, `/docs/mlops/distributed/core-distributed-algorithms`); all four exist on disk.
-- Claude has no push channel to Codex, nor Codex to Claude: this file is the channel. Please append, never rewrite, and write "BLOCKER:" at the start of any paragraph that needs a reply from Claude.
-
-**Known live-tree hazard.** A full build of the working tree currently fails if any chapter imports a lab or image that does not exist yet. Authors have been told to create each lab and board before saving the chapter that uses it. If a build of the live tree fails for a missing import, check `docs/mlops/platform` first (C2 has three chapters on disk whose boards are being drawn now).
-
-
-## Codex B: distributed learning authored and code checked (2026-10-05)
-
-Claude's 21:30 IST acknowledgement confirms the split: brief 3 stays with B and brief 2 with A. No further ownership clarification is needed.
-
-| Chapter | Words including code | Blocks run | Boards | Lab | Gates so far |
-| --- | ---: | ---: | ---: | --- | --- |
-| dist-regression | 2,793 | 3/3 | 2 | StaleGradientLab | CPU code, MDX source review, rendered boards, typecheck; browser pending |
-| dist-deep-learning | 2,753 | 3/3 | 1 | GradientCompressionLab | same; browser pending |
-| dist-advanced-sgd | 2,753 | 2/2 | 1 | LocalSgdLab | same; browser pending |
-
-Eight blocks pass with run_all.py, no skips. Versions actually imported: Python 3.14.6, NumPy 2.5.3, PyTorch 2.14.1 CPU. One block spawns two real Gloo processes on loopback; each unequal-shard gradient matches the full-batch reference to twelve printed decimal places. Four boards rendered and inspected; no viewBox clipping. Five new assigned labs typecheck. No new packages installed.
-
-### Source ledger, opened 2026-10-05
-
-| Topic | Opened source | Use | Licence/scope |
-| --- | --- | --- | --- |
-| Replicated gradients | https://docs.pytorch.org/docs/2.14/notes/ddp.html | bucket reduction and model agreement; tested torch 2.14.1 | official documentation linked, own explanation |
-| Gloo collectives | https://docs.pytorch.org/docs/2.14/distributed.html | process groups, SUM and spawn example | official documentation linked; original code |
-| Compression interface | https://docs.pytorch.org/docs/2.14/ddp_comm_hooks.html | bucket hooks and asynchronous completion | official documentation linked, no copied implementation |
-| Residual correction | https://proceedings.mlr.press/v97/karimireddy19a.html | error-feedback mechanism and limitations | author paper linked, original arithmetic |
-| Delayed gradients | https://arxiv.org/abs/1909.05350 | formal-analysis pointer | abstract-level scope; no theorem claimed reproduced |
-| Lock-free updates | https://arxiv.org/abs/1106.5730 | Hogwild! shared-memory sparsity boundary | author paper linked; no benchmark copied |
-| Local averaging | https://arxiv.org/abs/1805.09767 | local SGD mechanism | author paper linked; no theorem/benchmark reproduction |
-| Adaptive frequency | https://arxiv.org/abs/1810.08313 | AdaComm motivation | own illustrative schedule; actual AdaComm not implemented |
-
-### Findings and verification limits
-
-Corrected/qualified lecture claims: a plain average of local mean gradients requires equal shard weights; stale gradients do not preserve central synchronous GD; variance/B assumes independent equal-variance samples; 8-bit factor four is coordinate payload only; exact local-period savings require a divisible budget; Hogwild! is not every networked async algorithm; faster acceptance is not guaranteed faster time to quality. Defaults: stale delay 2 loss 0.000003, quantisation residual norm 0.013588, local period 4 model 1.146146 and excess loss 0.080552. CPU neural loss 0.631008 -> 0.297477 is training loss, not held-out accuracy.
-
-First live-tree build compiled client/server but failed broken links: this group's own forward link to special-topics (now authored), plus an in-progress GraphRAG link to contextual-retrieval-and-reranking owned by Claude. Full seven-chapter build and browser verification remain pending; I will rerun after the practice pages exist and use a copy excluding unfinished external folders if needed. Screen reader, GPU, multi-machine network performance and real codec transport are not verified. No commit or push.
-
-
-## Codex B: federated group code checked (2026-10-05)
-
-| Chapter | Words including code | Blocks run | Boards | Lab | Verification |
-| --- | ---: | ---: | ---: | --- | --- |
-| dist-federated | 2,895 | 2/2 | 1 | FedAvgLab | code, initial board inspection, typecheck; browser/build pending |
-| dist-special-topics | 2,895 | 2/2 | 1 | NonIidLab | code, initial board inspection, typecheck; browser/build pending |
-
-Four blocks pass with run_all.py, no skips. FedAvg defaults 0.700000; real CPU autograd local training ends at 1.650350 versus central optimum 1.769231, with objective 6.125000 -> 1.061427. Mask cancellation yields [310,20] with all clients, but dropping one yields [295,0] rather than surviving unmasked [280,5]. This is an arithmetic demonstration, not secure aggregation. Non-IID default period four produces 0.431989, optimum 0.600000, gap 0.988154, excess loss 0.035284. The illustrative decreasing schedule uses 24 local steps, 12 rounds, excess 0.000285 and modelled time 720 ms.
-
-### Source ledger, opened 2026-10-05
-
-| Topic | Opened source | Use | Licence/scope |
-| --- | --- | --- | --- |
-| FedAvg | https://proceedings.mlr.press/v54/mcmahan17a.html | local training and count-weighted model aggregation | original explanation/code, paper linked; no published benchmark claimed reproduced |
-| Secure aggregation | https://research.google/pubs/practical-secure-aggregation-for-privacy-preserving-machine-learning/ | distinguish protocol/privacy from averaging and mask cancellation | author publication page read; no cryptographic implementation copied |
-| Differential privacy | https://research.google/pubs/deep-learning-with-differential-privacy/ | privacy-mechanism/accounting boundary | author publication page read; no epsilon or private-run claim |
-| Heterogeneous optimisation | https://arxiv.org/abs/1812.06127 | FedProx mechanism pointer | abstract-level scope; not implemented |
-| Drift correction | https://arxiv.org/abs/1910.06378 | SCAFFOLD pointer | abstract-level scope; not implemented |
-
-### Findings and limits
-
-Qualified source claims: local records do not establish a privacy guarantee; secure aggregation guarantees depend on protocol/cohort/adversary assumptions; non-IID data is a family of differences; communication is not always the bottleneck; infrequent/adaptive averaging does not guarantee little accuracy loss. No privacy protocol, privacy accountant, real client population, dropout recovery, FedProx/SCAFFOLD/AdaComm implementation, network benchmark or GPU run verified. The non-IID board's table width was adjusted after initial inspection to keep its background within the viewBox. Final visual/browser/build checks remain pending. No packages installed, commit or push.
-
-## Codex B: practice group authored and code checked (2026-10-05)
-
-| Chapter | Words including code | Blocks run | Boards | Lab |
-| --- | ---: | ---: | ---: | --- |
-| dist-question-bank | 2,719 | 1/1 | 1 | none assigned |
-| dist-midsem | 2,583 | 2/2 | 4 | none assigned |
-
-Question bank audit: all 29 unique pairs retained; the comprehensive bank contains 15 exact repeats of the base bank after local numbering/whitespace normalisation. No unique answer discarded. Source question/answer wording retained with connector punctuation adjusted, and caveats added under labelled qualifications. Every numeric bank result computed. The supplied paper has three 10-mark qualitative questions, total 30; no numeric worked exam answer exists to mark wrong. Every added illustrative value is explicitly synthetic and computed.
-
-### Source ledger, opened 2026-10-05
-
-| Topic | Opened source | Use | Licence/scope |
-| --- | --- | --- | --- |
-| Pipeline correction | https://arxiv.org/html/2104.04473v5 | section 2.2 explicitly states equal bubble time for non-interleaved 1F1B; activation/interleaving distinction | original dependency schedule and redraws; paper linked, no copied figures |
-| Pipeline baseline | https://arxiv.org/abs/1811.06965 | GPipe paper identity and baseline pointer | primary abstract page, no performance figure used |
-| Spark persistence | https://spark.apache.org/docs/latest/rdd-programming-guide.html | persistence is explicit and can be memory/disk | page identifies Spark 4.2.0; not installed/run |
-| MapReduce | https://hadoop.apache.org/docs/stable/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html | map/shuffle/reduce reference | page identifies Hadoop 3.3.5; not installed/run |
-| Batch scaling | https://arxiv.org/abs/1706.02677 | qualify linear scaling heuristic | paper linked, no new benchmark claimed |
-| FDM | https://hub.hku.hk/bitstream/10722/45576/1/26205.pdf | original candidate/support-exchange reference | primary PDF read, no copied figure or mining benchmark |
-
-### Requests and findings
-
-Mid-semester Q2 correction: supplied answer says non-interleaved 1F1B reduces bubbles relative to the naive/all-forward/all-backward flush schedule. The primary paper section 2.2.1 says bubble time is the same; outstanding forward activations are bounded instead. Original checker: both 22 ticks, idle 24/88=0.272727; peak live activations [4,3,2,1] versus baseline 8 per stage. Interleaving is the separate bubble-reducing modification and adds communication. Bubble overhead over ideal time is 3/8=0.375000, a different denominator. Q1 sharding alone is not fault tolerance; Q3 near-linear speedup is conditional and the full-model limit describes plain replication. No source numeric answer was found arithmetically wrong.
-
-Bank caveats: parallel is not restricted to shared memory; Spark does not automatically keep everything in RAM or guarantee faster runtime; the linear scaling rule has limits; 6 GB is model storage only; ring sent payload depends on N but is bounded, latency still grows; exact k-means requires shared assignments/sums/counts and an empty-cluster rule; FDM's per-level shorthand is not one universal collective; compression metadata prevents automatic multiplied savings; privacy and low-loss claims are conditional. Other objective, variance, delay and local-round caveats are recorded in the learning/federated entries.
-
-No scan layout or unseen numeric scan data invented. Four exam boards are labelled original redraws; the forward-only illustration is explicitly distinct from the complete 1F1B training schedule. No GPU pipeline/interleaved execution, real distributed parameter-server recovery, browser/screen-reader test or final site build yet. No commit or push.
-
-
-## Codex B: DONE (2026-10-05)
-
-Claude-confirmed session B scope is complete: **7 chapters, 19,440 words including code, 15/15 independent runnable Python blocks, 11 original SVG boards, 5 interactive labs and 2 lab-spec files**. Source coverage: five lectures with all 25 supplied lecture Q&As retained, 29 unique bank Q&As (15 duplicates removed), and all three supplied qualitative exam questions/answers. Ten extra teaching questions make 67 details blocks across the seven chapters. No commit or push.
-
-### Final chapter log
-
-| Chapter | Words | Python blocks passed | Boards | Lab | G1–G10 evidence |
-| --- | ---: | ---: | ---: | --- | --- |
-| dist-regression | 2,832 | 3/3 | 2 | StaleGradientLab | source audit, code including real 2-process Gloo, isolated build/typecheck, rendered/inspected boards, browser |
-| dist-deep-learning | 2,753 | 3/3 | 1 | GradientCompressionLab | source audit, code including CPU neural training, isolated build/typecheck, board/browser |
-| dist-advanced-sgd | 2,763 | 2/2 | 1 | LocalSgdLab | source audit, code, isolated build/typecheck, board/browser |
-| dist-federated | 2,895 | 2/2 | 1 | FedAvgLab | source audit, CPU autograd and mask arithmetic, isolated build/typecheck, board/browser |
-| dist-special-topics | 2,895 | 2/2 | 1 | NonIidLab | source audit, code, isolated build/typecheck, board/browser |
-| dist-question-bank | 2,719 | 1/1 | 1 | none assigned | exact pair de-duplication, numerical code, isolated build, board/browser; lab gate not applicable |
-| dist-midsem | 2,583 | 2/2 | 4 | none assigned | supplied-source comparison, computed examples/dependency schedule, isolated build, redraws/browser; lab gate not applicable |
-
-### Verification
-
-- `run_all.py` executes every Python block under the runnable headings: 8 learning, 4 federated and 3 practice, all pass, no skips. Printed outputs were read in full while prototyping. Python 3.14.6, NumPy 2.5.3, PyTorch 2.14.1 CPU; no package installations or Hub downloads.
-- `npx tsc --noEmit` is clean, including the final LocalSgdLab drawing change that shows vertical averaging resets at round boundaries.
-- Final live-tree build compiled but failed solely because the in-progress GraphRAG chapter links to an unwritten contextual-retrieval-and-reranking route. Earlier own forward links are now resolved. A copy in `/tmp/codex-b-dml/site` excluded only `docs/genai/rag-advanced`; it retained distributed foundations/challenges, platform, training-at-scale and frontier files present at copy time. In that copy, `DOCUSAURUS_GENERATED_FILES_DIR_NAME=.docusaurus-codex-b npx docusaurus build --out-dir .lecture-import/codex-build-b` passes with no errors or warnings (Docusaurus 3.10.1, Node 24.14.0). The live-tree build is not claimed clean.
-- Chromium checks all seven production pages: 11 boards decode, all 67 answer controls open, all five labs reproduce Python-matched defaults, every slider/checkbox is operated by keyboard, changed state updates the readout, data tables render, light/dark palettes work, and 390 px has no page overflow in chart or table mode. No page/console/hydration errors. All 11 SVGs were rendered to PNG and inspected; text and rectangle bounds are within the viewBox. Revised non-IID table and parameter-server/1F1B redraws were inspected again. Lab screenshots were inspected in light/dark and mobile views.
-- Audit checks seven frontmatter fields, unique site-wide ids/slugs, existence of every local link/import/board, no bare MDX expressions in prose, no code comments, no forbidden lecture-site/GitHub references or em-dash connectors. Direct comparison confirms all five lectures' supplied practice pairs are present. Four exam boards are explicitly original redraws; numeric content is labelled synthetic, not unseen scan data.
-- Browser-harness-only corrections: the theme control can cycle via system mode, so the check sets light mode explicitly and cycles to dark; Docusaurus answer collapsibles must be opened through their summary UI rather than setting the native open property. No shared component changes were made.
-
-### Additional source ledger
-
-| Opened on 2026-10-05 | Use | Licence/scope |
-| --- | --- | --- |
-| https://research.google/pubs/large-scale-distributed-deep-networks/ | verify the retained lecture's Downpour name and provide a primary reading link | author publication page; no copied implementation/benchmark |
-| FDM PDF sections 3.4/count polling, https://hub.hku.hk/bitstream/10722/45576/1/26205.pdf | verify candidate transmission, requests, support replies and result broadcast | original qualification, no copied figures |
-
-### All source corrections and qualifications
-
-1. **Regression S10 / bank Q18:** mean of worker means is exact only for equal intended sample weights; otherwise use counts. Shared model versions are required. Synchronous equivalence does not hold for stale gradients.
-2. **Deep learning S11 / bank Q21:** variance/B requires independent equal-variance gradient samples; standard deviation improves by sqrt(B), here 5.656854. Correlation changes the result.
-3. **SGD S12 / bank Q22:** asynchronous acceptance is not guaranteed faster time to quality. Hogwild! is a sparse shared-memory lock-free mechanism, not every networked asynchronous architecture.
-4. **SGD S12 / bank Q23:** the 32/8=4 factor counts coordinate payload only. Scales, indices, packing and codec work prevent treating it as an automatic measured speedup; combining quantisation and sparsity does not automatically multiply full-message savings. Error feedback is not an unconditional negligible-accuracy-loss guarantee.
-5. **SGD S12 / special S15 / bank Q24/Q28:** exactly tau-fold fewer rounds requires a divisible fixed budget and one communication per round; otherwise use ceil(T/tau). Twenty-five steps at period four give 25/7=3.571429. Adaptive/local schedules have conditional quality trade-offs, illustrated by nonzero excess losses. The decreasing schedule is not an implemented AdaComm algorithm.
-6. **Federated S13–14 / bank Q25/Q27:** keeping raw records local is not by itself a privacy guarantee. Secure aggregation depends on protocol/cohort/adversary/dropout assumptions; differential privacy requires bounded contributions, a specified mechanism and accounting. Neither is established by the mask-cancellation toy.
-7. **Special S15 / bank Q29:** communication is a recurring course concern, not a universal bottleneck. Measure compute, input, memory, network and imbalance.
-8. **Bank Q1:** parallel computing is not restricted to one shared-memory machine; it can include distributed-memory computation.
-9. **Bank Q2/Q13:** RDD persistence is a policy with memory/disk storage levels. Spark does not automatically keep every intermediate in memory or guarantee every iterative job is faster.
-10. **Bank Q6:** linear learning-rate scaling is a heuristic with warm-up and a tested range, not a guarantee for arbitrary batches/models.
-11. **Bank Q8 / paper Q2:** extra micro-batches have schedule-dependent activation-memory costs; distinguish idle/total fraction from bubble overhead/ideal time.
-12. **Bank Q9/Q11:** 24/4=6 GB is model storage only; no device-capacity claim follows. Consistency is not an accuracy guarantee, and recovery needs model, optimiser and progress state.
-13. **Bank Q12 / paper Q3:** ideal ring sent payload depends on worker count but is bounded near two model copies; received bytes are separate and latency/phase count grows. Near-linear speedup is conditional; the whole-model memory limit applies to plain replicated data parallelism.
-14. **Bank Q15/Q16:** exact distributed centroids require common assignments/start state, sums/counts and an empty-cluster policy; 1000 coordinates is not whole-job traffic or a proof of a global k-means optimum.
-15. **Bank Q17:** FDM's simplified per-level count-exchange description must not be interpreted as a universal single-message/single-collective implementation; the primary paper specifies several exchanges including polling and result broadcast.
-16. **Paper Q1:** parameter sharding spreads load; it does not automatically supply fault tolerance or remove every bottleneck.
-17. **Paper Q2:** non-interleaved 1F1B's flush bubble equals the all-forward/all-backward baseline in the cited comparison; the benefit is fewer live activations. Interleaving is the separate bubble-reducing modification with extra communication. Our equal-task checker verifies 22 ticks in both schedules and live counts [4,3,2,1] versus baseline 8 per stage.
-
-No supplied numeric bank answer was arithmetically wrong. The supplied mid-semester transcript has no numeric worked answer beyond three ten-mark labels; the thirty-mark total and every added illustration were computed. No missing scan values or layout claimed reproduced.
-
-### Limits and hand-back to Claude
-
-Not verified: screen-reader use, GPU/NCCL, multiple machines, real network/codec throughput, private training/accounting, cryptographic secure aggregation/dropout recovery, full AdaComm/FedProx/SCAFFOLD implementations, real client populations, interleaved GPU scheduling or provider prices. No performance result is inferred from toy arithmetic. The large temporary build copy and this session's failed-build output/cache are removed after review; small temporary verification outputs remain outside the repository. All changes stay uncommitted.
-
-Codex B -> Claude: all seven assigned pages are ready for independent cross-review. Please retain ownership of unfinished RAG/platform/frontier/training files and of D1b verification. Session A's brief remains separate as you confirmed. **Codex B: DONE.**
-
-## Session wrap and new priorities (Claude, 2026-10-05, late)
-
-- **User decisions:** (1) Codex does ALL remaining chapter writing; Claude validates, improves, checks sources and enriches. (2) New standard for all content: `.codex/beginner-friendly-standard.md`
-  (beginner-friendly, detailed explanation, working labs, diagrams, plus a depth bar). (3) **The GenAI capstone (`docs/genai/23-capstone.md`) is first priority** and is being rebuilt by Claude as a real,
-  tested repository (updated for current LangChain, file names, repo structure, full explanation).
-- **Ready for Codex, not yet started:** `.codex/codex-next-prompt-4.md` (session C: advanced RAG 02 to 04, validating the GraphRAG draft, plus agent frontier 5 chapters) and
-  `.codex/codex-next-prompt-5.md` (session D: training at scale 4 chapters). Also pending: `-2.md` (session A) and `-3.md` (session B, started: 1 chapter written).
-- **Claude's authors for B2, D2 and G were stopped** (GraphRAG chapter, GraphRetrievalLab and 2 boards exist; ParallelismMemoryLab, a spec and working code exist for D2; nothing for G).
-- **Claude's improvement backlog (next sessions):** enrich Codex's thin chapters (IR, DM, CV, time series, recommenders: 59 chapters at 14 to 26 lines of code each) with real-library experiments and a second board,
-  using `.lecture-import/track-c/ENRICH-PROMPT.md` and `ENRICH-ASSIGNMENTS.md`; write `readability_audit.py` and run the beginner-friendly pass; browser-verify platform operations (5 chapters), distributed ML
-  `02-dist-challenges` (3) and everything Codex adds; check every external link; full build of the live tree.
-
-## Claude: GenAI capstone rebuilt (2026-10-05)
-
-- docs/genai/23-capstone.md rewritten (old stashed at docs/genai/_old/23-capstone-v1.md). Generated from the tested repo in .lecture-import/capstone/research-copilot (75 offline tests pass from a fresh install of the ZIP). Generator: .lecture-import/capstone/build_chapter.py (prose in ch_a/ch_b/ch_c.py).
-- 3 boards (static/img/capstone), labs ChunkSplitLab and RrfFusionLab (browser-verified: numbers match chapter, no console errors, no horizontal overflow at 390px), ZIP at static/examples/projects/research-copilot.zip.
-- Verified: tsc clean; isolated build passes. The live tree currently fails onBrokenLinks only because docs/genai/rag-advanced/graphrag-and-knowledge-graphs links to /docs/genai/rag-advanced/contextual-retrieval-and-reranking, which does not exist yet (Codex session C owns it).
-- Not verified: real-model path (no API key); live web search and YouTube; prose averages 25 words per sentence against the 22 target (Flesch about 62).
-
-
-## Codex: Ollama video gap check started (2026-10-05)
-
-User requested a minimal English update to `docs/genai/21-ollama-local-llms.md` from YouTube `YcAYmIFtA0o`, then explicitly requested checking video frames. Codex owns only that page for this task. Hindi auto-captions retrieved (3,778 segments, 2:49:40); sampled demonstration frames inspected. Main gaps: Ollama-specific tool schemas/dispatch/history and shop demo, actual sentiment Modelfile, Cloud limits/privacy/authentication failure, and desktop app. Preserving the chapter and other authors’ changes. No commits.
-
-
-## Codex: Ollama video gap check complete (2026-10-06)
-
-- Updated only `docs/genai/21-ollama-local-llms.md`: English explanations from Hindi captions plus 40 inspected frames. Preserved the chapter order; added timestamps, Ollama tool schema/dispatch/history workflow and the electronic-shop demo, actual sentiment Modelfile, cloud authentication/limits/privacy and desktop app instructions. Small chat and repeated-tool examples are labelled additions.
-- Frame-backed correction: the final shop answer prints a purported discount call/result as text after executing only inventory, then reports 1140. The displayed five-year rule gives 900; the new bounded loop enables the required second tool step. Sentiment frame actually shows NEUTRAL for the positive course sentence, so removed the guarantee of correct labels. Corrected the Ministral tag, image encoding distinction and persistent-service explanation.
-- Private source material and English topic review: `.lecture-import/ollama-video-review/`. No lecture frames embedded in the published page.
-- Checks: all 14 Python blocks parse; new conversation and tool examples exercised through the real Ollama SDK with mocked HTTP, including message history and dependent tool calls; stock cases and zero/five/ten-year discount arithmetic pass. The real Ollama CLI parses the exact Modelfile into the expected create request against a mocked endpoint. No live inference or model creation claimed; no model download.
-- Final MDX compilation, TypeScript and diff whitespace checks pass. Production client/server compilation succeeds; full site build is blocked only by the pre-existing GraphRAG link to the unfinished contextual-retrieval-and-reranking chapter. Browser verification passes for new headings and diagram, expansion/zoom/Escape, no page errors and no horizontal overflow at 390px.
-- Codex -> Claude: Ollama page ready for review. Other authors’ edits preserved, progress append-only, no commits.
-
-
-## Codex: Ollama notes style correction (2026-10-06)
-
-User clarified that these are course notes, not a timestamped video review. Removed all in-body video timestamps, frame/screenshot commentary and source narration from `docs/genai/21-ollama-local-llms.md`. Rewrote the motivation, examples and callouts to teach the concepts directly, following the surrounding chapters’ explanatory style. Kept the single source link at the top, working code and diagrams. Code unchanged; MDX compilation and Python syntax checks pass. Progress append-only; no commits.
-
-
-## Codex: factual explanations without speaker criticism (2026-10-06)
-
-User preference: course notes should state correct concepts with explanations, without timestamps or calling out a speaker’s mistakes. Applied to the Ollama page: removed the incorrect-price comparison and explained the correct tool-result flow directly; clarified downloadable/open-weight models and licences, inference configuration versus fine-tuning, local latency and hardware limits, LangChain component interfaces, and model size versus quality. Retained working code and examples. Official Ollama model/FAQ and LangChain model documentation checked. MDX and all 14 Python syntax checks pass; no commits.
-
-
-## Codex: Daily 2 local Python agent (2026-10-07, in progress)
-
-User requested YouTube ByWCsa8DbF8 as the second Daily entry, with all code, commands and explanations, and explicitly asked for transcript/code-file review. Retrieved transcript and reviewed the complete agent.py visible in video frames. Publisher’s download redirects to a community membership page; did not join or claim its downloadable original was retrieved. Authored `docs/daily/02-local-ai-agent.mdx`, a complete project in `static/examples/daily/local-python-agent/` plus ZIP, and two original boards generated by `scripts/infographics/daily_local_agent.py`. Daily sidebar position 2; no timestamps or speaker-error commentary. Pydantic AI 2.54.0 imports work. Offline checks pass. Real local Ollama inference on existing qwen3:14b successfully invoked all four tools; no model download. Build/browser checks in progress.
-
-
-## Codex: Daily 2 local Python agent complete (2026-10-07)
-
-- Added `docs/daily/02-local-ai-agent.mdx`, sidebar position 2, following the transcript and complete code visible in Tech With Tim’s ByWCsa8DbF8. English auto/manual transcripts reviewed. The publisher’s original downloadable file is membership-gated; reviewed on-screen code and did not claim original-file retrieval. Full source/verification ledger: `.lecture-import/daily-02/source-review.md`.
-- Complete project: `static/examples/daily/local-python-agent/` and `static/examples/daily/local-python-agent.zip`; all nine inline Python blocks match agent.py. Contains pinned requirements, README and offline checks. Two original boards under `static/img/daily/local-python-agent/`, generated by `scripts/infographics/daily_local_agent.py`. No timestamps or speaker-error commentary.
-- Real inference: existing qwen3:14b successfully called all four tools. Calculator result 162; actual saved text read back from the file; current time supplied by the clock. Unmodified downloadable CLI starts, calculates and exits. No new model downloaded; default qwen3.5:2b quality not tested. Offline checks verify tools, history, rejected arithmetic and file persistence from a new agent instance. Extracted ZIP passes.
-- MDX, TypeScript, whitespace and code parity checks pass. Isolated full production build passes; copied GraphRAG page has only its pre-existing unresolved contextual-retrieval link removed for validation. Live-tree build hits stale cached metadata from a prior generated-files path; no shared caches, source pages or configuration changed to hide this.
-- Browser passes: correct Daily order, two loaded/expandable boards, zoom/Escape, nine rendered Python blocks, exact ZIP download, zero page errors and no document overflow at 390px. Existing user/collaborator changes untouched. No commits.
-
-## Claude: Ollama chapter re-aligned to the video (2026-10-07)
-
-User reported docs/genai/21-ollama-local-llms.md did not match YouTube YcAYmIFtA0o. Compared the Hindi transcript (.lecture-import/ollama-video-review/source-hi.txt) section by section: intro, classification, Ollama benefits, CLI, Python library, REST, Modelfile, LangChain and cloud already matched in order and content. Fixed the divergences: (1) tool-calling demo now follows the video's step order (functions and lookup, tool schemas, messages list, chat call with tools, read tool_calls, run the function, append assistant and tool messages, second chat call, prompts for iPhone and laptop) with the dependent-call loop kept as a labelled addition; (2) hardware table restored to the video's guidance (8 GB RAM minimum, Core i5 13th generation or newer for smooth use); (3) cloud usage paragraph now states the free-to-start model with request limits and Pro/Max plans. New code run against the real Ollama SDK with a mocked HTTP server: single-pass flow and loop both pass (900 for five years). Not verified: live Ollama server (none running).
-
-## Session wrap (Claude, 2026-10-07): state for the next session
-
-- User asked to stop and continue next session. Codex sessions A to D were never started; Claude started three subagents (advanced RAG, agent frontier 01 to 03, training at scale) and stopped them mid-run to save tokens. They were NOT finished or verified. Partial output left in the tree, treat all as DRAFTS to validate before relying on them:
-  - docs/llm-engineering/03-training-at-scale/01-parallelism-strategies-for-llms.md and 02-ddp-fsdp-and-zero.md (+ ZeroStagesLab.tsx, 4 boards in static/img/llme/). 03 and 04 not written.
-  - docs/agentic-frontier: no chapters yet; scripts/infographics/afr_1.py, labs ContextWindowLab.tsx, ProtocolFlowLab.tsx, ActionSpaceLab.tsx and static/img/afr/ exist as unvalidated drafts.
-  - docs/genai/rag-advanced: only 01 (GraphRAG). 02 to 04 not written. The live-tree build still fails on onBrokenLinks until /docs/genai/rag-advanced/contextual-retrieval-and-reranking exists (or the link is removed).
-- Not yet started: causal, graph and speech chapters (10), interview additions file, Track C enrichment of 59 thin chapters (baseline in .lecture-import/track-c/readability_baseline_2026-10-07.txt; script readability_audit.py), final full build and link check.
-- Done this session: GenAI capstone rebuilt and verified; Ollama chapter re-aligned to the video; distributed ML and platform pages browser-checked (16 pass). Nothing committed. Remove the untracked .docusaurus-capstone/ folder before committing.
-
-
-## Claude subagent: agent frontier chapters 01 to 03 (2026-10-07)
-
-Took over from the Codex C session that never started. Chapters 04 and 05 are with other agents; task A (rag-advanced) is not touched.
-
-| File | Words | Python blocks run | Boards | Labs | Gates |
-| --- | ---: | ---: | ---: | ---: | --- |
-| `docs/agentic-frontier/01-context-engineering.md` | 6,675 | 4 (188 lines of code) | 3 | ContextWindowLab | run_all 4/4, readability audit pass (Flesch 67.3), isolated build pass |
-| `docs/agentic-frontier/02-agent-interoperability-mcp-and-a2a.md` | 6,844 | 5 (295 lines) | 3 | ProtocolFlowLab | run_all 5/5, Flesch 69.2, isolated build pass |
-| `docs/agentic-frontier/03-computer-use-and-browser-agents.md` | 6,283 | 4 (162 lines) | 3 | ActionSpaceLab | run_all 4/4, Flesch 67.5, isolated build pass |
-
-- Boards: `scripts/infographics/afr_1.py` writes 9 SVGs to `static/img/afr/`, each rendered to PNG and inspected. Lab specs: `.codex/visuals/afr-1.md`. Working data and capture scripts: `.lecture-import/afr-1/`.
-- Installed into `.lecture-import/venv-llm` (additions only): mcp 2.3.0, a2a-sdk 1.2.2, playwright 1.63.0 (plus their dependencies). Ran `python -m playwright install chromium-headless-shell` once (Chrome Headless Shell 153, revision 1243); Playwright removed the older cached browser revisions 1208 and 1509/2248 as stale, which may matter to scripts that pinned them.
-- Ledger (opened 2026-10-07): MCP specification 2026-07-28 (overview, basic, versioning, tools, discover, MRTR, Streamable HTTP, stdio, authorization, changelog) and 2025-11-25 lifecycle; MCP blog release candidate 21 May 2026; AAIF migration post 21 July 2026; A2A specification 1.0.0, agent discovery page, Python tutorial, Google Open Source Blog April 2026; Anthropic context engineering post (29 Sep 2025), prompt caching, context editing, computer use and vision docs; OpenAI prompt caching and computer use guides; Gemini computer use docs; Chroma Context Rot (14 Jul 2025); Lost in the Middle (arXiv 2307.03172); Manus post (18 Jul 2025); arXiv 2508.21433; OSWorld (2404.07972), WebArena (2307.13854), BrowseComp (2504.12516), steel.dev OSWorld leaderboard (updated 30 Sep 2026, self-reported entries); OWASP LLM01:2025; Playwright ARIA snapshot and MCP pages.
-- Not verified: any real model reading a masked or summarised history; vendor price ratios (0.10 and 1.25 are placeholders from documentation); MCP authorisation flow, subscriptions/listen, Tasks extension (read, not run); A2A gRPC and REST bindings, streaming, push notifications, signed Agent Cards (read, not run); the A2A JSON-RPC error code for a version mismatch (the SDK returned -32009); real computer-use models or benchmark scores; OpenAI browse-comp page was blocked (403), so BrowseComp is cited from the arXiv abstract only.
-- Honest findings in the experiments: masking every step cost more with a prefix cache (107,548 units) than keeping everything (57,017); a clock at the top of the prompt cut cache hits from 91.6% to 0.1%; the MCP 2026-07-28 stateless style costs more bytes from the third call of a session; the SDK's tools/list defaults to ttlMs 0, cacheScope private; an ARIA snapshot (2,492 tokens) cost more than the screenshot (1,334) of the same 40-product page.
-- No commits.
-
-
-## Session D (taken over by a Claude subagent): training at scale, 4 chapters (2026-10-07)
-
-Replaces the unstarted Codex D. Folder `docs/llm-engineering/03-training-at-scale/`; boards `scripts/infographics/llme_5.py` to `static/img/llme/`; spec `.codex/visuals/llme-5.md`; work files `.lecture-import/track-b/d2-code`, `d2-src`, `d2-build.py` (assembles the chapters from the source templates and the run code), `d2-audit.py`. The earlier draft is kept in `.lecture-import/track-b/d2-old/`.
-
-| Chapter | id | Words (prose by audit / file incl. code) | Python lines | Blocks run | Boards | Lab | Flesch | Sentence | Paragraph |
-| --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | ---: |
-| 01 parallelism strategies | llme-parallelism | 4,200 / 7,352 | 308 | 6 | 3 | ParallelismMemoryLab | 65.7 | 15.2 | 61.6 |
-| 02 DDP, FSDP and ZeRO | llme-fsdp-zero | 3,454 / 6,211 | 333 | 5 | 3 | ZeroStagesLab | 67.2 | 14.9 | 55.0 |
-| 03 mixed precision and numerics | llme-precision | 4,052 / 6,550 | 265 | 6 | 3 | PrecisionRangeLab | 71.8 | 14.5 | 57.6 |
-| 04 mixture of experts | llme-moe | 4,027 / 7,190 | 289 | 5 | 4 | MoeRoutingLab | 65.7 | 16.5 | 60.2 |
-
-`run_all.py` on the folder: 22 of 22 blocks pass. Environment: Python 3.14, PyTorch 2.14.1 CPU, Transformers 5.18.0. No extra pip installs.
-
-### What was run (key numbers)
-
-- 01: real configs from the Hub (8B, 70B, and the Hermes 3 fine-tune of 405B because Meta's repo is gated): formula equals the `meta`-device `LlamaForCausalLM` count (8.030B, 70.554B, 405.853B). Vocabulary in the configs is 128,256, the paper's Table 3 says 128,000 (8.4M parameters difference). 70B on TP 8 x PP 2 x DP 4: 70.55, 30.87, 24.25, 17.85 GB per GPU for ZeRO 0 to 3. Table 4 rows multiply out to 16,777,216 tokens. 405B: 6.69 GB states + 71.9 GB activations = 78.6 GB (ZeRO 2). Communication per step per GPU: TP 236.8 GB, DP 12.6 GB, PP 8.6 GB. Real 2-process gloo: tensor-parallel `LlamaMLP` matches to 1.34e-07; zigzag context parallel matches to 5.96e-08 with 264 and 264 score pairs against 136 and 392 contiguous.
-- 02: ZeRO paper example 120.0, 31.4, 16.6, 1.9 GB; real 2-process gloo toy (reduce_scatter_single, all_gather_single); DDP, hand-written ZeRO-2, `ZeroRedundancyOptimizer` and FSDP2 `fully_shard` (explicit CPU mesh) each match a single process to 2.00e-06 after 10 AdamW steps on a 158,016-parameter Llama; Adam state 632,064 B per rank against 1,264,128 B unsharded.
-- 03: `torch.finfo` table; fp16 sum of 0.01 x 10,000 stops at 32.0, bf16 at 4.0, fp32 gives 100.0030; gradient 2e-8 is 0 in fp16, 2.0023e-08 after a 1,024 scale; real `GradScaler` on CPU grows then skips and halves on an injected overflow; 60-step runs: fp32 1.7358, bf16 autocast 1.7386, fp16 autocast + scaler 1.7363, pure bf16 2.0277 (34.7% weights unchanged), pure fp16 NaN (Adam eps 1e-8 is 0.0 in fp16; 79.2% of second moments zero); real SmolLM2-135M hidden state after block 15 has max 24,946 vs median 2.09: per-tensor e4m3 flushes 1.46% to zero, per-64 tiles 0%.
-- 04: hand example balance term 1.3625; seeded router; toy training with Zipf data (3 seeds): loss 0.0177 / 0.0180 / 0.0290 / 0.0171 for none / aux 0.01 / aux 0.1 / bias update; library `load_balancing_loss_func` equals k x the Switch formula (2.0059 vs 1.0030); meta-device counts match cards (Mixtral 46.70B and 12.88B, DeepSeek-V3 671.03B and 37.55B, gpt-oss-120b 116.83B, Qwen3-30B-A3B 30.53B and 3.35B); 2-process `all_to_all_single` expert parallelism equals one process (error 0).
-
-### Findings and corrections of the earlier draft
-
-- The draft used vocabulary 128,000 and a hard-coded config; chapter 01 now reads real configs (vocabulary 128,256). Memory numbers are unchanged to two decimals.
-- The Megatron activation formula is for GPT-style layers; applied to Llama it gives 83.8 GB for the third Table 4 layout, above 80 GB, although Meta trained it. The chapter says so and does not present 78.6 GB as a measurement.
-- `torch.distributed.reduce_scatter_tensor` and `all_gather_into_tensor` are deprecated in 2.14; the chapters use `reduce_scatter_single` and `all_gather_single`.
-- `fully_shard` without a mesh fails on this Mac (default mesh picks MPS: `torch.mps` has no `is_initialized`); an explicit CPU mesh works.
-- Cards count active parameters differently: gpt-oss-120b's 5.1B excludes the input embedding (5.71 incl., 5.13 excl.), Qwen3-30B-A3B's 3.3B includes it.
-- Kimi K3 card says 2.8T total and 104B active; an aggregator search result said about 50B active, so the card was used.
-
-### Source ledger (all opened 2026-10-07)
-
-PyTorch 2.14 docs (DDP notes, FSDP2 `fully_shard`, `ZeroRedundancyOptimizer`, AMP, AMP examples; FSDP1 page checked for deprecation: none stated); DeepSpeed config reference and getting started (PyPI 0.19.7, 2026-09-16, not installed); NVIDIA Transformer Engine FP8 primer (2.20.2, PyPI 2026-10-05); arXiv 1909.08053, 2104.04473, 2205.05198, 1910.02054, 2407.21783 (v3), 1710.03740, 2209.05433, 2412.19437, 2101.03961, 2401.04088 (full text); 2509.25149, 2402.17762, 1701.06538, 2006.16668, 2401.06066, 2408.15664, 2304.11277 (abstract pages only); Ultra-Scale Playbook page; Hub `config.json` and cards: Llama 3.1 (NousResearch copies and Hermes 3), Mixtral-8x7B, gpt-oss-120b, DeepSeek-V3, V4-Pro, V4-Flash, V4.1-Flash, Kimi-K3, Qwen3-30B-A3B, Qwen3.6-35B-A3B, Kolibri-1, MiMo-V2.5, Llama-4-Scout (card only).
-
-### Not verified
-
-GPU behaviour (NCCL, real TP/PP/FSDP/DeepSpeed/Transformer Engine runs, fp8 kernels), throughput or MFU of anything, the 2026 model cards' benchmark claims, DeepSeek-V4 and Kimi K3 parameter counts beyond a config-based plausibility estimate (all layers assumed MoE), Kolibri-1's balancing method beyond the card text, FSDP paper body (abstract only), screen reader, and the live full-site build (one pre-existing broken link from `docs/genai/rag-advanced/graphrag-and-knowledge-graphs` to a page another session is writing; verified in an isolated copy with that page stubbed).
-
-## Session wrap 2 (Claude, 2026-10-07): agents resumed then stopped again at the user's request
-
-All three agents were stopped mid-run. Everything below is UNVERIFIED unless stated; validate before relying on it (build, tsc, run_all.py, browser check of boards and labs).
-- docs/llm-engineering/03-training-at-scale: 01, 02, 03 (mixed precision), 04 (mixture of experts) now all exist as drafts, with labs ZeroStagesLab, PrecisionRangeLab (precisionMath.ts), MoeRoutingLab (moeMath.ts) and boards in static/img/llme/. The agent was at its "build, audit, run" step when stopped, so the final checks did not complete.
-- docs/agentic-frontier: 01 context engineering, 02 interoperability MCP and A2A, 03 computer use exist as drafts (labs ContextWindowLab, ProtocolFlowLab, ActionSpaceLab; boards in static/img/afr/). 04 voice and 05 DSPy not written. Spec claims about MCP and A2A were being checked against current official specs; not confirmed.
-- docs/genai/rag-advanced: chapters 02 to 04 still NOT written. Labs ContextVsRagLab, SchemaLinkingLab, RerankLab (+ rerankData.ts, schemaLinkData.ts) and 6 boards in static/img/rag-adv/ exist without chapters. docs/genai/rag-advanced/_old/ holds a stashed copy made by the agent; check it matches 01 before deleting. The live build stays blocked on the missing contextual-retrieval-and-reranking page.
-- Still not started: causal, graph and speech chapters (10), interview additions file, Track C enrichment, final full build and link check.
-
-## Ollama teaching rewrite with write-like-claude (2026-10-07)
-
-User requested `.codex/write-like-claude.md`, then reinforced the no-timestamps rule. Improved only the Ollama chapter and its new supporting assets. Read the playbook, beginner standard and capstone/KV-cache exemplars. Kept source topic order, model tags, prompts, images, inventory and discount rules. Removed timestamp headings, timestamp links/table, repeated video pointers and narrator/frame commentary; one source-video line remains at the top. Preserved earlier draft in the ignored working folder.
-
-- Chapter: `docs/genai/21-ollama-local-llms.md`, with prerequisite ramp, glossary, hand-worked 1200/25%/900 example, Reading the output and Line by line explanations, common mistakes and reasoned practice answers.
-- Boards: `static/img/genai/ollama/interfaces-and-service.svg`, `shop-tool-results.svg`; reproducible generator `scripts/infographics/ollama_video.py`. Rendered and visually inspected both.
-- Lab: `OllamaShopLab.tsx`, maths in `ollamaShopMath.ts`. Browser verified default 900, ten-year cap 840, disabled continuation and absent iPhone both having no computed price. All 33 Python/TypeScript price cases agree. Desktop and 390px mobile checked; infographic expansion/zoom/Escape works; no page errors or horizontal overflow.
-- Real experiment: `static/examples/genai/ollama-shop/verify_shop.py` (120 lines), using an already installed `llama3.1:latest`, Ollama server 0.30.8 and Python SDK 0.6.3. First unvalidated run raised TypeError on string years. Strict Pydantic checks then rejected a discount request with string base_price '0' and years '5'. The model's second response contained ordinary text rather than structured retry calls. Only inventory executed. Direct function checks printed 900.0 and 840.0. The chapter reports this incomplete result explicitly and distinguishes it from the source examples. No model download or cloud usage.
-- Final metrics: 7,730 prose words, 327 inline Python lines, Flesch 59.1, mean sentence 11.4 words, mean paragraph 29.6 words, two boards, one lab. This remains a long chapter because the source covers the full masterclass.
-- Validation: 27 Python blocks parse; original stock/history flow tested through real SDK with mock transport; schemas still match source; actual CLI parses the sentiment Modelfile against a mock endpoint; REST parser checked. Typecheck passes. Final MDX compilation, whitespace checks and explicit no-timestamp/one-video-link checks pass. Browser checks pass.
-- Production build compiled client/server, then failed on the two existing GraphRAG links to contextual-retrieval-and-reranking and long-context-vs-rag. No unrelated docs repaired. Final prose-only timestamp/narration edits were checked through MDX and current preview, rather than claiming the site-wide build passes.
-- Limits stated on the page: source model packages were not all installed; not all video inference calls were replayed; cloud and model pull/removal/create mutations were not run on the user's model inventory. Live test service was started for verification and stopped afterwards.
-
-GATE: 1 of 1 chapters pass
-
-## Ollama rules re-audit (2026-10-07)
-
-User asked to check the actual Ollama output again against the defined rules. Current gate initially failed on 29 source/speaker-narration lines. Fixed those, removed the distracting duplicate-notebook comparison, shortened the preview to five sentences, added missing plain-words/how-it-works labels and first-use terminology, reordered closing sections, and placed two code explanations before their separate output fences. Preserved model tags, prompts, settings, inventory, functions and schemas.
-
-Manual audit: one top source-video link, zero timestamp links and narration matches; all executable blocks have Reading the output/Line by line; largest block 31 lines; no ordinary prose paragraph above 90 words. Flesch 59.2, mean sentence 11.3 words, mean paragraph 29.7 words, two boards, one lab, 327 Python lines. Full report `.codex/ollama-rule-audit.md`.
-
-Rechecked: 27 Python blocks parse; original flow through SDK/mock HTTP, CLI/Modelfile mock and REST parser pass. Typecheck/MDX/whitespace checks pass. Browser checks confirm boards, expansion, all guided lab cases, 33 matching Python/TS price cases, one source link and mobile width. Full production build rerun: client/server compile, link check still fails on the same two unrelated GraphRAG links. No model downloads or new live inference claims; earlier incomplete live run and untested source-model paths remain honestly identified.
-
-GATE: 1 of 1 chapters pass
-
-
-## Ollama transcript and OneNote completeness restoration (2026-10-07)
-
-User identified missing explanations and OneNote material despite the earlier rule checks. Reread the complete English working translation of the Hindi captions: 255 consecutive 40-second blocks. Checked nine titled OneNote pages plus the untitled interface sketch independently against 58 additional frames, earlier frames and all five instructor notebooks. Source-order coverage is recorded in `.codex/ollama-transcript-onenote-coverage.md`; the per-block map with source hashes is `.lecture-import/ollama-completeness/coverage.json`. Superseded the earlier topic-level “no missing sections” claim.
-
-Restored the accessibility/black-box comparison and cloth explanation; lawyer case-file example, Play Store/Phi, hosted cost versus local electricity, Llama 2 management commands and consultant analogy; six requirements including 3–15 GB rough storage guidance; interface sketch; image CLI prompt, inspection fields, Gemma/Qwen defaults, settings menu and response/request fields. Restored the tool-capability diagram, database implementation boundary, three tool-selection decisions, request JSON, assistant thinking/content/tool_calls fields and three-turn history. Kept the captured 1140/60 content as an unexecuted, arithmetically incorrect result; correct five-year price remains 900.
-
-Restored the legal assistant’s medical-advice boundary, general-purpose examples, numerical-integration shortcut, five Modelfile controls and same-weights identity sketch; the complete wrapper return path and actual JSON-line fragments; LangChain orchestration and named PyPDF/chunking/Ollama embeddings/FAISS/retrieval/generation chain, query-vector prefix and 768-versus-2 distinction; Cloud 100B disk-versus-memory example, eligibility/account/usage/privacy boundaries; app download/cancellation states. Moved the added live experiment after the whole source lesson. Kept benefits in their spoken order, including the return to customisation and management after the library tour.
-
-Final checks: 27 Python blocks parse; schemas match original Tool Calling notebook; real SDK/mock transport checks stock dispatch/history; actual CLI/mock endpoint parses the exact Modelfile; buffered REST parsing passes. MDX and typecheck pass; whitespace clean. Browser renders all 13 Mermaid diagrams, has one source-video link and zero timestamp links, confirms 900/840 lab prices and 390px width without overflow, and reports zero page errors. Visually inspected all 13 rendered diagram contact images. Previous two SVG-board and 33 Python/TypeScript lab comparisons remain valid. No new live-model or cloud calls; the previous incomplete local-model run remains honestly labelled on the page.
-
-Metrics: 10,198 measured prose words, 327 Python lines, largest executable block 31 lines, Flesch 57.6, mean sentence 11.6 words, mean paragraph 30.3 words, two boards and one lab. No published video timestamps or narrator commentary. Source depth takes precedence over generic chapter-length targets.
-
-Production client/server compilation succeeded; whole-site build still fails on the same two unrelated GraphRAG links. Those files were not changed. No commit, push or deployment.
-
-GATE: 1 of 1 chapters pass
-
-### Session D verification pass (2026-10-08)
-
-- Gate: `GATE: 4 of 4 chapters pass` (`quality_gate.py docs/llm-engineering/03-training-at-scale`). `run_all.py`: 22 of 22 blocks pass. `tsc --noEmit`: no errors in my files (the only errors are in another session's unfinished `RerankLab.tsx`, missing `rerankData`).
-- Full-site build: fails only on the pre-existing broken link from `docs/genai/rag-advanced/graphrag-and-knowledge-graphs` to `contextual-retrieval-and-reranking`. An isolated copy with that page stubbed builds with no warnings.
-- Browser (Playwright MCP, isolated build on port 3123): all four pages at 1280 px light and 390 px dark: no console errors, no horizontal overflow, every board loads (3, 3, 3, 4), labs reproduce the chapter numbers (ParallelismMemoryLab 78.6, 122.6, 755.0, 83.8, 79.0 GB; ZeroStagesLab 120.0/31.4/16.6/1.9, 41.3/28.1/15.0, 70B 1,128.9/295.4/156.5/17.6, fp32 60.9; PrecisionRangeLab fp16 0 then 2.0504e-5 and 2.0023e-8, e4m3 500 overflow to 448, fp16 70000 inf; MoeRoutingLab 1.5836/3.72/28.5%/57.2%, 1.0019/1.10/0.0%/80.0%, 4.5%/31.8%, 1.7509/7.84/33.3%/53.4%).
-- Re-checked 2026-10-08: PyPI torch 2.14.1, deepspeed 0.19.7, transformer-engine 2.20.2, transformers 5.19.0 (chapters ran 5.18.0). Chapter 04 gained Qwen3.8-Flash-Next (card: 125B, 6B activated, 512 experts, 10 routed + 1 shared) and a note that DeepSeek-V4-Pro-0813 and V4.1-Flash revisions exist.
-
-## Claude subagent: Track K3, causal inference (4) and graph neural networks (3) (2026-10-08)
-
-Written for Codex's second batch (task A, causal and gnn only). Files: `docs/theory/causal/01-potential-outcomes-and-confounding.md`, `02-experiments-and-adjustment.md`, `03-quasi-experiments.md`, `04-causal-ml-uplift-and-dml.md`; `docs/theory/gnn/01-graphs-and-message-passing.md`, `02-gcn-graphsage-gat.md`, `03-graph-tasks-in-production.md`; both `_category_.json` ("Causal inference" position 12, "Graph neural networks" position 13). Boards: `scripts/infographics/causal_1.py` (12 boards in `static/img/causal`), `scripts/infographics/gnn_1.py` (9 boards in `static/img/gnn`), every board rendered and inspected. Labs: `ConfoundingLab`, `IpwLab`, `DidLab`, `WaldIvLab`, `UpliftBudgetLab` (maths in `causalMath.ts`), `MessagePassingLab`, `GatAttentionLab`, `NeighbourSamplingLab` (maths in `gnnMath.ts`), shared `labParts.tsx`; each lab's maths cross-checked against Python (simulation or torch) to at most 0.005.
-
-- Gate: `GATE: 7 of 7 chapters pass`. `run_all.py`: causal 12 of 12 blocks, gnn 11 of 11. `tsc --noEmit`: no errors.
-- Installed into venv-llm: dowhy 0.8 (0.14 is latest on PyPI, 8 Nov 2025, but its metadata excludes Python 3.14), econml 0.17.0, linearmodels 7.0, torch_geometric 2.8.0.post1, rdrobust 2.1.1; transitive lightgbm 4.7.0 (does not load: libomp missing), numba 0.68.0, llvmlite 0.50.0, shap 0.52.0, sparse 0.19.2, pydot 4.0.1, pyhdfe 0.2.0, slicer 0.0.8.
-- Workarounds: DoWhy 0.8 calls `networkx.algorithms.d_separated`, removed in NetworkX 3.6.1; one alias line before the import fixes it (stated on the page). PyG `NeighborLoader` needs `pyg-lib` or `torch-sparse`, not installed; the chapter says so and uses its own sampler for counting.
-- Sources opened 2026-10-08: Hernan and Robins What If (edition dated 19 August 2026, full PDF downloaded, contents read); Facure Alves Brave and True (contents list; copyright 2023, no licence stated); CS224W Fall 2026 schedule; arXiv abs pages for GCN 1609.02907 (v4, 22 Feb 2017), GraphSAGE 1706.02216 (v4, 10 Sep 2018), GAT 1710.10903 (v3, 4 Feb 2018), double ML 1608.00060 (v7, 3 Nov 2024), How Powerful are GNNs 1810.00826 (v3), MPNN 1704.01212 (v2), Deeper Insights 1801.07606; PyPI pages for econml, dowhy, torch-geometric. Not opened: Rosenbaum and Rubin 1983, Zachary 1977, full text of the three GNN papers (abstract pages only).
-- Key numbers: confounded naive 4.369 against true 2.000; collider control flips a randomised +2.017 to -0.257; correct IPW has sd 0.913 against 0.053 for right-form regression; DiD 2.996 (parallel) against 4.734 (violated); OLS 3.508 against 2SLS 1.981; weak-instrument F 1.6 range -5.627 to 7.484; RD bandwidth jump means 2.507, 2.884, 2.959, 3.000; S-learner corr 0.853 beats T 0.648; DML boosting 0.923 cross-fitted against 0.633 not; GNN layers match PyG to 1.2e-07, 0.0, 2.4e-07; GCN 0.974 clean, 0.385 at 40 per cent same-class edges against MLP 0.647; GAT attention near uniform (0.823 against 0.817); fraud AP 0.852 against 0.228 features-only and 0.176 shuffled edges; link AUC 0.762 honest, 0.813 leaked; plain depth collapse at 8 layers (accuracy 0.347, similarity 1.000); 3-layer sampling 94.1 per cent of a 100,000-node graph against 10.4 per cent with fan-out 10, 5, 5.
-- Not verified: browser checks of the labs and boards in the page, the full site build, 390 px layout (skipped on instruction); the caveat that the single-sample results in chapter 3 depend on seeds chosen once (the RD seed was changed from 13 to 19 after a draw 3 sd below the mean was found, and the repeat tables are the evidence).
-
-GATE: 7 of 7 chapters pass
-
-## Queue update (Claude, 2026-10-09, user decisions)
-
-- New: 3 industry-level projects for EACH of docs/theory/ir, docs/theory/cv and docs/mlops/data (9 in total), added as a new group folder (98-projects) beside the existing 99-practice papers, which are kept. Each project: business context and requirements, data, architecture board, step-by-step solution with full runnable code, evaluation, failure analysis, operations notes, extensions, and a ZIP of the project in static/examples/projects/.
-- Order of remaining work: finish the running enrichment agents; enrich data management 9 to 16; write the 9 projects; fix Daily 01 to 03 (narration, timestamps); clean timestamps in older chapters; then run the audit of the full 150-chapter plan against what exists on disk (user asked for the audit last); then full build, link check, browser pass, delete .docusaurus-capstone/, decide on commit.
-
-## Rate-limit stop (Claude, 2026-10-09 19:24 IST)
-
-The spend limit was hit at about this time; it resets 04:50 IST. Five enrichment agents died mid-run (partial edits are on disk, some chapters half-enriched; none committed):
-- time series 01 to 05 (1 of 5 passes the gate), agent ab95b35c67b3d6e41
-- computer vision 6 to 10, agent a81c5af4d24ced202 (CV overall: 12 of 17 pass; 1 to 5 and 11 to 15 are finished)
-- information retrieval 8 to 14, agent ad3504af6f932eff5 (web group 0 of 4, modern retrieval 0 of 3 pass)
-- data management 1 to 8, agent aa4e767767a32dffe, and 9 to 16, agent a804fa174ac753439 (0 of 18 pass)
-Resume each with SendMessage once the limit resets (they keep their transcripts). Then: 9 industry projects (3 each for IR, CV, DM in 98-projects, practice papers kept), Daily 01 to 03 narration fixes, older-chapter timestamps, plan audit, build and release checks.
+# Senior AI engineer curriculum: state, pending work and plan
+
+Written 2026-10-09 at the end of a long Claude session, for whoever continues on
+another system (Codex, Claude or a person). Read this first, then
+`.codex/AGENTS.md` (the single rulebook; `.claude/AGENTS.md` is a symlink to
+it), then `.codex/senior-ai-plan.md` (the 150-chapter plan). The old 150 KB log
+of every earlier session is in git history:
+`git log -- .codex/senior-ai-progress.md`,
+`git show <commit>:.codex/senior-ai-progress.md`.
+
+Nothing from this session's final waves is guaranteed committed; check
+`git status`. Do not commit or push unless the owner asks.
+
+---
+
+## 1. How to resume in 10 minutes
+
+1. `cd /Users/sumanth.tp/Resources/ai-ml/learn-ai-ml` and read
+   `.codex/AGENTS.md` (sections 1 to 4 are the quality bar).
+2. Check the tools work:
+   - `python3 .lecture-import/track-c/quality_gate.py docs/genai/23-capstone.md`
+     should print `GATE: 1 of 1 chapters pass`. This is the structure and
+     house-style check (80 lines of Python with a real library, 2 boards, a lab,
+     required sections, no code comments, no timestamps or narration, no GitHub
+     links, no em-dash connectors, block-form details). It warns on readability.
+   - `python3 .lecture-import/track-c/link_check.py` checks every `/docs/...`
+     link and every `/img/` and `/examples/` reference. At the last run it
+     reported no broken links across 730 pages.
+   - `python3 .lecture-import/track-c/readability_audit.py docs` prints a
+     per-chapter table (baseline in
+     `.lecture-import/track-c/readability_baseline_2026-10-07.txt`).
+3. Chapter code runs in `.lecture-import/venv-llm/bin/python` (torch CPU,
+   transformers, sentence-transformers, scikit-learn, scipy, pandas, duckdb,
+   opencv 5.0.0, scikit-image, statsmodels, statsforecast, networkx,
+   torch_geometric, dowhy, econml, chronos-forecasting, faiss-cpu, jiwer,
+   motmetrics, pandera and more). Run a folder with
+   `.lecture-import/venv-llm/bin/python .lecture-import/codetest/run_all.py <folder> .lecture-import/venv-llm/bin/python`.
+4. Boards: `scripts/infographics/board.py` kit, one script per track, outputs in
+   `static/img/<dir>/`. Render for a look with `.lecture-import` Chromium
+   (`~/Library/Caches/ms-playwright/chromium_headless_shell-*/`) driven by
+   playwright-core.
+5. Build a copy of the tree rather than the live tree if anything is in
+   progress:
+   `DOCUSAURUS_GENERATED_FILES_DIR_NAME=.docusaurus-verify npx docusaurus build --out-dir .lecture-import/build-verify`
+   (`onBrokenLinks` is `throw`).
+
+### Working with sub-agents (what worked and what failed)
+
+- At most 5 agents at once (the owner allowed 5 to 7). More than that hits rate
+  limits.
+- An agent that fails with a spend or rate limit keeps its transcript. Resume it
+  with `SendMessage`, which saves tokens.
+- Always give an agent: the exact folder it owns, the rulebook sections to read
+  first, the chapter it should imitate, the gate command it must pass, and
+  "content only, no site build" if the owner asked for that. Agents cannot write
+  report files; they return the report as their final message.
+- Treat an agent's report as claims. At the end of this session no one had read
+  most of the new chapters; only the gate and the agents' own runs vouch for
+  them.
+
+---
+
+## 2. What is done (all pass the quality gate unless noted)
+
+| Area                                                                                  | State                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GenAI capstone `docs/genai/23-capstone.md`                                            | Rebuilt on LangChain 1.x as a tested repository. Source repo `.lecture-import/capstone/research-copilot` (75 offline tests). The chapter is generated from it by `.lecture-import/capstone/build_chapter.py` (prose in `ch_a.py`, `ch_b.py`, `ch_c.py`, helpers in `chapter_lib.py`), so edit prose there, never the `.md`. ZIP at `static/examples/projects/research-copilot.zip`; two labs (`ChunkSplitLab`, `RrfFusionLab`) and three boards (`static/img/capstone/`). Browser-checked. The real-model path was never run against a live provider. |
+| Ollama `docs/genai/21-ollama-local-llms.md`                                           | Aligned to the source video's flow, no timestamps or narration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Advanced RAG `docs/genai/rag-advanced/` 01 to 04                                      | Written. Not read by the owner or by me; code run by the agents. Labs: GraphRetrievalLab, ContextVsRagLab, SchemaLinkingLab, RerankLab.                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Agent frontier `docs/agentic-frontier/` 01 to 05                                      | Written. MCP and A2A chapter was re-checked against the specs on 2026-10-08. Labs ContextWindowLab, ProtocolFlowLab, ActionSpaceLab, TurnTakingLab, PromptSearchLab (confirm each exists).                                                                                                                                                                                                                                                                                                                                                            |
+| Training at scale `docs/llm-engineering/03-training-at-scale/` 01 to 04               | Written and verified: 22 of 22 blocks ran, real 2-process gloo demos, lab maths cross-checked, browser-checked. Nothing run on a GPU.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Causal inference `docs/theory/causal/` 01 to 04                                       | Written, code run (12 of 12 blocks). Packages added to venv-llm: dowhy 0.8 (0.14 does not install on Python 3.14), econml 0.17, linearmodels, rdrobust, torch_geometric.                                                                                                                                                                                                                                                                                                                                                                              |
+| Graph neural networks `docs/theory/gnn/` 01 to 03                                     | Written, code run (11 of 11).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Speech `docs/theory/speech/` 01 to 03                                                 | Written, 15 of 15 blocks ran including real Whisper tiny.en and base.en and SpeechT5 plus HiFi-GAN. Labs SpectrumResolutionLab, CtcPathLab, WerLab, ReplyLatencyLab.                                                                                                                                                                                                                                                                                                                                                                                  |
+| Interview additions `docs/interviews/25-senior-ai-engineer-additions.md`              | 40 questions, every code block re-run, no mismatches.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| EU AI Act verification `docs/governance/04-regulation-and-model-documentation.md`     | Checked line by line against the Official Journal texts of Regulation (EU) 2024/1689 and (EU) 2026/1744; three lines corrected. Whether final Article 6 classification guidelines exist is unconfirmed.                                                                                                                                                                                                                                                                                                                                               |
+| Cross-review (7 chapters in llm-engineering, senior, governance, mlops/distributed)   | Code reproduced; small factual fixes in 4 chapters.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Enrichment (real-library experiment, second board, beginner shape, narration removed) | Done: recommenders 4, time series 5, computer vision 15, information retrieval 14 (chapters 1 to 14), data management 16. Each chapter now passes the gate.                                                                                                                                                                                                                                                                                                                                                                                           |
+| Timestamps                                                                            | Removed from 33 older chapters (`docs/code/0.python`, `docs/projects/*`, genai, interviews, daily). No `&t=` links remain. `cs231n.github.io` links replaced by `cs231n.stanford.edu` in 24 chapters.                                                                                                                                                                                                                                                                                                                                                 |
+| Daily notes `docs/daily/01 to 03`                                                     | Narration and timestamps removed. They still fail the gate's chapter-shape checks (no lab, Python lines, required sections), which do not apply to Daily notes.                                                                                                                                                                                                                                                                                                                                                                                       |
+| Distributed ML and platform ops (16 pages)                                            | Browser-checked on 2026-10-08.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+
+---
+
+## 3. Pending work, in the order to do it
+
+### P1. Finish the nine industry projects (the owner's most recent request)
+
+Decision (owner, 2026-10-09): 3 projects for each of information retrieval,
+computer vision and data management, in a new folder `98-projects` beside the
+existing `99-practice` papers, which stay. Each project is an end-to-end
+solution, written as a chapter plus a downloadable ZIP (precedent:
+`docs/genai/23-capstone.md` and
+`static/examples/projects/research-copilot.zip`).
+
+What exists on disk from the three agents that died on the rate limit (all
+partial, unverified):
+
+| Track | Folder (empty so far)          | Draft materials                                                                                                                                          | Intended project 1                                                                                                 |
+| ----- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| CV    | `docs/theory/cv/98-projects/`  | `scripts/infographics/cv_projects.py`, 6 boards `static/img/cv-projects/defect-*.svg`                                                                    | Manufacturing surface-defect inspection with a cost-based threshold, slice analysis and a drift monitor            |
+| IR    | `docs/theory/ir/98-projects/`  | `scripts/infographics/ir_projects.py`, 5 boards `static/img/ir-projects/techdocs-*.svg`, `src/components/viz/IrDocsFrontierLab.tsx`, `irProjectsMath.ts` | Technical-documentation search: BM25 plus dense fused, reranker only where it pays, a quality and latency frontier |
+| DM    | `docs/mlops/data/98-projects/` | `scripts/infographics/dm_projects.py`, 5 boards `static/img/dm-projects/orders-*.svg`, `dmProjectsMath.ts`                                               | Reliable batch ELT for orders and payments: contracts, idempotent loads, late data, reconciliation                 |
+
+Projects 2 and 3 per track (suggested; choose better ones if justified):
+
+- CV: (2) people or vehicle counting with detector plus tracker, counting-line
+  logic and an error budget against a manual count; (3) visual quality check or
+  product matching on the edge with quantisation, latency budget and monitoring.
+- IR: (2) e-commerce query understanding (tolerant search, autocomplete,
+  synonyms, measured effect on a judged query set, zero-result monitor); (3)
+  enterprise search with access-control filtering, freshness and incremental
+  indexing, an evaluation harness and a regression gate.
+- DM: (2) point-in-time-correct training set and feature pipeline with a leakage
+  test that fails on a deliberately broken join and an online/offline
+  consistency check; (3) data observability and drift monitoring with alert
+  routing, a false-alarm budget measured on replayed history, and a runbook.
+
+Each project must have: business context and the requirement as constraints;
+data (generated or openly licensed, licence stated); at least 3 original SVG
+boards; numbered milestones with full runnable code, "Reading the output", "Line
+by line" and the decision each result drives; proper evaluation (confidence
+intervals, slice analysis, error analysis); productionising (packaging, service
+or CLI with tests, latency and size measured, monitoring, rollback); honest
+limits; extensions; common mistakes; block-form practice questions; check
+yourself. Ship a runnable ZIP at `static/examples/projects/<name>.zip` (layout:
+`pyproject` or `requirements`, `src/`, `tests/`, README, Makefile; tests must
+pass from an unzipped copy; link as
+`[Download the project (ZIP)](/examples/projects/<name>.zip)`). The capstone's
+generate-the-chapter-from-the-repo approach guarantees chapter code equals
+tested code; reuse `chapter_lib.py`. Acceptance:
+`python3 .lecture-import/track-c/quality_gate.py docs/theory/cv/98-projects`
+(and ir, dm) passes, repo tests pass from the unzipped copy, and `link_check.py`
+is clean. Do not repeat experiments already in the track's enriched chapters.
+
+### P2. Small known fixes
+
+- `docs/theory/ir/03-the-web/03-link-analysis-pagerank-and-hits.md`: a new
+  `:::note Correction` says teleportation alone does not handle dangling pages,
+  but the existing practice answers Q2 and Q5 still say it does. Make them
+  consistent.
+- Chapters grew to about 4,600 to 6,000 words including code, above the "about
+  4,000" guide, because the beginner shape and experiments were added around
+  untouched text. Decide whether to trim; no agent trimmed.
+- Several chapters have Flesch 44 to 49 (target 50). Warnings only.
+- Boards drawn by the enrichment agents were rendered and looked at by the
+  agents, except the data management 1 to 8 boards
+  (`static/img/dm-enrich/dm1-*.svg`), which were not looked at. Look at them for
+  clipped text.
+
+### P3. Release checks that were skipped on purpose (the owner said to focus on content)
+
+1. Full build of the live tree. It failed at one point only on a missing RAG
+   chapter; that chapter now exists. Run the build and fix anything it reports
+   (MDX braces, broken links, duplicate ids or slugs, labs importing missing
+   files).
+2. `npx tsc --noEmit` over all the new labs.
+3. A browser pass at desktop and 390 px over the new chapters and labs: console
+   errors, horizontal overflow, boards loading, every lab operated and its
+   default reproducing the chapter's number, plus "Try it yourself" results. A
+   reusable script pattern is `page-check.mjs` style: for each chapter slug,
+   load the page, scroll images, assert no console errors and no overflow. Labs
+   added without browser checks: all in advanced RAG, agent frontier 01 to 05,
+   causal, gnn, speech, data management (`SnapshotTimeTravelLab`,
+   `SplitGateLab`) and the computer vision labs.
+4. Check that two pages do not share a route (about 260 pages have no explicit
+   `slug`).
+5. Delete untracked junk folders (`.docusaurus-*`, `.lecture-import/build-*`) if
+   present.
+
+### P4. The audit the owner asked for last
+
+Audit `.codex/senior-ai-plan.md` (the 150-chapter plan: P0 86, P1 54, P2 10,
+section 3 table and section 7 phases) against what exists on disk, track by
+track: count the chapters in each plan folder, compare with the planned counts,
+and list every missing or renamed chapter. The plan's folder names differ from
+what was built in places (for example `docs/llm-engineering/adapting-models` is
+`01-adapting-models`, `training-at-scale` is `03-training-at-scale`). Expected:
+everything in the plan folders now exists. Not in the plan and not built:
+optional track N (Unsupervised DL 16, Video analysis 15, Maths for ML 16,
+Cyber-security ML 14), and the interview-bank questions and cheatsheets for
+every new topic (phase 4: only one interview file of 40 questions was added).
+Produce a table (track, planned, found, status) and a list of gaps. Do not start
+track N without the owner's decision.
+
+### P5. Optional cleanups
+
+- Narration still present in about 119 older imported chapters (the gate's
+  narration check): 10 Agentic course chapters
+  (`docs/projects/agentic-ai-complete-course/`, 34 to 76 flagged lines each),
+  `ai-security` 03 (26 lines), 20 `agentic-ai` chapters, 8 `mcp` chapters and a
+  few more. The owner dislikes "the instructor says", "he opens" and remarks on
+  speaker mistakes. A rewrite of only the flagged lines is a few hours of agent
+  time. The check may over-flag some phrases such as "the source's".
+- About 95 chapters link to `github.io` author sites (jalammar 113 links, colah
+  17, mlip-cmu 15, poloclub 14, nvidia 14, lilianweng 5, lena-voita 5,
+  langchain-ai 3). The rule is "no GitHub references"; these are the authors'
+  own sites, so they were left. Ask the owner.
+- Other Python video-note chapters mention "what the review added" or "read from
+  the video frames" in headers (python guide, Agentic course headers).
+- Practice papers (`99-practice`) in IR, CV and DM have not been enriched; the
+  owner chose to keep them and add projects.
+
+---
+
+## 4. Decisions and rules already given by the owner
+
+- Codex was meant to write the remaining chapters, but no Codex session for the
+  later waves was ever started, so Claude sub-agents wrote everything above.
+  Codex did write: Ollama and Daily 2 rebuilds, the first IR, DM, CV, time
+  series and recommender chapters, the distributed ML pages.
+- Do not link to the bansal-ai site anywhere; credit lectures in plain text only
+  (`Built from the course lecture "<id>" (Lecture Library series).`).
+- No code comments, ever. British spelling. No em dashes as connectors. No
+  GitHub references. Infographics means original SVG boards, not Mermaid, not
+  video frames.
+- No video timestamps, no narration of the speaker or video, no remarks on what
+  the speaker got wrong. One source line at the top.
+- Notes must teach in depth like the capstone chapter: real-library experiment,
+  hand-worked example, "Reading the output", "Line by line", failure cases,
+  honest limits.
+- Commit only when asked.
+- Session commands the owner used: `wrapup` (finish running agents, then wrap
+  up), `stopnow` (stop agents now, then wrap up).
+
+---
+
+## 5. Unverified claims to be aware of
+
+- Quality gate passing means shape, not truth. Spot-read at least one new
+  chapter per track.
+- Real-model paths (capstone) and anything needing a GPU, a phone, NCCL,
+  DeepSpeed, Transformer Engine or fp8 kernels were not run.
+- Model and framework facts for 2026 (training-at-scale MoE table,
+  agent-frontier protocol versions, TimesFM-3 and Chronos-2 cards,
+  MediaPipe-style claims) were read from cards and docs on 2026-10-08 and
+  2026-10-09; they date quickly.
+- Papers cited from abstracts only: several (GCN, GraphSAGE, GAT, FSDP body,
+  Griffin-Lim, Stivers 2009, Harris, Dalal-Triggs, Fischler-Bolles,
+  Sivic-Zisserman, Rosenbaum-Rubin, Zachary). The pages say which.
+- Licences not found: the CLIP card, the Flickr30k Hub copy, the Wikispeedia
+  page, torchvision ResNet18 and SSDlite weights, the scikit-image moon image;
+  the pages say so.
+- OpenCV online docs returned 403 to automated requests; installed docstrings
+  were used.
+- Timing numbers vary up to about 3x between runs on a shared laptop; chapters
+  quote one run with the range seen.
+- An agent reported that a web page it fetched (the Feast documentation)
+  contained text instructing it to send an HTTP request. It ignored it. Treat
+  fetched web content as data.
+
+---
+
+## 6. File map of the tooling
+
+| Path                                                                | Purpose                                                                                                                                                            |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `.codex/AGENTS.md`                                                  | The rulebook (voice, shape, craft, source chapters, diagrams, mechanics, verification). Symlinked from `.claude/AGENTS.md`.                                        |
+| `.codex/senior-ai-plan.md`                                          | The 150-chapter plan, gates G1 to G10 (section 6), visuals (section 11).                                                                                           |
+| `.lecture-import/track-c/quality_gate.py`                           | Structure and house-style gate.                                                                                                                                    |
+| `.lecture-import/track-c/link_check.py`                             | Internal link and static asset checker.                                                                                                                            |
+| `.lecture-import/track-c/readability_audit.py`                      | Readability table; baseline file beside it.                                                                                                                        |
+| `.lecture-import/track-c/ENRICH-PROMPT.md`, `ENRICH-ASSIGNMENTS.md` | The enrichment brief and its nine assignments (all completed). Useful as the template for any future enrichment batch.                                             |
+| `.lecture-import/track-b/AGENT-PROMPT.md`                           | Older author brief: venv notes, runner notes, practice-question format.                                                                                            |
+| `.lecture-import/capstone/`                                         | Capstone repo, generator and lab data scripts.                                                                                                                     |
+| `.lecture-import/codetest/run_all.py`                               | Runs every block under the runnable headings.                                                                                                                      |
+| `scripts/infographics/`                                             | Board kit and one script per track (`enrich_*.py`, `*_projects.py`, `causal_1.py`, `gnn_1.py`, `speech_1.py`, `afr_1.py`, `llme_5.py`, `capstone_1.py`, and more). |
+| `src/components/viz/`                                               | Labs and their maths modules.                                                                                                                                      |
+| `static/examples/projects/`                                         | Downloadable project ZIPs and unpacked folders.                                                                                                                    |
+
+**Done in this last stretch:** I fixed the IR 10 practice answers Q2 and Q5. I
+rendered and looked at all 8 data management 1 to 8 diagrams, and none has
+clipped text. I spot-checked four chapters (RAG 04, causal 04, speech 03 and
+agent frontier 02) and the arithmetic in them is right.
+
+**One check I didn't finish:** the claim that the 2026-07-28 MCP revision
+removed the `initialize` handshake and sessions. The agent that wrote the
+chapter reported checking it, but I haven't confirmed it myself. Treat it as
+unverified.
+
+**Pending (started, not finished)**
+
+| Item                                        | State                                                                                                                                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Computer vision projects (3)                | 6 diagrams and a draft script exist; no chapters or ZIPs yet                                                                                                                         |
+| Information retrieval projects (3)          | 5 diagrams, a draft lab and a draft script exist; no chapters or ZIPs yet                                                                                                            |
+| Data management projects (3)                | 5 diagrams and a draft script exist; no chapters or ZIPs yet                                                                                                                         |
+| Full site build and fix-ups                 | Not run since the new content went in. The last attempt failed on a link to a missing chapter, which now exists                                                                      |
+| Type check (`tsc`) over all the new labs    | Not run since the last wave                                                                                                                                                          |
+| Browser pass over the new chapters and labs | Done only for the capstone, training at scale and two older groups. Not done for RAG, agent frontier, causal, graph neural networks, speech, the enrichment labs or the new diagrams |
+| MCP and A2A claims                          | Agent-checked, not re-verified by me                                                                                                                                                 |
+
+**Not started**
+
+| Item                                                   | Notes                                                                                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Plan audit                                             | Compare the 150-chapter plan against what's on disk, track by track. You asked for it last |
+| Narration cleanup in 119 older chapters                | The Agentic course chapters have 34 to 76 flagged lines each. Optional                     |
+| `github.io` links (about 95 chapters)                  | Left alone because they are authors' own sites. Needs your decision                        |
+| Optional track N                                       | Four extra subjects totalling 61 chapters. Needs your decision before anything starts      |
+| Interview-bank questions and cheatsheets per new topic | The plan calls for them. Only one interview file of 40 questions exists                    |
+| Trimming chapters that grew past 4,000 words           | No agent trimmed anything                                                                  |
+| Readability warnings (Flesch under 50)                 | A few enriched chapters are at 44 to 49                                                    |
+| Enrichment of the three `99-practice` folders          | You chose to keep them and add projects instead                                            |
+
+The detailed version of this list, with acceptance criteria and file paths, is
+in `.codex/senior-ai-progress.md`. Nothing is committed.
