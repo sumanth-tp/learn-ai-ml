@@ -203,6 +203,16 @@ track N without the owner's decision.
 
 ---
 
+### P6. Projects for every topic (owner request, 2026-10-10)
+
+The owner asked for projects for each topic. Rule and method: `.codex/AGENTS.md` section 10 and `.codex/guides/projects.md`. `scripts/source-import/project_inventory.py` on 2026-10-10: 50 topics, 35 with no project (among them agentic-frontier, genai/rag-advanced, governance, llm-engineering, mlops/data, mlops/distributed, mlops/platform, senior, theory/cv, causal, gnn, ir, recsys, speech, statistics, timeseries, the code/* library tracks and the projects/* course imports). Existing project pages mostly do not link the chapters they use, so the inventory shows them as covering little. Existing project pages fail the new project checks only for a Mermaid architecture instead of a board, and for comments in code. Nothing was built yet.
+
+### P7. Coverage leads from the tooling test
+
+`coverage_check.py` on `docs/agentic-ai/01-playlist-introduction.md` against its own video (yC36gN-rqjo) flagged two blocks that look like real gaps: how the curriculum was prepared (block at 00:00:44) and the curriculum's final items, observability with LangSmith and deployment (block at 00:12:22). Not fixed.
+
+---
+
 ## 4. Decisions and rules already given by the owner
 
 - Codex was meant to write the remaining chapters, but no Codex session for the
@@ -253,6 +263,10 @@ track N without the owner's decision.
 ---
 
 ## 6. File map of the tooling
+
+**Added 2026-10-10.** `.codex/guides/` (method per job, see its README), `.claude/guides` and root `AGENTS.md` (links), `.claude/skills/{youtube-chapter,web-chapter,review-chapter,topic-projects}`, and tracked tools in `scripts/source-import/`: `yt_pack.py` (video source pack), `web_extract.py` (pages and PDFs), `render_svg.mjs` (board render with overflow check), `project_inventory.py` (topics without projects). `quality_gate.py` gained a room-and-session voice check (fail), a pointing-words check (warn) and a project mode. Before the change 79 of 730 chapters passed; after it, 79 still pass. The 40 chapters newly flagged for voice were already failing other checks. A pre-change copy of the gate was kept in the session scratchpad only.
+
+Why the root `AGENTS.md`: Codex loads `AGENTS.md` from the repo root and from folders down to where it runs, not from `.codex/`. The Codex session log of 2026-10-08 for this repo contains no rulebook text, so earlier Codex runs most likely never saw these rules unless a prompt pasted them.
 
 | Path                                                                | Purpose                                                                                                                                                            |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

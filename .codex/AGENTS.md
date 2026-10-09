@@ -32,6 +32,7 @@ Notes teach the **subject**. They are not a record of a video, a review of a spe
 - Narration of the video or speaker: "the instructor says", "in the video", "the lecture shows", "he opens", "he types", "on the screen", "in the frame", "the source's final answer", "the notebook's output", "the recorded version".
 - Commentary on what the speaker got wrong. State the correct idea and explain it. If the source's code or claim is wrong, ship the correct version and put the correction in a `:::note` without saying who said what.
 - Claims about how you checked the source ("checked against frames", "captions were translated"). That is your process. Put it in the progress file.
+- The room and the session: "a question from the class", "the class guessed", "this session shows", "that was the session", "the code will be shared the next day", the speaker's hedges and memories ("if remembered correctly", "honestly", "in my company"), and pointing words that only make sense with the screen ("as you can see", "this thing", "like this"). Each hides a claim about the subject: write the claim. An audience question becomes a question a reader would ask, answered. A lecture-relative date ("a few days before this session") becomes an absolute date. `.codex/guides/notes-voice.md` shows the fix for each case, with examples taken from this site.
 
 Keep exactly one pointer to the source: the source line at the top of the chapter, one line, no timestamps.
 
@@ -189,6 +190,8 @@ Numeric filename prefixes match `sidebar_position`. A folder or file prefixed `_
 
 ### Getting transcripts
 
+Use `scripts/source-import/yt_pack.py` (method in `.codex/guides/youtube-source-pack.md`). It builds the whole source pack (description, transcript with fallback, blocks, ledger, frames, contact sheets) and wraps the commands and workarounds below.
+
 ```bash
 yt-dlp --extractor-args "youtube:player_client=android" --skip-download --write-auto-subs --sub-langs "en" --sub-format json3 -o "subs/%(id)s.%(ext)s" "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
@@ -242,7 +245,13 @@ yt-dlp --extractor-args "youtube:player_client=android" --skip-download --write-
 
 ---
 
-## 10. Verify and report
+## 10. Projects for every topic
+
+Every topic (a folder with its own `_category_.json` holding chapters or modules) ends with projects: three for a topic of six chapters or more (guided, applied, portfolio), two for three to five chapters. Every chapter of the topic is used by at least one project, and links to it from **Where to go next**. Each project ships a runnable ZIP in `static/examples/projects/` that works offline by default and is verified from a clean unzip. Project pages are tagged `project`, and the gate then checks the project shape. Method: `.codex/guides/projects.md`. Status: `scripts/source-import/project_inventory.py`.
+
+---
+
+## 11. Verify and report
 
 Before you say a chapter is done:
 
@@ -255,3 +264,9 @@ Before you say a chapter is done:
 Report in the progress file and in your final message: what you added per chapter, the key printed numbers, the surprising result, sources with dates and versions, the gate line, and exactly what you did not verify. Report problems as plainly as successes.
 
 After a large import or batch, update `.codex/senior-ai-progress.md` with what was done, the tooling workarounds that worked, and what is outstanding. The next session will not have this context.
+
+---
+
+## 12. Guides and tools
+
+This rulebook sets the standard. `.codex/guides/` gives the method for each job, step by step, with tools tested on this machine: `README.md` (which guide for which job), `notes-voice.md` (speech into notes), `youtube-source-pack.md`, `youtube-chapter.md`, `fidelity-review.md`, `web-sources.md`, `authored-chapters.md`, `boards.md`, `labs.md`, `projects.md`, `prompts.md` (ready prompts for Codex and sub-agents), and `templates/`. Read the guide for your job before starting. Where a guide disagrees with this file, this file wins.
