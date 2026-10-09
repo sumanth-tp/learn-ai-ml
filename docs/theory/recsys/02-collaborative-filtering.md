@@ -12,6 +12,39 @@ import MatrixFactorLab from '@site/src/components/viz/MatrixFactorLab';
 
 **In one line.** Collaborative filtering uses interaction patterns shared across users and items to suggest something a user has not already found.
 
+:::tip Before you start
+**You should already know**
+
+- Feedback types and why a missing event is not a dislike: [feedback and objectives](/docs/theory/recsys/feedback-and-objectives).
+- How to read precision at ten and why a time split is used: [feedback and objectives](/docs/theory/recsys/feedback-and-objectives) ran the same split.
+- Cosine similarity of two vectors, as in [vector space and term weighting](/docs/theory/ir/vector-space-and-term-weighting).
+
+**Reading time.** About 35 minutes, plus a few minutes to run the code.
+
+**After this chapter you can**
+
+- compute a user-neighbour score by hand and say why overlap matters,
+- compare popularity, user-kNN, item-kNN and truncated SVD on held-out ranking metrics, including catalogue coverage,
+- explain why adding factors can make a recommender worse.
+:::
+
+## In 30 seconds
+
+Ask a friend who shares your taste for a film, and you are doing collaborative filtering. Find the people whose past choices overlap with yours, and borrow what they liked that you have not seen. Matrix factorisation does the same thing with a short list of numbers per person and per film instead of a whole friend group. The always-available competitor is "recommend what everyone watches". It is easy to beat, but not by as much as people expect, and it is the right yardstick for every fancier model.
+
+## Words you will meet
+
+| Term | Plain meaning | Tiny example |
+| --- | --- | --- |
+| Neighbour | A user (or item) whose history is most similar to the target | Ben is Ana's nearest neighbour |
+| Cosine similarity | Angle between two history vectors, 1 for the same, 0 for no overlap | Ana and Ben: 0.816 |
+| Latent factor | A learned hidden dimension in a short vector | A 10-number vector per film |
+| Truncated SVD | A way to find the best low-rank approximation of a matrix | Keep the top 10 directions of the user-film matrix |
+| Precision at 10 | Share of the top 10 that the user later liked | 1.3 of 10 on average is 0.13 |
+| NDCG at 10 | Like precision, but a hit near the top counts more | A hit at rank 1 beats a hit at rank 9 |
+| Catalogue coverage | Share of all items that appear in anybody's list | 0.043 means 4.3% of films ever show up |
+| Popularity baseline | Recommend the most-consumed unseen items to everyone | The same 10 films for every user |
+
 ## The idea in plain words
 
 Imagine a matrix whose rows are users and columns are items. Its entries are ratings, interactions or missing values. If two people have liked many of the same lessons, a lesson known only to one may be a candidate for the other. If two lessons are often completed by the same learners, one may be a useful follow-up to the other. These are **neighbour methods**: find similar users or similar items, then transfer evidence. They can reveal useful associations that content tags missed, but their similarity estimates become unstable when overlap is sparse.
@@ -19,6 +52,18 @@ Imagine a matrix whose rows are users and columns are items. Its entries are rat
 **Matrix factorisation** compresses the matrix. Instead of storing an independent prediction for every user-item pair, learn a short vector for each user and each item. Their dot product becomes a compatibility score. The dimensions are latent: a dimension may correlate with a topic or style, but its numerical axis is not guaranteed to have a clean human label. A low-dimensional model shares statistical strength across interactions, yet a new user or item has no reliable learned vector until there is evidence or a feature-based way to construct one.
 
 <Infographic src="/img/recsys/matrix-factors.svg" alt="Four cards explain a sparse interaction matrix, hand-set factor vectors with scores three and two, a training objective, and a cold-start fallback." caption="Factor scores are dot products; learning those factors requires an objective and feedback policy." />
+
+## Worked example, step by step
+
+Four films A, B, C, D and three users. Ana has seen A and B. Ben has seen A, B and C. Cat has seen C and D. We score Ana's unseen films by user-neighbour voting. The first block under "Code you can run" reproduces this.
+
+1. Write each history as a 0 or 1 vector over (A, B, C, D): Ana (1, 1, 0, 0), Ben (1, 1, 1, 0), Cat (0, 0, 1, 1).
+2. Cosine similarity is $\dfrac{x \cdot y}{\lVert x \rVert \, \lVert y \rVert}$. Ana and Ben share 2 films, so $x \cdot y = 2$. The lengths are $\sqrt{2} = 1.414$ and $\sqrt{3} = 1.732$, so the similarity is $2/(1.414 \times 1.732) = 2/2.449 = 0.816$.
+3. Ana and Cat share nothing, so $x \cdot y = 0$ and the similarity is 0.
+4. Each film's score is the sum of neighbour similarities that watched it. Film C: $0.816 \times 1 + 0 \times 1 = 0.816$. Film D: $0.816 \times 0 + 0 \times 1 = 0$.
+5. Ana has seen A and B, so they are excluded. C scores 0.816 and D scores 0, and C is recommended.
+
+In words: a film is recommended when people who resemble you watched it. Cat watched D but looks nothing like Ana, so D gets no vote. With very few shared films a similarity like 0.816 is fragile, which is why real systems require a minimum overlap or shrink the value.
 
 ## How it works
 
@@ -78,6 +123,128 @@ print('weighted neighbour rating:', round(prediction, 2))
 
 This reproduces the introductory Information Retrieval chapter's 4.43 rating, linking the neighbour method to the factor method without treating them as the same algorithm.
 
+### Experiment: neighbours and factors against popularity
+
+This experiment reuses the MovieLens 100K download and the per-user time split from [the previous chapter](/docs/theory/recsys/feedback-and-objectives): each user's last 20% of ratings are held out and a held-out film counts as relevant if it was rated 4 or 5. Models see only the training interactions as 0 and 1, so this is the implicit setting. The data licence is described there: research use, acknowledgement, no redistribution, no commercial use without permission. The code downloads the archive when you run it.
+
+Block one is the by-hand example. Block two compares six recommenders with precision at 10, NDCG at 10 and catalogue coverage, then splits users by how much history they have.
+
+```python
+import numpy as np
+
+films = ['A', 'B', 'C', 'D']
+ana = np.array([1, 1, 0, 0])
+ben = np.array([1, 1, 1, 0])
+cat = np.array([0, 0, 1, 1])
+cosine = lambda x, y: x @ y / np.sqrt((x @ x) * (y @ y))
+for name, other in (('Ben', ben), ('Cat', cat)):
+    print(f'similarity Ana to {name}: {cosine(ana, other):.3f}')
+sims = np.array([cosine(ana, ben), cosine(ana, cat)])
+votes = sims @ np.array([ben, cat])
+for film, v in zip(films, votes):
+    print(film, 'neighbour score', round(float(v), 3), '(already seen)' if ana[films.index(film)] else '')
+```
+
+The printed similarities are 0.816 and 0.000, and film C scores 0.816 while D scores 0.0.
+
+```python
+import os
+import tempfile
+import urllib.request
+import zipfile
+
+import numpy as np
+import pandas as pd
+from sklearn.decomposition import TruncatedSVD
+from sklearn.preprocessing import normalize
+
+URL = 'https://files.grouplens.org/datasets/movielens/ml-100k.zip'
+CACHE = os.path.join(tempfile.gettempdir(), 'ml-100k.zip')
+if not os.path.exists(CACHE):
+    urllib.request.urlretrieve(URL, CACHE)
+with zipfile.ZipFile(CACHE) as z:
+    df = pd.read_csv(z.open('ml-100k/u.data'), sep='\t', names=['u', 'i', 'r', 't'])
+df['u'] -= 1
+df['i'] -= 1
+n_users, n_items = df.u.max() + 1, df.i.max() + 1
+
+df = df.sort_values(['u', 't'], kind='stable')
+cut = (df.groupby('u').u.transform('size') * 0.8).astype(int)
+test = df[df.groupby('u').cumcount() >= cut]
+train = df.drop(test.index)
+B = np.zeros((n_users, n_items))
+B[train.u, train.i] = 1
+seen = B > 0
+liked = np.zeros((n_users, n_items), bool)
+liked[test.u[test.r >= 4], test.i[test.r >= 4]] = True
+users = np.flatnonzero(liked.any(1))
+discount = 1 / np.log2(np.arange(2, 12))
+ideal = np.array([discount[:min(10, liked[u].sum())].sum() for u in users])
+
+def top_ten(S):
+    return np.argsort(-np.where(seen, -np.inf, S), axis=1)[:, :10]
+
+def evaluate(S):
+    top = top_ten(S)
+    hit = np.take_along_axis(liked, top, axis=1)[users]
+    return hit.mean(), ((hit * discount).sum(1) / ideal).mean(), len(np.unique(top[users])) / n_items
+
+def keep_top(sim, k):
+    sim = sim.copy()
+    np.fill_diagonal(sim, 0)
+    keep = np.argpartition(-sim, k, axis=1)[:, :k]
+    mask = np.zeros_like(sim)
+    np.put_along_axis(mask, keep, 1, axis=1)
+    return sim * mask
+
+Bu, Bi = normalize(B), normalize(B, axis=0)
+results = {'popularity': np.tile(B.sum(0), (n_users, 1))}
+results['user-kNN k=50'] = keep_top(Bu @ Bu.T, 50) @ B
+results['item-kNN k=50'] = B @ keep_top(Bi.T @ Bi, 50).T
+for d in (10, 50, 200):
+    svd = TruncatedSVD(d, random_state=0).fit(B)
+    results[f'SVD d={d}'] = svd.transform(B) @ svd.components_
+for name, S in results.items():
+    p, n, c = evaluate(S)
+    print(f'{name:15s} P@10 {p:.3f}  NDCG@10 {n:.3f}  coverage {c:.3f}')
+
+history = B.sum(1)
+groups = {'under 25 train items': history < 25, '25 to 59': (history >= 25) & (history < 60), '60 or more': history >= 60}
+per_user = {name: np.take_along_axis(liked, top_ten(results[name]), axis=1).mean(1) for name in ('popularity', 'SVD d=10')}
+for label, mask in groups.items():
+    sel = mask & liked.any(1)
+    print(f'{label:21s} users {sel.sum():3d}  popularity {per_user["popularity"][sel].mean():.3f}  SVD d=10 {per_user["SVD d=10"][sel].mean():.3f}')
+```
+
+**Reading the output.** Each row is one recommender. `P@10` is precision at 10 over users who have at least one liked held-out film. `NDCG@10` rewards early hits, with 1.0 meaning the ideal ordering of that user's liked films. `coverage` is the share of the 1,682 films that appears in at least one list. The last three rows split users by training history length and compare popularity with the 10-factor SVD.
+
+**Line by line.**
+
+- `keep_top` zeroes everything except each row's `k` largest similarities, which is what makes it a neighbourhood and not an average over everyone.
+- `results['item-kNN k=50'] = B @ keep_top(...).T` scores an item by the similarity of its neighbours that the user has seen. `results['user-kNN k=50'] = keep_top(...) @ B` scores by what neighbouring users have seen.
+- `TruncatedSVD(d)` reduces the matrix to `d` directions. `svd.transform(B) @ svd.components_` rebuilds a full score for every pair from only those directions.
+- `np.where(seen, -np.inf, S)` stops a model recommending what the user already has.
+
+The printed output was:
+
+```text
+popularity      P@10 0.079  NDCG@10 0.099  coverage 0.043
+user-kNN k=50   P@10 0.126  NDCG@10 0.170  coverage 0.178
+item-kNN k=50   P@10 0.121  NDCG@10 0.160  coverage 0.259
+SVD d=10        P@10 0.126  NDCG@10 0.166  coverage 0.213
+SVD d=50        P@10 0.120  NDCG@10 0.166  coverage 0.332
+SVD d=200       P@10 0.076  NDCG@10 0.105  coverage 0.483
+under 25 train items  users 196  popularity 0.039  SVD d=10 0.065
+25 to 59              users 286  popularity 0.057  SVD d=10 0.098
+60 or more            users 425  popularity 0.111  SVD d=10 0.173
+```
+
+**What the numbers say.** Popularity, which shows every user the same unseen top films, gets 0.079 precision at 10. User-kNN and the 10-factor SVD both reach 0.126, about 60% more, and item-kNN reaches 0.121. Those three are within a hair of each other, so on this dataset the choice between neighbour and factor models is a matter of serving cost, not accuracy. All three beat popularity for every history-length group, with gains from 0.039 to 0.065 for light users and from 0.111 to 0.173 for heavy ones. Popularity also covers only 4.3% of the catalogue against 21.3% for SVD with 10 factors.
+
+The surprise is the last SVD row. With 200 factors the model can reproduce the training matrix almost exactly, so its scores for unseen films are noisy: precision falls to 0.076, below popularity, while coverage climbs to 0.483. High coverage did not mean good recommendations, because recommending more different films is easy if you recommend them badly. Limits: one split, no tuning of `k` or the factor count beyond three values, binary training data only, and a 1997 to 1998 catalogue. A tuned popularity-plus-recency baseline, or an ALS model, would change the margins.
+
+<Infographic src="/img/recsys-enrich/cf-baselines.svg" alt="Bars show precision at 10 for popularity, two neighbour models and three SVD sizes; cards show the 200-factor failure, gains by history length and catalogue coverage." caption="Look first at the red SVD d=200 bar: it falls below the grey popularity bar." />
+
 ## Designing with it
 
 ### Work through an explicit-rating case
@@ -116,6 +283,14 @@ For scale, store and refresh item vectors in a retrieval index, while user vecto
 
 Collaborative filtering remains a foundational recommendation idea, even when modern encoders replace fixed identifier factors with neural or content-derived vectors. The key abstraction is still a user or query representation compared with item representations, followed by evaluation of a ranked list. The historical factor methods are valuable because they expose assumptions about missing data, confidence and popularity that remain relevant inside larger systems. They are also useful baselines when a complex two-tower model is proposed.
 
+## Common mistakes
+
+1. **Skipping the popularity baseline.** It feels too simple to count. It costs one line and tells you whether a model earns its complexity. Here popularity got 0.079 against 0.126 for the best models, a real but modest margin.
+2. **Raising the factor count to fit more.** More capacity looks like more accuracy. With 200 factors precision dropped to 0.076. Pick the dimension on held-out ranking, not on reconstruction.
+3. **Judging by coverage alone.** A model that recommends nearly the whole catalogue looks diverse. The 200-factor SVD covered 0.483 and was worse than popularity. Read coverage next to precision.
+4. **Computing similarity on tiny overlap.** Two users with one shared film can look identical. Require a minimum overlap or shrink similarities toward zero.
+5. **Letting the model recommend what the user already has.** Mask training items before taking the top 10, or the model spends the list on films already seen.
+
 ## Practice questions
 
 <details>
@@ -146,12 +321,36 @@ Dot-product rankings can change because norm information disappears. The serving
 
 </details>
 
+<details>
+<summary><strong>Q5. (Easy)</strong> Ana has seen A and B, and Dev has seen only A. What is their cosine similarity?</summary>
+
+The dot product is 1, Ana's length is $\sqrt{2}$ and Dev's is 1. The similarity is $1/\sqrt{2} = 0.707$. It is high even though they share one film, which is why overlap thresholds matter.
+
+</details>
+
+<details>
+<summary><strong>Q6. (Medium)</strong> Popularity scored 0.079 and SVD with 10 factors 0.126. Is the SVD "60% better" a safe claim for your product?</summary>
+
+The ratio is 0.126 / 0.079 = 1.59, so the arithmetic holds, but the claim belongs to this dataset, one split and these settings. Check it on your catalogue, on a time split, with a tuned popularity baseline, and with a confidence interval over users before quoting it.
+
+</details>
+
+<details>
+<summary><strong>Q7. (Stretch)</strong> Why did SVD with 200 factors have the highest coverage and the lowest precision among the SVD sizes?</summary>
+
+Many factors let the model memorise each user's training history, so scores for unseen films are close to noise and spread across the catalogue. Spread-out noise raises coverage and removes the signal that precision measures.
+
+</details>
+
 ## Further reading
 
 - [Google: collaborative filtering basics](https://developers.google.com/machine-learning/recommendation/collaborative/basics) introduces neighbour and embedding ideas.
 - [Google: matrix factorisation](https://developers.google.com/machine-learning/recommendation/collaborative/matrix) develops objectives and optimisation.
 - [Hu, Koren and Volinsky](https://yifanhu.net/PUB/cf.pdf) gives the original confidence-weighted implicit formulation.
 - [Recommendation as personalised retrieval](/docs/theory/ir/recommendation-as-personalised-retrieval) contains the worked neighbour example.
+- [Dacrema, Cremonesi and Jannach, "Are We Really Making Much Progress?"](https://arxiv.org/abs/1907.06902) (RecSys 2019, opened 2026-10-09) tried to reproduce 18 recent neural recommenders; only 7 could be reproduced with reasonable effort, and six of those were often beaten by simpler nearest-neighbour or graph-based methods.
+- [GroupLens MovieLens 100K README](https://files.grouplens.org/datasets/movielens/ml-100k-README.txt) (opened 2026-10-08) carries the licence terms and the citation Harper and Konstan, ACM TiiS 5(4), 2015.
+- scikit-learn 1.9.1 `TruncatedSVD` and NumPy 2.5.3 were the versions run for the experiment.
 
 ## Check yourself
 
@@ -159,3 +358,10 @@ Dot-product rankings can change because norm information disappears. The serving
 - I can explain why an implicit zero differs from an explicit negative rating.
 - I can state what regularisation, confidence weighting and negative sampling each change.
 - I can design cold-start and popularity baselines for a factor-based candidate source.
+- I can compute a cosine similarity and a neighbour vote for a small history by hand.
+- I can say why popularity must be measured first and report the margin of a personalised model over it.
+- I can explain why SVD with too many factors got worse on held-out ranking while its coverage rose.
+
+## Where to go next
+
+Next is [retrieval, ranking and reranking](/docs/theory/recsys/retrieval-ranking-and-reranking), which turns these scores into a staged system. Go back to [feedback and objectives](/docs/theory/recsys/feedback-and-objectives) if the implicit-feedback assumptions here feel unfamiliar.

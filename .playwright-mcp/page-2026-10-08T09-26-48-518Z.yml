@@ -1,0 +1,1198 @@
+- generic [ref=f1e2]:
+  - progressbar "Reading progress"
+  - button "Ask AI tutor" [ref=f1e3] [cursor=pointer]:
+    - generic [aria-hidden] [ref=f1e4]: ✦
+    - generic [ref=f1e5]: Ask AI
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=f1e6] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - banner [ref=f1e7]:
+    - generic [ref=f1e8]:
+      - strong [ref=f1e9]: "New:"
+      - text: browse every note in one place —
+      - link "open Explore" [ref=f1e10] [cursor=pointer]:
+        - /url: /explore
+      - text: ", or press ? for shortcuts."
+    - button "Close" [ref=f1e11] [cursor=pointer]
+  - navigation "Main" [ref=f1e15]:
+    - generic [ref=f1e16]:
+      - generic [ref=f1e17]:
+        - button "Toggle navigation bar" [ref=f1e18] [cursor=pointer]
+        - link "Learn AI & ML AI & ML" [ref=f1e21] [cursor=pointer]:
+          - /url: /
+          - img "Learn AI & ML" [ref=f1e23]
+          - generic [ref=f1e24]: AI & ML
+      - textbox "Search" [ref=f1e27]
+  - main [ref=f1e31]:
+    - generic [ref=f1e35]:
+      - article [ref=f1e36]:
+        - navigation "Breadcrumbs" [ref=f1e37]:
+          - list [ref=f1e38]:
+            - listitem [ref=f1e39]:
+              - link "Home page" [ref=f1e40] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=f1e43]:
+              - generic [ref=f1e44]: 6 · LLM engineering
+            - listitem [ref=f1e45]:
+              - link "LLM Engineering" [ref=f1e46] [cursor=pointer]:
+                - /url: /docs/category/llm-engineering
+            - listitem [ref=f1e47]:
+              - link "Training at scale" [ref=f1e48] [cursor=pointer]:
+                - /url: /docs/category/training-at-scale
+            - listitem [ref=f1e49]:
+              - generic [ref=f1e50]: 2 · DDP, FSDP and ZeRO
+        - button "On this page" [ref=f1e52] [cursor=pointer]
+        - generic [ref=f1e53]:
+          - link "6 LLM engineering 0/34" [ref=f1e55] [cursor=pointer]:
+            - /url: /path#llm-engineering
+            - generic [ref=f1e56]: "6"
+            - generic [ref=f1e57]: LLM engineering
+            - generic [ref=f1e58]: 0/34
+          - generic [ref=f1e59]:
+            - group "Voice reader" [ref=f1e60]:
+              - button "Read aloud" [disabled] [ref=f1e61]
+              - combobox "Reader voice" [disabled] [ref=f1e62]:
+                - option "No local voice" [selected]
+              - combobox "Reader speed" [disabled] [ref=f1e63]:
+                - option "0.8×"
+                - option "1×" [selected]
+                - option "1.2×"
+                - option "1.5×"
+              - status
+            - button "Copy link to this page" [ref=f1e64] [cursor=pointer]
+            - button "Mark as read" [ref=f1e67] [cursor=pointer]
+        - generic [ref=f1e71]:
+          - heading "DDP, FSDP and ZeRO" [level=1] [ref=f1e73]
+          - paragraph [ref=f1e74]:
+            - strong [ref=f1e75]: In one line.
+            - text: Plain data parallelism keeps a full copy of the weights, the gradients and the optimiser state on every GPU, and ZeRO and FSDP remove those copies one at a time by giving each GPU a slice and fetching the rest only at the moment it is needed.
+          - generic [ref=f1e76]:
+            - generic [ref=f1e77]: Before you start
+            - list [ref=f1e82]:
+              - listitem [ref=f1e83]:
+                - strong [ref=f1e84]: You should already know
+                - text: how data parallelism averages gradients (
+                - link "data parallelism" [ref=f1e85] [cursor=pointer]:
+                  - /url: /docs/mlops/distributed/data-parallelism
+                - text: ), what Adam keeps for each parameter (
+                - link "Adam optimiser" [ref=f1e86] [cursor=pointer]:
+                  - /url: /docs/theory/dnn/adam-optimizer
+                - text: ), and the five parallelism axes and the 16-bytes-per-parameter sum from the previous chapter (
+                - link "parallelism strategies for LLMs" [ref=f1e87] [cursor=pointer]:
+                  - /url: /docs/llm-engineering/parallelism-strategies-for-llms
+                - text: ).
+              - listitem [ref=f1e88]:
+                - strong [ref=f1e89]: "Reading time:"
+                - text: about 40 minutes, plus a minute or two to run the code.
+              - listitem [ref=f1e90]:
+                - strong [ref=f1e91]: After this chapter you can
+                - text: say what each ZeRO stage shards and what it costs in traffic, run real sharded training on two processes and check it against a single process, and write the FSDP2 and DeepSpeed settings you would use on GPUs.
+          - generic [ref=f1e92]:
+            - generic [ref=f1e93]: Not from a lecture
+            - paragraph [ref=f1e98]: "This chapter was written for this site from the ZeRO paper, the PyTorch 2.14 documentation and the DeepSpeed configuration reference listed under Go deeper. Versions used: Python 3.14, PyTorch 2.14.1 (CPU, gloo backend), Transformers 5.18.0. DeepSpeed 0.19.7 (released 16 September 2026 on PyPI) is not installed here, so its snippet is not run. Sources were opened on 7 October 2026."
+          - heading [level=2] [ref=f1e99]:
+            - text: In 30 seconds
+            - link "Direct link to In 30 seconds" [ref=f1e100] [cursor=pointer]:
+              - /url: "#in-30-seconds"
+              - text: "#"
+          - paragraph [ref=f1e101]: Eight friends each want to bake from the same cookbook. If every friend buys a full set of three things, the cookbook, a notebook of corrections and a thick logbook of every past bake, then eight sets of identical books fill eight kitchens. Most of that is waste. Give each friend only one eighth of the logbook, and have them swap pages when they need them.
+          - paragraph [ref=f1e102]: Data parallel training has exactly this waste. Every GPU holds the same weights, the same gradients and the same optimiser state. ZeRO and FSDP are the ways to stop holding identical copies. They save memory at the cost of a little extra talking between GPUs.
+          - heading [level=2] [ref=f1e103]:
+            - text: Words you will meet
+            - link "Direct link to Words you will meet" [ref=f1e104] [cursor=pointer]:
+              - /url: "#words-you-will-meet"
+              - text: "#"
+          - table [ref=f1e105]:
+            - rowgroup [ref=f1e106]:
+              - row [ref=f1e107]:
+                - columnheader "Term" [ref=f1e108]
+                - columnheader "Plain meaning" [ref=f1e109]
+                - columnheader "Tiny example" [ref=f1e110]
+            - rowgroup [ref=f1e111]:
+              - row [ref=f1e112]:
+                - cell "DDP (DistributedDataParallel)" [ref=f1e113]
+                - 'cell "PyTorch''s plain data parallel wrapper: full copy per GPU, gradients averaged" [ref=f1e114]'
+                - cell "8 GPUs, 8 identical models" [ref=f1e115]
+              - row [ref=f1e116]:
+                - cell "Optimiser state" [ref=f1e117]
+                - cell "The extra numbers an optimiser keeps for each parameter" [ref=f1e118]
+                - cell "Adam keeps two (a running mean and a running mean of squares)" [ref=f1e119]
+              - row [ref=f1e120]:
+                - cell "Master weights" [ref=f1e121]
+                - cell "A full-precision copy of the weights kept for the update" [ref=f1e122]
+                - cell "fp32 copy next to a bf16 working copy" [ref=f1e123]
+              - row [ref=f1e124]:
+                - cell "Shard" [ref=f1e125]
+                - cell "One slice of a tensor, kept by one GPU" [ref=f1e126]
+                - cell "GPU 1 holds parameters 4 to 7" [ref=f1e127]
+              - row [ref=f1e128]:
+                - cell "Reduce-scatter" [ref=f1e129]
+                - cell "Add every GPU's tensor, then give each GPU only its own slice of the sum" [ref=f1e130]
+                - cell "8 gradients in, 4 summed numbers out" [ref=f1e131]
+              - row [ref=f1e132]:
+                - cell "All-gather" [ref=f1e133]
+                - cell "Every GPU contributes its slice and every GPU receives the whole" [ref=f1e134]
+                - cell "2 slices of 4 become 1 vector of 8" [ref=f1e135]
+              - row [ref=f1e136]:
+                - cell "ZeRO (Zero Redundancy Optimizer)" [ref=f1e137]
+                - cell "The DeepSpeed method that removes the duplicate copies in three stages" [ref=f1e138]
+                - cell "Stage 1 shards optimiser state" [ref=f1e139]
+              - row [ref=f1e140]:
+                - cell "FSDP (Fully Sharded Data Parallel)" [ref=f1e141]
+                - cell "PyTorch's built-in version of ZeRO stage 3" [ref=f1e142]
+                - cell [ref=f1e143]:
+                  - code [ref=f1e144]: fully_shard(layer)
+              - row [ref=f1e145]:
+                - cell "Bucket" [ref=f1e146]
+                - cell "A group of gradients sent together so small messages are not wasteful" [ref=f1e147]
+                - cell "25 MB of gradients" [ref=f1e148]
+          - heading [level=2] [ref=f1e149]:
+            - text: The idea in plain words
+            - link "Direct link to The idea in plain words" [ref=f1e150] [cursor=pointer]:
+              - /url: "#the-idea-in-plain-words"
+              - text: "#"
+          - paragraph [ref=f1e151]: Start with a model so small you can do it by hand. It has 8 parameters. Two GPUs train it, and each sees half of the examples, so each computes a gradient for all 8 parameters. Plain data parallelism averages those two gradients, so both GPUs hold the same 8 averaged numbers and both apply the same update.
+          - paragraph [ref=f1e152]: "Now ask what each GPU actually needs. To update parameters 0 to 3, a GPU needs only the averaged gradient for 0 to 3 and the optimiser state for 0 to 3. It does not need anything about 4 to 7. So split the job: GPU 0 owns parameters 0 to 3, GPU 1 owns 4 to 7. Each GPU receives only its half of the averaged gradient, updates only its half, and then the two halves are put back together so both GPUs have all 8 new weights for the next forward pass."
+          - paragraph [ref=f1e153]:
+            - text: That is ZeRO in one paragraph. The two operations in the middle have names.
+            - strong [ref=f1e154]: Reduce-scatter
+            - text: adds the gradients up and hands each GPU only its slice.
+            - strong [ref=f1e155]: All-gather
+            - text: collects the slices back into the whole. Everything in this chapter is a variation on those two moves.
+          - paragraph [ref=f1e156]: "The ZeRO paper names three stages by what they stop duplicating:"
+          - table [ref=f1e157]:
+            - rowgroup [ref=f1e158]:
+              - row [ref=f1e159]:
+                - columnheader "Stage" [ref=f1e160]
+                - columnheader "What each GPU keeps only a slice of" [ref=f1e161]
+                - columnheader "In PyTorch" [ref=f1e162]
+            - rowgroup [ref=f1e163]:
+              - row [ref=f1e164]:
+                - cell "0" [ref=f1e165]
+                - 'cell "Nothing: everything is copied" [ref=f1e166]'
+                - cell "DDP" [ref=f1e167]
+              - row [ref=f1e168]:
+                - cell "1" [ref=f1e169]
+                - cell "The optimiser state" [ref=f1e170]
+                - cell [ref=f1e171]:
+                  - code [ref=f1e172]: ZeroRedundancyOptimizer
+              - row [ref=f1e173]:
+                - cell "2" [ref=f1e174]
+                - cell "Optimiser state and gradients" [ref=f1e175]
+                - cell [ref=f1e176]:
+                  - text: No separate switch in PyTorch;
+                  - code [ref=f1e177]: fully_shard
+                  - text: with
+                  - code [ref=f1e178]: reshard_after_forward=False
+                  - text: behaves like it during a step
+              - row [ref=f1e179]:
+                - cell "3" [ref=f1e180]
+                - cell "Optimiser state, gradients and weights" [ref=f1e181]
+                - cell [ref=f1e182]:
+                  - text: FSDP,
+                  - code [ref=f1e183]: fully_shard
+          - 'figure "Compare the purple optimiser box first: it is by far the biggest, so stage 1 already removes most of the memory. The numbers are the ZeRO paper''s example and are reproduced by block 2." [ref=f1e184]':
+            - generic [ref=f1e185]:
+              - 'button "Enlarge: Four columns for DDP and ZeRO stages 1 to 3, each showing three boxes for weights, gradients and optimiser state with the part a GPU keeps shaded, and the per-GPU memory 120.0, 31.4, 16.6 and 1.9 GB for a 7.5B model on 64 GPUs" [ref=f1e186]':
+                - img "Four columns for DDP and ZeRO stages 1 to 3, each showing three boxes for weights, gradients and optimiser state with the part a GPU keeps shaded, and the per-GPU memory 120.0, 31.4, 16.6 and 1.9 GB for a 7.5B model on 64 GPUs" [ref=f1e187]
+              - button "View infographic larger" [ref=f1e188] [cursor=pointer]:
+                - generic [ref=f1e191]: Expand
+          - heading [level=2] [ref=f1e193]:
+            - text: Worked example, step by step
+            - link "Direct link to Worked example, step by step" [ref=f1e194] [cursor=pointer]:
+              - /url: "#worked-example-step-by-step"
+              - text: "#"
+          - paragraph [ref=f1e195]:
+            - strong [ref=f1e196]: The 8-parameter toy.
+            - text: Every weight starts at 1.0, the learning rate is 0.1, and the two GPUs computed these gradients on their own halves of the batch. Block 1 runs it with real collectives.
+          - list [ref=f1e197]:
+            - listitem [ref=f1e198]: GPU 0's gradients are 1, 2, 3, 4, 5, 6, 7, 8. GPU 1's are 3, 2, 1, 0, 1, 2, 3, 4.
+            - listitem [ref=f1e199]:
+              - strong [ref=f1e200]: Reduce-scatter with averaging.
+              - text: "Add them slot by slot and halve: 2, 2, 2, 2, 3, 4, 5, 6. GPU 0 receives the first four (2, 2, 2, 2). GPU 1 receives the last four (3, 4, 5, 6)."
+            - listitem [ref=f1e201]:
+              - strong [ref=f1e202]: Update only the owned slice.
+              - text: New weight = 1.0 minus 0.1 times the gradient. GPU 0 gets 0.8 for each of its four. GPU 1 gets 0.7, 0.6, 0.5, 0.4.
+            - listitem [ref=f1e203]:
+              - strong [ref=f1e204]: All-gather.
+              - text: Both GPUs now hold 0.8, 0.8, 0.8, 0.8, 0.7, 0.6, 0.5, 0.4, the same as plain data parallelism would give.
+          - 'figure "Read top to bottom: gradients, reduce-scatter, update, all-gather. Every number here is printed by block 1." [ref=f1e205]':
+            - generic [ref=f1e206]:
+              - 'button "Enlarge: Four stacked bands showing eight gradients on two GPUs, the reduce-scatter to two averaged halves, the update of each owned half, and the all-gather that rebuilds the eight weights" [ref=f1e207]':
+                - img "Four stacked bands showing eight gradients on two GPUs, the reduce-scatter to two averaged halves, the update of each owned half, and the all-gather that rebuilds the eight weights" [ref=f1e208]
+              - button "View infographic larger" [ref=f1e209] [cursor=pointer]:
+                - generic [ref=f1e212]: Expand
+          - paragraph [ref=f1e214]:
+            - strong [ref=f1e215]: The paper's real-size example.
+            - text: A model with 7.5 billion parameters and 64 GPUs, using the mixed-precision recipe of 2 + 2 + 12 bytes per parameter.
+          - list [ref=f1e216]:
+            - listitem [ref=f1e217]: "Plain data parallelism: 16 bytes x 7.5 billion = 120 GB per GPU."
+            - listitem [ref=f1e218]: "Stage 1 shards the 12-byte optimiser part: 4 + 12/64 = 4.19 bytes, so 31.4 GB."
+            - listitem [ref=f1e219]: "Stage 2 also shards the 2-byte gradients: 2 + 14/64 = 2.22 bytes, so 16.6 GB."
+            - listitem [ref=f1e220]: "Stage 3 shards everything: 16/64 = 0.25 bytes, so 1.9 GB."
+          - paragraph [ref=f1e221]: Memory fell from 120 GB to 1.9 GB. Block 2 prints exactly these numbers.
+          - heading [level=2] [ref=f1e222]:
+            - text: How it works
+            - link "Direct link to How it works" [ref=f1e223] [cursor=pointer]:
+              - /url: "#how-it-works"
+              - text: "#"
+          - heading [level=3] [ref=f1e224]:
+            - text: What does plain DDP do?
+            - link "Direct link to What does plain DDP do?" [ref=f1e225] [cursor=pointer]:
+              - /url: "#what-does-plain-ddp-do"
+              - text: "#"
+          - paragraph [ref=f1e226]: DDP, PyTorch's DistributedDataParallel, copies the model to every GPU. At construction it broadcasts the state from rank 0 so all replicas start identical. It groups gradients into buckets, roughly in the reverse order of the model's parameters, because that is the order they become ready. When every gradient in a bucket is ready, it starts an asynchronous all-reduce, so communication overlaps with the rest of the backward pass. After the backward pass every replica holds the same averaged gradient, and each applies the same optimiser step. This is described in the PyTorch 2.14 DDP notes.
+          - paragraph [ref=f1e227]: "DDP's weakness is the one in the picture above. It makes no attempt to share anything: three full copies per GPU, so a bigger replica count never makes the model fit."
+          - heading [level=3] [ref=f1e228]:
+            - text: Why are stages 1 and 2 almost free?
+            - link "Direct link to Why are stages 1 and 2 almost free?" [ref=f1e229] [cursor=pointer]:
+              - /url: "#why-are-stages-1-and-2-almost-free"
+              - text: "#"
+          - paragraph [ref=f1e230]: An all-reduce is the same as a reduce-scatter followed by an all-gather. Plain DDP moves about 2 model-sizes of data per step. ZeRO stage 2 does a reduce-scatter on the gradients (1 model-size) and, after the owned slice is updated, an all-gather of the new weights (1 model-size). The total is the same 2. The ZeRO paper states that stages 1 and 2 add no communication over the baseline. You get a large memory saving for nothing but a re-ordering of the same traffic.
+          - heading [level=3] [ref=f1e231]:
+            - text: What does stage 3 cost?
+            - link "Direct link to What does stage 3 cost?" [ref=f1e232] [cursor=pointer]:
+              - /url: "#what-does-stage-3-cost"
+              - text: "#"
+          - paragraph [ref=f1e233]:
+            - text: "At stage 3 the weights themselves are in slices, so a GPU must all-gather a layer's weights before it can compute with them, and free them afterwards. That gather happens in the forward pass and again in the backward pass, then the gradients are reduce-scattered. Three model-sizes of traffic instead of two: 1.5 times, as the paper computes. The cost is hidden when the gather for layer"
+            - code [ref=f1e234]: i + 1
+            - text: runs while layer
+            - code [ref=f1e235]: i
+            - text: computes.
+          - 'figure "Follow one layer: it is gathered, used, freed, gathered again for the backward pass, and its gradient is scattered. Only about two layers are whole at any time." [ref=f1e236]':
+            - generic [ref=f1e237]:
+              - 'button "Enlarge: Three lanes for all-gather, compute and reduce-scatter across a forward and backward pass over three layers, with each layer gathered once going forward and again going backward and its gradient scattered afterwards" [ref=f1e238]':
+                - img "Three lanes for all-gather, compute and reduce-scatter across a forward and backward pass over three layers, with each layer gathered once going forward and again going backward and its gradient scattered afterwards" [ref=f1e239]
+              - button "View infographic larger" [ref=f1e240] [cursor=pointer]:
+                - generic [ref=f1e243]: Expand
+          - heading [level=3] [ref=f1e245]:
+            - text: What is FSDP, and how is it different from ZeRO?
+            - link "Direct link to What is FSDP, and how is it different from ZeRO?" [ref=f1e246] [cursor=pointer]:
+              - /url: "#what-is-fsdp-and-how-is-it-different-from-zero"
+              - text: "#"
+          - paragraph [ref=f1e247]:
+            - text: FSDP is PyTorch's own implementation of the stage 3 idea. The PyTorch 2.14 documentation describes FSDP2 (
+            - code [ref=f1e248]: fully_shard
+            - text: ) as "a fully sharded data parallelism (FSDP) implementation targeting performant eager-mode while using per-parameter sharding". Each parameter becomes a
+            - code [ref=f1e249]: DTensor
+            - text: "whose local piece is one slice, which block 5 shows. Four settings matter:"
+          - table [ref=f1e250]:
+            - rowgroup [ref=f1e251]:
+              - row [ref=f1e252]:
+                - columnheader "Setting" [ref=f1e253]
+                - columnheader "What it does" [ref=f1e254]
+            - rowgroup [ref=f1e255]:
+              - row [ref=f1e256]:
+                - cell "Which modules you wrap" [ref=f1e257]
+                - cell "Each wrapped module is one unit that is gathered and freed together; wrap each transformer block, then the root" [ref=f1e258]
+              - row [ref=f1e259]:
+                - cell [ref=f1e260]:
+                  - code [ref=f1e261]: reshard_after_forward
+                - cell [ref=f1e262]:
+                  - code [ref=f1e263]: "True"
+                  - text: frees the gathered weights after forward and gathers them again in backward (less memory, more traffic).
+                  - code [ref=f1e264]: "False"
+                  - text: keeps them until backward (the reverse). By default it is
+                  - code [ref=f1e265]: "True"
+                  - text: for inner modules and
+                  - code [ref=f1e266]: "False"
+                  - text: for the root
+              - row [ref=f1e267]:
+                - cell [ref=f1e268]:
+                  - code [ref=f1e269]: mp_policy
+                - cell [ref=f1e270]:
+                  - text: A
+                  - code [ref=f1e271]: MixedPrecisionPolicy
+                  - text: with
+                  - code [ref=f1e272]: param_dtype
+                  - text: (compute and gather),
+                  - code [ref=f1e273]: reduce_dtype
+                  - text: (gradient reduction) and
+                  - code [ref=f1e274]: output_dtype
+              - row [ref=f1e275]:
+                - cell [ref=f1e276]:
+                  - code [ref=f1e277]: offload_policy
+                - cell "Whether to push sharded state to the CPU" [ref=f1e278]
+          - paragraph [ref=f1e279]:
+            - text: Llama 3's training used a FSDP that shards optimiser state and gradients but does not reshard the weights after the forward pass, to avoid the extra gather in backward. That is the
+            - code [ref=f1e280]: "False"
+            - text: setting. The weights stay whole from forward until backward is done with them, so for memory this behaves like stage 2 during a step.
+          - paragraph [ref=f1e281]:
+            - text: DeepSpeed ZeRO is the original library. Its
+            - code [ref=f1e282]: zero_optimization.stage
+            - text: setting takes 0 to 3 with the same meanings, and it can offload optimiser state or parameters to CPU memory with
+            - code [ref=f1e283]: offload_optimizer
+            - text: and
+            - code [ref=f1e284]: offload_param
+            - text: .
+          - heading [level=3] [ref=f1e285]:
+            - text: Which should you use?
+            - link "Direct link to Which should you use?" [ref=f1e286] [cursor=pointer]:
+              - /url: "#which-should-you-use"
+              - text: "#"
+          - paragraph [ref=f1e287]: Use plain DDP while the model state fits. Stage 1 is the cheapest step up, because the optimiser is most of the memory and the traffic is unchanged. Move to stage 2 or 3 when weights are the problem. At very large scale the ZeRO-3 gathers cross the network, so the Ultra-Scale Playbook found pure data parallelism or ZeRO-3 to become communication-bound at 512 GPUs and beyond. That is why the previous chapter combines them with tensor and pipeline parallelism.
+          - heading [level=2] [ref=f1e288]:
+            - text: A real system that works this way
+            - link "Direct link to A real system that works this way" [ref=f1e289] [cursor=pointer]:
+              - /url: "#a-real-system-that-works-this-way"
+              - text: "#"
+          - paragraph [ref=f1e290]:
+            - strong [ref=f1e291]: Llama 3 405B
+            - text: is the example from the last chapter. The paper reports FSDP with sharded optimiser state and gradients for the data-parallel dimension of its 4D layout, and that it chose not to reshard the weights after forward.
+          - paragraph [ref=f1e292]:
+            - strong [ref=f1e293]: The ZeRO paper itself
+            - text: is the origin of the three stages. Its authors report training models of over 100B parameters with super-linear speedup on 400 GPUs at 15 petaflops, an 8x increase in model size over the state of the art they compared against. Those are the authors' own 2019 measurements on their cluster.
+          - heading [level=2] [ref=f1e294]:
+            - text: Code you can run
+            - link "Direct link to Code you can run" [ref=f1e295] [cursor=pointer]:
+              - /url: "#code-you-can-run"
+              - text: "#"
+          - paragraph [ref=f1e296]: Five blocks. Block 1 is the toy with real collectives. Block 2 is arithmetic on real configs. Blocks 3 to 5 train a small real Llama model, 158,016 parameters, on two processes with PyTorch's gloo backend on the CPU, and compare against one process. Each takes a few seconds.
+          - heading [level=3] [ref=f1e297]:
+            - text: 1. The 8-parameter toy, with real collectives
+            - link "Direct link to 1. The 8-parameter toy, with real collectives" [ref=f1e298] [cursor=pointer]:
+              - /url: "#1-the-8-parameter-toy-with-real-collectives"
+              - text: "#"
+          - paragraph [ref=f1e299]:
+            - text: Two gloo processes run steps 1 to 4 of the worked example, using
+            - code [ref=f1e300]: reduce_scatter_single
+            - text: and
+            - code [ref=f1e301]: all_gather_single
+            - text: ", the names current in PyTorch 2.14."
+          - code [ref=f1e305]:
+            - generic [ref=f1e306]: import os
+            - generic [ref=f1e307]: import socket
+            - generic [ref=f1e309]: import torch
+            - generic [ref=f1e310]: import torch.distributed as dist
+            - generic [ref=f1e311]: import torch.multiprocessing as mp
+            - generic [ref=f1e313]: GRADS = [[1., 2., 3., 4., 5., 6., 7., 8.], [3., 2., 1., 0., 1., 2., 3., 4.]]
+            - generic [ref=f1e314]: LR = 0.1
+            - generic [ref=f1e317]: "def free_port():"
+            - generic [ref=f1e318]: "with socket.socket() as s:"
+            - generic [ref=f1e319]: s.bind(("127.0.0.1", 0))
+            - generic [ref=f1e320]: return s.getsockname()[1]
+            - generic [ref=f1e323]: "def worker(rank, world, port):"
+            - generic [ref=f1e324]: os.environ["MASTER_ADDR"] = "127.0.0.1"
+            - generic [ref=f1e325]: os.environ["MASTER_PORT"] = str(port)
+            - generic [ref=f1e326]: dist.init_process_group("gloo", rank=rank, world_size=world)
+            - generic [ref=f1e327]: weights = torch.ones(8)
+            - generic [ref=f1e328]: grad = torch.tensor(GRADS[rank])
+            - generic [ref=f1e329]: mine = torch.zeros(4)
+            - generic [ref=f1e330]: dist.reduce_scatter_single(mine, grad)
+            - generic [ref=f1e331]: mine /= world
+            - generic [ref=f1e332]: shard = weights[rank * 4:(rank + 1) * 4] - LR * mine
+            - generic [ref=f1e333]: rebuilt = torch.zeros(8)
+            - generic [ref=f1e334]: dist.all_gather_single(rebuilt, shard)
+            - generic [ref=f1e335]: report = torch.zeros(16)
+            - generic [ref=f1e336]: dist.all_gather_single(report, torch.cat([mine, shard]))
+            - generic [ref=f1e337]: "if rank == 0:"
+            - generic [ref=f1e338]: "for r in range(world):"
+            - generic [ref=f1e339]: g, s = report[8 * r:8 * r + 4].tolist(), report[8 * r + 4:8 * r + 8].tolist()
+            - generic [ref=f1e340]: "print(f\"rank {r}: gradients {GRADS[r]}\")"
+            - generic [ref=f1e341]: "print(f\" averaged gradient shard {g}, updated shard {[round(v, 2) for v in s]}\")"
+            - generic [ref=f1e342]: "print(f\"every rank after the all-gather: {[round(v, 2) for v in rebuilt.tolist()]}\")"
+            - generic [ref=f1e343]: dist.barrier()
+            - generic [ref=f1e344]: dist.destroy_process_group()
+            - generic [ref=f1e347]: "if __name__ == \"__main__\":"
+            - generic [ref=f1e348]: mp.spawn(worker, args=(2, free_port()), nprocs=2, join=True)
+          - paragraph [ref=f1e349]:
+            - strong [ref=f1e350]: Reading the output.
+            - text: Rank 0 receives the averaged gradient slice 2, 2, 2, 2 and rank 1 receives 3, 4, 5, 6, as in the hand calculation. Their updated slices are 0.8 four times and 0.7, 0.6, 0.5, 0.4. After the all-gather both ranks hold the same eight weights.
+          - paragraph [ref=f1e351]:
+            - strong [ref=f1e352]: Line by line.
+          - list [ref=f1e353]:
+            - listitem [ref=f1e354]:
+              - code [ref=f1e355]: dist.reduce_scatter_single(mine, grad)
+              - text: sums
+              - code [ref=f1e356]: grad
+              - text: over the ranks and writes this rank's quarter-by-rank slice into
+              - code [ref=f1e357]: mine
+              - text: . The sum is divided by the world size to make an average.
+            - listitem [ref=f1e358]:
+              - code [ref=f1e359]: weights[rank * 4:(rank + 1) * 4]
+              - text: is the slice this rank owns.
+            - listitem [ref=f1e360]:
+              - text: The
+              - code [ref=f1e361]: report
+              - text: tensor gathers every rank's numbers to one place so only rank 0 prints; printing from both ranks would interleave randomly.
+          - heading [level=3] [ref=f1e362]:
+            - text: 2. Bytes per parameter for every stage, and where it stops helping
+            - link "Direct link to 2. Bytes per parameter for every stage, and where it stops helping" [ref=f1e363] [cursor=pointer]:
+              - /url: "#2-bytes-per-parameter-for-every-stage-and-where-it-stops-helping"
+              - text: "#"
+          - paragraph [ref=f1e364]: This block reproduces the paper's 7.5B example, then asks, for Llama 3.1 8B read from its real config, the smallest number of GPUs that makes the model state fit in 80 GB at each stage.
+          - code [ref=f1e368]:
+            - generic [ref=f1e369]: import json
+            - generic [ref=f1e370]: import os
+            - generic [ref=f1e372]: os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+            - generic [ref=f1e373]: from huggingface_hub import hf_hub_download
+            - generic [ref=f1e375]: GB = 1e9
+            - generic [ref=f1e378]: "def bytes_per_param(stage, n, recipe=(2, 2, 12)):"
+            - generic [ref=f1e379]: w, g, o = recipe
+            - generic [ref=f1e380]: "if stage == 0:"
+            - generic [ref=f1e381]: return w + g + o
+            - generic [ref=f1e382]: "if stage == 1:"
+            - generic [ref=f1e383]: return w + g + o / n
+            - generic [ref=f1e384]: "if stage == 2:"
+            - generic [ref=f1e385]: return w + (g + o) / n
+            - generic [ref=f1e386]: return (w + g + o) / n
+            - generic [ref=f1e389]: psi = 7.5e9
+            - generic [ref=f1e390]: "print(\"ZeRO paper example: 7.5B parameters, 64-way data parallel, GB per GPU\")"
+            - generic [ref=f1e391]: "for stage in range(4):"
+            - generic [ref=f1e392]: "print(f\" stage {stage}: {bytes_per_param(stage, 64) * psi / GB:7.1f} GB ({bytes_per_param(stage, 64):.3f} bytes per parameter)\")"
+            - generic [ref=f1e394]: c = json.load(open(hf_hub_download("NousResearch/Meta-Llama-3.1-8B", "config.json")))
+            - generic [ref=f1e395]: h, ffn, v, layers = c["hidden_size"], c["intermediate_size"], c["vocab_size"], c["num_hidden_layers"]
+            - generic [ref=f1e396]: kv = h * c["num_key_value_heads"] // c["num_attention_heads"]
+            - generic [ref=f1e397]: layer = 2 * h * h + 2 * h * kv + 3 * h * ffn + 2 * h
+            - generic [ref=f1e398]: total = 2 * v * h + layers * layer + h
+            - generic [ref=f1e399]: print()
+            - generic [ref=f1e400]: "print(f\"Llama 3.1 8B: {total:,} parameters, one layer {layer:,}\")"
+            - generic [ref=f1e401]: print("smallest data-parallel degree whose model state fits in 80 GB (activations ignored)")
+            - generic [ref=f1e402]: "for stage in range(4):"
+            - generic [ref=f1e403]: n = next((k for k in range(1, 4097) if bytes_per_param(stage, k) * total / GB <= 80), None)
+            - generic [ref=f1e404]: "print(f\" stage {stage}: {n}\")"
+            - generic [ref=f1e406]: print()
+            - generic [ref=f1e407]: print("bf16 weights resident on one GPU at the moment of the largest layer, 8 GPUs, 8B model")
+            - generic [ref=f1e408]: shard = 2 * total / 8
+            - generic [ref=f1e409]: "print(f\" all weights kept whole (DDP, stage 0 to 2): {2 * total / GB:5.2f} GB\")"
+            - generic [ref=f1e410]: "print(f\" stage 3, reshard after forward: {(shard + 2 * layer) / GB:5.2f} GB (shard plus two layers, one prefetched)\")"
+            - generic [ref=f1e411]: "print(f\" stage 3, keep gathered after forward: {2 * total / GB:5.2f} GB (what Llama 3 chose for its weights)\")"
+            - generic [ref=f1e413]: "volume = {0: 2.0, 1: 2.0, 2: 2.0, 3: 3.0}"
+            - generic [ref=f1e414]: print()
+            - generic [ref=f1e415]: print("communication per step per GPU, in multiples of the model size (ZeRO paper, section 7)")
+            - generic [ref=f1e416]: "for stage, vol in volume.items():"
+            - generic [ref=f1e417]: "print(f\" stage {stage}: {vol:.1f} relative to DDP: {vol / volume[0]:.2f}\")"
+          - paragraph [ref=f1e418]:
+            - strong [ref=f1e419]: Reading the output.
+            - text: "The paper's example prints 120.0, 31.4, 16.6 and 1.9 GB, matching the figure. For Llama 3.1 8B (8,030,261,248 parameters) plain DDP never fits, stage 1 fits from 3 GPUs, and stages 2 and 3 from 2. The last section shows what stage 3 means for weights: if the full weights are kept after the forward pass, as in the Llama 3 recipe, the whole 16.06 GB stays resident, against 2.44 GB if they are resharded."
+          - paragraph [ref=f1e420]:
+            - strong [ref=f1e421]: Line by line.
+          - list [ref=f1e422]:
+            - listitem [ref=f1e423]:
+              - code [ref=f1e424]: bytes_per_param
+              - text: "is the table in code form: stage 1 divides"
+              - code [ref=f1e425]: o
+              - text: by
+              - code [ref=f1e426]: "n"
+              - text: ", stage 2 also"
+              - code [ref=f1e427]: g
+              - text: ", stage 3 everything."
+            - listitem [ref=f1e428]:
+              - text: The
+              - code [ref=f1e429]: next(...)
+              - text: search finds the smallest
+              - code [ref=f1e430]: "n"
+              - text: ; it returns
+              - code [ref=f1e431]: None
+              - text: when even
+              - code [ref=f1e432]: n = 4096
+              - text: is not enough.
+            - listitem [ref=f1e433]:
+              - code [ref=f1e434]: shard + 2 * layer
+              - text: is the sharded weights plus the current layer and one prefetched layer, in bf16.
+          - heading [level=3] [ref=f1e435]:
+            - text: 3. DDP on a real model, matched against one process
+            - link "Direct link to 3. DDP on a real model, matched against one process" [ref=f1e436] [cursor=pointer]:
+              - /url: "#3-ddp-on-a-real-model-matched-against-one-process"
+              - text: "#"
+          - paragraph [ref=f1e437]: Two processes start from different random seeds. DDP broadcasts rank 0's weights, each rank trains on half of a batch of 8 sequences, and after 10 AdamW steps we compare the result with one process training on the whole batch. We also count the bytes of weights, gradients and Adam state that one rank really holds.
+          - code [ref=f1e441]:
+            - generic [ref=f1e442]: import os
+            - generic [ref=f1e443]: import socket
+            - generic [ref=f1e445]: import torch
+            - generic [ref=f1e446]: import torch.distributed as dist
+            - generic [ref=f1e447]: import torch.multiprocessing as mp
+            - generic [ref=f1e448]: from torch.nn.parallel import DistributedDataParallel as DDP
+            - generic [ref=f1e449]: from transformers import LlamaConfig, LlamaForCausalLM
+            - generic [ref=f1e451]: CFG = LlamaConfig(vocab_size=512, hidden_size=64, intermediate_size=176, num_hidden_layers=2,
+            - generic [ref=f1e452]: num_attention_heads=4, num_key_value_heads=2, tie_word_embeddings=False)
+            - generic [ref=f1e453]: STEPS, WORLD = 10, 2
+            - generic [ref=f1e456]: "def make(seed):"
+            - generic [ref=f1e457]: torch.manual_seed(seed)
+            - generic [ref=f1e458]: return LlamaForCausalLM(CFG)
+            - generic [ref=f1e461]: "def batch():"
+            - generic [ref=f1e462]: return torch.randint(0, CFG.vocab_size, (8, 32), generator=torch.Generator().manual_seed(1))
+            - generic [ref=f1e465]: "def flat(model):"
+            - generic [ref=f1e466]: return torch.cat([p.detach().reshape(-1) for p in model.parameters()])
+            - generic [ref=f1e469]: "def free_port():"
+            - generic [ref=f1e470]: "with socket.socket() as s:"
+            - generic [ref=f1e471]: s.bind(("127.0.0.1", 0))
+            - generic [ref=f1e472]: return s.getsockname()[1]
+            - generic [ref=f1e475]: "def worker(rank, world, port):"
+            - generic [ref=f1e476]: os.environ["MASTER_ADDR"] = "127.0.0.1"
+            - generic [ref=f1e477]: os.environ["MASTER_PORT"] = str(port)
+            - generic [ref=f1e478]: dist.init_process_group("gloo", rank=rank, world_size=world)
+            - generic [ref=f1e479]: ddp = DDP(make(rank))
+            - generic [ref=f1e480]: opt = torch.optim.AdamW(ddp.parameters(), lr=1e-3)
+            - generic [ref=f1e481]: x = batch()[rank * 4:(rank + 1) * 4]
+            - generic [ref=f1e482]: "for _ in range(STEPS):"
+            - generic [ref=f1e483]: loss = ddp(x, labels=x).loss
+            - generic [ref=f1e484]: loss.backward()
+            - generic [ref=f1e485]: opt.step()
+            - generic [ref=f1e486]: opt.zero_grad()
+            - generic [ref=f1e487]: mine = flat(ddp.module)
+            - generic [ref=f1e488]: "if rank == 0:"
+            - generic [ref=f1e489]: ref = make(0)
+            - generic [ref=f1e490]: ref_opt = torch.optim.AdamW(ref.parameters(), lr=1e-3)
+            - generic [ref=f1e491]: full = batch()
+            - generic [ref=f1e492]: "for _ in range(STEPS):"
+            - generic [ref=f1e493]: ref(full, labels=full).loss.backward()
+            - generic [ref=f1e494]: ref_opt.step()
+            - generic [ref=f1e495]: ref_opt.zero_grad()
+            - generic [ref=f1e496]: n = mine.numel()
+            - generic [ref=f1e497]: state = sum(t.nbytes for s in opt.state.values() for t in s.values() if torch.is_tensor(t) and t.dim() > 0)
+            - generic [ref=f1e498]: "print(f\"parameters: {n:,} ranks started from different seeds and DDP broadcast rank 0's weights\")"
+            - generic [ref=f1e499]: "print(f\"max |DDP - single process on the whole batch| after {STEPS} steps: {(mine - flat(ref)).abs().max().item():.2e}\")"
+            - generic [ref=f1e500]: "print(f\"per rank in fp32: weights {4 * n:,} B, gradients {4 * n:,} B, Adam state {state:,} B\")"
+            - generic [ref=f1e501]: "print(f\"bytes per parameter: {(4 * n + 4 * n + state) / n:.2f} all-reduced each step: {4 * n:,} B\")"
+            - generic [ref=f1e502]: dist.barrier()
+            - generic [ref=f1e503]: dist.destroy_process_group()
+            - generic [ref=f1e506]: "if __name__ == \"__main__\":"
+            - generic [ref=f1e507]: mp.spawn(worker, args=(WORLD, free_port()), nprocs=WORLD, join=True)
+          - paragraph [ref=f1e508]:
+            - strong [ref=f1e509]: Reading the output.
+            - text: "The two-process result agrees with the single process to 2.00e-06 after 10 steps. That is larger than float32 rounding on one step, because Adam divides by a running average and so magnifies tiny differences in the order of additions, but it is far below any real difference in the model. Each rank holds 632,064 bytes of weights, 632,064 of gradients and 1,264,128 of Adam state: exactly 16 bytes per parameter in fp32 (4 + 4 + 8). Each step all-reduces 632,064 bytes, the gradient."
+          - paragraph [ref=f1e510]:
+            - strong [ref=f1e511]: Line by line.
+          - list [ref=f1e512]:
+            - listitem [ref=f1e513]:
+              - code [ref=f1e514]: make(rank)
+              - text: gives each rank a different seed; the
+              - code [ref=f1e515]: DDP(...)
+              - text: constructor then overwrites the weights with rank 0's.
+            - listitem [ref=f1e516]:
+              - code [ref=f1e517]: x = batch()[rank * 4:(rank + 1) * 4]
+              - text: is the rank's half of the batch. The halves have equal token counts, so averaging the two mean losses equals the mean loss over the whole batch.
+            - listitem [ref=f1e518]:
+              - text: The state size sums only the
+              - code [ref=f1e519]: exp_avg
+              - text: and
+              - code [ref=f1e520]: exp_avg_sq
+              - text: tensors, not the scalar step counters.
+          - heading [level=3] [ref=f1e521]:
+            - text: 4. ZeRO stage 2 by hand, with real collectives
+            - link "Direct link to 4. ZeRO stage 2 by hand, with real collectives" [ref=f1e522] [cursor=pointer]:
+              - /url: "#4-zero-stage-2-by-hand-with-real-collectives"
+              - text: "#"
+          - paragraph [ref=f1e523]: "This block writes the sharded update the way the toy did, but on the real model: flatten the parameters, reduce-scatter the gradients so each rank keeps only its slice, update that slice with its own AdamW, and all-gather the new weights. The result is compared with one process."
+          - code [ref=f1e527]:
+            - generic [ref=f1e528]: import os
+            - generic [ref=f1e529]: import socket
+            - generic [ref=f1e531]: import torch
+            - generic [ref=f1e532]: import torch.distributed as dist
+            - generic [ref=f1e533]: import torch.multiprocessing as mp
+            - generic [ref=f1e534]: from torch.nn.utils import parameters_to_vector, vector_to_parameters
+            - generic [ref=f1e535]: from transformers import LlamaConfig, LlamaForCausalLM
+            - generic [ref=f1e537]: CFG = LlamaConfig(vocab_size=512, hidden_size=64, intermediate_size=176, num_hidden_layers=2,
+            - generic [ref=f1e538]: num_attention_heads=4, num_key_value_heads=2, tie_word_embeddings=False)
+            - generic [ref=f1e539]: STEPS = 10
+            - generic [ref=f1e542]: "def make():"
+            - generic [ref=f1e543]: torch.manual_seed(0)
+            - generic [ref=f1e544]: return LlamaForCausalLM(CFG)
+            - generic [ref=f1e547]: "def batch():"
+            - generic [ref=f1e548]: return torch.randint(0, CFG.vocab_size, (8, 32), generator=torch.Generator().manual_seed(1))
+            - generic [ref=f1e551]: "def free_port():"
+            - generic [ref=f1e552]: "with socket.socket() as s:"
+            - generic [ref=f1e553]: s.bind(("127.0.0.1", 0))
+            - generic [ref=f1e554]: return s.getsockname()[1]
+            - generic [ref=f1e557]: "def worker(rank, world, port):"
+            - generic [ref=f1e558]: os.environ["MASTER_ADDR"] = "127.0.0.1"
+            - generic [ref=f1e559]: os.environ["MASTER_PORT"] = str(port)
+            - generic [ref=f1e560]: dist.init_process_group("gloo", rank=rank, world_size=world)
+            - generic [ref=f1e561]: model = make()
+            - generic [ref=f1e562]: params = list(model.parameters())
+            - generic [ref=f1e563]: n = sum(p.numel() for p in params)
+            - generic [ref=f1e564]: padded = -(-n // world) * world
+            - generic [ref=f1e565]: size = padded // world
+            - generic [ref=f1e566]: flat = torch.zeros(padded)
+            - generic [ref=f1e567]: flat[:n] = parameters_to_vector(params).detach()
+            - generic [ref=f1e568]: shard = torch.nn.Parameter(flat[rank * size:(rank + 1) * size].clone())
+            - generic [ref=f1e569]: opt = torch.optim.AdamW([shard], lr=1e-3)
+            - generic [ref=f1e570]: x = batch()[rank * 4:(rank + 1) * 4]
+            - generic [ref=f1e571]: "for _ in range(STEPS):"
+            - generic [ref=f1e572]: model(x, labels=x).loss.backward()
+            - generic [ref=f1e573]: grads = torch.zeros(padded)
+            - generic [ref=f1e574]: grads[:n] = torch.cat([p.grad.reshape(-1) for p in params])
+            - generic [ref=f1e575]: mine = torch.zeros(size)
+            - generic [ref=f1e576]: dist.reduce_scatter_single(mine, grads)
+            - generic [ref=f1e577]: shard.grad = mine / world
+            - generic [ref=f1e578]: opt.step()
+            - generic [ref=f1e579]: dist.all_gather_single(flat, shard.detach())
+            - generic [ref=f1e580]: vector_to_parameters(flat[:n].clone(), params)
+            - generic [ref=f1e581]: "for p in params:"
+            - generic [ref=f1e582]: p.grad = None
+            - generic [ref=f1e583]: state = sum(t.nbytes for s in opt.state.values() for t in s.values() if t.dim() > 0)
+            - generic [ref=f1e584]: "if rank == 0:"
+            - generic [ref=f1e585]: ref = make()
+            - generic [ref=f1e586]: ref_opt = torch.optim.AdamW(ref.parameters(), lr=1e-3)
+            - generic [ref=f1e587]: full = batch()
+            - generic [ref=f1e588]: "for _ in range(STEPS):"
+            - generic [ref=f1e589]: ref(full, labels=full).loss.backward()
+            - generic [ref=f1e590]: ref_opt.step()
+            - generic [ref=f1e591]: ref_opt.zero_grad()
+            - generic [ref=f1e592]: diff = (flat[:n] - parameters_to_vector(ref.parameters()).detach()).abs().max().item()
+            - generic [ref=f1e593]: "print(f\"parameters {n:,}, padded to {padded:,}, each rank owns {size:,}\")"
+            - generic [ref=f1e594]: "print(f\"max |sharded Adam - single process Adam| after {STEPS} steps: {diff:.2e}\")"
+            - generic [ref=f1e595]: "print(f\"Adam state per rank: {state:,} B; unsharded it would be {8 * n:,} B ({state / (8 * n):.2f} of that)\")"
+            - generic [ref=f1e596]: "print(f\"gradient shard per rank: {4 * size:,} B instead of {4 * n:,} B\")"
+            - generic [ref=f1e597]: dist.barrier()
+            - generic [ref=f1e598]: dist.destroy_process_group()
+            - generic [ref=f1e601]: "if __name__ == \"__main__\":"
+            - generic [ref=f1e602]: mp.spawn(worker, args=(2, free_port()), nprocs=2, join=True)
+          - paragraph [ref=f1e603]:
+            - strong [ref=f1e604]: Reading the output.
+            - text: The sharded run ends within 2.00e-06 of single-process Adam, the same agreement DDP had. Each rank holds 632,064 bytes of Adam state, exactly half of the 1,264,128 an unsharded rank holds, and keeps 316,032 bytes of gradient instead of 632,064. The padding line says the parameter count divided evenly here (158,016 over two ranks); when it does not, the flat vector is padded and a few bytes are wasted.
+          - paragraph [ref=f1e605]:
+            - strong [ref=f1e606]: What did not work, and what this does not show.
+            - text: "The full gradients still exist for a moment on every rank, because this simple version runs the whole backward pass before the reduce-scatter. Production code reduces and frees each bucket during the backward pass so the full gradient never exists. This block measures bytes of tensors, not the peak of an allocator on a GPU, so treat it as accounting, not a memory profile. It also says nothing about speed: two CPU processes on one machine have no real network."
+          - paragraph [ref=f1e607]:
+            - strong [ref=f1e608]: Line by line.
+          - list [ref=f1e609]:
+            - listitem [ref=f1e610]:
+              - code [ref=f1e611]: padded = -(-n // world) * world
+              - text: rounds the parameter count up to a multiple of the number of ranks.
+            - listitem [ref=f1e612]:
+              - code [ref=f1e613]: shard.grad = mine / world
+              - text: turns the summed slice into an average before the update.
+            - listitem [ref=f1e614]:
+              - code [ref=f1e615]: vector_to_parameters
+              - text: copies the gathered flat vector back into the model so the next forward pass uses the new weights.
+          - heading [level=3] [ref=f1e616]:
+            - text: "5. The PyTorch tools:"
+            - code [ref=f1e617]: ZeroRedundancyOptimizer
+            - text: and FSDP2
+            - code [ref=f1e618]: fully_shard
+            - link "Direct link to 5-the-pytorch-tools-zeroredundancyoptimizer-and-fsdp2-fully_shard" [ref=f1e619] [cursor=pointer]:
+              - /url: "#5-the-pytorch-tools-zeroredundancyoptimizer-and-fsdp2-fully_shard"
+              - text: "#"
+          - paragraph [ref=f1e620]:
+            - text: The same training run with the two built-in tools.
+            - code [ref=f1e621]: ZeroRedundancyOptimizer
+            - text: is stage 1 on top of DDP.
+            - code [ref=f1e622]: fully_shard
+            - text: is FSDP2 with every transformer block wrapped and the root wrapped last. We compare final weights with a single process and look at what each rank holds.
+          - code [ref=f1e626]:
+            - generic [ref=f1e627]: import os
+            - generic [ref=f1e628]: import socket
+            - generic [ref=f1e630]: import torch
+            - generic [ref=f1e631]: import torch.distributed as dist
+            - generic [ref=f1e632]: import torch.multiprocessing as mp
+            - generic [ref=f1e633]: from torch.distributed.device_mesh import init_device_mesh
+            - generic [ref=f1e634]: from torch.distributed.fsdp import fully_shard
+            - generic [ref=f1e635]: from torch.distributed.optim import ZeroRedundancyOptimizer
+            - generic [ref=f1e636]: from torch.nn.parallel import DistributedDataParallel as DDP
+            - generic [ref=f1e637]: from transformers import LlamaConfig, LlamaForCausalLM
+            - generic [ref=f1e639]: CFG = LlamaConfig(vocab_size=512, hidden_size=64, intermediate_size=176, num_hidden_layers=2,
+            - generic [ref=f1e640]: num_attention_heads=4, num_key_value_heads=2, tie_word_embeddings=False)
+            - generic [ref=f1e641]: STEPS = 10
+            - generic [ref=f1e644]: "def make():"
+            - generic [ref=f1e645]: torch.manual_seed(0)
+            - generic [ref=f1e646]: return LlamaForCausalLM(CFG)
+            - generic [ref=f1e649]: "def batch():"
+            - generic [ref=f1e650]: return torch.randint(0, CFG.vocab_size, (8, 32), generator=torch.Generator().manual_seed(1))
+            - generic [ref=f1e653]: "def local(t):"
+            - generic [ref=f1e654]: return t.to_local() if hasattr(t, "to_local") else t
+            - generic [ref=f1e657]: "def state_bytes(opt):"
+            - generic [ref=f1e658]: return sum(local(t).nbytes for s in opt.state.values() for t in s.values() if torch.is_tensor(t) and t.dim() > 0)
+            - generic [ref=f1e661]: "def free_port():"
+            - generic [ref=f1e662]: "with socket.socket() as s:"
+            - generic [ref=f1e663]: s.bind(("127.0.0.1", 0))
+            - generic [ref=f1e664]: return s.getsockname()[1]
+            - generic [ref=f1e667]: "def train(model, opt, x):"
+            - generic [ref=f1e668]: "for _ in range(STEPS):"
+            - generic [ref=f1e669]: model(x, labels=x).loss.backward()
+            - generic [ref=f1e670]: opt.step()
+            - generic [ref=f1e671]: opt.zero_grad()
+            - generic [ref=f1e674]: "def worker(rank, world, port):"
+            - generic [ref=f1e675]: os.environ["MASTER_ADDR"] = "127.0.0.1"
+            - generic [ref=f1e676]: os.environ["MASTER_PORT"] = str(port)
+            - generic [ref=f1e677]: dist.init_process_group("gloo", rank=rank, world_size=world)
+            - generic [ref=f1e678]: x = batch()[rank * 4:(rank + 1) * 4]
+            - generic [ref=f1e679]: ref = make()
+            - generic [ref=f1e680]: ref_opt = torch.optim.AdamW(ref.parameters(), lr=1e-3)
+            - generic [ref=f1e681]: train(ref, ref_opt, batch())
+            - generic [ref=f1e682]: ref_flat = torch.cat([p.detach().reshape(-1) for p in ref.parameters()])
+            - generic [ref=f1e683]: n = ref_flat.numel()
+            - generic [ref=f1e685]: zero_model = DDP(make())
+            - generic [ref=f1e686]: zero_opt = ZeroRedundancyOptimizer(zero_model.parameters(), optimizer_class=torch.optim.AdamW, lr=1e-3)
+            - generic [ref=f1e687]: train(zero_model, zero_opt, x)
+            - generic [ref=f1e688]: zero_flat = torch.cat([p.detach().reshape(-1) for p in zero_model.parameters()])
+            - generic [ref=f1e690]: mesh = init_device_mesh("cpu", (world,))
+            - generic [ref=f1e691]: fsdp = make()
+            - generic [ref=f1e692]: "for layer in fsdp.model.layers:"
+            - generic [ref=f1e693]: fully_shard(layer, mesh=mesh)
+            - generic [ref=f1e694]: fully_shard(fsdp, mesh=mesh)
+            - generic [ref=f1e695]: fsdp_opt = torch.optim.AdamW(fsdp.parameters(), lr=1e-3)
+            - generic [ref=f1e696]: train(fsdp, fsdp_opt, x)
+            - generic [ref=f1e697]: fsdp_flat = torch.cat([p.full_tensor().detach().reshape(-1) for p in fsdp.parameters()])
+            - generic [ref=f1e698]: held = sum(local(p).numel() for p in fsdp.parameters())
+            - generic [ref=f1e700]: "if rank == 0:"
+            - generic [ref=f1e701]: "print(f\"ZeroRedundancyOptimizer: max diff {(zero_flat - ref_flat).abs().max().item():.2e}, Adam state on rank 0 {state_bytes(zero_opt.optim):,} B\")"
+            - generic [ref=f1e702]: "print(f\"FSDP2 fully_shard: max diff {(fsdp_flat - ref_flat).abs().max().item():.2e}, Adam state on rank 0 {state_bytes(fsdp_opt):,} B\")"
+            - generic [ref=f1e703]: "print(f\"FSDP2 rank 0 holds {held:,} of {n:,} parameters ({held / n:.3f}); one DDP rank holds {8 * n:,} B of Adam state\")"
+            - generic [ref=f1e704]: "print(f\"parameter type under FSDP2: {type(next(fsdp.parameters())).__name__}\")"
+            - generic [ref=f1e705]: dist.barrier()
+            - generic [ref=f1e706]: dist.destroy_process_group()
+            - generic [ref=f1e709]: "if __name__ == \"__main__\":"
+            - generic [ref=f1e710]: mp.spawn(worker, args=(2, free_port()), nprocs=2, join=True)
+          - paragraph [ref=f1e711]:
+            - strong [ref=f1e712]: Reading the output.
+            - text: Both tools match the single process to 2.00e-06. The FSDP2 rank holds 79,008 of 158,016 parameters (0.500), and its parameters are
+            - code [ref=f1e713]: DTensor
+            - text: objects whose local piece is the slice. The Adam state on rank 0 is 632,064 bytes under FSDP2 and 632,320 under
+            - code [ref=f1e714]: ZeroRedundancyOptimizer
+            - text: . The second is slightly more than half because that optimiser packs whole parameters greedily by size, which the PyTorch documentation calls a sorted-greedy algorithm, so the split is close to half but not exactly.
+          - paragraph [ref=f1e715]:
+            - strong [ref=f1e716]: What did not work on the first try.
+            - code [ref=f1e717]: fully_shard(module)
+            - text: without a mesh failed on this Mac with
+            - code [ref=f1e718]: module 'torch.mps' has no attribute 'is_initialized'
+            - text: ", because the default mesh picked the Apple GPU device. Passing"
+            - code [ref=f1e719]: mesh=init_device_mesh("cpu", (world,))
+            - text: fixed it. On a CUDA machine the default mesh works.
+          - paragraph [ref=f1e720]:
+            - strong [ref=f1e721]: Line by line.
+          - list [ref=f1e722]:
+            - listitem [ref=f1e723]:
+              - code [ref=f1e724]: "for layer in fsdp.model.layers: fully_shard(layer, mesh=mesh)"
+              - text: makes each transformer block its own gather-and-free unit.
+            - listitem [ref=f1e725]:
+              - code [ref=f1e726]: fully_shard(fsdp, mesh=mesh)
+              - text: last wraps the root, which then owns the embeddings and the output head.
+            - listitem [ref=f1e727]:
+              - code [ref=f1e728]: p.full_tensor()
+              - text: gathers a
+              - code [ref=f1e729]: DTensor
+              - text: into a normal tensor, only to compare it with the reference.
+          - heading [level=3] [ref=f1e730]:
+            - text: Try it yourself
+            - link "Direct link to Try it yourself" [ref=f1e731] [cursor=pointer]:
+              - /url: "#try-it-yourself"
+              - text: "#"
+          - paragraph [ref=f1e732]: "The lab is block 2's formula with the model, the number of GPUs and the stage exposed. Its defaults (7.5B, 64 GPUs, bf16 recipe, 80 GB card) reproduce the four numbers printed by block 2: 120.0, 31.4, 16.6 and 1.9 GB. Click \"show data\" to see the table, including the traffic and the smallest GPU count that fits."
+          - figure "Interactive Model state per GPU under DDP and ZeRO show data" [ref=f1e733]:
+            - generic [ref=f1e734]:
+              - generic [ref=f1e735]: Interactive
+              - generic [ref=f1e736]: Model state per GPU under DDP and ZeRO
+              - button "show data" [ref=f1e737] [cursor=pointer]
+            - generic [ref=f1e738]:
+              - generic [ref=f1e739]:
+                - text: model
+                - combobox "model" [ref=f1e740] [cursor=pointer]:
+                  - option "7.5B (ZeRO paper example)" [selected]
+                  - option "Llama 3.1 8B (8.03B)"
+                  - option "Llama 3.1 70B (70.55B)"
+                  - option "Llama 3.1 405B (405.85B)"
+              - generic [ref=f1e741]:
+                - text: data-parallel GPUs N
+                - combobox "data-parallel GPUs N" [ref=f1e742] [cursor=pointer]:
+                  - option "1"
+                  - option "2"
+                  - option "4"
+                  - option "8"
+                  - option "16"
+                  - option "32"
+                  - option "64" [selected]
+                  - option "128"
+                  - option "256"
+                  - option "512"
+                  - option "1024"
+              - generic [ref=f1e743]:
+                - text: highlight stage
+                - combobox "highlight stage" [ref=f1e744] [cursor=pointer]:
+                  - option "0 (plain DDP)"
+                  - option "1" [selected]
+                  - option "2"
+                  - option "3"
+              - generic [ref=f1e745]:
+                - text: bytes per parameter
+                - combobox "bytes per parameter" [ref=f1e746] [cursor=pointer]:
+                  - option "bf16 weights and gradients, fp32 Adam state (2 + 2 + 12)" [selected]
+                  - option "fp32 everywhere (4 + 4 + 8)"
+              - generic [ref=f1e747]:
+                - text: GPU memory (GB)
+                - slider "GPU memory (GB) 80" [ref=f1e748]: "80"
+                - generic [ref=f1e749]: "80"
+              - generic [ref=f1e750]: "ZeRO stage 1: 31.4 GB per GPU on 64 GPUs, fits in 80 GB. Smallest N that fits: 2. Traffic: 2.0x the model size."
+            - 'img "Four stacked bars of model state per GPU. ZeRO stage 1: 31.4 GB per GPU on 64 GPUs, fits in 80 GB" [ref=f1e752]':
+              - generic [ref=f1e753]:
+                - generic [ref=f1e754]: DDP
+                - generic [ref=f1e758]: "120.0"
+              - generic [ref=f1e759]:
+                - generic [ref=f1e760]: stage 1
+                - generic [ref=f1e764]: "31.4"
+              - generic [ref=f1e765]:
+                - generic [ref=f1e766]: stage 2
+                - generic [ref=f1e770]: "16.6"
+              - generic [ref=f1e771]:
+                - generic [ref=f1e772]: stage 3
+                - generic [ref=f1e776]: "1.9"
+              - generic [ref=f1e777]: 80 GB card
+              - generic [ref=f1e778]: "0"
+            - list [ref=f1e779]:
+              - listitem [ref=f1e780]: weights
+              - listitem [ref=f1e782]: gradients
+              - listitem [ref=f1e784]: optimiser state
+            - paragraph [ref=f1e786]: "The defaults are the ZeRO paper's example: 7.5B parameters on 64 GPUs. The four bars read 120.0, 31.4, 16.6 and 1.9 GB. Activations are not included."
+          - paragraph [ref=f1e787]:
+            - strong [ref=f1e788]: What each control does.
+          - list [ref=f1e789]:
+            - listitem [ref=f1e790]:
+              - strong [ref=f1e791]: model
+              - text: "picks the parameter count: the paper's 7.5B or the real Llama 3.1 sizes from the configs read in chapter 1."
+            - listitem [ref=f1e792]:
+              - strong [ref=f1e793]: data-parallel GPUs N
+              - text: sets the number of replicas that share the slices.
+            - listitem [ref=f1e794]:
+              - strong [ref=f1e795]: highlight stage
+              - text: brightens one bar and sets the readout underneath.
+            - listitem [ref=f1e796]:
+              - strong [ref=f1e797]: bytes per parameter
+              - text: switches between the bf16 recipe (2 + 2 + 12) and plain fp32 (4 + 4 + 8).
+            - listitem [ref=f1e798]:
+              - strong [ref=f1e799]: GPU memory
+              - text: moves the red limit line, and the "smallest N that fits" readout follows it.
+          - paragraph [ref=f1e800]:
+            - strong [ref=f1e801]: Try it yourself.
+          - list [ref=f1e802]:
+            - listitem [ref=f1e803]:
+              - text: Set
+              - strong [ref=f1e804]: "N"
+              - text: "to 8 with the other defaults. Stage 1 now needs 41.3 GB, stage 2 28.1 GB and stage 3 15.0 GB. Why: each stage divides by N, so fewer GPUs means a smaller saving. The 64-GPU numbers were flattering."
+            - listitem [ref=f1e805]:
+              - text: Set
+              - strong [ref=f1e806]: model
+              - text: "to Llama 3.1 70B and keep N at 64. Only stage 3 fits (17.6 GB), and the data view shows stages 1 and 2 \"never\" fit at any N. Why: stage 1 cannot go below 4 bytes per parameter and stage 2 cannot go below 2, because the weights are still whole. At 70.55B parameters, 2 bytes is 141 GB."
+            - listitem [ref=f1e807]:
+              - text: Set
+              - strong [ref=f1e808]: bytes per parameter
+              - text: "to fp32 at the defaults. Stage 1 jumps from 31.4 to 60.9 GB. Why: with fp32 everywhere only 8 of the 16 bytes are optimiser state, so stage 1 has less to shard. The bf16 recipe is part of why ZeRO looks so good."
+          - heading [level=2] [ref=f1e809]:
+            - text: Production snippets (not run here)
+            - link "Direct link to Production snippets (not run here)" [ref=f1e810] [cursor=pointer]:
+              - /url: "#production-snippets-not-run-here"
+              - text: "#"
+          - generic [ref=f1e811]:
+            - generic [ref=f1e812]: Not run in this environment
+            - paragraph [ref=f1e817]:
+              - text: These need CUDA GPUs and several processes. The imports and the signatures of
+              - code [ref=f1e818]: fully_shard
+              - text: and
+              - code [ref=f1e819]: MixedPrecisionPolicy
+              - text: were checked against PyTorch 2.14.1 on 7 October 2026. The DeepSpeed key names were checked against its configuration reference; DeepSpeed itself is not installed here.
+          - paragraph [ref=f1e820]:
+            - text: FSDP2 on GPUs. Wrap each block, then the root. The policy computes and gathers in bf16 and reduces gradients in fp32.
+            - code [ref=f1e821]: reshard_after_forward=False
+            - text: "is the Llama 3 style choice for the weights:"
+          - code [ref=f1e825]:
+            - generic [ref=f1e826]: import torch
+            - generic [ref=f1e827]: from torch.distributed.fsdp import MixedPrecisionPolicy, fully_shard
+            - generic [ref=f1e829]: policy = MixedPrecisionPolicy(param_dtype=torch.bfloat16, reduce_dtype=torch.float32)
+            - generic [ref=f1e831]: "for layer in model.model.layers:"
+            - generic [ref=f1e832]: fully_shard(layer, mp_policy=policy, reshard_after_forward=False)
+            - generic [ref=f1e833]: fully_shard(model, mp_policy=policy)
+            - generic [ref=f1e834]: optimiser = torch.optim.AdamW(model.parameters(), lr=1e-4)
+          - paragraph [ref=f1e835]: "DeepSpeed ZeRO stage 3 with bf16 and optimiser offload to the CPU, written as a configuration file, and the training loop it expects:"
+          - code [ref=f1e839]:
+            - generic [ref=f1e840]: "{"
+            - generic [ref=f1e841]: "\"train_micro_batch_size_per_gpu\": 1,"
+            - generic [ref=f1e842]: "\"gradient_accumulation_steps\": 8,"
+            - generic [ref=f1e843]: "\"bf16\": {\"enabled\": true},"
+            - generic [ref=f1e844]: "\"zero_optimization\": {"
+            - generic [ref=f1e845]: "\"stage\": 3,"
+            - generic [ref=f1e846]: "\"overlap_comm\": true,"
+            - generic [ref=f1e847]: "\"contiguous_gradients\": true,"
+            - generic [ref=f1e848]: "\"offload_optimizer\": {\"device\": \"cpu\"}"
+            - generic [ref=f1e849]: "}"
+            - generic [ref=f1e850]: "}"
+          - code [ref=f1e854]:
+            - generic [ref=f1e855]: import deepspeed
+            - generic [ref=f1e857]: engine, optimiser, _, _ = deepspeed.initialize(model=model, model_parameters=model.parameters(), config="ds_config.json")
+            - generic [ref=f1e858]: "for batch in loader:"
+            - generic [ref=f1e859]: loss = engine(**batch).loss
+            - generic [ref=f1e860]: engine.backward(loss)
+            - generic [ref=f1e861]: engine.step()
+          - heading [level=2] [ref=f1e862]:
+            - text: Designing with it
+            - link "Direct link to Designing with it" [ref=f1e863] [cursor=pointer]:
+              - /url: "#designing-with-it"
+              - text: "#"
+          - list [ref=f1e864]:
+            - listitem [ref=f1e865]:
+              - strong [ref=f1e866]: Count before you shard.
+              - text: Use block 2's formula. If the state already fits with room for activations, plain DDP is the fastest option.
+            - listitem [ref=f1e867]:
+              - strong [ref=f1e868]: Try stage 1 first.
+              - text: It removes most of the memory with no extra traffic.
+            - listitem [ref=f1e869]:
+              - strong [ref=f1e870]: Wrap at the block level.
+              - text: Gather-and-free units should be transformer blocks, so the gather for the next block can overlap with the current one.
+            - listitem [ref=f1e871]:
+              - strong [ref=f1e872]:
+                - text: Choose
+                - code [ref=f1e873]: reshard_after_forward
+                - text: on purpose.
+              - text: "Memory-tight:"
+              - code [ref=f1e874]: "True"
+              - text: ". Network-tight:"
+              - code [ref=f1e875]: "False"
+              - text: .
+            - listitem [ref=f1e876]:
+              - strong [ref=f1e877]: Watch the traffic when you cross servers.
+              - text: Stage 3 moves 1.5 times as much as DDP; if your links are slow, prefer stage 2 or combine with tensor and pipeline parallelism.
+            - listitem [ref=f1e878]:
+              - strong [ref=f1e879]: Do not compare absolute memory across recipes.
+              - text: "\"ZeRO saves 8x\" depends on the bytes-per-parameter recipe; the lab's fp32 setting shows the difference."
+          - heading [level=2] [ref=f1e880]:
+            - text: Where this stands in 2026
+            - link "Direct link to Where this stands in 2026" [ref=f1e881] [cursor=pointer]:
+              - /url: "#where-this-stands-in-2026"
+              - text: "#"
+          - generic [ref=f1e882]:
+            - generic [ref=f1e883]: Industry view
+            - list [ref=f1e888]:
+              - listitem [ref=f1e889]:
+                - strong [ref=f1e890]: FSDP2 is documented as the per-parameter design.
+                - text: The PyTorch 2.14 FSDP2 page describes
+                - code [ref=f1e891]: fully_shard
+                - text: with
+                - code [ref=f1e892]: DTensor
+                - text: "-based per-parameter sharding. The original"
+                - code [ref=f1e893]: FullyShardedDataParallel
+                - text: class is still documented in 2.14 without a deprecation notice, as of 7 October 2026.
+              - listitem [ref=f1e894]:
+                - strong [ref=f1e895]: DeepSpeed is still maintained.
+                - text: PyPI listed 0.19.7 as the latest release, uploaded on 16 September 2026.
+              - listitem [ref=f1e896]:
+                - strong [ref=f1e897]: Sharding is one layer of a stack.
+                - text: The Llama 3 paper and the Ultra-Scale Playbook both combine it with tensor, pipeline and context parallelism rather than using it alone.
+              - listitem [ref=f1e898]:
+                - strong [ref=f1e899]: "Not verified here:"
+                - text: GPU throughput, offload speed, or which framework a given lab uses today.
+          - heading [level=2] [ref=f1e900]:
+            - text: Common mistakes
+            - link "Direct link to Common mistakes" [ref=f1e901] [cursor=pointer]:
+              - /url: "#common-mistakes"
+              - text: "#"
+          - list [ref=f1e902]:
+            - listitem [ref=f1e903]:
+              - strong [ref=f1e904]: Expecting ZeRO to shrink activations.
+              - text: It shards weights, gradients and optimiser state only. If you run out of memory in activations, use the savings from the previous chapter.
+            - listitem [ref=f1e905]:
+              - strong [ref=f1e906]: Using stage 1 or 2 to fit a model whose weights alone are too big.
+              - text: They keep the weights whole. Block 2 shows stage 2 never fits Llama 3.1 70B at any GPU count on 80 GB.
+            - listitem [ref=f1e907]:
+              - strong [ref=f1e908]: Wrapping the whole model as one FSDP unit.
+              - text: It feels simple. But then the entire model is gathered at once, and the memory saving disappears. Wrap per block.
+            - listitem [ref=f1e909]:
+              - strong [ref=f1e910]: Forgetting the recipe.
+              - text: "\"ZeRO divides memory by N\" is only true for the part it shards. Lab experiment 3 shows how the share changes with the recipe."
+            - listitem [ref=f1e911]:
+              - strong [ref=f1e912]: Comparing a sharded run to a single process after many steps and expecting zero difference.
+              - text: Adam magnifies ordering differences in float arithmetic. Compare after a few steps, with a tolerance, as blocks 3 to 5 do.
+          - heading [level=2] [ref=f1e913]:
+            - text: Practice questions
+            - link "Direct link to Practice questions" [ref=f1e914] [cursor=pointer]:
+              - /url: "#practice-questions"
+              - text: "#"
+          - group [ref=f1e915]:
+            - generic [ref=f1e916] [cursor=pointer]:
+              - strong [ref=f1e917]: Q1 (Easy).
+              - text: A 3-billion-parameter model trains in bf16 with Adam (2 + 2 + 12 bytes). How much model state does plain DDP need per GPU, and how much does stage 3 need on 8 GPUs?
+          - group [ref=f1e918]:
+            - generic [ref=f1e919] [cursor=pointer]:
+              - strong [ref=f1e920]: Q2 (Easy).
+              - text: Which two collective operations replace one all-reduce in stage 2, and why is the traffic the same?
+          - group [ref=f1e921]:
+            - generic [ref=f1e922] [cursor=pointer]:
+              - strong [ref=f1e923]: Q3 (Medium).
+              - text: Block 2 says plain DDP never fits Llama 3.1 8B in 80 GB but stage 1 fits from 3 GPUs. Check the number by hand.
+          - group [ref=f1e924]:
+            - generic [ref=f1e925] [cursor=pointer]:
+              - strong [ref=f1e926]: Q4 (Medium).
+              - text: Why does stage 3 cost 1.5 times the traffic of DDP, and when can that cost be hidden?
+          - group [ref=f1e927]:
+            - generic [ref=f1e928] [cursor=pointer]:
+              - strong [ref=f1e929]: Q5 (Stretch).
+              - text: The lab says Llama 3.1 70B at stage 2 "never" fits an 80 GB card. Explain with numbers, and say what you would do.
+          - group [ref=f1e930]:
+            - generic [ref=f1e931] [cursor=pointer]:
+              - strong [ref=f1e932]: Q6 (Stretch).
+              - text: After 10 steps the sharded run differs from the single process by 2.00e-06. Is that a bug?
+          - heading [level=2] [ref=f1e933]:
+            - text: Go deeper
+            - link "Direct link to Go deeper" [ref=f1e934] [cursor=pointer]:
+              - /url: "#go-deeper"
+              - text: "#"
+          - paragraph [ref=f1e935]: All sources were opened on 7 October 2026.
+          - list [ref=f1e936]:
+            - listitem [ref=f1e937]:
+              - 'link "ZeRO: Memory optimizations toward training trillion parameter models (arXiv 1910.02054)" [ref=f1e938] [cursor=pointer]':
+                - /url: https://arxiv.org/abs/1910.02054
+              - text: ": the three stages, the 2 + 2 + K accounting, the 7.5B and 64-GPU example, and the communication analysis (2 against 3 model-sizes)."
+            - listitem [ref=f1e939]:
+              - link "PyTorch 2.14 DDP design notes" [ref=f1e940] [cursor=pointer]:
+                - /url: https://docs.pytorch.org/docs/2.14/notes/ddp.html
+              - text: ": the broadcast, buckets and overlapped all-reduce."
+            - listitem [ref=f1e941]:
+              - link [ref=f1e942] [cursor=pointer]:
+                - /url: https://docs.pytorch.org/docs/2.14/distributed.fsdp.fully_shard.html
+                - text: PyTorch 2.14 FSDP2
+                - code [ref=f1e943]: fully_shard
+              - text: ":"
+              - code [ref=f1e944]: reshard_after_forward
+              - text: ","
+              - code [ref=f1e945]: MixedPrecisionPolicy
+              - text: ","
+              - code [ref=f1e946]: OffloadPolicy
+              - text: .
+            - listitem [ref=f1e947]:
+              - link [ref=f1e948] [cursor=pointer]:
+                - /url: https://docs.pytorch.org/docs/2.14/distributed.optim.html
+                - text: PyTorch 2.14
+                - code [ref=f1e949]: ZeroRedundancyOptimizer
+              - text: ": the sorted-greedy partitioning and its caveats."
+            - listitem [ref=f1e950]:
+              - 'link "PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel (arXiv 2304.11277)" [ref=f1e951] [cursor=pointer]':
+                - /url: https://arxiv.org/abs/2304.11277
+              - text: ": the design paper for the first FSDP; its title and abstract page were opened, the body was not read for this chapter."
+            - listitem [ref=f1e952]:
+              - link "DeepSpeed configuration reference" [ref=f1e953] [cursor=pointer]:
+                - /url: https://www.deepspeed.ai/docs/config-json/
+              - text: and
+              - link "getting started" [ref=f1e954] [cursor=pointer]:
+                - /url: https://www.deepspeed.ai/getting-started/
+              - text: ": the"
+              - code [ref=f1e955]: zero_optimization
+              - text: keys and the initialise, backward and step loop.
+            - listitem [ref=f1e956]:
+              - link "The Ultra-Scale Playbook (Hugging Face, 2025)" [ref=f1e957] [cursor=pointer]:
+                - /url: https://huggingface.co/spaces/nanotron/ultrascale-playbook
+              - text: and
+              - link "The Llama 3 Herd of Models (arXiv 2407.21783)" [ref=f1e958] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2407.21783
+              - text: ": ZeRO in a full layout."
+          - heading [level=2] [ref=f1e959]:
+            - text: Check yourself
+            - link "Direct link to Check yourself" [ref=f1e960] [cursor=pointer]:
+              - /url: "#check-yourself"
+              - text: "#"
+          - list [ref=f1e961]:
+            - listitem [ref=f1e962]: I can say what each ZeRO stage shards and give its bytes per parameter for the 2 + 2 + 12 recipe.
+            - listitem [ref=f1e963]: I can explain why an all-reduce equals a reduce-scatter plus an all-gather and why that makes stages 1 and 2 free in traffic.
+            - listitem [ref=f1e964]: I can explain why stage 3 costs 1.5 times the traffic and how overlap hides it.
+            - listitem [ref=f1e965]: I can run two-process sharded training on the CPU and check it against one process with a sensible tolerance.
+            - listitem [ref=f1e966]: I can write the FSDP2 wrapping and the DeepSpeed configuration for a GPU run, and say what each setting trades.
+            - listitem [ref=f1e967]: I can say when plain DDP is the right answer, and why ZeRO does not help with activations.
+          - heading [level=2] [ref=f1e968]:
+            - text: Where to go next
+            - link "Direct link to Where to go next" [ref=f1e969] [cursor=pointer]:
+              - /url: "#where-to-go-next"
+              - text: "#"
+          - paragraph [ref=f1e970]:
+            - text: "Next chapter:"
+            - link "mixed precision and numerics" [ref=f1e971] [cursor=pointer]:
+              - /url: /docs/llm-engineering/mixed-precision-and-numerics
+            - text: ", which explains where the 2, 2 and 12 bytes come from and what can go wrong with fewer bits. A related chapter:"
+            - link "parallelism strategies for LLMs" [ref=f1e972] [cursor=pointer]:
+              - /url: /docs/llm-engineering/parallelism-strategies-for-llms
+            - text: ", which combines sharding with tensor, pipeline and context parallelism."
+        - generic [ref=f1e975]:
+          - text: "Tags:"
+          - list [ref=f1e976]:
+            - listitem [ref=f1e977]:
+              - link "ddp" [ref=f1e978] [cursor=pointer]:
+                - /url: /docs/tags/ddp
+            - listitem [ref=f1e979]:
+              - link "fsdp" [ref=f1e980] [cursor=pointer]:
+                - /url: /docs/tags/fsdp
+            - listitem [ref=f1e981]:
+              - link "fsdp2" [ref=f1e982] [cursor=pointer]:
+                - /url: /docs/tags/fsdp-2
+            - listitem [ref=f1e983]:
+              - link "zero" [ref=f1e984] [cursor=pointer]:
+                - /url: /docs/tags/zero
+            - listitem [ref=f1e985]:
+              - link "deepspeed" [ref=f1e986] [cursor=pointer]:
+                - /url: /docs/tags/deepspeed
+            - listitem [ref=f1e987]:
+              - link "data-parallel" [ref=f1e988] [cursor=pointer]:
+                - /url: /docs/tags/data-parallel
+            - listitem [ref=f1e989]:
+              - link "sharding" [ref=f1e990] [cursor=pointer]:
+                - /url: /docs/tags/sharding
+            - listitem [ref=f1e991]:
+              - link "optimizer-state" [ref=f1e992] [cursor=pointer]:
+                - /url: /docs/tags/optimizer-state
+            - listitem [ref=f1e993]:
+              - link "torch-distributed" [ref=f1e994] [cursor=pointer]:
+                - /url: /docs/tags/torch-distributed
+      - navigation "Docs pages" [ref=f1e995]:
+        - link "Previous « 1 · Parallelism strategies" [ref=f1e996] [cursor=pointer]:
+          - /url: /docs/llm-engineering/parallelism-strategies-for-llms
+          - generic [ref=f1e997]: Previous
+          - generic [ref=f1e998]: « 1 · Parallelism strategies
+        - link "Next 3 · Mixed precision and numerics »" [ref=f1e999] [cursor=pointer]:
+          - /url: /docs/llm-engineering/mixed-precision-and-numerics
+          - generic [ref=f1e1000]: Next
+          - generic [ref=f1e1001]: 3 · Mixed precision and numerics »
+  - contentinfo [ref=f1e1002]:
+    - generic [ref=f1e1003]:
+      - generic [ref=f1e1004]:
+        - generic [ref=f1e1005]:
+          - generic [ref=f1e1006]: Learn
+          - list [ref=f1e1007]:
+            - listitem [ref=f1e1008]:
+              - link "Roadmap" [ref=f1e1009] [cursor=pointer]:
+                - /url: /docs/intro
+            - listitem [ref=f1e1010]:
+              - link "Daily notes" [ref=f1e1011] [cursor=pointer]:
+                - /url: /docs/category/daily
+            - listitem [ref=f1e1012]:
+              - link "Production LLM track" [ref=f1e1013] [cursor=pointer]:
+                - /url: /llm-roadmap
+            - listitem [ref=f1e1014]:
+              - link "Deep learning" [ref=f1e1015] [cursor=pointer]:
+                - /url: /docs/category/dnn
+            - listitem [ref=f1e1016]:
+              - link "Statistics" [ref=f1e1017] [cursor=pointer]:
+                - /url: /docs/category/statistics
+            - listitem [ref=f1e1018]:
+              - link "Code tracks" [ref=f1e1019] [cursor=pointer]:
+                - /url: /docs/category/coding
+        - generic [ref=f1e1020]:
+          - generic [ref=f1e1021]: Practice
+          - list [ref=f1e1022]:
+            - listitem [ref=f1e1023]:
+              - link "Cheatsheets" [ref=f1e1024] [cursor=pointer]:
+                - /url: /docs/category/cheetsheet
+            - listitem [ref=f1e1025]:
+              - link "Interview questions" [ref=f1e1026] [cursor=pointer]:
+                - /url: /docs/category/interview
+            - listitem [ref=f1e1027]:
+              - link "Engineering & systems" [ref=f1e1028] [cursor=pointer]:
+                - /url: /docs/category/scaler
+            - listitem [ref=f1e1029]:
+              - link "Miscellaneous" [ref=f1e1030] [cursor=pointer]:
+                - /url: /docs/category/miscellaneous-collection
+            - listitem [ref=f1e1031]:
+              - link "Explore all notes" [ref=f1e1032] [cursor=pointer]:
+                - /url: /explore
+            - listitem [ref=f1e1033]:
+              - link "AI Innovation Hub" [ref=f1e1034] [cursor=pointer]:
+                - /url: /ai-news
+        - generic [ref=f1e1035]:
+          - generic [ref=f1e1036]: More
+          - list [ref=f1e1037]:
+            - listitem [ref=f1e1038]:
+              - link [ref=f1e1039] [cursor=pointer]:
+                - /url: https://pytorch.org/docs/stable/index.html
+                - text: PyTorch docs
+                - img "(opens in new tab)" [ref=f1e1040]
+            - listitem [ref=f1e1042]:
+              - link [ref=f1e1043] [cursor=pointer]:
+                - /url: https://scikit-learn.org/stable/
+                - text: scikit-learn
+                - img "(opens in new tab)" [ref=f1e1044]
+      - generic [ref=f1e1046]: Copyright © 2026 Learn AI, ML. Built by Sumanth.

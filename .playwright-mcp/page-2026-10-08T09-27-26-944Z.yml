@@ -1,0 +1,1201 @@
+- generic [ref=f3e2]:
+  - progressbar "Reading progress"
+  - button "Ask AI tutor" [ref=f3e3] [cursor=pointer]:
+    - generic [aria-hidden] [ref=f3e4]: ✦
+    - generic [ref=f3e5]: Ask AI
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=f3e6] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - banner [ref=f3e7]:
+    - generic [ref=f3e8]:
+      - strong [ref=f3e9]: "New:"
+      - text: browse every note in one place —
+      - link "open Explore" [ref=f3e10] [cursor=pointer]:
+        - /url: /explore
+      - text: ", or press ? for shortcuts."
+    - button "Close" [ref=f3e11] [cursor=pointer]
+  - navigation "Main" [ref=f3e15]:
+    - generic [ref=f3e16]:
+      - generic [ref=f3e17]:
+        - button "Toggle navigation bar" [ref=f3e18] [cursor=pointer]
+        - link "Learn AI & ML AI & ML" [ref=f3e21] [cursor=pointer]:
+          - /url: /
+          - img "Learn AI & ML" [ref=f3e23]
+          - generic [ref=f3e24]: AI & ML
+      - textbox "Search" [ref=f3e27]
+  - main [ref=f3e31]:
+    - generic [ref=f3e35]:
+      - article [ref=f3e36]:
+        - navigation "Breadcrumbs" [ref=f3e37]:
+          - list [ref=f3e38]:
+            - listitem [ref=f3e39]:
+              - link "Home page" [ref=f3e40] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=f3e43]:
+              - generic [ref=f3e44]: 6 · LLM engineering
+            - listitem [ref=f3e45]:
+              - link "LLM Engineering" [ref=f3e46] [cursor=pointer]:
+                - /url: /docs/category/llm-engineering
+            - listitem [ref=f3e47]:
+              - link "Training at scale" [ref=f3e48] [cursor=pointer]:
+                - /url: /docs/category/training-at-scale
+            - listitem [ref=f3e49]:
+              - generic [ref=f3e50]: 4 · Mixture of experts
+        - button "On this page" [ref=f3e52] [cursor=pointer]
+        - generic [ref=f3e53]:
+          - link "6 LLM engineering 0/34" [ref=f3e55] [cursor=pointer]:
+            - /url: /path#llm-engineering
+            - generic [ref=f3e56]: "6"
+            - generic [ref=f3e57]: LLM engineering
+            - generic [ref=f3e58]: 0/34
+          - generic [ref=f3e59]:
+            - group "Voice reader" [ref=f3e60]:
+              - button "Read aloud" [disabled] [ref=f3e61]
+              - combobox "Reader voice" [disabled] [ref=f3e62]:
+                - option "No local voice" [selected]
+              - combobox "Reader speed" [disabled] [ref=f3e63]:
+                - option "0.8×"
+                - option "1×" [selected]
+                - option "1.2×"
+                - option "1.5×"
+              - status
+            - button "Copy link to this page" [ref=f3e64] [cursor=pointer]
+            - button "Mark as read" [ref=f3e67] [cursor=pointer]
+        - generic [ref=f3e71]:
+          - heading "Mixture of Experts" [level=1] [ref=f3e73]
+          - paragraph [ref=f3e74]:
+            - strong [ref=f3e75]: In one line.
+            - text: A mixture-of-experts model stores many feed-forward networks (experts) in each layer but sends each token through only a few of them, so it holds the knowledge of a very large model while paying the arithmetic of a small one, in exchange for keeping every expert in memory and keeping the load between experts balanced.
+          - generic [ref=f3e76]:
+            - generic [ref=f3e77]: Before you start
+            - list [ref=f3e82]:
+              - listitem [ref=f3e83]:
+                - strong [ref=f3e84]: You should already know
+                - text: what a transformer layer's feed-forward block does (
+                - link "transformer decoder architecture" [ref=f3e85] [cursor=pointer]:
+                  - /url: /docs/theory/dnn/transformer-decoder-architecture
+                - text: ), the parallelism axes from
+                - link "parallelism strategies for LLMs" [ref=f3e86] [cursor=pointer]:
+                  - /url: /docs/llm-engineering/parallelism-strategies-for-llms
+                - text: ", and why decoding is limited by memory traffic ("
+                - link "why decoding is memory-bound" [ref=f3e87] [cursor=pointer]:
+                  - /url: /docs/llm-engineering/why-decoding-is-memory-bound
+                - text: ).
+              - listitem [ref=f3e88]:
+                - strong [ref=f3e89]: "Reading time:"
+                - text: about 45 minutes, plus a minute or two to run the code.
+              - listitem [ref=f3e90]:
+                - strong [ref=f3e91]: After this chapter you can
+                - text: compute total and active parameters from a config, say what the load-balancing loss and capacity factor do, explain how expert parallelism moves tokens, and read a current model card's mixture-of-experts numbers critically.
+          - generic [ref=f3e92]:
+            - generic [ref=f3e93]: Not from a lecture
+            - paragraph [ref=f3e98]: "This chapter was written for this site from the papers and model cards under Go deeper. Model sizes are counted from real configs read from the Hugging Face Hub by the code below. Versions used: Python 3.14, PyTorch 2.14.1 (CPU), Transformers 5.18.0. Model cards and papers were opened on 7 and 8 October 2026; this field changes monthly, so check the card before you rely on a number."
+          - heading [level=2] [ref=f3e99]:
+            - text: In 30 seconds
+            - link "Direct link to In 30 seconds" [ref=f3e100] [cursor=pointer]:
+              - /url: "#in-30-seconds"
+              - text: "#"
+          - paragraph [ref=f3e101]: "Imagine a hospital with eight specialist doctors and one receptionist. The receptionist glances at each patient and sends them to the two doctors who seem most useful. The hospital as a whole knows far more than any one doctor, yet each patient only spends time with two. That is a mixture-of-experts layer: the receptionist is the router and the doctors are the experts."
+          - paragraph [ref=f3e102]: Two warnings from real systems. The "specialists" do not become experts in subjects like law or biology; the Mixtral paper looked and found no obvious topic pattern. And the receptionist can send too many patients to the same doctor, so training adds tricks to spread the load.
+          - heading [level=2] [ref=f3e103]:
+            - text: Words you will meet
+            - link "Direct link to Words you will meet" [ref=f3e104] [cursor=pointer]:
+              - /url: "#words-you-will-meet"
+              - text: "#"
+          - table [ref=f3e105]:
+            - rowgroup [ref=f3e106]:
+              - row [ref=f3e107]:
+                - columnheader "Term" [ref=f3e108]
+                - columnheader "Plain meaning" [ref=f3e109]
+                - columnheader "Tiny example" [ref=f3e110]
+            - rowgroup [ref=f3e111]:
+              - row [ref=f3e112]:
+                - cell "Expert" [ref=f3e113]
+                - cell "One feed-forward network inside a layer" [ref=f3e114]
+                - cell "One of 8 in Mixtral 8x7B" [ref=f3e115]
+              - row [ref=f3e116]:
+                - cell "Router (gate)" [ref=f3e117]
+                - cell "A small linear layer that scores every expert for a token" [ref=f3e118]
+                - cell "Eight scores per token" [ref=f3e119]
+              - row [ref=f3e120]:
+                - cell "Top-k" [ref=f3e121]
+                - cell "The k highest-scoring experts, the ones that actually run" [ref=f3e122]
+                - cell "Mixtral uses k = 2" [ref=f3e123]
+              - row [ref=f3e124]:
+                - cell "Active parameters" [ref=f3e125]
+                - cell "The parameters a single token passes through" [ref=f3e126]
+                - cell "12.88 billion of Mixtral's 46.70 billion" [ref=f3e127]
+              - row [ref=f3e128]:
+                - cell "Load-balancing loss" [ref=f3e129]
+                - cell "An extra training term that punishes uneven expert use" [ref=f3e130]
+                - cell "Coefficient 0.01 in the Switch paper" [ref=f3e131]
+              - row [ref=f3e132]:
+                - cell "Capacity factor" [ref=f3e133]
+                - cell "How much room each expert has, relative to a perfectly even share" [ref=f3e134]
+                - cell "1.25 means 25 per cent spare room" [ref=f3e135]
+              - row [ref=f3e136]:
+                - cell "Dropped token" [ref=f3e137]
+                - cell "A token an over-full expert refuses; it skips the layer" [ref=f3e138]
+                - cell "Passed on through the residual connection" [ref=f3e139]
+              - row [ref=f3e140]:
+                - cell "Shared expert" [ref=f3e141]
+                - cell "An expert every token always uses, beside the routed ones" [ref=f3e142]
+                - cell "DeepSeek-V3 has 1" [ref=f3e143]
+              - row [ref=f3e144]:
+                - cell "All-to-all" [ref=f3e145]
+                - cell "A collective where every rank sends a different piece to every other rank" [ref=f3e146]
+                - cell "Tokens going to their experts" [ref=f3e147]
+          - heading [level=2] [ref=f3e148]:
+            - text: The idea in plain words
+            - link "Direct link to The idea in plain words" [ref=f3e149] [cursor=pointer]:
+              - /url: "#the-idea-in-plain-words"
+              - text: "#"
+          - paragraph [ref=f3e150]: In an ordinary transformer, every token goes through the same feed-forward network in every layer. To make the model know more you make that network bigger, and every token then pays for the extra size. A mixture-of-experts layer breaks the link between "how much the model stores" and "how much each token costs". It keeps several feed-forward networks and a router, and only the top few run for each token.
+          - paragraph [ref=f3e151]:
+            - text: Take the smallest example. Four experts, eight tokens, and the router gives each token a probability for each expert. Each token goes to its single best expert. If five of the eight tokens pick expert A, then A does most of the work and the others sit idle. That is a
+            - strong [ref=f3e152]: load imbalance
+            - text: ", and it is the main thing that goes wrong with these models. It wastes compute, and with expert parallelism the busiest GPU sets the pace for everyone."
+          - paragraph [ref=f3e153]: "So a mixture-of-experts model has three jobs beyond a dense one: choose the experts, keep them evenly used, and move the tokens to wherever the experts live. The next sections take them in that order."
+          - 'figure "Look at the right panel: eight experts are stored, two run. The yellow box at the bottom gives the price and the prize in Mixtral''s own numbers." [ref=f3e154]':
+            - generic [ref=f3e155]:
+              - 'button "Enlarge: A dense feed-forward block beside a mixture-of-experts block in which a token passes through a router, two chosen experts out of eight, and a weighted sum, with Mixtral 8x7B''s 46.70 billion stored and 12.88 billion used parameters" [ref=f3e156]':
+                - img "A dense feed-forward block beside a mixture-of-experts block in which a token passes through a router, two chosen experts out of eight, and a weighted sum, with Mixtral 8x7B's 46.70 billion stored and 12.88 billion used parameters" [ref=f3e157]
+              - button "View infographic larger" [ref=f3e158] [cursor=pointer]:
+                - generic [ref=f3e161]: Expand
+          - heading [level=2] [ref=f3e163]:
+            - text: Worked example, step by step
+            - link "Direct link to Worked example, step by step" [ref=f3e164] [cursor=pointer]:
+              - /url: "#worked-example-step-by-step"
+              - text: "#"
+          - paragraph [ref=f3e165]: The eight tokens and four experts from the smallest example, with the router's probabilities. Block 1 computes every number below.
+          - list [ref=f3e166]:
+            - listitem [ref=f3e167]:
+              - strong [ref=f3e168]: Pick the top expert.
+              - text: Tokens 0 to 4 prefer expert A (probabilities 0.7, 0.6, 0.5, 0.4, 0.4). Tokens 5 and 6 prefer B. Token 7 prefers C. No token prefers D.
+            - listitem [ref=f3e169]:
+              - strong [ref=f3e170]: Count the share of tokens.
+              - text: f = A 5/8 = 0.625, B 2/8 = 0.25, C 1/8 = 0.125, D 0.
+            - listitem [ref=f3e171]:
+              - strong [ref=f3e172]: Average the router probabilities.
+              - text: P = A 0.3875, B 0.275, C 0.2375, D 0.1.
+            - listitem [ref=f3e173]:
+              - strong [ref=f3e174]: Compute the balance term.
+              - text: "N times the sum of f times P, with N = 4 experts: 4 x (0.625 x 0.3875 + 0.25 x 0.275 + 0.125 x 0.2375 + 0 x 0.1) = 4 x 0.340625 = 1.3625. A perfectly even router would score exactly 1.0. In words: the term is large when the experts that get most of the tokens are also the ones the router likes most."
+            - listitem [ref=f3e175]:
+              - strong [ref=f3e176]: Apply a capacity.
+              - text: With a capacity factor of 1.0, each expert has room for 8 / 4 = 2 tokens. A can keep 2 of its 5, so 3 tokens are dropped, 37.5 per cent. With a capacity factor of 1.5 (room for 3) 2 are dropped. With 2.5 (room for 5) none are dropped, but only 8 of 20 slots are used.
+          - figure "Read the left table first, then the orange boxes top to bottom, then the capacity table. All figures are printed by block 1." [ref=f3e177]:
+            - generic [ref=f3e178]:
+              - 'button "Enlarge: A table of eight tokens with router probabilities for four experts and each token''s chosen expert, beside the shares f, the balance term 1.3625 and a table of capacity factors 1.0, 1.5 and 2.5 with tokens dropped and slots used" [ref=f3e179]':
+                - img "A table of eight tokens with router probabilities for four experts and each token's chosen expert, beside the shares f, the balance term 1.3625 and a table of capacity factors 1.0, 1.5 and 2.5 with tokens dropped and slots used" [ref=f3e180]
+              - button "View infographic larger" [ref=f3e181] [cursor=pointer]:
+                - generic [ref=f3e184]: Expand
+          - heading [level=2] [ref=f3e186]:
+            - text: How it works
+            - link "Direct link to How it works" [ref=f3e187] [cursor=pointer]:
+              - /url: "#how-it-works"
+              - text: "#"
+          - heading [level=3] [ref=f3e188]:
+            - text: What is inside a mixture-of-experts layer?
+            - link "Direct link to What is inside a mixture-of-experts layer?" [ref=f3e189] [cursor=pointer]:
+              - /url: "#what-is-inside-a-mixture-of-experts-layer"
+              - text: "#"
+          - paragraph [ref=f3e190]:
+            - text: The router is one linear layer from the hidden size to the number of experts. It gives each token a score for each expert. The top-k scores pick the experts. Mixtral then applies a softmax to those k scores only to get the weights, and the layer's output is the weighted sum of the chosen experts' outputs. The paper writes it as
+            - code [ref=f3e191]: y = sum of Softmax(Top2(x Wg))_i times SwiGLU_i(x)
+            - text: ". In words: score the experts, keep the best two, turn their scores into weights, and add up their answers."
+          - paragraph [ref=f3e192]:
+            - text: The experts are ordinary feed-forward blocks. Mixtral's are three-matrix SwiGLU blocks, so the layer has the same shape as a dense Llama layer, repeated eight times. Newer models change the recipe in three ways, which you can see in their
+            - code [ref=f3e193]: config.json
+            - text: "files:"
+          - table [ref=f3e194]:
+            - rowgroup [ref=f3e195]:
+              - row [ref=f3e196]:
+                - columnheader "Change" [ref=f3e197]
+                - columnheader "What it is" [ref=f3e198]
+                - columnheader "Where you can see it" [ref=f3e199]
+            - rowgroup [ref=f3e200]:
+              - row [ref=f3e201]:
+                - cell "Many small experts" [ref=f3e202]
+                - cell "128 to 896 experts instead of 8, each smaller" [ref=f3e203]
+                - cell "DeepSeek-V3 has 256 routed experts, top 8; Kimi K3 has 896, top 16" [ref=f3e204]
+              - row [ref=f3e205]:
+                - cell "Shared experts" [ref=f3e206]
+                - cell "One or two experts every token always uses, besides the routed ones" [ref=f3e207]
+                - cell [ref=f3e208]:
+                  - text: DeepSeek-V3
+                  - code [ref=f3e209]: n_shared_experts
+                  - text: 1; Kimi K3
+                  - code [ref=f3e210]: num_shared_experts
+                  - text: "2"
+              - row [ref=f3e211]:
+                - cell "New scoring functions" [ref=f3e212]
+                - cell "Sigmoid or square-root-softplus scores instead of a softmax" [ref=f3e213]
+                - cell [ref=f3e214]:
+                  - text: DeepSeek-V3
+                  - code [ref=f3e215]: sigmoid
+                  - text: ; DeepSeek-V4-Pro
+                  - code [ref=f3e216]: sqrtsoftplus
+          - paragraph [ref=f3e217]: "The DeepSeekMoE paper argues for the first two: finer experts let each token combine a more flexible mix, and shared experts hold knowledge that every token needs, so the routed ones need not duplicate it."
+          - heading [level=3] [ref=f3e218]:
+            - text: Total parameters against active parameters
+            - link "Direct link to Total parameters against active parameters" [ref=f3e219] [cursor=pointer]:
+              - /url: "#total-parameters-against-active-parameters"
+              - text: "#"
+          - paragraph [ref=f3e220]:
+            - text: Parameters in experts are stored for all experts but used for only k of E. So
+            - code [ref=f3e221]: active = total - expert parameters x (1 - k/E)
+            - text: . For Mixtral 8x7B, block 4 counts 46.70 billion parameters, of which 45.10 billion are in experts. With k = 2 of 8, the active count is 46.70 - 45.10 x 0.75 = 12.88 billion. The paper reports "47B" and "13B".
+          - paragraph [ref=f3e222]: Counting conventions differ. Qwen's card for Qwen3-30B-A3B gives 3.3 billion active, which matches counting everything (3.35). OpenAI's card for gpt-oss-120b gives 5.1 billion, which matches only if the 0.58 billion input embedding is left out (5.71 - 0.58 = 5.13). When you compare models, check how the card counts.
+          - heading [level=3] [ref=f3e223]:
+            - text: Why do experts become unbalanced, and what fixes it?
+            - link "Direct link to Why do experts become unbalanced, and what fixes it?" [ref=f3e224] [cursor=pointer]:
+              - /url: "#why-do-experts-become-unbalanced-and-what-fixes-it"
+              - text: "#"
+          - paragraph [ref=f3e225]:
+            - text: Early in training a few experts get slightly more tokens, learn faster, look better to the router, and get even more tokens. This is
+            - strong [ref=f3e226]: routing collapse
+            - text: ", and Shazeer and colleagues described it in the paper that introduced the sparsely-gated layer. Three remedies are in use."
+          - paragraph [ref=f3e227]:
+            - strong [ref=f3e228]: A balancing loss.
+            - text: The Switch Transformer adds
+            - code [ref=f3e229]: alpha x N x sum of f_i x P_i
+            - text: to the training loss, where
+            - code [ref=f3e230]: f_i
+            - text: is the share of tokens sent to expert
+            - code [ref=f3e231]: i
+            - text: and
+            - code [ref=f3e232]: P_i
+            - text: "is the router's average probability for it. In words: the product is small only when no expert is both busy and favoured. Block 1 shows it equals 1.0 for a perfectly even router. The Switch paper used"
+            - code [ref=f3e233]: alpha = 0.01
+            - text: ", found by sweeping from 0.1 to 0.00001. The loss reaches the router through"
+            - code [ref=f3e234]: P_i
+            - text: ", which is differentiable;"
+            - code [ref=f3e235]: f_i
+            - text: is a count and is not.
+          - paragraph [ref=f3e236]:
+            - strong [ref=f3e237]: A capacity limit.
+            - text: Each expert gets room for
+            - code [ref=f3e238]: capacity factor x tokens x k / experts
+            - text: "slots. Extra tokens are dropped: their computation is skipped and they pass through the layer on the residual connection. The Switch paper notes that more capacity wastes compute and memory, and that low drop rates matter for quality."
+          - paragraph [ref=f3e239]:
+            - strong [ref=f3e240]: A bias instead of a loss.
+            - text: DeepSeek-V3 argues that a big auxiliary loss hurts quality. It adds a bias to each expert's score, used only to choose the top-k, never in the gate weights. After each step it lowers the bias of overloaded experts and raises it for underloaded ones by a fixed step, 0.001 for most of training. It keeps a tiny sequence-level balance loss, coefficient 0.0001, to stop extreme cases within one sequence. The method comes from an earlier paper on auxiliary-loss-free balancing.
+          - paragraph [ref=f3e241]: Block 2 runs all three on a toy problem.
+          - heading [level=3] [ref=f3e242]:
+            - text: What does expert parallelism do?
+            - link "Direct link to What does expert parallelism do?" [ref=f3e243] [cursor=pointer]:
+              - /url: "#what-does-expert-parallelism-do"
+              - text: "#"
+          - paragraph [ref=f3e244]:
+            - text: With expert parallelism, each GPU holds a few experts, so a token's chosen experts may live on other GPUs. Each step has two
+            - strong [ref=f3e245]: all-to-all
+            - text: exchanges. Dispatch sends each token to the rank that holds each of its experts. After the experts compute, combine sends the results back, and each token's outputs are added with their gate weights. Block 5 runs this on two real processes and matches a single process.
+          - paragraph [ref=f3e246]: The weak point is balance. Every rank must wait for the slowest, so a rank that receives 40 token slots while another receives 24 sets the pace, with the other idle 40 per cent of the time. DeepSeek-V3 limits each token to experts on at most 4 nodes to keep traffic on the faster links. Its experts for each layer are spread over 64 GPUs on 8 nodes.
+          - 'figure "Follow a token copy from its own rank to the rank of its expert and back. The red box is the lesson: rank 0 receives 40 slots and rank 1 only 24. Counts are printed by block 5." [ref=f3e247]':
+            - generic [ref=f3e248]:
+              - 'button "Enlarge: Two ranks each holding two experts, a dispatch all-to-all in which rank 0 sends 21 slots to itself and 11 to rank 1 while rank 1 sends 19 to rank 0 and 13 to itself, and a combine all-to-all that returns the outputs" [ref=f3e249]':
+                - img "Two ranks each holding two experts, a dispatch all-to-all in which rank 0 sends 21 slots to itself and 11 to rank 1 while rank 1 sends 19 to rank 0 and 13 to itself, and a combine all-to-all that returns the outputs" [ref=f3e250]
+              - button "View infographic larger" [ref=f3e251] [cursor=pointer]:
+                - generic [ref=f3e254]: Expand
+          - heading [level=3] [ref=f3e256]:
+            - text: What does it mean for memory and serving?
+            - link "Direct link to What does it mean for memory and serving?" [ref=f3e257] [cursor=pointer]:
+              - /url: "#what-does-it-mean-for-memory-and-serving"
+              - text: "#"
+          - paragraph [ref=f3e258]:
+            - text: "Compute follows the active parameters; memory follows the total. Every expert must be resident because the next token may choose any of them. So a mixture-of-experts model is cheap per token but needs many GPUs' worth of memory. The previous inference chapters apply:"
+            - link "KV cache and paged attention" [ref=f3e259] [cursor=pointer]:
+              - /url: /docs/llm-engineering/kv-cache-and-paged-attention
+            - text: still sizes the context, and
+            - link "GPU sizing" [ref=f3e260] [cursor=pointer]:
+              - /url: /docs/llm-engineering/gpu-sizing-and-capacity-planning
+            - text: must use total parameters for weights, not active ones.
+          - heading [level=3] [ref=f3e261]:
+            - text: Which models are current?
+            - link "Direct link to Which models are current?" [ref=f3e262] [cursor=pointer]:
+              - /url: "#which-models-are-current"
+              - text: "#"
+          - paragraph [ref=f3e263]: The table is built from the official model cards and configs, read on 7 and 8 October 2026. Dates are when each repository was created on the Hub, which is not always the announcement date.
+          - table [ref=f3e264]:
+            - rowgroup [ref=f3e265]:
+              - row [ref=f3e266]:
+                - columnheader "Model" [ref=f3e267]
+                - columnheader "Created on the Hub" [ref=f3e268]
+                - columnheader "Total / active parameters (card)" [ref=f3e269]
+                - columnheader "Experts" [ref=f3e270]
+                - columnheader "Notes from the card or config" [ref=f3e271]
+            - rowgroup [ref=f3e272]:
+              - row [ref=f3e273]:
+                - cell "Mixtral 8x7B" [ref=f3e274]
+                - cell "December 2023" [ref=f3e275]
+                - cell "47B / 13B (paper)" [ref=f3e276]
+                - cell "8, top 2" [ref=f3e277]
+                - cell "Apache 2.0 weights" [ref=f3e278]
+              - row [ref=f3e279]:
+                - cell "gpt-oss-120b" [ref=f3e280]
+                - cell "August 2025" [ref=f3e281]
+                - cell "117B / 5.1B" [ref=f3e282]
+                - cell "128, top 4" [ref=f3e283]
+                - cell "MXFP4-quantised expert weights; fits one 80 GB GPU" [ref=f3e284]
+              - row [ref=f3e285]:
+                - cell "Llama 4 Scout" [ref=f3e286]
+                - cell "April 2025" [ref=f3e287]
+                - cell "109B / 17B" [ref=f3e288]
+                - cell "16" [ref=f3e289]
+                - cell "Card lists 17B activated" [ref=f3e290]
+              - row [ref=f3e291]:
+                - cell "Qwen3-30B-A3B" [ref=f3e292]
+                - cell "April 2025" [ref=f3e293]
+                - cell "30.5B / 3.3B" [ref=f3e294]
+                - cell "128, top 8" [ref=f3e295]
+                - cell [ref=f3e296]
+              - row [ref=f3e297]:
+                - cell "DeepSeek-V3" [ref=f3e298]
+                - cell "December 2024" [ref=f3e299]
+                - cell "671B / 37B" [ref=f3e300]
+                - cell "256 + 1 shared, top 8" [ref=f3e301]
+                - cell "Auxiliary-loss-free balancing" [ref=f3e302]
+              - row [ref=f3e303]:
+                - cell "Qwen3.6-35B-A3B" [ref=f3e304]
+                - cell "April 2026" [ref=f3e305]
+                - cell "35B / 3B" [ref=f3e306]
+                - cell "256, top 8 + 1 shared" [ref=f3e307]
+                - cell "Gated DeltaNet and gated attention layers" [ref=f3e308]
+              - row [ref=f3e309]:
+                - cell "DeepSeek-V4-Pro and Flash" [ref=f3e310]
+                - cell "April 2026" [ref=f3e311]
+                - cell "1.6T / 49B and 284B / 13B" [ref=f3e312]
+                - cell "384 and 256, top 6" [ref=f3e313]
+                - cell "Card calls it a preview; experts in FP4" [ref=f3e314]
+              - row [ref=f3e315]:
+                - cell "Qwen3.8-Flash-Next" [ref=f3e316]
+                - cell "August 2026" [ref=f3e317]
+                - cell "125B / 6B (plus 51B n-gram embedding)" [ref=f3e318]
+                - cell "512, 10 routed + 1 shared" [ref=f3e319]
+                - cell "Card figures; read on 8 October 2026" [ref=f3e320]
+              - row [ref=f3e321]:
+                - cell "Kimi K3" [ref=f3e322]
+                - cell "June 2026" [ref=f3e323]
+                - cell "2.8T / 104B" [ref=f3e324]
+                - cell "896 + 2 shared, top 16" [ref=f3e325]
+                - cell "MXFP4 weights, quantisation-aware training" [ref=f3e326]
+              - row [ref=f3e327]:
+                - cell "Kolibri-1" [ref=f3e328]
+                - cell "October 2026" [ref=f3e329]
+                - cell "78.1B / 3.46B" [ref=f3e330]
+                - cell "384, 1 shared + 6 routed" [ref=f3e331]
+                - cell "Experts in fp8 blocks; router in bf16" [ref=f3e332]
+          - 'figure "Compare each blue bar with the orange bar beneath it: the active share is 27.6 per cent for Mixtral and 3 to 5 per cent for most 2026 models. Figures are from the cards and papers in the table." [ref=f3e333]':
+            - generic [ref=f3e334]:
+              - 'button "Enlarge: Horizontal bars on a log axis for nine mixture-of-experts models, each with total parameters in blue and activated parameters in orange, from Mixtral 8x7B at 46.7B total and 12.9B active to Kimi K3 at 2,800B total and 104B active" [ref=f3e335]':
+                - img "Horizontal bars on a log axis for nine mixture-of-experts models, each with total parameters in blue and activated parameters in orange, from Mixtral 8x7B at 46.7B total and 12.9B active to Kimi K3 at 2,800B total and 104B active" [ref=f3e336]
+              - button "View infographic larger" [ref=f3e337] [cursor=pointer]:
+                - generic [ref=f3e340]: Expand
+          - paragraph [ref=f3e342]: "Later revisions already exist for some rows: the Hub lists DeepSeek-V4-Pro-0813 (August 2026, same expert layout in its config) and DeepSeek-V4.1-Flash (September 2026, a multimodal model whose card gives 552B backbone parameters). The table keeps the first card of each family that this chapter read in full."
+          - paragraph [ref=f3e343]:
+            - text: "Two trends stand out. Experts keep getting more numerous and smaller, and the active fraction keeps falling: from 27.6 per cent in Mixtral to 3 to 9 per cent in the 2026 models. And expert weights are stored in 4 or 8 bits, which links back to the"
+            - link "previous chapter" [ref=f3e344] [cursor=pointer]:
+              - /url: /docs/llm-engineering/mixed-precision-and-numerics
+            - text: .
+          - heading [level=2] [ref=f3e345]:
+            - text: A real system that works this way
+            - link "Direct link to A real system that works this way" [ref=f3e346] [cursor=pointer]:
+              - /url: "#a-real-system-that-works-this-way"
+              - text: "#"
+          - paragraph [ref=f3e347]:
+            - strong [ref=f3e348]: Mixtral 8x7B
+            - text: "is the clearest open example: a Mistral 7B-style model with the feed-forward block replaced by eight experts and top-2 routing. The paper reports that it matches or outperforms Llama 2 70B and GPT-3.5 across the benchmarks it evaluated, using 13B active parameters. Those are the authors' evaluations, from December 2023."
+          - paragraph [ref=f3e349]:
+            - strong [ref=f3e350]: DeepSeek-V3
+            - text: is the best-documented training system. Its report describes the 256 routed experts per layer, the bias-based balancing, the 4-node routing limit and fp8 training, as covered above and in the last chapter.
+          - paragraph [ref=f3e351]:
+            - strong [ref=f3e352]: The Switch Transformer
+            - text: (2021) is the origin of the single-expert, balancing-loss and capacity-factor recipe, and reports models of up to a trillion parameters.
+          - heading [level=2] [ref=f3e353]:
+            - text: Code you can run
+            - link "Direct link to Code you can run" [ref=f3e354] [cursor=pointer]:
+              - /url: "#code-you-can-run"
+              - text: "#"
+          - paragraph [ref=f3e355]:
+            - text: Five blocks. Blocks 1 to 3 and 5 run in a few seconds on the CPU. Block 4 builds large models on the
+            - code [ref=f3e356]: meta
+            - text: device, which allocates no memory, and reads configs from the Hub.
+          - heading [level=3] [ref=f3e357]:
+            - text: 1. Routing by hand, then a seeded router at scale
+            - link "Direct link to 1. Routing by hand, then a seeded router at scale" [ref=f3e358] [cursor=pointer]:
+              - /url: "#1-routing-by-hand-then-a-seeded-router-at-scale"
+              - text: "#"
+          - paragraph [ref=f3e359]: The 8-token example in numpy, with its capacity table, then a seeded simulation of 1,024 tokens, 16 experts and top-2 routing with a "skew" that makes some experts favourites. This simulation is the one the lab runs.
+          - code [ref=f3e363]:
+            - generic [ref=f3e364]: import math
+            - generic [ref=f3e366]: import numpy as np
+            - generic [ref=f3e368]: probs = np.array([
+            - generic [ref=f3e369]: "[0.7, 0.1, 0.1, 0.1], [0.6, 0.2, 0.1, 0.1], [0.5, 0.3, 0.1, 0.1], [0.4, 0.3, 0.2, 0.1],"
+            - generic [ref=f3e370]: "[0.4, 0.2, 0.3, 0.1], [0.2, 0.5, 0.2, 0.1], [0.2, 0.4, 0.3, 0.1], [0.1, 0.2, 0.6, 0.1],"
+            - generic [ref=f3e371]: "])"
+            - generic [ref=f3e372]: T, N = probs.shape
+            - generic [ref=f3e373]: choice = probs.argmax(axis=1)
+            - generic [ref=f3e374]: counts = np.bincount(choice, minlength=N)
+            - generic [ref=f3e375]: f = counts / T
+            - generic [ref=f3e376]: P = probs.mean(axis=0)
+            - generic [ref=f3e377]: aux = N * float((f * P).sum())
+            - generic [ref=f3e378]: "print(\"the hand example: 8 tokens, 4 experts, each token goes to its top expert\")"
+            - generic [ref=f3e379]: print("tokens per expert:", counts.tolist(), " f =", f.tolist())
+            - generic [ref=f3e380]: print("mean router probability P =", np.round(P, 4).tolist())
+            - generic [ref=f3e381]: "print(f\"balance term N * sum(f * P) = {aux:.4f} (1.0000 when perfectly balanced)\")"
+            - generic [ref=f3e382]: "for cf in (1.0, 1.5, 2.5):"
+            - generic [ref=f3e383]: capacity = math.ceil(cf * T / N)
+            - generic [ref=f3e384]: kept = np.minimum(counts, capacity)
+            - generic [ref=f3e385]: "print(f\"capacity factor {cf}: room for {capacity} tokens per expert, dropped {T - kept.sum()} of {T}, slots used {kept.sum()} of {capacity * N}\")"
+            - generic [ref=f3e388]: "def mulberry32(seed):"
+            - generic [ref=f3e389]: state = [seed & 0xFFFFFFFF]
+            - generic [ref=f3e391]: "def draw():"
+            - generic [ref=f3e392]: state[0] = (state[0] + 0x6D2B79F5) & 0xFFFFFFFF
+            - generic [ref=f3e393]: t = state[0]
+            - generic [ref=f3e394]: t = ((t ^ (t >> 15)) * (t | 1)) & 0xFFFFFFFF
+            - generic [ref=f3e395]: t ^= (t + (((t ^ (t >> 7)) * (t | 61)) & 0xFFFFFFFF)) & 0xFFFFFFFF
+            - generic [ref=f3e396]: return ((t ^ (t >> 14)) & 0xFFFFFFFF) / 4294967296.0
+            - generic [ref=f3e398]: return draw
+            - generic [ref=f3e401]: "def simulate(n_experts, k, tokens, cf, skew, seed=7):"
+            - generic [ref=f3e402]: draw = mulberry32(seed)
+            - generic [ref=f3e404]: "def gauss():"
+            - generic [ref=f3e405]: u1, u2 = max(draw(), 1e-12), draw()
+            - generic [ref=f3e406]: return math.sqrt(-2 * math.log(u1)) * math.cos(2 * math.pi * u2)
+            - generic [ref=f3e408]: bias = np.array([gauss() for _ in range(n_experts)])
+            - generic [ref=f3e409]: logits = np.array([[gauss() + skew * bias[e] for e in range(n_experts)] for _ in range(tokens)])
+            - generic [ref=f3e410]: p = np.exp(logits - logits.max(axis=1, keepdims=True))
+            - generic [ref=f3e411]: p /= p.sum(axis=1, keepdims=True)
+            - generic [ref=f3e412]: top = np.argsort(-logits, axis=1)[:, :k]
+            - generic [ref=f3e413]: counts = np.bincount(top.ravel(), minlength=n_experts)
+            - generic [ref=f3e414]: f = counts / (tokens * k)
+            - generic [ref=f3e415]: aux = n_experts * float((f * p.mean(axis=0)).sum())
+            - generic [ref=f3e416]: capacity = math.ceil(cf * tokens * k / n_experts)
+            - generic [ref=f3e417]: kept = np.minimum(counts, capacity)
+            - generic [ref=f3e418]: return aux, counts.max() / (tokens * k / n_experts), 1 - kept.sum() / (tokens * k), kept.sum() / (capacity * n_experts)
+            - generic [ref=f3e421]: print()
+            - generic [ref=f3e422]: print("1,024 tokens, 16 experts, top-2, capacity factor 1.25, seeded router; skew makes some experts favourites")
+            - generic [ref=f3e423]: print("skew balance term busiest expert / average slots dropped capacity used")
+            - generic [ref=f3e424]: "for skew in (0.0, 0.25, 0.5, 1.0):"
+            - generic [ref=f3e425]: aux, busiest, dropped, used = simulate(16, 2, 1024, 1.25, skew)
+            - generic [ref=f3e426]: "print(f\"{skew:5.2f} {aux:12.4f} {busiest:24.2f} {dropped:13.1%} {used:13.1%}\")"
+            - generic [ref=f3e427]: print()
+            - generic [ref=f3e428]: print("same router, skew 0.5, different capacity factors")
+            - generic [ref=f3e429]: "for cf in (1.0, 1.25, 1.5, 2.0, 3.0):"
+            - generic [ref=f3e430]: aux, busiest, dropped, used = simulate(16, 2, 1024, cf, 0.5)
+            - generic [ref=f3e431]: "print(f\"capacity factor {cf:4.2f}: dropped {dropped:6.1%}, capacity used {used:6.1%}\")"
+          - paragraph [ref=f3e432]:
+            - strong [ref=f3e433]: Reading the output.
+            - text: The hand example prints counts 5, 2, 1, 0, a balance term of 1.3625 and drops of 3, 2 and 0 tokens at capacity factors 1.0, 1.5 and 2.5. In the simulation, no skew gives a balance term of 1.0019, a busiest expert 1.10 times the average, and 80.0 per cent of capacity used, which is exactly 1 / 1.25. Skew 0.5 gives 1.5836, 3.72 times the average and 28.5 per cent of slots dropped. At that skew, raising the capacity factor from 1.25 to 3.0 cuts drops from 28.5 to 4.5 per cent but leaves only 31.8 per cent of capacity in use.
+          - paragraph [ref=f3e434]:
+            - strong [ref=f3e435]: Line by line.
+          - list [ref=f3e436]:
+            - listitem [ref=f3e437]:
+              - code [ref=f3e438]: mulberry32
+              - text: is a small seeded random generator; the lab uses the same one so both give the same numbers.
+            - listitem [ref=f3e439]:
+              - code [ref=f3e440]: skew * bias[e]
+              - text: gives each expert a fixed advantage for every token, which is how a router develops favourites.
+            - listitem [ref=f3e441]:
+              - code [ref=f3e442]: kept = np.minimum(counts, capacity)
+              - text: "is the capacity rule: whatever an expert receives beyond its room is dropped."
+          - heading [level=3] [ref=f3e443]:
+            - text: 2. Training a toy mixture of experts with three kinds of balancing
+            - link "Direct link to 2. Training a toy mixture of experts with three kinds of balancing" [ref=f3e444] [cursor=pointer]:
+              - /url: "#2-training-a-toy-mixture-of-experts-with-three-kinds-of-balancing"
+              - text: "#"
+          - paragraph [ref=f3e445]: Eight small experts, top-2 routing, and data in which cluster 0 is eight times as common as cluster 7. We train with no balancing, with the Switch-style loss at two strengths, and with a DeepSeek-style bias update, and look at the last 100 steps averaged over 3 seeds.
+          - code [ref=f3e449]:
+            - generic [ref=f3e450]: import numpy as np
+            - generic [ref=f3e451]: import torch
+            - generic [ref=f3e452]: import torch.nn as nn
+            - generic [ref=f3e453]: import torch.nn.functional as F
+            - generic [ref=f3e455]: E, D, K, STEPS, BATCH = 8, 16, 2, 600, 256
+            - generic [ref=f3e458]: "def train(method, seed, alpha=0.0, gamma=0.003):"
+            - generic [ref=f3e459]: torch.manual_seed(seed)
+            - generic [ref=f3e460]: centres = torch.randn(E, D) * 2.0
+            - generic [ref=f3e461]: maps = torch.randn(E, D, D) / D**0.5
+            - generic [ref=f3e462]: router = nn.Linear(D, E, bias=False)
+            - generic [ref=f3e463]: "with torch.no_grad():"
+            - generic [ref=f3e464]: router.weight.mul_(0.1)
+            - generic [ref=f3e465]: experts = nn.ModuleList([nn.Sequential(nn.Linear(D, 32), nn.GELU(), nn.Linear(32, D)) for _ in range(E)])
+            - generic [ref=f3e466]: opt = torch.optim.Adam(list(router.parameters()) + list(experts.parameters()), lr=3e-3)
+            - generic [ref=f3e467]: freq = 1.0 / torch.arange(1, E + 1).float()
+            - generic [ref=f3e468]: freq = freq / freq.sum()
+            - generic [ref=f3e469]: bias = torch.zeros(E)
+            - generic [ref=f3e470]: data = torch.Generator().manual_seed(seed + 100)
+            - generic [ref=f3e471]: history = []
+            - generic [ref=f3e472]: "for _ in range(STEPS):"
+            - generic [ref=f3e473]: cluster = torch.multinomial(freq, BATCH, replacement=True, generator=data)
+            - generic [ref=f3e474]: x = centres[cluster] + 0.5 * torch.randn(BATCH, D, generator=data)
+            - generic [ref=f3e475]: target = torch.einsum("bd,bde->be", x, maps[cluster])
+            - generic [ref=f3e476]: logits = router(x)
+            - generic [ref=f3e477]: chosen = (logits + bias).topk(K, dim=-1).indices
+            - generic [ref=f3e478]: gate = torch.gather(logits, 1, chosen).softmax(-1)
+            - generic [ref=f3e479]: out = torch.zeros_like(x)
+            - generic [ref=f3e480]: "for e in range(E):"
+            - generic [ref=f3e481]: rows, slot = (chosen == e).nonzero(as_tuple=True)
+            - generic [ref=f3e482]: "if len(rows):"
+            - generic [ref=f3e483]: out[rows] += gate[rows, slot].unsqueeze(-1) * experts[e](x[rows])
+            - generic [ref=f3e484]: share = torch.bincount(chosen.reshape(-1), minlength=E).float() / (BATCH * K)
+            - generic [ref=f3e485]: balance = E * (share * logits.softmax(-1).mean(0)).sum()
+            - generic [ref=f3e486]: task = F.mse_loss(out, target)
+            - generic [ref=f3e487]: opt.zero_grad()
+            - generic [ref=f3e488]: (task + alpha * balance).backward()
+            - generic [ref=f3e489]: opt.step()
+            - generic [ref=f3e490]: "if method == \"bias\":"
+            - generic [ref=f3e491]: bias -= gamma * torch.sign(share - 1.0 / E)
+            - generic [ref=f3e492]: history.append((task.item(), share.max().item(), share.min().item()))
+            - generic [ref=f3e493]: return np.array(history[-100:]).mean(axis=0)
+            - generic [ref=f3e496]: print("top-2 routing, 8 experts, cluster 0 is 8 times as common as cluster 7; mean of the last 100 steps and 3 seeds")
+            - generic [ref=f3e497]: print("method task loss busiest expert share quietest expert share")
+            - generic [ref=f3e498]: for label, kw in [("no balancing", dict(method="none")), ("aux loss, alpha 0.01", dict(method="aux", alpha=0.01)),
+            - generic [ref=f3e499]: "(\"aux loss, alpha 0.1\", dict(method=\"aux\", alpha=0.1)), (\"bias update (loss-free)\", dict(method=\"bias\"))]:"
+            - generic [ref=f3e500]: r = np.mean([train(seed=s, **kw) for s in range(3)], axis=0)
+            - generic [ref=f3e501]: "print(f\"{label:<24} {r[0]:9.4f} {r[1]:19.3f} {r[2]:21.3f}\")"
+            - generic [ref=f3e502]: "print(f\"a perfectly even share is {1 / E:.3f} for every expert\")"
+          - paragraph [ref=f3e503]:
+            - strong [ref=f3e504]: Reading the output.
+            - text: With no balancing the busiest expert takes 26.8 per cent of the slots, the quietest only 3.0 per cent (an even share is 12.5 per cent), and the task loss is 0.0177. A balance loss of 0.01 improves the spread slightly (20.5 and 6.0 per cent) at the same loss, 0.0180. A coefficient of 0.1 balances better (17.5 and 8.7 per cent) but the loss rises to 0.0290. The bias update gets 18.4 and 9.7 per cent with the lowest loss, 0.0171.
+          - paragraph [ref=f3e505]:
+            - strong [ref=f3e506]: What this does and does not show.
+            - text: "The pattern agrees with DeepSeek's argument: a strong auxiliary loss trades quality for balance and a bias does not. But this is a toy: 600 steps, 3 seeds, a made-up skewed dataset and one bias step size (0.003; in a separate run, not shown here, steps of 0.01 and 0.03 gave worse losses, 0.0233 and 0.0270). The data is skewed on purpose, because with evenly spread clusters the router balanced itself and no method was needed. It is evidence of the mechanism, not a ranking."
+          - paragraph [ref=f3e507]:
+            - strong [ref=f3e508]: Line by line.
+          - list [ref=f3e509]:
+            - listitem [ref=f3e510]:
+              - code [ref=f3e511]: (logits + bias).topk(K)
+              - text: picks the experts with the bias;
+              - code [ref=f3e512]: gate
+              - text: is computed from the original
+              - code [ref=f3e513]: logits
+              - text: ", as in DeepSeek-V3."
+            - listitem [ref=f3e514]:
+              - code [ref=f3e515]: bias -= gamma * torch.sign(share - 1.0 / E)
+              - text: lowers the bias of experts above an even share and raises those below.
+            - listitem [ref=f3e516]:
+              - code [ref=f3e517]: balance
+              - text: is the Switch term, computed from the share of slots and the mean router probability.
+          - heading [level=3] [ref=f3e518]:
+            - text: 3. The real library's balancing loss
+            - link "Direct link to 3. The real library's balancing loss" [ref=f3e519] [cursor=pointer]:
+              - /url: "#3-the-real-librarys-balancing-loss"
+              - text: "#"
+          - paragraph [ref=f3e520]:
+            - text: We build a tiny Mixtral with the real Transformers classes (8 experts, top-2), take its router outputs and compare the library's
+            - code [ref=f3e521]: load_balancing_loss_func
+            - text: with the formula from block 1.
+          - code [ref=f3e525]:
+            - generic [ref=f3e526]: import torch
+            - generic [ref=f3e527]: from transformers import MixtralConfig, MixtralForCausalLM
+            - generic [ref=f3e528]: from transformers.models.mixtral.modeling_mixtral import load_balancing_loss_func
+            - generic [ref=f3e530]: E, K, COEF = 8, 2, 0.02
+            - generic [ref=f3e531]: CFG = MixtralConfig(vocab_size=512, hidden_size=64, intermediate_size=128, num_hidden_layers=2,
+            - generic [ref=f3e532]: num_attention_heads=4, num_key_value_heads=2, num_local_experts=E,
+            - generic [ref=f3e533]: num_experts_per_tok=K, router_aux_loss_coef=COEF)
+            - generic [ref=f3e536]: "def switch_balance(router_logits):"
+            - generic [ref=f3e537]: p = torch.cat(router_logits).softmax(-1)
+            - generic [ref=f3e538]: chosen = p.topk(K, dim=-1).indices
+            - generic [ref=f3e539]: counts = torch.bincount(chosen.reshape(-1), minlength=E).float()
+            - generic [ref=f3e540]: share = counts / counts.sum()
+            - generic [ref=f3e541]: return E * (share * p.mean(0)).sum()
+            - generic [ref=f3e544]: torch.manual_seed(0)
+            - generic [ref=f3e545]: model = MixtralForCausalLM(CFG).eval()
+            - generic [ref=f3e546]: tokens = torch.randint(0, 512, (4, 32), generator=torch.Generator().manual_seed(1))
+            - generic [ref=f3e547]: "with torch.no_grad():"
+            - generic [ref=f3e548]: plain = model(tokens, labels=tokens)
+            - generic [ref=f3e549]: routed = model(tokens, labels=tokens, output_router_logits=True)
+            - generic [ref=f3e551]: lib = load_balancing_loss_func(routed.router_logits, E, K)
+            - generic [ref=f3e552]: mine = switch_balance(routed.router_logits)
+            - generic [ref=f3e553]: "print(f\"router logits per layer: {len(routed.router_logits)} tensors of shape {tuple(routed.router_logits[0].shape)} (tokens x experts)\")"
+            - generic [ref=f3e554]: "print(f\"library balance loss {lib.item():.4f} Switch formula {mine.item():.4f} formula x k {K * mine.item():.4f}\")"
+            - generic [ref=f3e555]: "print(f\"output aux_loss {routed.aux_loss.item():.4f} equals the library function: {torch.allclose(routed.aux_loss, lib)}\")"
+            - generic [ref=f3e556]: "print(f\"loss without routing outputs {plain.loss.item():.4f} loss with them {routed.loss.item():.4f} difference {routed.loss.item() - plain.loss.item():.4f}\")"
+            - generic [ref=f3e557]: "print(f\"coefficient x aux loss = {COEF * lib.item():.4f}\")"
+            - generic [ref=f3e559]: experts = sum(p.numel() for n, p in model.named_parameters() if ".experts." in n)
+            - generic [ref=f3e560]: total = sum(p.numel() for p in model.parameters())
+            - generic [ref=f3e561]: active = total - experts * (E - K) / E
+            - generic [ref=f3e562]: print()
+            - generic [ref=f3e563]: "print(f\"tiny Mixtral: {total:,} parameters, {experts:,} of them in experts ({experts / total:.1%})\")"
+            - generic [ref=f3e564]: "print(f\"each token uses {K} of {E} experts: {active:,.0f} active parameters ({active / total:.1%})\")"
+          - paragraph [ref=f3e565]:
+            - strong [ref=f3e566]: Reading the output.
+            - text: The library's balance loss is 2.0059, exactly twice the Switch formula (1.0030), because the library counts every one of the k selections per token, so a perfectly even router scores k, here 2, not 1. The loss with routing outputs enabled is 6.2624, against 6.2223 without, and the difference of 0.0401 is the coefficient 0.02 times 2.0059. In this tiny model 81.1 per cent of parameters are in experts and 39.2 per cent are active.
+          - paragraph [ref=f3e567]:
+            - strong [ref=f3e568]: Line by line.
+          - list [ref=f3e569]:
+            - listitem [ref=f3e570]:
+              - code [ref=f3e571]: output_router_logits=True
+              - text: asks each layer to return its router scores, one tensor per layer, tokens by experts.
+            - listitem [ref=f3e572]:
+              - code [ref=f3e573]: torch.cat(router_logits)
+              - text: pools all layers' tokens, as the library does.
+            - listitem [ref=f3e574]:
+              - code [ref=f3e575]: experts
+              - text: counts parameters whose names contain
+              - code [ref=f3e576]: .experts.
+              - text: ", which in Transformers 5.18 are the fused expert weight tensors."
+          - heading [level=3] [ref=f3e577]:
+            - text: 4. Total and active parameters of real models, from configs
+            - link "Direct link to 4. Total and active parameters of real models, from configs" [ref=f3e578] [cursor=pointer]:
+              - /url: "#4-total-and-active-parameters-of-real-models-from-configs"
+              - text: "#"
+          - paragraph [ref=f3e579]:
+            - text: We build four real mixture-of-experts models on the
+            - code [ref=f3e580]: meta
+            - text: device from their Hub configs and count parameters. For four newer models whose classes are not in this Transformers release, we compute the routed-expert parameters from
+            - code [ref=f3e581]: config.json
+            - text: alone. Card numbers are printed beside ours.
+          - code [ref=f3e585]:
+            - generic [ref=f3e586]: import json
+            - generic [ref=f3e587]: import os
+            - generic [ref=f3e589]: os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+            - generic [ref=f3e590]: import torch
+            - generic [ref=f3e591]: from huggingface_hub import hf_hub_download
+            - generic [ref=f3e592]: from transformers import AutoConfig, AutoModelForCausalLM
+            - generic [ref=f3e594]: "COUNTED = {"
+            - generic [ref=f3e595]: "\"mistralai/Mixtral-8x7B-v0.1\": (8, 2, \"47B / 13B\"),"
+            - generic [ref=f3e596]: "\"openai/gpt-oss-120b\": (128, 4, \"117B / 5.1B\"),"
+            - generic [ref=f3e597]: "\"deepseek-ai/DeepSeek-V3\": (256, 8, \"671B / 37B\"),"
+            - generic [ref=f3e598]: "\"Qwen/Qwen3-30B-A3B\": (128, 8, \"30.5B / 3.3B\"),"
+            - generic [ref=f3e599]: "}"
+            - generic [ref=f3e600]: print("counted on the meta device with the real Transformers classes (billions)")
+            - generic [ref=f3e601]: "print(\"model experts top-k total in experts active (all) active (no input embedding) card: total / active\")"
+            - generic [ref=f3e602]: "for repo, (n_exp, k, card) in COUNTED.items():"
+            - generic [ref=f3e603]: config = AutoConfig.from_pretrained(repo)
+            - generic [ref=f3e604]: "with torch.device(\"meta\"):"
+            - generic [ref=f3e605]: model = AutoModelForCausalLM.from_config(config)
+            - generic [ref=f3e606]: total = sum(p.numel() for p in model.parameters())
+            - generic [ref=f3e607]: experts = sum(p.numel() for n, p in model.named_parameters() if ".experts." in n and "shared" not in n)
+            - generic [ref=f3e608]: active = total - experts * (1 - k / n_exp)
+            - generic [ref=f3e609]: embedding = model.get_input_embeddings().weight.numel()
+            - generic [ref=f3e610]: "print(f\"{repo.split('/')[-1]:<30} {n_exp:>7} {k:>6} {total / 1e9:7.2f} {experts / 1e9:12.2f} {active / 1e9:14.2f} {(active - embedding) / 1e9:29.2f} {card}\")"
+            - generic [ref=f3e612]: "ESTIMATED = {"
+            - generic [ref=f3e613]: "\"deepseek-ai/DeepSeek-V4-Pro\": (\"n_routed_experts\", \"moe_intermediate_size\", \"hidden_size\", 61, \"1.6T / 49B\"),"
+            - generic [ref=f3e614]: "\"moonshotai/Kimi-K3\": (\"num_experts\", \"moe_intermediate_size\", \"routed_expert_hidden_size\", 92, \"2.8T / 104B\"),"
+            - generic [ref=f3e615]: "\"Aleph-Alpha/Kolibri-1\": (\"num_experts\", \"moe_intermediate_size\", \"hidden_size\", 50, \"78.1B / 3.46B\"),"
+            - generic [ref=f3e616]: "\"Qwen/Qwen3.6-35B-A3B\": (\"num_experts\", \"moe_intermediate_size\", \"hidden_size\", 40, \"35B / 3B\"),"
+            - generic [ref=f3e617]: "}"
+            - generic [ref=f3e618]: print()
+            - generic [ref=f3e619]: "print(\"models whose classes are not in this Transformers release: routed-expert parameters from config.json alone, 3 matrices per expert\")"
+            - generic [ref=f3e620]: "for repo, (e_key, f_key, h_key, layers, card) in ESTIMATED.items():"
+            - generic [ref=f3e621]: c = json.load(open(hf_hub_download(repo, "config.json")))
+            - generic [ref=f3e622]: c = c.get("text_config", c)
+            - generic [ref=f3e623]: per_expert = 3 * c[h_key] * c[f_key]
+            - generic [ref=f3e624]: routed = layers * c[e_key] * per_expert
+            - generic [ref=f3e625]: "print(f\"{repo.split('/')[-1]:<30} {c[e_key]:>5} experts of {per_expert / 1e6:6.1f}M in {layers} layers = {routed / 1e9:8.1f}B card total / active: {card}\")"
+          - paragraph [ref=f3e626]:
+            - strong [ref=f3e627]: Reading the output.
+            - text: "Counts match the cards: Mixtral 46.70 billion total and 12.88 active (card 47B and 13B), DeepSeek-V3 671.03 and 37.55 (671B and 37B), Qwen3-30B-A3B 30.53 and 3.35 (30.5B and 3.3B). For gpt-oss-120b the total is 116.83 (117B), and the active count is 5.71, or 5.13 without the input embedding, which is how the card's 5.1B arises. In the second table, routed experts alone account for most of each model: 1,547 billion of DeepSeek-V4-Pro's 1.6 trillion, 2,723 billion of Kimi K3's 2.8 trillion, 75.5 of Kolibri-1's 78.1 and 32.2 of Qwen3.6's 35."
+          - paragraph [ref=f3e628]:
+            - strong [ref=f3e629]: What this does not show.
+            - text: "The second table is an estimate: it assumes every layer is a mixture-of-experts layer (Kimi K3 has one dense layer, so 92 are counted), it uses Kimi K3's latent expert width (3,584) as the expert input size, and it ignores shared experts, attention and embeddings. It checks that the card's total is plausible, not the exact active count."
+          - paragraph [ref=f3e630]:
+            - strong [ref=f3e631]: Line by line.
+          - list [ref=f3e632]:
+            - listitem [ref=f3e633]:
+              - code [ref=f3e634]: AutoModelForCausalLM.from_config
+              - text: under
+              - code [ref=f3e635]: torch.device("meta")
+              - text: builds the architecture with no weights in memory.
+            - listitem [ref=f3e636]:
+              - code [ref=f3e637]: experts * (1 - k / n_exp)
+              - text: is the number of expert parameters that a token does not use.
+            - listitem [ref=f3e638]:
+              - code [ref=f3e639]: get_input_embeddings().weight.numel()
+              - text: is the embedding size that some cards leave out of "active".
+          - heading [level=3] [ref=f3e640]:
+            - text: 5. Expert parallelism on two real processes
+            - link "Direct link to 5. Expert parallelism on two real processes" [ref=f3e641] [cursor=pointer]:
+              - /url: "#5-expert-parallelism-on-two-real-processes"
+              - text: "#"
+          - paragraph [ref=f3e642]:
+            - text: Four experts, two per rank, 16 tokens per rank, top-2. Each rank sends token copies to the ranks that hold their experts with
+            - code [ref=f3e643]: all_to_all_single
+            - text: ", runs its experts, sends the results back, and combines them. The output is compared with one process running everything. We run it with an even router and with one that favours expert 0."
+          - code [ref=f3e647]:
+            - generic [ref=f3e648]: import os
+            - generic [ref=f3e649]: import socket
+            - generic [ref=f3e651]: import torch
+            - generic [ref=f3e652]: import torch.distributed as dist
+            - generic [ref=f3e653]: import torch.multiprocessing as mp
+            - generic [ref=f3e654]: import torch.nn as nn
+            - generic [ref=f3e656]: E, K, D, TOKENS, WORLD = 4, 2, 16, 32, 2
+            - generic [ref=f3e659]: "def build(seed):"
+            - generic [ref=f3e660]: torch.manual_seed(seed)
+            - generic [ref=f3e661]: router = nn.Linear(D, E, bias=False)
+            - generic [ref=f3e662]: experts = nn.ModuleList([nn.Sequential(nn.Linear(D, 32), nn.GELU(), nn.Linear(32, D)) for _ in range(E)])
+            - generic [ref=f3e663]: return router, experts
+            - generic [ref=f3e666]: "def route(router, x, skew):"
+            - generic [ref=f3e667]: logits = router(x) + torch.tensor([skew, 0.0, 0.0, 0.0])
+            - generic [ref=f3e668]: top = logits.topk(K, dim=-1)
+            - generic [ref=f3e669]: return top.indices, top.values.softmax(-1)
+            - generic [ref=f3e672]: "def reference(router, experts, x, skew):"
+            - generic [ref=f3e673]: chosen, gate = route(router, x, skew)
+            - generic [ref=f3e674]: out = torch.zeros_like(x)
+            - generic [ref=f3e675]: "for t in range(x.shape[0]):"
+            - generic [ref=f3e676]: "for s in range(K):"
+            - generic [ref=f3e677]: out[t] += gate[t, s] * experts[chosen[t, s]](x[t])
+            - generic [ref=f3e678]: return out
+            - generic [ref=f3e681]: "def free_port():"
+            - generic [ref=f3e682]: "with socket.socket() as s:"
+            - generic [ref=f3e683]: s.bind(("127.0.0.1", 0))
+            - generic [ref=f3e684]: return s.getsockname()[1]
+            - generic [ref=f3e687]: "def worker(rank, world, port, skew):"
+            - generic [ref=f3e688]: os.environ["MASTER_ADDR"] = "127.0.0.1"
+            - generic [ref=f3e689]: os.environ["MASTER_PORT"] = str(port)
+            - generic [ref=f3e690]: dist.init_process_group("gloo", rank=rank, world_size=world)
+            - generic [ref=f3e691]: router, experts = build(0)
+            - generic [ref=f3e692]: x_all = torch.randn(TOKENS, D, generator=torch.Generator().manual_seed(1))
+            - generic [ref=f3e693]: mine = slice(rank * TOKENS // world, (rank + 1) * TOKENS // world)
+            - generic [ref=f3e694]: x = x_all[mine]
+            - generic [ref=f3e695]: "with torch.no_grad():"
+            - generic [ref=f3e696]: chosen, gate = route(router, x, skew)
+            - generic [ref=f3e697]: slots = [(t, s) for t in range(x.shape[0]) for s in range(K)]
+            - generic [ref=f3e698]: "slots.sort(key=lambda ts: int(chosen[ts]) // (E // world))"
+            - generic [ref=f3e699]: dest = torch.tensor([int(chosen[ts]) // (E // world) for ts in slots])
+            - generic [ref=f3e700]: send_counts = torch.bincount(dest, minlength=world)
+            - generic [ref=f3e701]: recv_counts = torch.zeros_like(send_counts)
+            - generic [ref=f3e702]: dist.all_to_all_single(recv_counts, send_counts)
+            - generic [ref=f3e703]: payload = torch.stack([x[t] for t, _ in slots])
+            - generic [ref=f3e704]: ids = torch.tensor([int(chosen[ts]) for ts in slots], dtype=torch.float32)[:, None]
+            - generic [ref=f3e705]: packet = torch.cat([payload, ids], dim=1)
+            - generic [ref=f3e706]: inbox = torch.zeros(int(recv_counts.sum()), D + 1)
+            - generic [ref=f3e707]: dist.all_to_all_single(inbox, packet, recv_counts.tolist(), send_counts.tolist())
+            - generic [ref=f3e708]: done = torch.zeros(len(inbox), D)
+            - generic [ref=f3e709]: "for row, packet_row in enumerate(inbox):"
+            - generic [ref=f3e710]: done[row] = experts[int(packet_row[-1])](packet_row[:-1])
+            - generic [ref=f3e711]: back = torch.zeros(len(slots), D)
+            - generic [ref=f3e712]: dist.all_to_all_single(back, done, send_counts.tolist(), recv_counts.tolist())
+            - generic [ref=f3e713]: out = torch.zeros_like(x)
+            - generic [ref=f3e714]: "for row, (t, s) in enumerate(slots):"
+            - generic [ref=f3e715]: out[t] += gate[t, s] * back[row]
+            - generic [ref=f3e716]: err = (out - reference(router, experts, x_all, skew)[mine]).abs().max().item()
+            - generic [ref=f3e717]: stats = torch.tensor([err, float(send_counts[0]), float(send_counts[1]), float(recv_counts.sum())], dtype=torch.float64)
+            - generic [ref=f3e718]: table = [torch.zeros(4, dtype=torch.float64) for _ in range(world)]
+            - generic [ref=f3e719]: dist.all_gather(table, stats)
+            - generic [ref=f3e720]: "if rank == 0:"
+            - generic [ref=f3e721]: "print(f\"router favours expert 0 by {skew}\")"
+            - generic [ref=f3e722]: "for r, t in enumerate(table):"
+            - generic [ref=f3e723]: "print(f\" rank {r}: sends {int(t[1])} to rank 0 and {int(t[2])} to rank 1, receives {int(t[3])}, max error {t[0].item():.2e}\")"
+            - generic [ref=f3e724]: dist.barrier()
+            - generic [ref=f3e725]: dist.destroy_process_group()
+            - generic [ref=f3e728]: "if __name__ == \"__main__\":"
+            - generic [ref=f3e729]: "for skew in (0.0, 2.0):"
+            - generic [ref=f3e730]: mp.spawn(worker, args=(WORLD, free_port(), skew), nprocs=WORLD, join=True)
+          - paragraph [ref=f3e731]:
+            - strong [ref=f3e732]: Reading the output.
+            - text: The result matches a single process exactly (maximum error 0.00e+00) in both runs. With the favouring router, rank 0 sends 21 of its 32 token copies to itself and 11 to rank 1, and rank 1 sends 19 to rank 0 and 13 to itself, so rank 0 receives 40 and rank 1 only 24. The even mean is 32, so rank 0 is 25 per cent over it, and the step runs at the speed of rank 0, leaving rank 1 idle for 40 per cent of the time. With the even router, the two ranks receive 27 and 37, because 4 experts and 32 slots are too few for a perfectly even split.
+          - paragraph [ref=f3e733]:
+            - strong [ref=f3e734]: Line by line.
+          - list [ref=f3e735]:
+            - listitem [ref=f3e736]:
+              - code [ref=f3e737]: send_counts
+              - text: and
+              - code [ref=f3e738]: recv_counts
+              - text: are exchanged first with a small all-to-all, so each rank knows how big a message to expect.
+            - listitem [ref=f3e739]:
+              - code [ref=f3e740]: all_to_all_single(inbox, packet, recv_counts, send_counts)
+              - text: "takes the output and input split sizes: how many rows come from each rank, and how many go to each."
+            - listitem [ref=f3e741]: The expert id travels with each token as an extra column, so the receiver knows which expert to run.
+          - heading [level=3] [ref=f3e742]:
+            - text: Try it yourself
+            - link "Direct link to Try it yourself" [ref=f3e743] [cursor=pointer]:
+              - /url: "#try-it-yourself"
+              - text: "#"
+          - paragraph [ref=f3e744]: The lab is block 1's simulation with every setting exposed, and the same generator, so its numbers equal the printed ones. Its defaults (16 experts, top 2, 1,024 tokens, capacity factor 1.25, skew 0.5) reproduce the row 1.5836, 3.72 times the average, 28.5 per cent dropped and 57.2 per cent capacity used. The rounding of the numbers and the routing code were checked against a Python run on six other settings with a maximum difference of 2.2e-16.
+          - figure "Interactive Router balance, capacity and dropped tokens show data" [ref=f3e745]:
+            - generic [ref=f3e746]:
+              - generic [ref=f3e747]: Interactive
+              - generic [ref=f3e748]: Router balance, capacity and dropped tokens
+              - button "show data" [ref=f3e749] [cursor=pointer]
+            - generic [ref=f3e750]:
+              - generic [ref=f3e751]:
+                - text: experts
+                - combobox "experts" [ref=f3e752] [cursor=pointer]:
+                  - option "4"
+                  - option "8"
+                  - option "16" [selected]
+                  - option "32"
+                  - option "64"
+              - generic [ref=f3e753]:
+                - text: experts per token (top-k)
+                - combobox "experts per token (top-k)" [ref=f3e754] [cursor=pointer]:
+                  - option "1"
+                  - option "2" [selected]
+                  - option "3"
+                  - option "4"
+              - generic [ref=f3e755]:
+                - text: tokens
+                - combobox "tokens" [ref=f3e756] [cursor=pointer]:
+                  - option "256"
+                  - option "512"
+                  - option "1,024" [selected]
+                  - option "2,048"
+              - generic [ref=f3e757]:
+                - text: capacity factor
+                - slider "capacity factor 1.25" [ref=f3e758]: "1.25"
+                - generic [ref=f3e759]: "1.25"
+              - generic [ref=f3e760]:
+                - text: router skew
+                - slider "router skew 0.50" [ref=f3e761]: "0.5"
+                - generic [ref=f3e762]: "0.50"
+              - generic [ref=f3e763]: "16 experts, top 2: balance term 1.5836, busiest expert 3.72 times the average, 28.5 per cent of slots dropped, 57.2 per cent of capacity used"
+            - 'img "Bars of slots per expert against a capacity line. 16 experts, top 2: balance term 1.5836, busiest expert 3.72 times the average, 28.5 per cent of slots dropped, 57.2 per cent of capacity used" [ref=f3e765]':
+              - generic [ref=f3e766]: "0"
+              - generic [ref=f3e770]: "1"
+              - generic [ref=f3e773]: "2"
+              - generic [ref=f3e776]: "3"
+              - generic [ref=f3e779]: "4"
+              - generic [ref=f3e782]: "5"
+              - generic [ref=f3e786]: "6"
+              - generic [ref=f3e789]: "7"
+              - generic [ref=f3e792]: "8"
+              - generic [ref=f3e795]: "9"
+              - generic [ref=f3e799]: "10"
+              - generic [ref=f3e803]: "11"
+              - generic [ref=f3e807]: "12"
+              - generic [ref=f3e810]: "13"
+              - generic [ref=f3e813]: "14"
+              - generic [ref=f3e817]: "15"
+              - generic [ref=f3e820]: capacity 160
+              - generic [ref=f3e821]: even share 128.0
+              - generic [ref=f3e822]: balance 1.5836, dropped 28.5%, capacity used 57.2%
+            - list [ref=f3e823]:
+              - listitem [ref=f3e824]: slots sent to the expert
+              - listitem [ref=f3e826]: slots beyond capacity (dropped)
+            - paragraph [ref=f3e828]: "The defaults, 16 experts, top 2, 1,024 tokens, capacity factor 1.25 and skew 0.5, give the row printed by block 1: balance term 1.5836, busiest expert 3.72 times the average, 28.5 per cent dropped, 57.2 per cent of capacity used."
+          - paragraph [ref=f3e829]:
+            - strong [ref=f3e830]: What each control does.
+          - list [ref=f3e831]:
+            - listitem [ref=f3e832]:
+              - strong [ref=f3e833]: experts
+              - text: is the number of experts in the layer, and
+              - strong [ref=f3e834]: experts per token (top-k)
+              - text: is how many each token uses.
+            - listitem [ref=f3e835]:
+              - strong [ref=f3e836]: tokens
+              - text: is the number of tokens in the batch.
+            - listitem [ref=f3e837]:
+              - strong [ref=f3e838]: capacity factor
+              - text: sets the room per expert, as a multiple of an even share.
+            - listitem [ref=f3e839]:
+              - strong [ref=f3e840]: router skew
+              - text: gives experts fixed favourites; 0 is a router with no favourites.
+            - listitem [ref=f3e841]: The dashed line is capacity, the dotted line the even share; orange is what each expert drops.
+          - paragraph [ref=f3e842]:
+            - strong [ref=f3e843]: Try it yourself.
+          - list [ref=f3e844]:
+            - listitem [ref=f3e845]:
+              - text: Set
+              - strong [ref=f3e846]: router skew
+              - text: "to 0. The balance term falls to 1.0019, the busiest expert is 1.10 times the average, nothing is dropped, and capacity used is 80.0 per cent. Why: with no favourites the experts share the load, and a capacity of 1.25 times an even share is 80 per cent full."
+            - listitem [ref=f3e847]:
+              - text: Go back to skew 0.5 and move
+              - strong [ref=f3e848]: capacity factor
+              - text: "to 3.00. Drops fall from 28.5 to 4.5 per cent but capacity used falls from 57.2 to 31.8 per cent. Why: more room stops the drops but leaves most of the reserved slots empty, which is wasted memory and compute."
+            - listitem [ref=f3e849]:
+              - text: Set
+              - strong [ref=f3e850]: experts
+              - text: "to 64 with the other defaults. The balance term rises to 1.7509, the busiest expert to 7.84 times the average, and 33.3 per cent of slots are dropped. Why: with more experts each gets fewer tokens, so chance and favourites matter more. This is why balancing methods matter more as expert counts grow."
+          - heading [level=2] [ref=f3e851]:
+            - text: Production snippets (not run here)
+            - link "Direct link to Production snippets (not run here)" [ref=f3e852] [cursor=pointer]:
+              - /url: "#production-snippets-not-run-here"
+              - text: "#"
+          - generic [ref=f3e853]:
+            - generic [ref=f3e854]: Not run in this environment
+            - paragraph [ref=f3e859]:
+              - text: These need a GPU with about 80 GB of memory for gpt-oss-120b (the model card says it fits on one 80 GB GPU). The snippet follows the model card, with the argument name
+              - code [ref=f3e860]: dtype
+              - text: that Transformers 5 uses.
+          - paragraph [ref=f3e861]: "Loading a mixture-of-experts model is no different from loading a dense one; the library handles the routing:"
+          - code [ref=f3e865]:
+            - generic [ref=f3e866]: from transformers import pipeline
+            - generic [ref=f3e868]: pipe = pipeline("text-generation", model="openai/gpt-oss-120b", dtype="auto", device_map="auto")
+            - generic [ref=f3e869]: "messages = [{\"role\": \"user\", \"content\": \"Explain quantum mechanics clearly and concisely.\"}]"
+            - generic [ref=f3e870]: outputs = pipe(messages, max_new_tokens=256)
+            - generic [ref=f3e871]: print(outputs[0]["generated_text"][-1])
+          - heading [level=2] [ref=f3e872]:
+            - text: Designing with it
+            - link "Direct link to Designing with it" [ref=f3e873] [cursor=pointer]:
+              - /url: "#designing-with-it"
+              - text: "#"
+          - list [ref=f3e874]:
+            - listitem [ref=f3e875]:
+              - strong [ref=f3e876]: Plan memory with total parameters and compute with active ones.
+              - text: A 2.8-trillion-parameter model with 104 billion active still needs the memory for 2.8 trillion.
+            - listitem [ref=f3e877]:
+              - strong [ref=f3e878]: Compare models by both numbers, and by how the card counts.
+              - text: Block 4 shows the embedding convention moving gpt-oss-120b from 5.71 to 5.13 billion.
+            - listitem [ref=f3e879]:
+              - strong [ref=f3e880]: Watch the load, not only the loss.
+              - text: Log the share of tokens per expert and the drop rate during training. Block 2 shows the loss can look fine while one expert gets 27 per cent of the traffic.
+            - listitem [ref=f3e881]:
+              - strong [ref=f3e882]: Prefer gentle balancing.
+              - text: A large auxiliary loss costs quality (block 2); a bias update or a small coefficient costs less.
+            - listitem [ref=f3e883]:
+              - strong [ref=f3e884]: Budget capacity on purpose.
+              - text: Capacity factor 1.25 means 20 per cent of slots empty even when perfectly balanced (block 1).
+            - listitem [ref=f3e885]:
+              - strong [ref=f3e886]: Keep the router in higher precision.
+              - text: The Switch paper casts the router to float32 selectively, and the Kolibri-1 card keeps the router in bf16 while the experts are fp8.
+            - listitem [ref=f3e887]:
+              - strong [ref=f3e888]: Choose the parallel layout for the routing.
+              - text: Expert parallelism turns every layer into two all-to-alls; keep them on fast links, as DeepSeek-V3's node limit does.
+          - heading [level=2] [ref=f3e889]:
+            - text: Where this stands in 2026
+            - link "Direct link to Where this stands in 2026" [ref=f3e890] [cursor=pointer]:
+              - /url: "#where-this-stands-in-2026"
+              - text: "#"
+          - generic [ref=f3e891]:
+            - generic [ref=f3e892]: Industry view
+            - list [ref=f3e897]:
+              - listitem [ref=f3e898]:
+                - strong [ref=f3e899]: Mixture of experts is the common design in the large open models listed in the table above.
+                - text: The cards for DeepSeek-V4, Kimi K3, Qwen3.6, gpt-oss and Kolibri-1 all describe mixture-of-experts models; read on 7 and 8 October 2026.
+              - listitem [ref=f3e900]:
+                - strong [ref=f3e901]: The recipe is moving.
+                - text: More and smaller experts, shared experts, sigmoid or square-root-softplus scoring in several configs, and bias-based balancing. The Kolibri-1 card names its own balancing method (Exact Quantile Balancing); this chapter did not study it beyond what the card states.
+              - listitem [ref=f3e902]:
+                - strong [ref=f3e903]: Low-bit experts are normal.
+                - text: Cards report FP4, MXFP4 or fp8 experts for DeepSeek-V4, Kimi K3, gpt-oss and Kolibri-1.
+              - listitem [ref=f3e904]:
+                - strong [ref=f3e905]: "Not verified here:"
+                - text: benchmark claims in any card, GPU throughput, and the exact layer layouts of the 2026 models beyond what each config.json shows. The 2026 models were not downloaded or run.
+          - heading [level=2] [ref=f3e906]:
+            - text: Common mistakes
+            - link "Direct link to Common mistakes" [ref=f3e907] [cursor=pointer]:
+              - /url: "#common-mistakes"
+              - text: "#"
+          - list [ref=f3e908]:
+            - listitem [ref=f3e909]:
+              - strong [ref=f3e910]: Reading "8x7B" as 56 billion.
+              - text: The experts share attention and embeddings, so Mixtral has 46.70 billion. The names are marketing, not arithmetic. Count from the config, as block 4 does.
+            - listitem [ref=f3e911]:
+              - strong [ref=f3e912]: Sizing the GPU by active parameters.
+              - text: It feels right because that is what a token uses. But every expert must be resident. Use total parameters for weights.
+            - listitem [ref=f3e913]:
+              - strong [ref=f3e914]: Assuming experts are subject specialists.
+              - text: The Mixtral paper found no obvious topic pattern in routing. Routing is more syntactic than semantic.
+            - listitem [ref=f3e915]:
+              - strong [ref=f3e916]: Dropping the balancing and hoping.
+              - text: Without it, block 2's quietest expert got 3 per cent of the slots. In a real run that is wasted capacity, and under expert parallelism it is a slow GPU.
+            - listitem [ref=f3e917]:
+              - strong [ref=f3e918]: Setting the balancing loss very high.
+              - text: It balances, but block 2 shows the loss rises sharply. Raise it gently or use a bias.
+          - heading [level=2] [ref=f3e919]:
+            - text: Practice questions
+            - link "Direct link to Practice questions" [ref=f3e920] [cursor=pointer]:
+              - /url: "#practice-questions"
+              - text: "#"
+          - group [ref=f3e921]:
+            - generic [ref=f3e922] [cursor=pointer]:
+              - strong [ref=f3e923]: Q1 (Easy).
+              - text: Mixtral 8x7B has 46.70 billion parameters, 45.10 billion of them in experts. Each token uses 2 of 8. How many parameters are active?
+          - group [ref=f3e924]:
+            - generic [ref=f3e925] [cursor=pointer]:
+              - strong [ref=f3e926]: Q2 (Easy).
+              - text: Only 2 of 8 experts run for a token. Why must all 8 stay in GPU memory?
+          - group [ref=f3e927]:
+            - generic [ref=f3e928] [cursor=pointer]:
+              - strong [ref=f3e929]: Q3 (Medium).
+              - text: In block 1's example, what would the balance term be if the tokens were split 2, 2, 2, 2 and the average router probabilities were 0.25 each? What would the capacity factor 1.0 drop?
+          - group [ref=f3e930]:
+            - generic [ref=f3e931] [cursor=pointer]:
+              - strong [ref=f3e932]: Q4 (Medium).
+              - text: With 1,024 tokens, top-2, 16 experts and a capacity factor of 1.25, what is the capacity, and how many slots does the busiest expert drop at skew 0.5 (3.72 times the average)?
+          - group [ref=f3e933]:
+            - generic [ref=f3e934] [cursor=pointer]:
+              - strong [ref=f3e935]: Q5 (Stretch).
+              - text: DeepSeek-V3 adds a bias to the scores for choosing experts but not to the gate weights. Why is that important, and how big can the bias get with a step of 0.001?
+          - group [ref=f3e936]:
+            - generic [ref=f3e937] [cursor=pointer]:
+              - strong [ref=f3e938]: Q6 (Stretch).
+              - text: In block 5 with the favouring router, rank 0 receives 40 slots and rank 1 receives 24. How much of the cluster's capacity is wasted, and what are two ways to fix it?
+          - heading [level=2] [ref=f3e939]:
+            - text: Go deeper
+            - link "Direct link to Go deeper" [ref=f3e940] [cursor=pointer]:
+              - /url: "#go-deeper"
+              - text: "#"
+          - paragraph [ref=f3e941]: All sources were opened on 7 and 8 October 2026.
+          - list [ref=f3e942]:
+            - listitem [ref=f3e943]:
+              - link "Mixtral of Experts (arXiv 2401.04088)" [ref=f3e944] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2401.04088
+              - text: ": top-2 routing over 8 SwiGLU experts, 47B total and 13B active, and the routing analysis that found no topic pattern."
+            - listitem [ref=f3e945]:
+              - link "Switch Transformers (arXiv 2101.03961)" [ref=f3e946] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2101.03961
+              - text: ": the balancing loss, the coefficient 0.01, capacity factor, dropped tokens and selective float32 precision."
+            - listitem [ref=f3e947]:
+              - 'link "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer (arXiv 1701.06538)" [ref=f3e948] [cursor=pointer]':
+                - /url: https://arxiv.org/abs/1701.06538
+              - text: and
+              - link "GShard (arXiv 2006.16668)" [ref=f3e949] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2006.16668
+              - text: ": the earlier work (titles and abstracts opened only)."
+            - listitem [ref=f3e950]:
+              - link "DeepSeekMoE (arXiv 2401.06066)" [ref=f3e951] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2401.06066
+              - text: ": fine-grained and shared experts (title and abstract opened only)."
+            - listitem [ref=f3e952]:
+              - link "Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts (arXiv 2408.15664)" [ref=f3e953] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2408.15664
+              - text: ": the bias method (title and abstract opened only)."
+            - listitem [ref=f3e954]:
+              - link "DeepSeek-V3 Technical Report (arXiv 2412.19437)" [ref=f3e955] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2412.19437
+              - text: ": the bias update, the sequence-level balance loss, node-limited routing and the 64-GPU expert layout."
+            - listitem [ref=f3e956]:
+              - text: Model cards and
+              - code [ref=f3e957]: config.json
+              - text: "files on the Hugging Face Hub, read for block 4:"
+              - code [ref=f3e958]: mistralai/Mixtral-8x7B-v0.1
+              - text: ","
+              - code [ref=f3e959]: openai/gpt-oss-120b
+              - text: ","
+              - code [ref=f3e960]: deepseek-ai/DeepSeek-V3
+              - text: ","
+              - code [ref=f3e961]: deepseek-ai/DeepSeek-V4-Pro
+              - text: ","
+              - code [ref=f3e962]: moonshotai/Kimi-K3
+              - text: ","
+              - code [ref=f3e963]: Qwen/Qwen3-30B-A3B
+              - text: ","
+              - code [ref=f3e964]: Qwen/Qwen3.6-35B-A3B
+              - text: ","
+              - code [ref=f3e965]: Aleph-Alpha/Kolibri-1
+              - text: ","
+              - code [ref=f3e966]: meta-llama/Llama-4-Scout-17B-16E-Instruct
+              - text: (card only).
+            - listitem [ref=f3e967]:
+              - link "The Ultra-Scale Playbook (Hugging Face, 2025)" [ref=f3e968] [cursor=pointer]:
+                - /url: https://huggingface.co/spaces/nanotron/ultrascale-playbook
+              - text: ": the expert-parallel section and its note on DeepSeek-V3's node limit."
+          - heading [level=2] [ref=f3e969]:
+            - text: Check yourself
+            - link "Direct link to Check yourself" [ref=f3e970] [cursor=pointer]:
+              - /url: "#check-yourself"
+              - text: "#"
+          - list [ref=f3e971]:
+            - listitem [ref=f3e972]: I can explain what a router, a top-k choice and an expert are, and why a mixture-of-experts model has more parameters than it uses.
+            - listitem [ref=f3e973]: I can compute total and active parameters from a config and say how a model card counted them.
+            - listitem [ref=f3e974]: I can compute the balance term and a capacity from router probabilities by hand.
+            - listitem [ref=f3e975]: I can describe routing collapse and compare a balancing loss with a bias update and a capacity limit.
+            - listitem [ref=f3e976]: I can explain dispatch and combine in expert parallelism and why the busiest rank sets the speed.
+            - listitem [ref=f3e977]: I can say why memory is sized by total parameters and compute by active ones.
+          - heading [level=2] [ref=f3e978]:
+            - text: Where to go next
+            - link "Direct link to Where to go next" [ref=f3e979] [cursor=pointer]:
+              - /url: "#where-to-go-next"
+              - text: "#"
+          - paragraph [ref=f3e980]:
+            - text: "This is the last chapter of the training-at-scale group. Related chapters:"
+            - link "quantisation for inference" [ref=f3e981] [cursor=pointer]:
+              - /url: /docs/llm-engineering/quantisation-for-inference
+            - text: ", for storing expert weights in few bits when serving, and"
+            - link "continuous batching and scheduling" [ref=f3e982] [cursor=pointer]:
+              - /url: /docs/llm-engineering/continuous-batching-and-scheduling
+            - text: ", where the serving engine batches tokens bound for different experts. To revisit the layout side, return to"
+            - link "parallelism strategies for LLMs" [ref=f3e983] [cursor=pointer]:
+              - /url: /docs/llm-engineering/parallelism-strategies-for-llms
+            - text: .
+        - generic [ref=f3e986]:
+          - text: "Tags:"
+          - list [ref=f3e987]:
+            - listitem [ref=f3e988]:
+              - link "mixture-of-experts" [ref=f3e989] [cursor=pointer]:
+                - /url: /docs/tags/mixture-of-experts
+            - listitem [ref=f3e990]:
+              - link "moe" [ref=f3e991] [cursor=pointer]:
+                - /url: /docs/tags/moe
+            - listitem [ref=f3e992]:
+              - link "routing" [ref=f3e993] [cursor=pointer]:
+                - /url: /docs/tags/routing
+            - listitem [ref=f3e994]:
+              - link "load-balancing" [ref=f3e995] [cursor=pointer]:
+                - /url: /docs/tags/load-balancing
+            - listitem [ref=f3e996]:
+              - link "expert-parallelism" [ref=f3e997] [cursor=pointer]:
+                - /url: /docs/tags/expert-parallelism
+            - listitem [ref=f3e998]:
+              - link "mixtral" [ref=f3e999] [cursor=pointer]:
+                - /url: /docs/tags/mixtral
+            - listitem [ref=f3e1000]:
+              - link "deepseek" [ref=f3e1001] [cursor=pointer]:
+                - /url: /docs/tags/deepseek
+            - listitem [ref=f3e1002]:
+              - link "switch-transformer" [ref=f3e1003] [cursor=pointer]:
+                - /url: /docs/tags/switch-transformer
+            - listitem [ref=f3e1004]:
+              - link "all-to-all" [ref=f3e1005] [cursor=pointer]:
+                - /url: /docs/tags/all-to-all
+      - navigation "Docs pages" [ref=f3e1006]:
+        - link "Previous « 3 · Mixed precision and numerics" [ref=f3e1007] [cursor=pointer]:
+          - /url: /docs/llm-engineering/mixed-precision-and-numerics
+          - generic [ref=f3e1008]: Previous
+          - generic [ref=f3e1009]: « 3 · Mixed precision and numerics
+        - link "Next Distributed machine learning »" [ref=f3e1010] [cursor=pointer]:
+          - /url: /docs/category/distributed-machine-learning
+          - generic [ref=f3e1011]: Next
+          - generic [ref=f3e1012]: Distributed machine learning »
+  - contentinfo [ref=f3e1013]:
+    - generic [ref=f3e1014]:
+      - generic [ref=f3e1015]:
+        - generic [ref=f3e1016]:
+          - generic [ref=f3e1017]: Learn
+          - list [ref=f3e1018]:
+            - listitem [ref=f3e1019]:
+              - link "Roadmap" [ref=f3e1020] [cursor=pointer]:
+                - /url: /docs/intro
+            - listitem [ref=f3e1021]:
+              - link "Daily notes" [ref=f3e1022] [cursor=pointer]:
+                - /url: /docs/category/daily
+            - listitem [ref=f3e1023]:
+              - link "Production LLM track" [ref=f3e1024] [cursor=pointer]:
+                - /url: /llm-roadmap
+            - listitem [ref=f3e1025]:
+              - link "Deep learning" [ref=f3e1026] [cursor=pointer]:
+                - /url: /docs/category/dnn
+            - listitem [ref=f3e1027]:
+              - link "Statistics" [ref=f3e1028] [cursor=pointer]:
+                - /url: /docs/category/statistics
+            - listitem [ref=f3e1029]:
+              - link "Code tracks" [ref=f3e1030] [cursor=pointer]:
+                - /url: /docs/category/coding
+        - generic [ref=f3e1031]:
+          - generic [ref=f3e1032]: Practice
+          - list [ref=f3e1033]:
+            - listitem [ref=f3e1034]:
+              - link "Cheatsheets" [ref=f3e1035] [cursor=pointer]:
+                - /url: /docs/category/cheetsheet
+            - listitem [ref=f3e1036]:
+              - link "Interview questions" [ref=f3e1037] [cursor=pointer]:
+                - /url: /docs/category/interview
+            - listitem [ref=f3e1038]:
+              - link "Engineering & systems" [ref=f3e1039] [cursor=pointer]:
+                - /url: /docs/category/scaler
+            - listitem [ref=f3e1040]:
+              - link "Miscellaneous" [ref=f3e1041] [cursor=pointer]:
+                - /url: /docs/category/miscellaneous-collection
+            - listitem [ref=f3e1042]:
+              - link "Explore all notes" [ref=f3e1043] [cursor=pointer]:
+                - /url: /explore
+            - listitem [ref=f3e1044]:
+              - link "AI Innovation Hub" [ref=f3e1045] [cursor=pointer]:
+                - /url: /ai-news
+        - generic [ref=f3e1046]:
+          - generic [ref=f3e1047]: More
+          - list [ref=f3e1048]:
+            - listitem [ref=f3e1049]:
+              - link [ref=f3e1050] [cursor=pointer]:
+                - /url: https://pytorch.org/docs/stable/index.html
+                - text: PyTorch docs
+                - img "(opens in new tab)" [ref=f3e1051]
+            - listitem [ref=f3e1053]:
+              - link [ref=f3e1054] [cursor=pointer]:
+                - /url: https://scikit-learn.org/stable/
+                - text: scikit-learn
+                - img "(opens in new tab)" [ref=f3e1055]
+      - generic [ref=f3e1057]: Copyright © 2026 Learn AI, ML. Built by Sumanth.

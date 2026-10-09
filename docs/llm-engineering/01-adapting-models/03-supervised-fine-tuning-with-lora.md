@@ -38,7 +38,7 @@ This chapter takes the support-ticket router of the previous two chapters and tr
 Block 1 shows the whole workflow in one run: build data, measure the base model, train, measure again. Three details of the configuration are worth knowing.
 
 - **Float32 on CPU.** TRL loads the model in float32 unless you pass a dtype in `model_init_kwargs`; its documentation notes this differs from plain `from_pretrained`, which follows the checkpoint. On a CPU, float32 is the safe choice.
-- **A higher learning rate than full fine-tuning.** TRL's guide says adapters typically use a learning rate near 1e-4 because only new parameters are learned. Block 1 uses 3e-4 for a very short run on a tiny dataset. A published study of LoRA found the best learning rate to be consistently about ten times the full fine-tuning rate, and about fifteen times for runs shorter than around 100 steps; this run is of that kind.
+- **A higher learning rate than full fine-tuning.** TRL's guide says adapters typically use a learning rate near 1e-4 because only new parameters are learned. Block 1 uses 3e-4 for a very short run on a tiny dataset. A published study of LoRA found the best learning rate to be consistently about ten times the full fine-tuning rate, and, as preliminary evidence the authors call anecdotal, about fifteen times for runs of roughly 100 steps or fewer; this run is of that kind.
 - **Gradient checkpointing off.** TRL turns it on by default to save memory on GPUs. At this size it only slows the CPU run.
 
 ### What the hyperparameters mean

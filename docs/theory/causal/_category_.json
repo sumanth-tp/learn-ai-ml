@@ -1,0 +1,10 @@
+{
+  "label": "Causal inference",
+  "position": 12,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "From potential outcomes and confounding to experiments, quasi-experiments and causal machine learning, each checked against a simulated truth."
+  }
+}

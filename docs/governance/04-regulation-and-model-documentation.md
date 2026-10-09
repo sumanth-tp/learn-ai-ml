@@ -47,7 +47,7 @@ The Act entered into force on 1 August 2024 (Official Journal of 12 July 2024). 
 | 2 February 2025 | Chapters I and II: general provisions including AI literacy, and the prohibited practices of Article 5 | Art 113(a) |
 | 2 August 2025 | Chapter III Section 4 (notified bodies), Chapter V (general-purpose models), Chapter VII (governance), Chapter XII (penalties) and Article 78, except Article 101 | Art 113(b) |
 | 27 July 2026 | the Omnibus enters into force; Articles 102 to 110 apply from this date | Omnibus Art 4; Art 113(d) as inserted |
-| 2 August 2026 | the Act's general date of application: Article 50 transparency duties, and Article 101 (fines for general-purpose model providers) | Art 113, first paragraph |
+| 2 August 2026 | the Act's general date of application: Article 50 transparency duties, and Article 101 (fines for general-purpose model providers) | Art 113, second paragraph |
 | 2 December 2026 | new prohibitions on certain sexual deepfake and child-abuse-material generators, Article 5(1)(ba), (bb), (1a), (1b); and Article 50(2) marking for generative systems placed on the market before 2 August 2026 | Art 113(a) as amended; Art 111(4) as inserted |
 | 2 December 2027 | Chapter III Sections 1, 2 and 3 (high-risk requirements) for systems classified under Article 6(2) and **Annex III** | Art 113(c)(i) as replaced |
 | 2 August 2028 | the same obligations for systems classified under Article 6(1) and **Annex I** (products) | Art 113(c)(ii) as replaced |
@@ -68,7 +68,7 @@ The **Omnibus did not delay everything.** It moved the Annex III high-risk date 
 
 **General-purpose models** (Articles 53 and 55): providers keep technical documentation, give downstream providers the information they need, adopt a copyright policy and publish a summary of training content. Providers of models with systemic risk, presumed above 10^25 floating point operations of training compute, must also evaluate the model including adversarial testing, assess and mitigate systemic risks, report serious incidents and secure the model (see [red-teaming](/docs/governance/red-teaming-llm-systems)).
 
-**Penalties** (Article 99, as amended): up to EUR 35 million or 7% of worldwide annual turnover, whichever is higher, for prohibited practices; up to EUR 15 million or 3% for most other operator obligations including Article 50; up to EUR 7.5 million or 1% for supplying incorrect, incomplete or misleading information. For SMEs each fine is capped at the lower of the two figures, and the Omnibus extends that rule to small mid-cap enterprises. Fines for general-purpose model providers under Article 101 are up to 3% or EUR 15 million.
+**Penalties** (Article 99, as amended): up to EUR 35 million or 7% of worldwide annual turnover, whichever is higher, for prohibited practices; up to EUR 15 million or 3% for most other operator obligations including Article 50; up to EUR 7.5 million or 1% for supplying incorrect, incomplete or misleading information. For SMEs each fine is capped at the lower of the two figures, and the Omnibus extends that rule to small mid-cap enterprises for fines under Article 99(4) and (5). Fines for general-purpose model providers under Article 101 are up to 3% or EUR 15 million.
 
 ### The voluntary frameworks
 
@@ -397,7 +397,7 @@ Editing entry 2 is caught at position 2, deleting entry 1 at position 1, and res
 :::info Industry view
 
 - **The high-risk timetable moved in July 2026.** Regulation (EU) 2026/1744 delays the Annex III obligations to 2 December 2027 and the Annex I obligations to 2 August 2028, adds new prohibitions from 2 December 2026, and brings Articles 102 to 110 into application from 27 July 2026. Practitioners reading older material that says 2 August 2026 for high-risk systems are reading a superseded date.
-- **Transparency and general-purpose model rules are already running.** Article 50 applies from 2 August 2026, with an extension to 2 December 2026 for older generative systems, and the general-purpose model duties since 2 August 2025.
+- **Transparency and general-purpose model rules are already running.** Article 50 applies from 2 August 2026, with an extension to 2 December 2026 for the Article 50(2) marking duty of generative systems already on the market, and the general-purpose model duties since 2 August 2025.
 - **NIST's framework is in revision.** NIST says AI RMF 1.0 is being revised as part of the White House AI Action Plan, and it published a concept note on a critical-infrastructure profile on 7 April 2026.
 - **ISO/IEC 42001:2023 remains edition 1** on the IEC webstore, and is the certifiable standard for an AI management system.
 - **Not verified here:** the status of harmonised standards, the Commission's classification guidelines, national authorities and any general-purpose code of practice. Check them before you plan a compliance schedule.

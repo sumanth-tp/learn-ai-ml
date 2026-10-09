@@ -14,11 +14,11 @@ import ProtocolFlowLab from '@site/src/components/viz/ProtocolFlowLab';
 **In one line.** MCP is how one agent reaches tools and data, A2A is how one agent hands work to another, and both are plain JSON-RPC messages whose shape you can read, send by hand and test.
 
 :::note Not from a lecture
-Written for this site from the current official specifications, opened on 7 October 2026: the MCP specification at its `latest` address, which resolved to revision 2026-07-28 (changelog against 2025-11-25), and the A2A specification at its `latest` address, version 1.0.0. Every message below was produced by a real server: the MCP Python SDK 2.3.0 and the A2A Python SDK 1.2.2, run with Python 3.14.6 in `.lecture-import/venv-llm`. Where I could not check something against a running system, the page says so.
+Written for this site from the current official specifications, opened on 7 October 2026 and re-checked on 8 October 2026: the MCP specification at its `latest` address, which resolved to revision 2026-07-28 (changelog against 2025-11-25), and the A2A specification at its `latest` address, version 1.0.0. Every message below was produced by a real server: the MCP Python SDK 2.3.0 and the A2A Python SDK 1.2.2, run with Python 3.14.6 in `.lecture-import/venv-llm`. Where I could not check something against a running system, the page says so.
 :::
 
 :::warning The older MCP chapters describe an older revision
-The video-based [MCP lifecycle](/docs/mcp/mcp-lifecycle) and [architecture](/docs/mcp/mcp-architecture) chapters teach the `initialize` handshake and sessions of the 2025 revisions. The 2026-07-28 revision removed both. That material is still correct for servers that speak 2025-11-25 and earlier, and the code below shows both eras side by side. Whenever the two disagree, this chapter follows the current specification.
+The earlier [MCP lifecycle](/docs/mcp/mcp-lifecycle) and [architecture](/docs/mcp/mcp-architecture) chapters teach the `initialize` handshake and sessions of the 2025 revisions. The 2026-07-28 revision removed both. That material is still correct for servers that speak 2025-11-25 and earlier, and the code below shows both eras side by side. Whenever the two disagree, this chapter follows the current specification.
 :::
 
 :::tip Before you start
@@ -111,9 +111,11 @@ Both protocols use JSON-RPC 2.0. A **request** has `jsonrpc: "2.0"`, a unique `i
 
 **The unit is a Task.** `SendMessage` carries a message (`messageId`, `role` of `ROLE_USER` or `ROLE_AGENT`, and `parts`, each part being text, raw bytes, a URL or structured data). The reply is either a Message (quick answers) or a Task with an `id`, a `contextId` that groups related work, a `status` with a state, `artifacts` for results and a `history`.
 
-**The states.** A task starts `TASK_STATE_SUBMITTED`, moves to `WORKING`, and can pause in `INPUT_REQUIRED` or `AUTH_REQUIRED` (interrupted states: the task resumes when the missing input or credential arrives) or end in `COMPLETED`, `FAILED`, `CANCELED` or `REJECTED` (terminal).
+**The states.** A task starts `TASK_STATE_SUBMITTED`, moves to `WORKING`, and can pause in `INPUT_REQUIRED` or `AUTH_REQUIRED` (interrupted states) or end in `COMPLETED`, `FAILED`, `CANCELED` or `REJECTED` (terminal).
 
 <Infographic src="/img/afr/a2a-task-lifecycle.svg" alt="A state diagram of an A2A task: submitted, working, the interrupted states input required and auth required, and the four terminal states, above the two-turn expense example." caption="Follow the arrows from SUBMITTED. The dashed arrow is turn 2 of the example: a new message with the task id. The panels at the bottom are block 5's output." />
+
+`INPUT_REQUIRED` resumes when the client sends a message with the task id. `AUTH_REQUIRED` hands an authorisation request to the client, normally fulfilled out of band, and the agent may carry on without any follow-up message, so a client that wants the outcome should stream or register a webhook. By default `SendMessage` blocks until the task reaches a terminal or interrupted state, which is why turn 1 of block 5 returns `INPUT_REQUIRED`; `return_immediately: true` returns as soon as the task exists.
 
 Other methods: `SendStreamingMessage` and `SubscribeToTask` stream status and artifact updates, `GetTask` and `ListTasks` read state, `CancelTask` stops work, and push-notification methods register a webhook for tasks that outlive a connection.
 
@@ -493,7 +495,7 @@ proc.terminate()
 proc.wait(timeout=10)
 ```
 
-**Reading the output.** The card names the agent, one JSON-RPC interface at protocol version 1.0, one skill and `streaming True`. Turn 1 ends in `TASK_STATE_INPUT_REQUIRED` with the agent's question. Turn 2 reuses the task and context ids and ends in `TASK_STATE_COMPLETED` with the artifact "expense of 120: approved" and 3 messages in the history. `GetTask` returns the same final state later. A request with `A2A-Version: 9.9` is rejected with the SDK's version error, code `-32009` in this SDK; I did not look up whether the specification fixes that number for JSON-RPC.
+**Reading the output.** The card names the agent, one JSON-RPC interface at protocol version 1.0, one skill and `streaming True`. Turn 1 ends in `TASK_STATE_INPUT_REQUIRED` with the agent's question. Turn 2 reuses the task and context ids and ends in `TASK_STATE_COMPLETED` with the artifact "expense of 120: approved" and 3 messages in the history. `GetTask` returns the same final state later. A request with `A2A-Version: 9.9` is rejected with the version error, code `-32009`, which is the number the specification's error table gives for `VersionNotSupportedError`.
 
 **Line by line.**
 
@@ -597,7 +599,7 @@ Flight prices and the points balance are lookups with clear schemas: MCP tools, 
 
 ## Go deeper
 
-All opened on 7 October 2026.
+All opened on 7 October 2026 and checked again on 8 October 2026 (MCP revision 2026-07-28 and A2A 1.0.0 were still the latest).
 
 - Model Context Protocol specification, revision 2026-07-28: overview, base protocol, versioning, tools, discovery, multi round-trip requests, Streamable HTTP and stdio transports, authorisation, and the changelog against 2025-11-25. Revision 2025-11-25 lifecycle page for the old handshake.
 - Agentic AI Foundation, "MCP 2026-07-28: what's changing and how to migrate", 21 July 2026, and the MCP blog post "2026-07-28 release candidate", 21 May 2026.
@@ -606,7 +608,7 @@ All opened on 7 October 2026.
 - Libraries used: `mcp` 2.3.0 and `a2a-sdk` 1.2.2, installed from PyPI.
 - On this site: [MCP architecture](/docs/mcp/mcp-architecture) and [lifecycle](/docs/mcp/mcp-lifecycle) (older revisions), [building MCP clients](/docs/mcp/build-mcp-clients), [project 3: an enterprise MCP gateway](/docs/mcp/project-3-enterprise-mcp-gateway), [MCP client with LangGraph](/docs/agentic-ai/mcp-client-langgraph), [multi-agent systems in LangChain](/docs/genai/langchain-advanced/multi-agent-systems), [support agent platform case](/docs/senior/design-customer-support-agent-platform).
 
-**Not verified here.** The MCP authorisation flow (read, not run); MCP `subscriptions/listen`, the Tasks extension and Client ID Metadata Documents; A2A gRPC and HTTP+JSON bindings, streaming, push notifications and signed Agent Cards (read, not run); the error code the A2A specification assigns to a version error on JSON-RPC; any server or agent from another vendor. The measured byte counts are for the Python SDK's JSON on stdio and will differ with another SDK.
+**Not verified here.** The MCP authorisation flow (read, not run); MCP `subscriptions/listen`, the Tasks extension and Client ID Metadata Documents; A2A gRPC and HTTP+JSON bindings, streaming, push notifications and signed Agent Cards (read, not run); any server or agent from another vendor. The measured byte counts are for the Python SDK's JSON on stdio and will differ with another SDK.
 
 ## Check yourself
 

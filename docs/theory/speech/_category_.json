@@ -1,0 +1,10 @@
+{
+  "label": "Speech and audio",
+  "position": 14,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Waveforms, spectrograms and mel scales, speech recognition with CTC, attention and Whisper, and speech synthesis for voice agents, each run on real audio on a laptop CPU."
+  }
+}

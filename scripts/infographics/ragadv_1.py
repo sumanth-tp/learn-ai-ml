@@ -270,6 +270,72 @@ def lc_worked():
     return b
 
 
+@board("contextual-retrieval-and-reranking-results")
+def contextual_results():
+    b = Board(1240, 640, "What each repair bought on this data", "Numbers printed by chapter code blocks 1, 2, 3, 5, 6 and 9")
+    b.group(20, 90, 600, 250, "Reranking on SciFact: nDCG@10 over 300 test claims", "purple")
+    for i, (label, value, color) in enumerate([("hybrid, no reranker", 0.691, "blue"), ("general reranker, top 20", 0.682, "red"), ("fine-tuned reranker, top 20", 0.702, "green")]):
+        hbar(b, 250, 140 + i * 50, 300, 28, value / 0.8, color, label, f"{value:.3f}")
+    raw_text(b, 320, 310, "bars start at zero; the differences are small, which is the point", 11, FAINT)
+    b.group(640, 90, 580, 250, "Context on chunks", "orange")
+    for i, (label, value, color, text) in enumerate([("synthetic, BM25 hit@1: bare", 0.042, "grey", "0.042"), ("synthetic, BM25 hit@1: context", 1.0, "green", "1.000")]):
+        hbar(b, 910, 140 + i * 50, 200, 28, value, color, label, text)
+    for i, (label, value, color) in enumerate([("real, nDCG@10: bare chunk", 0.670, "grey"), ("real: title prefix", 0.687, "green"), ("real: late chunking", 0.659, "yellow")]):
+        hbar(b, 910, 245 + i * 30, 200, 20, value, color, label, f"{value:.3f}")
+    b.group(20, 370, 1200, 250, "What a deeper shortlist buys (general reranker)", "teal")
+    rows = [["depth", "5", "10", "20", "30", "50"],
+            ["nDCG@10", "0.691", "0.684", "0.682", "0.675", "0.684"],
+            ["relevant in shortlist", "0.754", "0.817", "0.879", "0.898", "0.937"]]
+    b.table(80, 420, [300, 150, 150, 150, 150, 150], rows, "teal", size=13, row_h=44)
+    raw_text(b, 620, 590, "a deeper shortlist raised the ceiling; this reranker could not use it", 13, "#0b7285", "middle", "700")
+    return b
+
+
+@board("text-to-sql-and-structured-rag-results")
+def sql_results():
+    b = Board(1240, 640, "What reached the prompt, and what the model did with it", "Numbers printed by chapter code blocks 2, 5 and 6")
+    b.group(20, 90, 600, 330, "Schema linking: mean recall of needed columns", "teal")
+    rows = [("top-5, name only", 0.897, "9/12"), ("top-5, with description", 0.761, "6/12"), ("top-8, with description", 0.931, "10/12"), ("top-5 + key columns", 0.854, "9/12"), ("top-8 + key columns", 0.979, "11/12")]
+    for i, (label, value, found) in enumerate(rows):
+        hbar(b, 260, 135 + i * 50, 250, 26, value, "teal", label, f"{value:.3f}  {found}")
+    raw_text(b, 320, 395, "found = questions where nothing needed was lost", 11, FAINT)
+    b.group(640, 90, 580, 330, "SmolLM2-1.7B, 11 answerable questions", "purple")
+    for i, (label, ran, right, color) in enumerate([("no schema", 3, 2, "grey"), ("linked schema", 7, 5, "blue"), ("full schema", 9, 7, "green")]):
+        hbar(b, 800, 140 + i * 70, 300, 24, ran / 11, color, f"{label}: runs", f"{ran}")
+        hbar(b, 800, 170 + i * 70, 300, 24, right / 11, "purple", "returns right rows", f"{right}")
+    raw_text(b, 930, 395, "delete request blocked in every condition", 12, "#2b8a3e", "middle", "700")
+    b.group(20, 450, 1200, 170, "One retry with the error message, linked and full schema", "orange")
+    b.card(60, 495, 520, 90, "linked schema", ["4 rejected, 0 fixed by one retry"], "orange", size=13)
+    b.card(640, 495, 520, 90, "full schema", ["2 rejected, 0 fixed by one retry"], "orange", size=13)
+    return b
+
+
+@board("long-context-vs-rag-needle-and-cost")
+def lc_needle():
+    b = Board(1240, 660, "What the small model found, and what each prompt costs the machine", "SmolLM2-360M-Instruct on CPU, 32-bit floats; numbers from chapter code blocks 3, 4 and 5")
+    b.group(20, 90, 640, 340, "Needle recovered out of 6, whole prompt (8 look-alike sentences)", "blue")
+    rows = [["tokens", "start", "middle", "end", "RAG, top 3"],
+            ["512", "6", "5", "6", "3"],
+            ["2,048", "6", "4", "6", "5"],
+            ["4,096", "6", "4", "6", "6"]]
+    b.table(45, 140, [130, 100, 110, 100, 150], rows, "blue", size=14, row_h=44)
+    raw_text(b, 340, 360, "middle is the weak spot; no collapse with length", 13, "#1864ab", "middle", "700")
+    raw_text(b, 340, 392, "same needle, question reworded: 4 of 6 becomes 2 of 6", 13, "#c92a2a", "middle", "700")
+    b.group(680, 90, 540, 340, "Cost of reading the prompt", "teal")
+    rows2 = [["tokens", "prefill s", "KV cache MB"],
+             ["512", "0.89", "21.0"],
+             ["1,024", "1.36", "41.9"],
+             ["2,048", "2.59", "83.9"],
+             ["4,096", "4.71", "167.8"]]
+    b.table(705, 140, [150, 170, 190], rows2, "teal", size=14, row_h=44)
+    raw_text(b, 950, 400, "1,000,000 tokens would need 41.0 GB of KV cache", 12, "#0b7285", "middle", "700")
+    b.group(20, 460, 1200, 170, "Reading it", "grey")
+    b.card(45, 505, 370, 100, "whole prompt", ["reads 512 to 4,096 tokens", "finds the needle 16 to 17 times in 18"], "blue", size=12)
+    b.card(435, 505, 370, 100, "RAG", ["reads about 215 tokens", "3 of 6 at 512, 6 of 6 at 4,096"], "green", size=12)
+    b.card(825, 505, 370, 100, "so", ["accuracy was not the gap here", "tokens and time were"], "orange", size=12)
+    return b
+
+
 def main(names):
     todo = names or list(BOARDS)
     for name in todo:

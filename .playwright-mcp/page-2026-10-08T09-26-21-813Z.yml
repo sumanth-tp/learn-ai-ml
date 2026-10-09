@@ -1,0 +1,1470 @@
+- generic [ref=e2]:
+  - progressbar "Reading progress"
+  - button "Ask AI tutor" [ref=e3] [cursor=pointer]:
+    - generic [aria-hidden] [ref=e4]: ✦
+    - generic [ref=e5]: Ask AI
+  - button "Keyboard shortcuts" [ref=e6] [cursor=pointer]:
+    - generic [ref=e7]: "?"
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=e8] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - banner [ref=e9]:
+    - generic [ref=e10]:
+      - strong [ref=e11]: "New:"
+      - text: browse every note in one place —
+      - link "open Explore" [ref=e12] [cursor=pointer]:
+        - /url: /explore
+      - text: ", or press ? for shortcuts."
+    - button "Close" [ref=e13] [cursor=pointer]
+  - navigation "Main" [ref=e17]:
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - link "Learn AI & ML AI & ML":
+          - /url: /
+          - img "Learn AI & ML" [ref=e21] [cursor=pointer]
+          - generic: AI & ML
+        - link "Daily" [ref=e22] [cursor=pointer]:
+          - /url: /docs/category/daily
+        - link "All notes" [ref=e23] [cursor=pointer]:
+          - /url: /docs/intro
+        - link "Learning path" [ref=e24] [cursor=pointer]:
+          - /url: /path
+        - link "LLM track" [ref=e25] [cursor=pointer]:
+          - /url: /llm-roadmap
+        - button "Theory" [ref=e27] [cursor=pointer]
+        - link "Code" [ref=e28] [cursor=pointer]:
+          - /url: /docs/category/coding
+        - link "Cheatsheets" [ref=e29] [cursor=pointer]:
+          - /url: /docs/category/cheetsheet
+        - link "Interviews" [ref=e30] [cursor=pointer]:
+          - /url: /docs/category/interview
+        - link "Projects" [ref=e31] [cursor=pointer]:
+          - /url: /docs/category/projects
+        - link "AI updates" [ref=e32] [cursor=pointer]:
+          - /url: /ai-news
+        - link "Explore" [ref=e33] [cursor=pointer]:
+          - /url: /explore
+      - generic [ref=e34]:
+        - textbox "Search" [ref=e37]
+        - button "Switch between dark and light mode (currently system mode)" [disabled] [ref=e39]
+  - generic [ref=e44]:
+    - complementary [ref=e45]:
+      - generic [ref=e47]:
+        - link "Learn AI & ML AI & ML" [ref=e48] [cursor=pointer]:
+          - /url: /
+          - img "Learn AI & ML" [ref=e49]
+          - generic [ref=e50]: AI & ML
+        - navigation "Docs sidebar" [ref=e51]:
+          - list [ref=e52]:
+            - listitem [ref=e53]:
+              - button "Start here" [ref=e55] [cursor=pointer]
+            - listitem [ref=e57]:
+              - button "1 · Foundations" [ref=e59] [cursor=pointer]
+            - listitem [ref=e61]:
+              - button "2 · Machine learning" [ref=e63] [cursor=pointer]
+            - listitem [ref=e65]:
+              - button "3 · Deep learning & vision" [ref=e67] [cursor=pointer]
+            - listitem [ref=e69]:
+              - button "4 · Language & retrieval" [ref=e71] [cursor=pointer]
+            - listitem [ref=e73]:
+              - button "5 · Building with LLMs" [ref=e75] [cursor=pointer]
+            - listitem [ref=e77]:
+              - button "6 · LLM engineering" [expanded] [ref=e79] [cursor=pointer]
+              - list [ref=e81]:
+                - listitem [ref=e82]:
+                  - generic [ref=e83]:
+                    - link "LLM Engineering" [ref=e84] [cursor=pointer]:
+                      - /url: /docs/category/llm-engineering
+                    - button "Collapse sidebar category 'LLM Engineering'" [expanded] [ref=e86] [cursor=pointer]
+                  - list [ref=e87]:
+                    - listitem [ref=e88]:
+                      - generic [ref=e89]:
+                        - link "Adapting models" [ref=e90] [cursor=pointer]:
+                          - /url: /docs/category/adapting-models
+                        - button "Expand sidebar category 'Adapting models'" [ref=e92] [cursor=pointer]
+                    - listitem [ref=e93]:
+                      - generic [ref=e94]:
+                        - link "Inference and serving" [ref=e95] [cursor=pointer]:
+                          - /url: /docs/category/inference-and-serving
+                        - button "Expand sidebar category 'Inference and serving'" [ref=e97] [cursor=pointer]
+                    - listitem [ref=e98]:
+                      - generic [ref=e99]:
+                        - link "Training at scale" [ref=e100] [cursor=pointer]:
+                          - /url: /docs/category/training-at-scale
+                        - button "Collapse sidebar category 'Training at scale'" [expanded] [ref=e102] [cursor=pointer]
+                      - list [ref=e103]:
+                        - listitem [ref=e104]:
+                          - link "1 · Parallelism strategies" [ref=e105] [cursor=pointer]:
+                            - /url: /docs/llm-engineering/parallelism-strategies-for-llms
+                        - listitem [ref=e107]:
+                          - link "2 · DDP, FSDP and ZeRO" [ref=e108] [cursor=pointer]:
+                            - /url: /docs/llm-engineering/ddp-fsdp-and-zero
+                        - listitem [ref=e110]:
+                          - link "3 · Mixed precision and numerics" [ref=e111] [cursor=pointer]:
+                            - /url: /docs/llm-engineering/mixed-precision-and-numerics
+                        - listitem [ref=e113]:
+                          - link "4 · Mixture of experts" [ref=e114] [cursor=pointer]:
+                            - /url: /docs/llm-engineering/mixture-of-experts
+                - listitem [ref=e116]:
+                  - generic [ref=e117]:
+                    - link "Distributed machine learning" [ref=e118] [cursor=pointer]:
+                      - /url: /docs/category/distributed-machine-learning
+                    - button "Expand sidebar category 'Distributed machine learning'" [ref=e120] [cursor=pointer]
+            - listitem [ref=e121]:
+              - button "7 · Agents & MCP" [ref=e123] [cursor=pointer]
+            - listitem [ref=e125]:
+              - button "8 · Evaluate, secure & ship" [ref=e127] [cursor=pointer]
+            - listitem [ref=e129]:
+              - button "9 · Real systems & craft" [ref=e131] [cursor=pointer]
+            - listitem [ref=e133]:
+              - button "10 · Interview-ready" [ref=e135] [cursor=pointer]
+            - listitem [ref=e137]:
+              - button "Elective · RL" [ref=e139] [cursor=pointer]
+            - listitem [ref=e141]:
+              - button "Elective · Specialised" [ref=e143] [cursor=pointer]
+            - listitem [ref=e145]:
+              - button "Reference shelf" [ref=e147] [cursor=pointer]
+        - button "Collapse sidebar" [ref=e149] [cursor=pointer]
+    - main [ref=e154]:
+      - generic [ref=e156]:
+        - generic [ref=e158]:
+          - article [ref=e159]:
+            - navigation "Breadcrumbs" [ref=e160]:
+              - list [ref=e161]:
+                - listitem [ref=e162]:
+                  - link "Home page" [ref=e163] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e166]:
+                  - generic [ref=e167]: 6 · LLM engineering
+                - listitem [ref=e168]:
+                  - link "LLM Engineering" [ref=e169] [cursor=pointer]:
+                    - /url: /docs/category/llm-engineering
+                - listitem [ref=e170]:
+                  - link "Training at scale" [ref=e171] [cursor=pointer]:
+                    - /url: /docs/category/training-at-scale
+                - listitem [ref=e172]:
+                  - generic [ref=e173]: 1 · Parallelism strategies
+            - generic [ref=e174]:
+              - link "6 LLM engineering 0/34" [ref=e176] [cursor=pointer]:
+                - /url: /path#llm-engineering
+                - generic [ref=e177]: "6"
+                - generic [ref=e178]: LLM engineering
+                - generic [ref=e179]: 0/34
+              - generic [ref=e180]:
+                - group "Voice reader" [ref=e181]:
+                  - button "Read aloud" [disabled] [ref=e182]
+                  - combobox "Reader voice" [disabled] [ref=e183]:
+                    - option "No local voice" [selected]
+                  - combobox "Reader speed" [disabled] [ref=e184]:
+                    - option "0.8×"
+                    - option "1×" [selected]
+                    - option "1.2×"
+                    - option "1.5×"
+                  - status
+                - group "Reading comfort" [ref=e185]:
+                  - button "Decrease text size" [ref=e186] [cursor=pointer]:
+                    - generic [ref=e187]: A
+                  - button "Increase text size" [ref=e188] [cursor=pointer]:
+                    - generic [ref=e189]: A
+                  - button "Toggle full width" [ref=e190] [cursor=pointer]
+                - button "Copy link to this page" [ref=e193] [cursor=pointer]
+                - button "Mark as read" [ref=e196] [cursor=pointer]
+            - generic [ref=e200]:
+              - heading "Parallelism Strategies for LLMs" [level=1] [ref=e202]
+              - paragraph [ref=e203]:
+                - strong [ref=e204]: In one line.
+                - text: A large language model is trained by cutting the job along several axes at once (examples, weight matrices, layers, tokens, experts), and the craft is choosing the cuts so that what must fit in one GPU's memory fits and the chatty communication stays on the fastest links.
+              - generic [ref=e205]:
+                - generic [ref=e206]: Before you start
+                - list [ref=e211]:
+                  - listitem [ref=e212]:
+                    - strong [ref=e213]: You should already know
+                    - text: what a training step is and why workers average gradients (
+                    - link "data parallelism" [ref=e214] [cursor=pointer]:
+                      - /url: /docs/mlops/distributed/data-parallelism
+                    - text: ), how a network can be cut by layer or by matrix (
+                    - link "model parallelism" [ref=e215] [cursor=pointer]:
+                      - /url: /docs/mlops/distributed/model-parallelism
+                    - text: ), and why plain training costs 16 bytes per parameter (
+                    - link "why distribute machine learning" [ref=e216] [cursor=pointer]:
+                      - /url: /docs/mlops/distributed/why-distribute-machine-learning
+                    - text: ).
+                  - listitem [ref=e217]:
+                    - strong [ref=e218]: You should be able to picture
+                    - text: "one decoder layer: attention, then a feed-forward block ("
+                    - link "transformer decoder architecture" [ref=e219] [cursor=pointer]:
+                      - /url: /docs/theory/dnn/transformer-decoder-architecture
+                    - text: ).
+                  - listitem [ref=e220]:
+                    - strong [ref=e221]: "Reading time:"
+                    - text: about 40 minutes, plus a few minutes to run the code.
+                  - listitem [ref=e222]:
+                    - strong [ref=e223]: After this chapter you can
+                    - text: work out how much memory one GPU needs for a given layout, say which of the five axes fixes which problem, and read a published training configuration such as Llama 3's.
+              - generic [ref=e224]:
+                - generic [ref=e225]: Not from a lecture
+                - paragraph [ref=e230]:
+                  - text: This chapter was written for this site from the sources listed under Go deeper. Model sizes come from real
+                  - code [ref=e231]: config.json
+                  - text: "files read from the Hugging Face Hub by the code below. Versions used: Python 3.14, PyTorch 2.14.1 (CPU), Transformers 5.18.0. Sources were opened on 7 October 2026."
+              - heading [level=2] [ref=e232]:
+                - text: In 30 seconds
+                - link "Direct link to In 30 seconds" [ref=e233] [cursor=pointer]:
+                  - /url: "#in-30-seconds"
+                  - text: "#"
+              - paragraph [ref=e234]: A modern language model has hundreds of billions of numbers to store, and every number needs several copies while it trains. No single graphics card (GPU) can hold that. So we cut the work up and spread it over thousands of GPUs.
+              - paragraph [ref=e235]: Think of printing a huge encyclopaedia. You can add presses that each print different copies, cut every plate in half so two presses share it, or set up an assembly line where each press does some chapters. Each choice solves one problem and makes a new one. This chapter names the five cuts and counts what each costs.
+              - heading [level=2] [ref=e236]:
+                - text: Words you will meet
+                - link "Direct link to Words you will meet" [ref=e237] [cursor=pointer]:
+                  - /url: "#words-you-will-meet"
+                  - text: "#"
+              - table [ref=e238]:
+                - rowgroup [ref=e239]:
+                  - row [ref=e240]:
+                    - columnheader "Term" [ref=e241]
+                    - columnheader "Plain meaning" [ref=e242]
+                    - columnheader "Tiny example" [ref=e243]
+                - rowgroup [ref=e244]:
+                  - row [ref=e245]:
+                    - cell "Parameter" [ref=e246]
+                    - cell "One learned number inside the model" [ref=e247]
+                    - cell "Llama 3.1 405B has 405,853,388,800" [ref=e248]
+                  - row [ref=e249]:
+                    - cell "HBM (high-bandwidth memory)" [ref=e250]
+                    - cell "The fast memory on the GPU card" [ref=e251]
+                    - cell "80 GB on the H100 cards Llama 3 used" [ref=e252]
+                  - row [ref=e253]:
+                    - cell "Activation" [ref=e254]
+                    - cell "An intermediate result saved during the forward pass so the backward pass can use it" [ref=e255]
+                    - cell "The output of each layer for each token" [ref=e256]
+                  - row [ref=e257]:
+                    - cell "Rank" [ref=e258]
+                    - cell "The number of one process, usually one per GPU" [ref=e259]
+                    - cell "Rank 0 of 8" [ref=e260]
+                  - row [ref=e261]:
+                    - cell "All-reduce" [ref=e262]
+                    - cell "Every rank contributes a tensor and every rank receives the sum" [ref=e263]
+                    - cell "Eight gradients become one shared gradient" [ref=e264]
+                  - row [ref=e265]:
+                    - cell "Shard" [ref=e266]
+                    - cell "One piece of a tensor that is split across ranks" [ref=e267]
+                    - cell "Each of 8 GPUs holds one eighth of a matrix" [ref=e268]
+                  - row [ref=e269]:
+                    - cell "Micro-batch" [ref=e270]
+                    - cell "A slice of the batch that is pushed through the model on its own" [ref=e271]
+                    - cell "1 sequence of 8,192 tokens" [ref=e272]
+                  - row [ref=e273]:
+                    - cell "Bubble" [ref=e274]
+                    - cell "Time a GPU sits idle while a pipeline fills and drains" [ref=e275]
+                    - cell "The last stage waits for the first" [ref=e276]
+                  - row [ref=e277]:
+                    - cell "MFU (model FLOPs utilisation)" [ref=e278]
+                    - cell "Useful arithmetic done, as a share of what the hardware could do" [ref=e279]
+                    - cell "Llama 3 reports 38 to 43 per cent" [ref=e280]
+              - heading [level=2] [ref=e281]:
+                - text: The idea in plain words
+                - link "Direct link to The idea in plain words" [ref=e282] [cursor=pointer]:
+                  - /url: "#the-idea-in-plain-words"
+                  - text: "#"
+              - paragraph [ref=e283]: "Start with the smallest case you can do by hand. A model with 1 billion parameters needs about 16 GB while training with the Adam optimiser: 2 bytes for the weight, 2 for its gradient and 12 for the optimiser's copies (explained below). One 80 GB card holds it easily. Now take a model with 10 billion parameters. It needs 160 GB, so it no longer fits on one card, however fast the card is."
+              - paragraph [ref=e284]:
+                - text: You have two broad remedies.
+                - strong [ref=e285]: Split the model
+                - text: so each GPU holds only part of it. Or
+                - strong [ref=e286]: split the examples
+                - text: so many GPUs work at once, each with a full copy. Splitting the model fixes the memory wall. Splitting the examples fixes the speed wall but not the memory wall, because every copy is still full size.
+              - paragraph [ref=e287]: Real runs need both, and there is more than one way to split a model. You can cut each weight matrix in half, cut the stack of layers into stages, cut a long input into pieces, or give different experts to different GPUs. That makes five axes in all.
+              - table [ref=e288]:
+                - rowgroup [ref=e289]:
+                  - row [ref=e290]:
+                    - columnheader "Axis" [ref=e291]
+                    - columnheader "What it splits" [ref=e292]
+                    - columnheader "What it sends" [ref=e293]
+                    - columnheader "Where it lives" [ref=e294]
+                - rowgroup [ref=e295]:
+                  - row [ref=e296]:
+                    - cell "Data parallel (DP)" [ref=e297]
+                    - cell "The batch of examples" [ref=e298]
+                    - cell "Gradients, once per step" [ref=e299]
+                    - cell "Across servers" [ref=e300]
+                  - row [ref=e301]:
+                    - cell "Tensor parallel (TP)" [ref=e302]
+                    - cell "Each weight matrix inside a layer" [ref=e303]
+                    - cell "Partial results, several times in every layer" [ref=e304]
+                    - cell "Inside one server" [ref=e305]
+                  - row [ref=e306]:
+                    - cell "Pipeline parallel (PP)" [ref=e307]
+                    - cell "The stack of layers into stages" [ref=e308]
+                    - cell "Activations between neighbouring stages" [ref=e309]
+                    - cell "Across servers" [ref=e310]
+                  - row [ref=e311]:
+                    - cell "Context parallel (CP)" [ref=e312]
+                    - cell "The tokens of one long sequence" [ref=e313]
+                    - cell "Keys and values" [ref=e314]
+                    - cell "Where inputs are very long" [ref=e315]
+                  - row [ref=e316]:
+                    - cell "Expert parallel (EP)" [ref=e317]
+                    - cell "The experts of a mixture-of-experts layer" [ref=e318]
+                    - cell "Tokens, to the expert that will process them" [ref=e319]
+                    - cell "Only for MoE models" [ref=e320]
+              - paragraph [ref=e321]: "No axis is free. Data parallelism keeps a full copy of the model on every replica, so on its own it cannot help when the model does not fit. Tensor parallelism makes the model fit but talks inside every layer. Pipeline parallelism talks little but leaves GPUs idle while the line fills. A real run combines them: data, tensor and pipeline together are called 3D parallelism, and adding context parallelism gives 4D."
+              - 'figure "Look at the bottom row first: it says which wall you are hitting. The columns above say which cut removes it. Expert parallelism returns in chapter 4, and sharded data parallelism (ZeRO and FSDP) is chapter 2." [ref=e322]':
+                - generic [ref=e323]:
+                  - 'button "Enlarge: Five columns, one per parallelism axis, each saying what it splits and what it communicates, above three cards that map a memory or speed problem to the axis that fixes it" [ref=e324]':
+                    - img "Five columns, one per parallelism axis, each saying what it splits and what it communicates, above three cards that map a memory or speed problem to the axis that fixes it" [ref=e325]
+                  - button "View infographic larger" [ref=e326] [cursor=pointer]:
+                    - generic [ref=e329]: Expand
+              - heading [level=2] [ref=e331]:
+                - text: Worked example, step by step
+                - link "Direct link to Worked example, step by step" [ref=e332] [cursor=pointer]:
+                  - /url: "#worked-example-step-by-step"
+                  - text: "#"
+              - paragraph [ref=e333]: We will fit a 70-billion-parameter model on 64 GPUs, using tensor parallel 8, pipeline parallel 2 and data parallel 4 (8 x 2 x 4 = 64). The code in block 2 prints every number below.
+              - list [ref=e334]:
+                - listitem [ref=e335]:
+                  - strong [ref=e336]: Count the parameters.
+                  - text: The config of Llama 3.1 70B says 80 layers, hidden size 8,192, feed-forward size 28,672, 64 attention heads, 8 key-value heads and a vocabulary of 128,256. One layer holds 855,654,400 parameters. Eighty layers give 68,452,352,000. The input and output embeddings add 2,101,346,304, and the final norm adds 8,192. The total is 70,553,706,496.
+                - listitem [ref=e337]:
+                  - strong [ref=e338]: Count the bytes.
+                  - text: "Plain mixed-precision training stores a 2-byte weight, a 2-byte gradient and 12 bytes of optimiser state per parameter: a 4-byte master copy of the weight plus Adam's two running averages (4 bytes each). That is 16 bytes. 70.55 billion x 16 = 1,128.9 GB."
+                - listitem [ref=e339]:
+                  - strong [ref=e340]: Cut across the model-parallel GPUs.
+                  - text: Tensor 8 x pipeline 2 means 16 GPUs share one copy of the model. 1,128.9 / 16 = 70.55 GB each. That is the "ZeRO stage 0" row, with no sharding across replicas. It is nearly the whole of an 80 GB card before a single activation.
+                - listitem [ref=e341]:
+                  - strong [ref=e342]: Shard the optimiser state across the 4 replicas (ZeRO stage 1).
+                  - text: The optimiser share is 12 x 70.55 / 16 = 52.92 GB. Divide by 4 and you get 13.23 GB. The total falls to 8.82 + 8.82 + 13.23 = 30.87 GB.
+                - listitem [ref=e343]:
+                  - strong [ref=e344]: Shard the gradients too (stage 2).
+                  - text: Gradients drop from 8.82 GB to 2.20 GB. Total 24.25 GB.
+                - listitem [ref=e345]:
+                  - strong [ref=e346]: Shard the weights too (stage 3).
+                  - text: Weights drop to 8.82 / 4 = 2.21 GB, plus 0.21 GB for the one layer that is gathered while it is being used. Total 17.85 GB.
+              - figure "Read the left column top to bottom, then watch the purple optimiser bar shrink in the right panel. Activations come on top of these bars." [ref=e347]:
+                - generic [ref=e348]:
+                  - 'button "Enlarge: Four steps that count a 70B model''s parameters, multiply by 16 bytes, divide by 16 model-parallel GPUs and then shard across 4 replicas, beside bars of per-GPU memory for ZeRO stages 0 to 3 against an 80 GB marker" [ref=e349]':
+                    - img "Four steps that count a 70B model's parameters, multiply by 16 bytes, divide by 16 model-parallel GPUs and then shard across 4 replicas, beside bars of per-GPU memory for ZeRO stages 0 to 3 against an 80 GB marker" [ref=e350]
+                  - button "View infographic larger" [ref=e351] [cursor=pointer]:
+                    - generic [ref=e354]: Expand
+              - paragraph [ref=e356]: Notice what moved. Tensor and pipeline parallelism divide all three parts equally. Sharding across replicas, which chapter 2 develops, divides them one at a time. That is the whole memory story for the model itself. The remaining part, activations, behaves differently, and the next section covers it.
+              - heading [level=2] [ref=e357]:
+                - text: How it works
+                - link "Direct link to How it works" [ref=e358] [cursor=pointer]:
+                  - /url: "#how-it-works"
+                  - text: "#"
+              - heading [level=3] [ref=e359]:
+                - text: What fills a GPU's memory?
+                - link "Direct link to What fills a GPU's memory?" [ref=e360] [cursor=pointer]:
+                  - /url: "#what-fills-a-gpus-memory"
+                  - text: "#"
+              - paragraph [ref=e361]: "Training memory has four parts. The first three belong to the model: weights, gradients and optimiser state. They scale with the number of parameters, and the 16-bytes-per-parameter figure holds for the common recipe (bf16, a 2-byte format with a wide range, for weights and gradients, and fp32 master weights and Adam moments). The Hugging Face Ultra-Scale Playbook gives the same 2 + 2 + 4 + 8 accounting. The fourth part, activations, scales with the batch and the sequence length instead."
+              - paragraph [ref=e362]:
+                - text: The Megatron-LM team's analysis of activations gives the bytes per layer for sequence length
+                - code [ref=e363]: s
+                - text: ", micro-batch"
+                - code [ref=e364]: b
+                - text: ", hidden size"
+                - code [ref=e365]: h
+                - text: ","
+                - code [ref=e366]: a
+                - text: attention heads and tensor-parallel size
+                - code [ref=e367]: t
+                - text: ":"
+              - table [ref=e368]:
+                - rowgroup [ref=e369]:
+                  - row [ref=e370]:
+                    - columnheader "Setting" [ref=e371]
+                    - columnheader "Activation bytes per layer" [ref=e372]
+                - rowgroup [ref=e373]:
+                  - row [ref=e374]:
+                    - cell "Nothing saved or shared" [ref=e375]
+                    - cell [ref=e376]:
+                      - code [ref=e377]: sbh(34 + 5as/h)
+                  - row [ref=e378]:
+                    - cell "Tensor parallel" [ref=e379]
+                    - cell [ref=e380]:
+                      - code [ref=e381]: sbh(10 + 24/t + 5as/(ht))
+                  - row [ref=e382]:
+                    - cell "Tensor + sequence parallel" [ref=e383]
+                    - cell [ref=e384]:
+                      - code [ref=e385]: sbh/t (34 + 5as/h)
+                  - row [ref=e386]:
+                    - cell "Tensor + sequence parallel + selective recomputation" [ref=e387]
+                    - cell [ref=e388]:
+                      - code [ref=e389]: 34 sbh / t
+                  - row [ref=e390]:
+                    - cell "Full recomputation" [ref=e391]
+                    - cell [ref=e392]:
+                      - code [ref=e393]: 2 sbh
+              - paragraph [ref=e394]:
+                - text: "In words: the"
+                - code [ref=e395]: 5as/h
+                - text: term is the attention score matrices, which grow with the square of the sequence length.
+                - strong [ref=e396]: Selective recomputation
+                - text: throws those matrices away and recomputes them in the backward pass, because they are cheap to recompute and large to store.
+                - strong [ref=e397]: Sequence parallelism
+                - text: (not the same as context parallelism) splits layer norm and dropout along the tokens, because they work on each token separately and need no copy of the whole sequence on every tensor-parallel GPU.
+              - paragraph [ref=e398]:
+                - text: The first pipeline stage holds the activations of
+                - code [ref=e399]: p
+                - text: micro-batches in flight, and each stage owns
+                - code [ref=e400]: L/p
+                - text: layers. So it holds the equivalent of all
+                - code [ref=e401]: L
+                - text: layers at once, whatever
+                - code [ref=e402]: p
+                - text: is. That is why block 3 multiplies the per-layer figure by the full layer count.
+              - heading [level=3] [ref=e403]:
+                - text: What does tensor parallelism cost?
+                - link "Direct link to What does tensor parallelism cost?" [ref=e404] [cursor=pointer]:
+                  - /url: "#what-does-tensor-parallelism-cost"
+                  - text: "#"
+              - paragraph [ref=e405]: A transformer layer is cut so that each GPU holds a slice of the attention heads and a column slice of each feed-forward matrix. The Megatron-LM paper reports only two all-reduces in the forward pass and two in the backward pass per layer. That sounds small, but it is four collective operations in every layer, thousands of times per step.
+              - paragraph [ref=e406]: "Block 4 turns that into bytes for the Llama 3 405B layout. A GPU sends about 237 GB per step for tensor parallelism, against about 12.6 GB for data parallelism and 8.6 GB for pipeline parallelism. That ratio is why the Megatron follow-up paper says to use tensor parallelism up to the number of GPUs in a server and only then add pipeline parallelism. The Ultra-Scale Playbook measured the cliff: it saw \"significant drops\" going from TP 8 to TP 16, because the second group of eight GPUs sits in another server on a slower link. Each GPU needs at least one attention head to work on, so the tensor-parallel size has an upper limit set by the head count."
+              - paragraph [ref=e407]:
+                - text: Block 5 shows the mechanism on a real
+                - code [ref=e408]: LlamaMLP
+                - text: . Each rank holds half of the gate and up columns and half of the down rows. Alone, each rank's answer is wrong by about 0.2. After one all-reduce, the sum matches the unsplit layer to 1.34e-07.
+              - heading [level=3] [ref=e409]:
+                - text: What does pipeline parallelism cost?
+                - link "Direct link to What does pipeline parallelism cost?" [ref=e410] [cursor=pointer]:
+                  - /url: "#what-does-pipeline-parallelism-cost"
+                  - text: "#"
+              - paragraph [ref=e411]:
+                - text: "Think of a laundrette line: wash, dry, fold. While the first load is in the dryer, the folder has nothing to do. That idle time is the"
+                - strong [ref=e412]: bubble
+                - text: . With
+                - code [ref=e413]: p
+                - text: stages and
+                - code [ref=e414]: m
+                - text: micro-batches in the plain schedule, the idle fraction is
+                - code [ref=e415]: (p - 1)/(m + p - 1)
+                - text: ". In words: more micro-batches mean the line stays full for longer, so the idle ends are a smaller part of the whole."
+              - paragraph [ref=e416]:
+                - text: With 16 stages and 16 micro-batches, nearly half the time is idle (15/31 = 0.484). With 128 micro-batches it is 0.105.
+                - strong [ref=e417]: Interleaved schedules
+                - text: give each GPU several small, non-adjacent chunks of layers, which cuts the bubble roughly by the number of chunks
+                - code [ref=e418]: V
+                - text: . Llama 3 uses one and writes the overall ratio as
+                - code [ref=e419]: (PP - 1)/(V x M)
+                - text: . The paper does not give
+                - code [ref=e420]: V
+                - text: or
+                - code [ref=e421]: M
+                - text: ", so block 4 shows"
+                - code [ref=e422]: V = 4
+                - text: as an illustration only.
+              - heading [level=3] [ref=e423]:
+                - text: What does context parallelism do for long inputs?
+                - link "Direct link to What does context parallelism do for long inputs?" [ref=e424] [cursor=pointer]:
+                  - /url: "#what-does-context-parallelism-do-for-long-inputs"
+                  - text: "#"
+              - paragraph [ref=e425]: "When inputs reach 128K tokens, even one sequence's activations do not fit. The fix is to split the tokens. Llama 3 uses an all-gather of keys and values: each context-parallel rank keeps its own queries, gathers everyone's keys and values, and computes attention for its own chunk. The paper notes this works because grouped-query attention makes keys and values much smaller than queries."
+              - paragraph [ref=e426]:
+                - text: Causal attention makes the work lopsided, because a late token attends to many more tokens than an early one. So the paper cuts the sequence into
+                - code [ref=e427]: 2 x CP
+                - text: chunks and gives rank
+                - code [ref=e428]: i
+                - text: chunks
+                - code [ref=e429]: i
+                - text: and
+                - code [ref=e430]: 2 x CP - 1 - i
+                - text: . Block 6 runs this on two processes and counts the work.
+              - heading [level=3] [ref=e431]:
+                - text: How do the degrees fit together?
+                - link "Direct link to How do the degrees fit together?" [ref=e432] [cursor=pointer]:
+                  - /url: "#how-do-the-degrees-fit-together"
+                  - text: "#"
+              - paragraph [ref=e433]:
+                - text: "The product of the degrees is the number of GPUs:"
+                - code [ref=e434]: TP x CP x PP x DP
+                - text: . The Llama 3 paper orders the dimensions as [TP, CP, PP, DP], innermost to outermost, so the most talkative axis gets the best network. The Ultra-Scale Playbook turns this into a decision order. First fit one model instance (under 10B parameters, one technique such as ZeRO-3 over 8 GPUs may do), then reach the target batch size with data parallelism, then tune throughput. For 10B to 100B parameters it suggests TP 8 with pipeline parallelism or with ZeRO-3. At 512 GPUs and more, pure data parallelism becomes communication-bound. At 1,024 GPUs and more, it suggests TP 8 with ZeRO-2 and pipeline parallelism. It also says you must run experiments on your own cluster.
+              - paragraph [ref=e435]:
+                - text: "Expert parallelism, the fifth axis, only applies to mixture-of-experts models and gets its own chapter:"
+                - link "mixture of experts" [ref=e436] [cursor=pointer]:
+                  - /url: /docs/llm-engineering/mixture-of-experts
+                - text: .
+              - heading [level=2] [ref=e437]:
+                - text: A real system that works this way
+                - link "Direct link to A real system that works this way" [ref=e438] [cursor=pointer]:
+                  - /url: "#a-real-system-that-works-this-way"
+                  - text: "#"
+              - paragraph [ref=e439]: "Meta's Llama 3 paper (v3, 23 November 2024) describes the largest open recipe. The 405B model has 126 layers, hidden size 16,384, 128 attention heads and 8 key-value heads. It trained on up to 16,384 H100 GPUs with 80 GB of HBM each, using 4D parallelism. Table 4 of the paper gives three configurations, each with 16M tokens per batch:"
+              - table [ref=e440]:
+                - rowgroup [ref=e441]:
+                  - row [ref=e442]:
+                    - columnheader "GPUs" [ref=e443]
+                    - columnheader "TP" [ref=e444]
+                    - columnheader "CP" [ref=e445]
+                    - columnheader "PP" [ref=e446]
+                    - columnheader "DP" [ref=e447]
+                    - columnheader "Sequence length" [ref=e448]
+                    - columnheader "BF16 MFU" [ref=e449]
+                - rowgroup [ref=e450]:
+                  - row [ref=e451]:
+                    - cell "8,192" [ref=e452]
+                    - cell "8" [ref=e453]
+                    - cell "1" [ref=e454]
+                    - cell "16" [ref=e455]
+                    - cell "64" [ref=e456]
+                    - cell "8,192" [ref=e457]
+                    - cell "43%" [ref=e458]
+                  - row [ref=e459]:
+                    - cell "16,384" [ref=e460]
+                    - cell "8" [ref=e461]
+                    - cell "1" [ref=e462]
+                    - cell "16" [ref=e463]
+                    - cell "128" [ref=e464]
+                    - cell "8,192" [ref=e465]
+                    - cell "41%" [ref=e466]
+                  - row [ref=e467]:
+                    - cell "16,384" [ref=e468]
+                    - cell "8" [ref=e469]
+                    - cell "16" [ref=e470]
+                    - cell "16" [ref=e471]
+                    - cell "8" [ref=e472]
+                    - cell "131,072" [ref=e473]
+                    - cell "38%" [ref=e474]
+              - paragraph [ref=e475]: The paper also says its FSDP shards optimiser state and gradients but does not reshard the weights after the forward pass, which avoids an extra all-gather in the backward pass. In ZeRO terms the weights then behave as in stage 2 during a step, because the full weights stay in memory from the forward pass until the backward pass is done with them. It pre-trained at 8K tokens without activation checkpointing, after removing the first and last transformer layer from the first and last pipeline stages to balance the load.
+              - 'figure "Start with the green box at the bottom right: states plus activations come to 78.6 GB, just under the 80 GB card. Every figure is printed by blocks 2 and 3." [ref=e476]':
+                - generic [ref=e477]:
+                  - 'button "Enlarge: The 16,384 GPU Llama 3 405B layout as nested data, pipeline and tensor groups, with a table of model state per ZeRO stage and a table of activation memory per saving that sums to 78.6 GB" [ref=e478]':
+                    - img "The 16,384 GPU Llama 3 405B layout as nested data, pipeline and tensor groups, with a table of model state per ZeRO stage and a table of activation memory per saving that sums to 78.6 GB" [ref=e479]
+                  - button "View infographic larger" [ref=e480] [cursor=pointer]:
+                    - generic [ref=e483]: Expand
+              - heading [level=2] [ref=e485]:
+                - text: Code you can run
+                - link "Direct link to Code you can run" [ref=e486] [cursor=pointer]:
+                  - /url: "#code-you-can-run"
+                  - text: "#"
+              - paragraph [ref=e487]: Six blocks. Blocks 1 to 4 read real configs from the Hub and do arithmetic. Blocks 5 and 6 start two real processes with PyTorch's gloo backend on the CPU. Everything runs in about a minute after the config downloads.
+              - heading [level=3] [ref=e488]:
+                - text: 1. Count parameters from real configs
+                - link "Direct link to 1. Count parameters from real configs" [ref=e489] [cursor=pointer]:
+                  - /url: "#1-count-parameters-from-real-configs"
+                  - text: "#"
+              - paragraph [ref=e490]:
+                - text: We read three Llama 3.1 configs from the Hub, count the parameters with a formula, and check the formula against the real
+                - code [ref=e491]: LlamaForCausalLM
+                - text: built on the
+                - code [ref=e492]: meta
+                - text: device, which allocates no memory even for 405B. The 405B config comes from the Hermes 3 fine-tune, which keeps the architecture of Llama 3.1 405B, because Meta's own repository is gated.
+              - code [ref=e496]:
+                - generic [ref=e497]: import json
+                - generic [ref=e498]: import os
+                - generic [ref=e500]: os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+                - generic [ref=e501]: import torch
+                - generic [ref=e502]: from huggingface_hub import hf_hub_download
+                - generic [ref=e503]: from transformers import LlamaConfig, LlamaForCausalLM
+                - generic [ref=e505]: "REPOS = {"
+                - generic [ref=e506]: "\"8B\": \"NousResearch/Meta-Llama-3.1-8B\","
+                - generic [ref=e507]: "\"70B\": \"NousResearch/Meta-Llama-3.1-70B\","
+                - generic [ref=e508]: "\"405B\": \"NousResearch/Hermes-3-Llama-3.1-405B\","
+                - generic [ref=e509]: "}"
+                - generic [ref=e512]: "def formula(c):"
+                - generic [ref=e513]: kv_dim = c["hidden_size"] * c["num_key_value_heads"] // c["num_attention_heads"]
+                - generic [ref=e514]: attn = 2 * c["hidden_size"] ** 2 + 2 * c["hidden_size"] * kv_dim
+                - generic [ref=e515]: mlp = 3 * c["hidden_size"] * c["intermediate_size"]
+                - generic [ref=e516]: per_layer = attn + mlp + 2 * c["hidden_size"]
+                - generic [ref=e517]: total = 2 * c["vocab_size"] * c["hidden_size"] + c["num_hidden_layers"] * per_layer + c["hidden_size"]
+                - generic [ref=e518]: return total, per_layer
+                - generic [ref=e521]: "def counted(c):"
+                - generic [ref=e522]: "cfg = LlamaConfig(**{k: c[k] for k in ("
+                - generic [ref=e523]: "\"vocab_size\", \"hidden_size\", \"intermediate_size\", \"num_hidden_layers\","
+                - generic [ref=e524]: "\"num_attention_heads\", \"num_key_value_heads\", \"tie_word_embeddings\")})"
+                - generic [ref=e525]: "with torch.device(\"meta\"):"
+                - generic [ref=e526]: model = LlamaForCausalLM(cfg)
+                - generic [ref=e527]: return sum(p.numel() for p in model.parameters())
+                - generic [ref=e530]: print("name layers hidden ffn heads kv vocab formula (B) transformers (B) equal")
+                - generic [ref=e531]: "configs = {}"
+                - generic [ref=e532]: "for name, repo in REPOS.items():"
+                - generic [ref=e533]: c = json.load(open(hf_hub_download(repo, "config.json")))
+                - generic [ref=e534]: configs[name] = c
+                - generic [ref=e535]: f, _ = formula(c)
+                - generic [ref=e536]: n = counted(c)
+                - generic [ref=e537]: "print(f\"{name:<5} {c['num_hidden_layers']:>6} {c['hidden_size']:>7} {c['intermediate_size']:>6} \""
+                - generic [ref=e538]: "f\"{c['num_attention_heads']:>6} {c['num_key_value_heads']:>3} {c['vocab_size']:>6} \""
+                - generic [ref=e539]: "f\"{f / 1e9:>13.3f} {n / 1e9:>17.3f} {f == n}\")"
+                - generic [ref=e541]: big = formula(configs["405B"])[0]
+                - generic [ref=e542]: print()
+                - generic [ref=e543]: "print(f\"405B parameters: {big:,}\")"
+                - generic [ref=e544]: "print(f\"405B model states at 16 bytes per parameter: {big * 16 / 1e12:.2f} TB\")"
+                - generic [ref=e545]: "print(f\"80 GB cards needed just for those states: {int(big * 16 / 80e9) + 1}\")"
+                - generic [ref=e546]: paper_vocab = dict(configs["405B"], vocab_size=128000)
+                - generic [ref=e547]: "print(f\"with the paper's rounded vocabulary of 128,000: {formula(paper_vocab)[0]:,}\")"
+              - paragraph [ref=e548]:
+                - strong [ref=e549]: Reading the output.
+                - text: The formula and the library agree to the last digit on all three sizes. The 405B model has 405,853,388,800 parameters, so 16 bytes each is 6.49 TB. That needs at least 82 cards of 80 GB for model state alone. The paper's Table 3 says the vocabulary is 128,000; the real config says 128,256. That difference moves the total by only 8.4 million parameters, 0.002 per cent.
+              - paragraph [ref=e550]:
+                - strong [ref=e551]: Line by line.
+              - list [ref=e552]:
+                - listitem [ref=e553]:
+                  - code [ref=e554]: with torch.device("meta")
+                  - text: builds the model with shapes but no storage, so counting parameters is instant.
+                - listitem [ref=e555]:
+                  - code [ref=e556]: kv_dim
+                  - text: "is the width of the key and value projections: with 8 key-value heads and 128 query heads it is one sixteenth of"
+                  - code [ref=e557]: hidden_size
+                  - text: .
+                - listitem [ref=e558]:
+                  - code [ref=e559]: 2 * vocab_size * hidden_size
+                  - text: counts the input embedding and the separate output head, because
+                  - code [ref=e560]: tie_word_embeddings
+                  - text: is false.
+              - heading [level=3] [ref=e561]:
+                - text: 2. Check the layout and the model state per GPU
+                - link "Direct link to 2. Check the layout and the model state per GPU" [ref=e562] [cursor=pointer]:
+                  - /url: "#2-check-the-layout-and-the-model-state-per-gpu"
+                  - text: "#"
+              - paragraph [ref=e563]: We check that Table 4's rows multiply out, then compute per-GPU model state for each ZeRO stage, first for the 70B worked example and then for the 405B layout.
+              - code [ref=e567]:
+                - generic [ref=e568]: import json
+                - generic [ref=e569]: import os
+                - generic [ref=e571]: os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+                - generic [ref=e572]: from huggingface_hub import hf_hub_download
+                - generic [ref=e574]: GB = 1e9
+                - generic [ref=e577]: "def load(repo):"
+                - generic [ref=e578]: return json.load(open(hf_hub_download(repo, "config.json")))
+                - generic [ref=e581]: "def layer_params(c):"
+                - generic [ref=e582]: h = c["hidden_size"]
+                - generic [ref=e583]: kv_dim = h * c["num_key_value_heads"] // c["num_attention_heads"]
+                - generic [ref=e584]: return 2 * h * h + 2 * h * kv_dim + 3 * h * c["intermediate_size"] + 2 * h
+                - generic [ref=e587]: "def params(c):"
+                - generic [ref=e588]: return 2 * c["vocab_size"] * c["hidden_size"] + c["num_hidden_layers"] * layer_params(c) + c["hidden_size"]
+                - generic [ref=e591]: "def states(c, t, p, d, zero):"
+                - generic [ref=e592]: n = params(c)
+                - generic [ref=e593]: weights, grads, opt = 2 * n / (t * p), 2 * n / (t * p), 12 * n / (t * p)
+                - generic [ref=e594]: "if zero >= 1:"
+                - generic [ref=e595]: opt /= d
+                - generic [ref=e596]: "if zero >= 2:"
+                - generic [ref=e597]: grads /= d
+                - generic [ref=e598]: "if zero >= 3:"
+                - generic [ref=e599]: weights = weights / d + 2 * layer_params(c) / t
+                - generic [ref=e600]: return weights / GB, grads / GB, opt / GB
+                - generic [ref=e603]: c70 = load("NousResearch/Meta-Llama-3.1-70B")
+                - generic [ref=e604]: "print(f\"70B: {params(c70):,} parameters, {16 * params(c70) / GB:,.1f} GB of states at 16 bytes each\")"
+                - generic [ref=e605]: print("70B on 64 GPUs as TP 8 x PP 2 x DP 4, per-GPU states in GB")
+                - generic [ref=e606]: "for z in range(4):"
+                - generic [ref=e607]: w, g, o = states(c70, 8, 2, 4, z)
+                - generic [ref=e608]: "print(f\" ZeRO {z}: weights {w:6.2f} grads {g:6.2f} optimiser {o:6.2f} total {w + g + o:6.2f}\")"
+                - generic [ref=e610]: c405 = load("NousResearch/Hermes-3-Llama-3.1-405B")
+                - generic [ref=e611]: rows = [(8192, 8, 1, 16, 64, 32, 8192), (16384, 8, 1, 16, 128, 16, 8192), (16384, 8, 16, 16, 8, 16, 131072)]
+                - generic [ref=e612]: print()
+                - generic [ref=e613]: "print(\"Llama 3 405B, Table 4 of the paper: do the layouts multiply out?\")"
+                - generic [ref=e614]: print("GPUs TP CP PP DP seq tokens per batch GPUs ok")
+                - generic [ref=e615]: "for gpus, t, cp, p, d, bs, s in rows:"
+                - generic [ref=e616]: "print(f\"{gpus:>5} {t:>2} {cp:>2} {p:>2} {d:>3} {s:>6} {d * bs * s:>16,} {t * cp * p * d == gpus}\")"
+                - generic [ref=e618]: print()
+                - generic [ref=e619]: print("405B on 16,384 GPUs as TP 8 x PP 16 x DP 128, per-GPU states in GB")
+                - generic [ref=e620]: "for z in range(4):"
+                - generic [ref=e621]: w, g, o = states(c405, 8, 16, 128, z)
+                - generic [ref=e622]: "print(f\" ZeRO {z}: weights {w:6.2f} grads {g:6.2f} optimiser {o:6.2f} total {w + g + o:6.2f}\")"
+              - paragraph [ref=e623]:
+                - strong [ref=e624]: Reading the output.
+                - text: "The 70B rows are the worked example: 70.55, 30.87, 24.25 and 17.85 GB. All three published layouts multiply out to their GPU counts and to exactly 16,777,216 tokens per batch, which the paper rounds to 16M. For the 405B layout on 16,384 GPUs, state falls from 50.73 GB with no sharding to 6.69 GB at stage 2, which is what Llama 3 does."
+              - paragraph [ref=e625]:
+                - strong [ref=e626]: Line by line.
+              - list [ref=e627]:
+                - listitem [ref=e628]:
+                  - code [ref=e629]: states
+                  - text: divides all three parts by
+                  - code [ref=e630]: t * p
+                  - text: ", then divides optimiser, gradients and weights by"
+                  - code [ref=e631]: d
+                  - text: as the ZeRO stage rises.
+                - listitem [ref=e632]:
+                  - text: At stage 3 it adds
+                  - code [ref=e633]: 2 * layer_params / t
+                  - text: ": the one layer that is gathered into full size while it computes."
+                - listitem [ref=e634]: The embeddings and output head are not spread evenly over pipeline stages in a real run, so this is an average, not a per-stage truth.
+              - heading [level=3] [ref=e635]:
+                - text: 3. Activations for each saving, and does it fit?
+                - link "Direct link to 3. Activations for each saving, and does it fit?" [ref=e636] [cursor=pointer]:
+                  - /url: "#3-activations-for-each-saving-and-does-it-fit"
+                  - text: "#"
+              - paragraph [ref=e637]: We apply the five activation formulas to the 405B layout at 8,192 tokens, add them to the model state of block 2 and compare with the 80 GB card.
+              - code [ref=e641]:
+                - generic [ref=e642]: import json
+                - generic [ref=e643]: import os
+                - generic [ref=e645]: os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+                - generic [ref=e646]: from huggingface_hub import hf_hub_download
+                - generic [ref=e648]: GB = 1e9
+                - generic [ref=e649]: c = json.load(open(hf_hub_download("NousResearch/Hermes-3-Llama-3.1-405B", "config.json")))
+                - generic [ref=e650]: L, H, A = c["num_hidden_layers"], c["hidden_size"], c["num_attention_heads"]
+                - generic [ref=e651]: kv_dim = H * c["num_key_value_heads"] // A
+                - generic [ref=e652]: layer = 2 * H * H + 2 * H * kv_dim + 3 * H * c["intermediate_size"] + 2 * H
+                - generic [ref=e653]: P = 2 * c["vocab_size"] * H + L * layer + H
+                - generic [ref=e656]: "def activations(s, b, t, cp, mode):"
+                - generic [ref=e657]: sl = s / cp
+                - generic [ref=e658]: sbh = sl * b * H
+                - generic [ref=e659]: attn_scores = 5 * A * sl / H
+                - generic [ref=e660]: "per_layer = {"
+                - generic [ref=e661]: "\"nothing saved\": sbh * (34 + attn_scores),"
+                - generic [ref=e662]: "\"tensor parallel\": sbh * (10 + 24 / t + attn_scores / t),"
+                - generic [ref=e663]: "\"tensor + sequence parallel\": sbh / t * (34 + attn_scores),"
+                - generic [ref=e664]: "\"+ selective recomputation\": sbh * 34 / t,"
+                - generic [ref=e665]: "\"full recomputation\": 2 * sbh,"
+                - generic [ref=e666]: "}[mode]"
+                - generic [ref=e667]: return per_layer * L
+                - generic [ref=e670]: modes = ["nothing saved", "tensor parallel", "tensor + sequence parallel", "+ selective recomputation", "full recomputation"]
+                - generic [ref=e671]: t, p, d = 8, 16, 128
+                - generic [ref=e672]: print("activations on the first pipeline stage, 8,192 tokens, micro-batch 1, TP 8 (GB)")
+                - generic [ref=e673]: "for mode in modes:"
+                - generic [ref=e674]: "print(f\" {mode:<28} {activations(8192, 1, t, 1, mode) / GB:9.1f}\")"
+                - generic [ref=e676]: states = 2 * P / (t * p) + 2 * P / (t * p) / d + 12 * P / (t * p) / d
+                - generic [ref=e677]: acts = activations(8192, 1, t, 1, "+ selective recomputation")
+                - generic [ref=e678]: print()
+                - generic [ref=e679]: "print(f\"ZeRO 2 states {states / GB:.1f} GB + activations {acts / GB:.1f} GB = {(states + acts) / GB:.1f} GB against 80 GB of HBM\")"
+                - generic [ref=e680]: a_long = activations(131072, 1, 8, 16, "+ selective recomputation")
+                - generic [ref=e681]: "print(f\"CP 16 at 131,072 tokens: {a_long / GB:.1f} GB, each rank holds {131072 // 16:,} tokens\")"
+                - generic [ref=e682]: "print(f\"without context parallelism at 131,072 tokens: {activations(131072, 1, 8, 1, '+ selective recomputation') / GB:.1f} GB\")"
+              - paragraph [ref=e683]:
+                - strong [ref=e684]: Reading the output.
+                - text: With nothing saved, activations would take 5,986.6 GB on the first stage. Tensor and sequence parallelism bring that to 748.3 GB. Only selective recomputation gets it to 71.9 GB. Add 6.7 GB of stage 2 state and the total is 78.6 GB against 80 GB. Without context parallelism the 131,072-token case would need 1,150 GB. With CP 16, each rank holds 8,192 tokens and the term returns to 71.9 GB.
+              - paragraph [ref=e685]:
+                - strong [ref=e686]: What did not work.
+                - text: Treat the 78.6 GB as a sanity check, not a measurement. The Megatron formula was derived for a GPT-style layer with a 4h feed-forward block. Llama uses a three-matrix SwiGLU block and grouped-query attention, so the real byte counts differ. The estimate also leaves out the output logits, communication buffers and fragmentation. The lab below shows the third published layout giving 83.8 GB with this formula, over the card, even though Meta trained it. The formula is a guide to which saving matters, not a promise that a layout fits.
+              - heading [level=3] [ref=e687]:
+                - text: 4. Bubbles and bytes on the wire
+                - link "Direct link to 4. Bubbles and bytes on the wire" [ref=e688] [cursor=pointer]:
+                  - /url: "#4-bubbles-and-bytes-on-the-wire"
+                  - text: "#"
+              - paragraph [ref=e689]: First the pipeline bubble for different micro-batch counts. Then the bytes each GPU sends in one step for tensor, pipeline and data parallelism in the 405B layout, counting bf16 activation-sized messages.
+              - code [ref=e693]:
+                - generic [ref=e694]: import json
+                - generic [ref=e695]: import os
+                - generic [ref=e697]: os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+                - generic [ref=e698]: from huggingface_hub import hf_hub_download
+                - generic [ref=e700]: c = json.load(open(hf_hub_download("NousResearch/Hermes-3-Llama-3.1-405B", "config.json")))
+                - generic [ref=e701]: L, H, FFN, VOCAB = c["num_hidden_layers"], c["hidden_size"], c["intermediate_size"], c["vocab_size"]
+                - generic [ref=e702]: KV = H * c["num_key_value_heads"] // c["num_attention_heads"]
+                - generic [ref=e703]: P = 2 * VOCAB * H + L * (2 * H * H + 2 * H * KV + 3 * H * FFN + 2 * H) + H
+                - generic [ref=e705]: print("pipeline bubble, p = 16 stages")
+                - generic [ref=e706]: "print(\"micro-batches m idle fraction (p-1)/(m+p-1) bubble / ideal (p-1)/m interleaved V=4: bubble / ideal\")"
+                - generic [ref=e707]: "for m in (16, 32, 64, 128):"
+                - generic [ref=e708]: "print(f\"{m:>15} {15 / (m + 15):>27.3f} {15 / m:>22.3f} {15 / (4 * m):>31.3f}\")"
+                - generic [ref=e710]: t, p, d, seq, seqs_per_rank = 8, 16, 128, 8192, 16
+                - generic [ref=e711]: tokens = seq * seqs_per_rank
+                - generic [ref=e712]: message = tokens * H * 2
+                - generic [ref=e713]: layers_per_stage = L / p
+                - generic [ref=e714]: ring = 2 * (t - 1) / t
+                - generic [ref=e715]: tp_bytes = 4 * layers_per_stage * ring * message
+                - generic [ref=e716]: pp_bytes = 2 * message
+                - generic [ref=e717]: dp_bytes = 2 * (2 * P / (t * p)) * (d - 1) / d
+                - generic [ref=e718]: print()
+                - generic [ref=e719]: "print(f\"one activation tensor for a DP rank's {tokens:,} tokens, bf16: {message / 1e9:.2f} GB\")"
+                - generic [ref=e720]: print("bytes a single GPU sends per training step, 405B layout (GB)")
+                - generic [ref=e721]: "print(f\" tensor parallel {tp_bytes / 1e9:8.1f} 4 collectives per layer, {layers_per_stage:.3f} layers per stage, ring factor {ring:.2f}\")"
+                - generic [ref=e722]: "print(f\" pipeline {pp_bytes / 1e9:8.1f} one tensor forward and one backward per stage boundary\")"
+                - generic [ref=e723]: "print(f\" data parallel {dp_bytes / 1e9:8.1f} gradient reduce-scatter plus weight all-gather of a {2 * P / (t * p) / 1e9:.2f} GB shard\")"
+                - generic [ref=e724]: "print(f\"tensor parallel moves {tp_bytes / dp_bytes:.0f} times the data parallel volume and {tp_bytes / pp_bytes:.0f} times the pipeline volume\")"
+              - paragraph [ref=e725]:
+                - strong [ref=e726]: Reading the output.
+                - text: "The bubble falls from 0.484 idle at 16 micro-batches to 0.105 at 128. A DP rank's 131,072 tokens make a 4.29 GB activation tensor. Tensor parallelism sends 236.8 GB per step, 19 times the data-parallel volume and 28 times the pipeline volume. Treat these as estimates: they count only the main collectives, assume micro-batch size does not change the total, and ignore recomputation traffic, which adds more."
+              - paragraph [ref=e727]:
+                - strong [ref=e728]: Line by line.
+              - list [ref=e729]:
+                - listitem [ref=e730]:
+                  - code [ref=e731]: ring = 2 * (t - 1) / t
+                  - text: "is the share of the message each GPU sends in a ring all-reduce: 1.75 for 8 GPUs."
+                - listitem [ref=e732]:
+                  - code [ref=e733]: 4 * layers_per_stage
+                  - text: is two forward and two backward collectives per layer.
+                - listitem [ref=e734]:
+                  - code [ref=e735]: dp_bytes
+                  - text: is a gradient reduce-scatter plus a weight all-gather of the 6.34 GB shard each GPU holds.
+              - heading [level=3] [ref=e736]:
+                - text: 5. Tensor parallelism on a real
+                - code [ref=e737]: LlamaMLP
+                - text: ", two processes"
+                - link "Direct link to 5-tensor-parallelism-on-a-real-llamamlp-two-processes" [ref=e738] [cursor=pointer]:
+                  - /url: "#5-tensor-parallelism-on-a-real-llamamlp-two-processes"
+                  - text: "#"
+              - paragraph [ref=e739]:
+                - text: Two gloo processes each take half of the gate and up columns and half of the down rows of one real
+                - code [ref=e740]: LlamaMLP
+                - text: ", compute their part, and add the parts with one all-reduce."
+              - code [ref=e744]:
+                - generic [ref=e745]: import os
+                - generic [ref=e746]: import socket
+                - generic [ref=e748]: import torch
+                - generic [ref=e749]: import torch.distributed as dist
+                - generic [ref=e750]: import torch.multiprocessing as mp
+                - generic [ref=e751]: from transformers import LlamaConfig
+                - generic [ref=e752]: from transformers.models.llama.modeling_llama import LlamaMLP
+                - generic [ref=e754]: HIDDEN, FFN, TOKENS, WORLD = 64, 160, 12, 2
+                - generic [ref=e757]: "def free_port():"
+                - generic [ref=e758]: "with socket.socket() as s:"
+                - generic [ref=e759]: s.bind(("127.0.0.1", 0))
+                - generic [ref=e760]: return s.getsockname()[1]
+                - generic [ref=e763]: "def worker(rank, world, port):"
+                - generic [ref=e764]: os.environ["MASTER_ADDR"] = "127.0.0.1"
+                - generic [ref=e765]: os.environ["MASTER_PORT"] = str(port)
+                - generic [ref=e766]: dist.init_process_group("gloo", rank=rank, world_size=world)
+                - generic [ref=e767]: torch.manual_seed(0)
+                - generic [ref=e768]: mlp = LlamaMLP(LlamaConfig(hidden_size=HIDDEN, intermediate_size=FFN, mlp_bias=False)).eval()
+                - generic [ref=e769]: x = torch.randn(TOKENS, HIDDEN)
+                - generic [ref=e770]: "with torch.no_grad():"
+                - generic [ref=e771]: reference = mlp(x)
+                - generic [ref=e772]: shard = FFN // world
+                - generic [ref=e773]: cols = slice(rank * shard, (rank + 1) * shard)
+                - generic [ref=e774]: gate = mlp.gate_proj.weight[cols].T
+                - generic [ref=e775]: up = mlp.up_proj.weight[cols].T
+                - generic [ref=e776]: down = mlp.down_proj.weight[:, cols].T
+                - generic [ref=e777]: partial = (torch.nn.functional.silu(x @ gate) * (x @ up)) @ down
+                - generic [ref=e778]: before_sum = (partial - reference).abs().max().item()
+                - generic [ref=e779]: summed = partial.clone()
+                - generic [ref=e780]: dist.all_reduce(summed)
+                - generic [ref=e781]: after_sum = (summed - reference).abs().max().item()
+                - generic [ref=e782]: params_full = sum(p.numel() for p in mlp.parameters())
+                - generic [ref=e783]: params_mine = gate.numel() + up.numel() + down.numel()
+                - generic [ref=e784]: stats = torch.tensor([before_sum, after_sum, params_mine], dtype=torch.float64)
+                - generic [ref=e785]: table = [torch.zeros(3, dtype=torch.float64) for _ in range(world)]
+                - generic [ref=e786]: dist.all_gather(table, stats)
+                - generic [ref=e787]: "if rank == 0:"
+                - generic [ref=e788]: "print(f\"MLP parameters in one piece: {params_full:,}\")"
+                - generic [ref=e789]: "for r, row in enumerate(table):"
+                - generic [ref=e790]: "print(f\"rank {r}: holds {int(row[2]):,} parameters, \""
+                - generic [ref=e791]: "f\"error before the sum {row[0].item():.3f}, after the sum {row[1].item():.2e}\")"
+                - generic [ref=e792]: "print(f\"bytes in the one all-reduce: {partial.numel() * 4:,} (tokens x hidden x 4)\")"
+                - generic [ref=e793]: dist.barrier()
+                - generic [ref=e794]: dist.destroy_process_group()
+                - generic [ref=e797]: "if __name__ == \"__main__\":"
+                - generic [ref=e798]: mp.spawn(worker, args=(WORLD, free_port()), nprocs=WORLD, join=True)
+              - paragraph [ref=e799]:
+                - strong [ref=e800]: Reading the output.
+                - text: Each rank holds 15,360 of the layer's 30,720 parameters. Alone, a rank's output differs from the full layer by 0.232 and 0.216, so a half-sum is wrong. After the all-reduce both ranks match the unsplit layer to 1.34e-07, which is float32 rounding. The message was only 3,072 bytes here (12 tokens x 64 x 4); in the 405B layout it is the 268 MB per micro-batch per collective that block 4 counts.
+              - paragraph [ref=e801]:
+                - strong [ref=e802]: Line by line.
+              - list [ref=e803]:
+                - listitem [ref=e804]:
+                  - code [ref=e805]: mlp.gate_proj.weight[cols].T
+                  - text: takes rows of the stored weight, which are the output columns of the matrix. This is the "column split".
+                - listitem [ref=e806]:
+                  - code [ref=e807]: mlp.down_proj.weight[:, cols].T
+                  - text: "takes the matching input rows of the down projection: the \"row split\"."
+                - listitem [ref=e808]: The activation sits between the two splits, so no communication is needed until the end.
+              - heading [level=3] [ref=e809]:
+                - text: 6. Context parallelism with zigzag chunks, two processes
+                - link "Direct link to 6. Context parallelism with zigzag chunks, two processes" [ref=e810] [cursor=pointer]:
+                  - /url: "#6-context-parallelism-with-zigzag-chunks-two-processes"
+                  - text: "#"
+              - paragraph [ref=e811]: Two gloo processes each hold the zigzag chunks of a 32-token sequence, all-gather keys and values, and compute causal attention for their own queries. The result is compared with attention on the whole sequence, and the work per rank is counted under the zigzag and a contiguous split.
+              - code [ref=e815]:
+                - generic [ref=e816]: import os
+                - generic [ref=e817]: import socket
+                - generic [ref=e819]: import torch
+                - generic [ref=e820]: import torch.distributed as dist
+                - generic [ref=e821]: import torch.multiprocessing as mp
+                - generic [ref=e823]: SEQ, DIM, WORLD = 32, 8, 2
+                - generic [ref=e826]: "def free_port():"
+                - generic [ref=e827]: "with socket.socket() as s:"
+                - generic [ref=e828]: s.bind(("127.0.0.1", 0))
+                - generic [ref=e829]: return s.getsockname()[1]
+                - generic [ref=e832]: "def causal_attention(q, k, v, q_pos, k_pos):"
+                - generic [ref=e833]: scores = q @ k.T / DIM**0.5
+                - generic [ref=e834]: scores = scores.masked_fill(k_pos[None, :] > q_pos[:, None], float("-inf"))
+                - generic [ref=e835]: return torch.softmax(scores, dim=-1) @ v
+                - generic [ref=e838]: "def chunks_for(rank, world, seq):"
+                - generic [ref=e839]: size = seq // (2 * world)
+                - generic [ref=e840]: mine = [rank, 2 * world - 1 - rank]
+                - generic [ref=e841]: return torch.cat([torch.arange(c * size, (c + 1) * size) for c in mine])
+                - generic [ref=e844]: "def pairs(positions):"
+                - generic [ref=e845]: return int((positions + 1).sum())
+                - generic [ref=e848]: "def worker(rank, world, port):"
+                - generic [ref=e849]: os.environ["MASTER_ADDR"] = "127.0.0.1"
+                - generic [ref=e850]: os.environ["MASTER_PORT"] = str(port)
+                - generic [ref=e851]: dist.init_process_group("gloo", rank=rank, world_size=world)
+                - generic [ref=e852]: g = torch.Generator().manual_seed(0)
+                - generic [ref=e853]: q, k, v = (torch.randn(SEQ, DIM, generator=g) for _ in range(3))
+                - generic [ref=e854]: all_pos = torch.arange(SEQ)
+                - generic [ref=e855]: reference = causal_attention(q, k, v, all_pos, all_pos)
+                - generic [ref=e857]: mine = chunks_for(rank, world, SEQ)
+                - generic [ref=e858]: k_full = [torch.zeros(SEQ // world, DIM) for _ in range(world)]
+                - generic [ref=e859]: v_full = [torch.zeros(SEQ // world, DIM) for _ in range(world)]
+                - generic [ref=e860]: dist.all_gather(k_full, k[mine].contiguous())
+                - generic [ref=e861]: dist.all_gather(v_full, v[mine].contiguous())
+                - generic [ref=e862]: order = torch.cat([chunks_for(r, world, SEQ) for r in range(world)])
+                - generic [ref=e863]: out = causal_attention(q[mine], torch.cat(k_full), torch.cat(v_full), mine, order)
+                - generic [ref=e865]: err = (out - reference[mine]).abs().max().item()
+                - generic [ref=e866]: contiguous = torch.arange(rank * SEQ // world, (rank + 1) * SEQ // world)
+                - generic [ref=e867]: stats = torch.tensor([err, pairs(mine), pairs(contiguous)], dtype=torch.float64)
+                - generic [ref=e868]: table = [torch.zeros(3, dtype=torch.float64) for _ in range(world)]
+                - generic [ref=e869]: dist.all_gather(table, stats)
+                - generic [ref=e870]: "if rank == 0:"
+                - generic [ref=e871]: "for r, row in enumerate(table):"
+                - generic [ref=e872]: "print(f\"rank {r}: max error {row[0].item():.2e} score pairs zigzag {int(row[1])} contiguous {int(row[2])}\")"
+                - generic [ref=e873]: dist.barrier()
+                - generic [ref=e874]: dist.destroy_process_group()
+                - generic [ref=e877]: "if __name__ == \"__main__\":"
+                - generic [ref=e878]: mp.spawn(worker, args=(WORLD, free_port()), nprocs=WORLD, join=True)
+              - paragraph [ref=e879]:
+                - strong [ref=e880]: Reading the output.
+                - text: Both ranks match single-process attention to float32 rounding (at most 5.96e-08). The zigzag split gives each rank exactly 264 of the 528 causal score pairs. A contiguous split would give rank 0 only 136 and rank 1 392, nearly three times the work, and the step runs at the speed of the slower rank.
+              - paragraph [ref=e881]:
+                - strong [ref=e882]: Line by line.
+              - list [ref=e883]:
+                - listitem [ref=e884]:
+                  - code [ref=e885]: chunks_for
+                  - text: gives rank
+                  - code [ref=e886]: i
+                  - text: chunks
+                  - code [ref=e887]: i
+                  - text: and
+                  - code [ref=e888]: 2 * world - 1 - i
+                  - text: ": one early, one late."
+                - listitem [ref=e889]:
+                  - code [ref=e890]: pairs
+                  - text: "counts query-key pairs under the causal mask: position"
+                  - code [ref=e891]: p
+                  - text: scores
+                  - code [ref=e892]: p + 1
+                  - text: keys.
+                - listitem [ref=e893]:
+                  - text: The
+                  - code [ref=e894]: all_gather
+                  - text: of keys and values is the single communication step, as in the Llama 3 recipe.
+              - heading [level=3] [ref=e895]:
+                - text: Try it yourself
+                - link "Direct link to Try it yourself" [ref=e896] [cursor=pointer]:
+                  - /url: "#try-it-yourself"
+                  - text: "#"
+              - paragraph [ref=e897]: The lab is block 3 with every degree exposed. Its defaults (405B, TP 8, PP 16, CP 1, DP 128, ZeRO 2, 8,192 tokens, micro-batch 1, tensor and sequence parallelism with selective recomputation, 80 GB) reproduce the printed 78.6 GB. The GPU-memory slider is an input you choose, not a specification.
+              - figure "Interactive Memory per GPU for a dense transformer show data" [ref=e898]:
+                - generic [ref=e899]:
+                  - generic [ref=e900]: Interactive
+                  - generic [ref=e901]: Memory per GPU for a dense transformer
+                  - button "show data" [ref=e902] [cursor=pointer]
+                - generic [ref=e903]:
+                  - generic [ref=e904]:
+                    - text: model
+                    - combobox "model" [ref=e905] [cursor=pointer]:
+                      - option "Llama 3 8B"
+                      - option "Llama 3 70B"
+                      - option "Llama 3 405B" [selected]
+                  - generic [ref=e906]:
+                    - text: tensor
+                    - combobox "tensor" [ref=e907] [cursor=pointer]:
+                      - option "1"
+                      - option "2"
+                      - option "4"
+                      - option "8" [selected]
+                      - option "16"
+                  - generic [ref=e908]:
+                    - text: pipeline
+                    - combobox "pipeline" [ref=e909] [cursor=pointer]:
+                      - option "1"
+                      - option "2"
+                      - option "4"
+                      - option "8"
+                      - option "16" [selected]
+                      - option "32"
+                  - generic [ref=e910]:
+                    - text: context
+                    - combobox "context" [ref=e911] [cursor=pointer]:
+                      - option "1" [selected]
+                      - option "2"
+                      - option "4"
+                      - option "8"
+                      - option "16"
+                  - generic [ref=e912]:
+                    - text: data
+                    - combobox "data" [ref=e913] [cursor=pointer]:
+                      - option "1"
+                      - option "2"
+                      - option "4"
+                      - option "8"
+                      - option "16"
+                      - option "32"
+                      - option "64"
+                      - option "128" [selected]
+                      - option "256"
+                      - option "512"
+                  - generic [ref=e914]:
+                    - text: ZeRO stage
+                    - combobox "ZeRO stage" [ref=e915] [cursor=pointer]:
+                      - option "0"
+                      - option "1"
+                      - option "2" [selected]
+                      - option "3"
+                  - generic [ref=e916]:
+                    - text: tokens per sequence
+                    - combobox "tokens per sequence" [ref=e917] [cursor=pointer]:
+                      - option "2,048"
+                      - option "4,096"
+                      - option "8,192" [selected]
+                      - option "16,384"
+                      - option "32,768"
+                      - option "65,536"
+                      - option "131,072"
+                  - generic [ref=e918]:
+                    - text: micro-batch
+                    - combobox "micro-batch" [ref=e919] [cursor=pointer]:
+                      - option "1" [selected]
+                      - option "2"
+                      - option "4"
+                  - generic [ref=e920]:
+                    - text: activations
+                    - combobox "activations" [ref=e921] [cursor=pointer]:
+                      - option "no parallelism, nothing saved"
+                      - option "tensor parallel only"
+                      - option "tensor + sequence parallel"
+                      - option "tensor + sequence + selective recompute" [selected]
+                      - option "full recomputation"
+                  - generic [ref=e922]:
+                    - text: GPU memory (GB)
+                    - slider "GPU memory (GB) 80" [ref=e923]: "80"
+                    - generic [ref=e924]: "80"
+                  - generic [ref=e925]: 16,384 GPUs, 78.6 GB per GPU, fits in 80 GB
+                - 'img "Stacked bar of memory per GPU: 16,384 GPUs, 78.6 GB per GPU, fits in 80 GB" [ref=e927]':
+                  - generic [ref=e932]: 80 GB
+                  - generic [ref=e933]: "0"
+                  - generic [ref=e934]: 86 GB
+                  - generic [ref=e935]: total 78.6 GB per GPU on 16,384 GPUs
+                - list [ref=e936]:
+                  - listitem [ref=e937]: weights
+                  - listitem [ref=e939]: gradients
+                  - listitem [ref=e941]: optimiser state
+                  - listitem [ref=e943]: activations
+                - paragraph [ref=e945]: The defaults are the Llama 3 405B layout from the paper (tensor 8, pipeline 16, data 128, ZeRO 2 style sharding, 8,192 tokens) and give 78.6 GB. Turn off selective recomputation to see why attention scores had to go.
+              - paragraph [ref=e946]:
+                - strong [ref=e947]: What each control does.
+              - list [ref=e948]:
+                - listitem [ref=e949]:
+                  - strong [ref=e950]: model
+                  - text: picks the Llama 3.1 8B, 70B or 405B shape, from the real configs of block 1.
+                - listitem [ref=e951]:
+                  - strong [ref=e952]: tensor, pipeline, context, data
+                  - text: set the four degrees; the readout shows their product, the GPU count.
+                - listitem [ref=e953]:
+                  - strong [ref=e954]: ZeRO stage
+                  - text: shards optimiser state (1), then gradients (2), then weights (3) across the data-parallel group.
+                - listitem [ref=e955]:
+                  - strong [ref=e956]: tokens per sequence
+                  - text: and
+                  - strong [ref=e957]: micro-batch
+                  - text: feed the activation formula.
+                - listitem [ref=e958]:
+                  - strong [ref=e959]: activations
+                  - text: "chooses which saving is on: nothing, tensor, tensor plus sequence, plus selective recomputation, or full recomputation."
+                - listitem [ref=e960]:
+                  - strong [ref=e961]: GPU memory
+                  - text: moves the dashed limit. The dashed limit line turns red when the total passes it.
+              - paragraph [ref=e962]:
+                - strong [ref=e963]: Try it yourself.
+              - list [ref=e964]:
+                - listitem [ref=e965]:
+                  - text: Set
+                  - strong [ref=e966]: ZeRO stage
+                  - text: "to 0. Weights, gradients and optimiser state become 6.34, 6.34 and 38.05 GB, and the total is 122.6 GB. Why it matters: the 128-way data-parallel group was holding 128 identical copies of the optimiser; sharding is what makes the layout fit."
+                - listitem [ref=e967]:
+                  - text: Set
+                  - strong [ref=e968]: activations
+                  - text: "to \"tensor + sequence parallel\". The total jumps to 755.0 GB. Why: the attention score matrices (the"
+                  - code [ref=e969]: 5as/h
+                  - text: term) are back. This one setting is worth more than any change to the degrees.
+                - listitem [ref=e970]:
+                  - text: "Reproduce the paper's third row: set"
+                  - strong [ref=e971]: tokens per sequence
+                  - text: to 131,072,
+                  - strong [ref=e972]: context
+                  - text: to 16 and
+                  - strong [ref=e973]: data
+                  - text: "to 8. The total is 83.8 GB, over the 80 GB line, and ZeRO stage 3 brings it to 79.0 GB. Why: with only 8 replicas there is much less to shard across, and this crude formula cannot see the savings Meta's kernels make."
+              - heading [level=2] [ref=e974]:
+                - text: Production snippets (not run here)
+                - link "Direct link to Production snippets (not run here)" [ref=e975] [cursor=pointer]:
+                  - /url: "#production-snippets-not-run-here"
+                  - text: "#"
+              - generic [ref=e976]:
+                - generic [ref=e977]: Not run in this environment
+                - paragraph [ref=e982]: These blocks need CUDA GPUs and several servers. The imports were checked against PyTorch 2.14.1 on 7 October 2026; the code was not executed.
+              - paragraph [ref=e983]:
+                - text: A three-dimensional device mesh, with tensor parallelism applied to the feed-forward block of each layer (
+                - code [ref=e984]: ColwiseParallel
+                - text: on the up projections and
+                - code [ref=e985]: RowwiseParallel
+                - text: "on the down projection, so the only communication is the all-reduce after the second matrix):"
+              - code [ref=e989]:
+                - generic [ref=e990]: import torch
+                - generic [ref=e991]: from torch.distributed.device_mesh import init_device_mesh
+                - generic [ref=e992]: from torch.distributed.tensor.parallel import ColwiseParallel, RowwiseParallel, parallelize_module
+                - generic [ref=e994]: mesh = init_device_mesh("cuda", (4, 2, 8), mesh_dim_names=("dp", "pp", "tp"))
+                - generic [ref=e995]: tp_mesh = mesh["tp"]
+                - generic [ref=e997]: "for block in model.model.layers:"
+                - generic [ref=e998]: parallelize_module(
+                - generic [ref=e999]: block.mlp,
+                - generic [ref=e1000]: tp_mesh,
+                - generic [ref=e1001]: "{\"gate_proj\": ColwiseParallel(), \"up_proj\": ColwiseParallel(), \"down_proj\": RowwiseParallel()},"
+                - generic [ref=e1002]: )
+              - paragraph [ref=e1003]:
+                - text: Starting it across servers uses
+                - code [ref=e1004]: torchrun
+                - text: ". The strategy does not change how the job is launched:"
+              - code [ref=e1008]:
+                - generic [ref=e1009]: torchrun --nnodes 8 --nproc-per-node 8 --rdzv-backend c10d --rdzv-endpoint head-node:29500 train.py
+              - heading [level=2] [ref=e1010]:
+                - text: Designing with it
+                - link "Direct link to Designing with it" [ref=e1011] [cursor=pointer]:
+                  - /url: "#designing-with-it"
+                  - text: "#"
+              - list [ref=e1012]:
+                - listitem [ref=e1013]:
+                  - strong [ref=e1014]: Start from the memory wall, not the speed wall.
+                  - text: Compute 16 bytes per parameter and the activation formula for your sequence length. Only parallelism that removes a real wall is worth its communication.
+                - listitem [ref=e1015]:
+                  - strong [ref=e1016]: Fill the server with tensor parallelism, then stop.
+                  - text: Keep tensor groups inside a server (commonly 8) on the fastest links.
+                - listitem [ref=e1017]:
+                  - strong [ref=e1018]: Use pipeline parallelism for what is left.
+                  - text: It needs far less bandwidth, so it can cross servers, but give it enough micro-batches that the bubble stays small, and balance the first and last stages.
+                - listitem [ref=e1019]:
+                  - strong [ref=e1020]: Spend the remaining GPUs on data parallelism,
+                  - text: sharded with ZeRO or FSDP when state is the constraint.
+                - listitem [ref=e1021]:
+                  - strong [ref=e1022]: Add context parallelism only for long sequences,
+                  - text: and use the zigzag split with causal attention.
+                - listitem [ref=e1023]:
+                  - strong [ref=e1024]: Prefer less parallelism.
+                  - text: The Playbook's decision order says to fit one instance first and scale out second. Every axis you add is a failure mode and a debugging cost.
+                - listitem [ref=e1025]:
+                  - strong [ref=e1026]: Measure MFU.
+                  - text: Llama 3 reports 38 to 43 per cent. If yours is far lower, look for a talkative axis crossing a slow link.
+              - heading [level=2] [ref=e1027]:
+                - text: Where this stands in 2026
+                - link "Direct link to Where this stands in 2026" [ref=e1028] [cursor=pointer]:
+                  - /url: "#where-this-stands-in-2026"
+                  - text: "#"
+              - generic [ref=e1029]:
+                - generic [ref=e1030]: Industry view
+                - list [ref=e1035]:
+                  - listitem [ref=e1036]:
+                    - strong [ref=e1037]: The vocabulary is stable.
+                    - text: "Tensor, pipeline, data (sharded) and context parallelism appear in the Llama 3 paper and in the Ultra-Scale Playbook (2025), which treats expert parallelism as the fifth axis. This chapter's version check: the Playbook page was read on 7 October 2026."
+                  - listitem [ref=e1038]:
+                    - strong [ref=e1039]: PyTorch has first-party pieces for most axes.
+                    - text: PyTorch 2.14 ships
+                    - code [ref=e1040]: fully_shard
+                    - text: (FSDP2), a tensor-parallel module, a pipelining module and
+                    - code [ref=e1041]: DeviceMesh
+                    - text: for composing them. Importing each worked in this chapter's environment.
+                  - listitem [ref=e1042]:
+                    - strong [ref=e1043]: The published recipe is a 2024 recipe.
+                    - text: Use the Llama 3 paper as a worked example of how the degrees combine. Newer systems differ in detail, and chapter 4 covers the mixture-of-experts models that now share the frontier.
+                  - listitem [ref=e1044]:
+                    - strong [ref=e1045]: "Not verified here:"
+                    - text: any GPU timing, any cluster's real MFU, and which exact layout any current lab uses. Those are not published for most models.
+              - heading [level=2] [ref=e1046]:
+                - text: Common mistakes
+                - link "Direct link to Common mistakes" [ref=e1047] [cursor=pointer]:
+                  - /url: "#common-mistakes"
+                  - text: "#"
+              - list [ref=e1048]:
+                - listitem [ref=e1049]:
+                  - strong [ref=e1050]: Spanning a tensor-parallel group across servers.
+                  - text: "It feels natural to use all 16 GPUs of two servers as one tensor group. Block 4 shows why not: tensor traffic is an order of magnitude larger than the others. Keep it inside a server and use pipeline parallelism between servers."
+                - listitem [ref=e1051]:
+                  - strong [ref=e1052]: Sizing by weights alone.
+                  - text: "\"70B in bf16 is 140 GB, so 2 cards will do.\" Training stores gradients, optimiser state and activations too: 16 bytes per parameter, plus activations. Do the whole sum."
+                - listitem [ref=e1053]:
+                  - strong [ref=e1054]: Adding data parallelism to fix an out-of-memory error.
+                  - text: More replicas make training faster, not smaller. Unless you shard the replicas (chapter 2), each still holds the full copy.
+                - listitem [ref=e1055]:
+                  - strong [ref=e1056]: Using a plain contiguous split for causal context parallelism.
+                  - text: It looks like the obvious cut. Block 6 shows one rank doing nearly three times the work of the other. Use the zigzag assignment.
+                - listitem [ref=e1057]:
+                  - strong [ref=e1058]: Trusting a memory formula as proof.
+                  - text: The Megatron formula is for GPT-style layers. Use it to pick which saving matters, then measure the real peak on one node.
+              - heading [level=2] [ref=e1059]:
+                - text: Practice questions
+                - link "Direct link to Practice questions" [ref=e1060] [cursor=pointer]:
+                  - /url: "#practice-questions"
+                  - text: "#"
+              - group [ref=e1061]:
+                - generic [ref=e1062] [cursor=pointer]:
+                  - strong [ref=e1063]: Q1 (Easy).
+                  - text: The Llama 3 405B run used TP 8, PP 16 and DP 128. How many GPUs is that, and how many 8,192-token sequences does each data-parallel replica process per step if the batch is 16,777,216 tokens?
+              - group [ref=e1064]:
+                - generic [ref=e1065] [cursor=pointer]:
+                  - strong [ref=e1066]: Q2 (Easy).
+                  - text: A 13B-parameter model trains with plain bf16 and Adam, with no sharding. How much model state does one GPU need?
+              - group [ref=e1067]:
+                - generic [ref=e1068] [cursor=pointer]:
+                  - strong [ref=e1069]: Q3 (Medium).
+                  - text: Why do practitioners keep tensor-parallel groups inside one server?
+              - group [ref=e1070]:
+                - generic [ref=e1071] [cursor=pointer]:
+                  - strong [ref=e1072]: Q4 (Medium).
+                  - text: A 16-stage pipeline processes 48 micro-batches per step in the plain schedule. What fraction of time is idle, and what would 4-way interleaving change?
+              - group [ref=e1073]:
+                - generic [ref=e1074] [cursor=pointer]:
+                  - strong [ref=e1075]: Q5 (Stretch).
+                  - text: Training a 70B model with TP 8, PP 2, DP 4 and ZeRO 1, you run out of memory. The lab says activations are 22.8 GB with selective recomputation. Name two changes and what each saves.
+              - group [ref=e1076]:
+                - generic [ref=e1077] [cursor=pointer]:
+                  - strong [ref=e1078]: Q6 (Stretch).
+                  - text: Explain why 78.6 GB is not proof that Llama 3 fits in 80 GB, and what the lab's 83.8 GB for the third layout tells you.
+              - heading [level=2] [ref=e1079]:
+                - text: Go deeper
+                - link "Direct link to Go deeper" [ref=e1080] [cursor=pointer]:
+                  - /url: "#go-deeper"
+                  - text: "#"
+              - paragraph [ref=e1081]: All sources were opened on 7 October 2026.
+              - list [ref=e1082]:
+                - listitem [ref=e1083]:
+                  - 'link "The Ultra-Scale Playbook: Training LLMs on GPU Clusters (Hugging Face, 2025)" [ref=e1084] [cursor=pointer]':
+                    - /url: https://huggingface.co/spaces/nanotron/ultrascale-playbook
+                  - text: ": the 2 + 2 + 4 + 8 memory accounting, the TP 8 to TP 16 drop, the 4,000-experiment benchmark on up to 512 GPUs and the three-step decision order."
+                - listitem [ref=e1085]:
+                  - link "The Llama 3 Herd of Models (arXiv 2407.21783, v3)" [ref=e1086] [cursor=pointer]:
+                    - /url: https://arxiv.org/abs/2407.21783
+                  - text: ": Table 3 hyper-parameters, Table 4 configurations, the FSDP note and the zigzag context parallelism."
+                - listitem [ref=e1087]:
+                  - link "Megatron-LM (arXiv 1909.08053)" [ref=e1088] [cursor=pointer]:
+                    - /url: https://arxiv.org/abs/1909.08053
+                  - text: ": the tensor-parallel layer split and its two forward and two backward all-reduces."
+                - listitem [ref=e1089]:
+                  - link "Efficient large-scale language model training on GPU clusters using Megatron-LM (arXiv 2104.04473)" [ref=e1090] [cursor=pointer]:
+                    - /url: https://arxiv.org/abs/2104.04473
+                  - text: ": interleaved pipeline schedule and the takeaways on using tensor parallelism up to the server size."
+                - listitem [ref=e1091]:
+                  - link "Reducing activation recomputation in large transformer models (arXiv 2205.05198)" [ref=e1092] [cursor=pointer]:
+                    - /url: https://arxiv.org/abs/2205.05198
+                  - text: ": the activation formulas, sequence parallelism and selective recomputation."
+                - listitem [ref=e1093]:
+                  - link "ZeRO (arXiv 1910.02054)" [ref=e1094] [cursor=pointer]:
+                    - /url: https://arxiv.org/abs/1910.02054
+                  - text: ": the 16-bytes-per-parameter accounting that chapter 2 develops."
+                - listitem [ref=e1095]:
+                  - link "PyTorch 2.14 tensor parallel" [ref=e1096] [cursor=pointer]:
+                    - /url: https://docs.pytorch.org/docs/2.14/distributed.tensor.parallel.html
+                  - text: and
+                  - link [ref=e1097] [cursor=pointer]:
+                    - /url: https://docs.pytorch.org/docs/2.14/distributed.fsdp.fully_shard.html
+                    - text: FSDP2
+                    - code [ref=e1098]: fully_shard
+                  - text: .
+                - listitem [ref=e1099]:
+                  - text: "Config files read by block 1:"
+                  - code [ref=e1100]: NousResearch/Meta-Llama-3.1-8B
+                  - text: ","
+                  - code [ref=e1101]: NousResearch/Meta-Llama-3.1-70B
+                  - text: and
+                  - code [ref=e1102]: NousResearch/Hermes-3-Llama-3.1-405B
+                  - text: on the Hugging Face Hub.
+              - heading [level=2] [ref=e1103]:
+                - text: Check yourself
+                - link "Direct link to Check yourself" [ref=e1104] [cursor=pointer]:
+                  - /url: "#check-yourself"
+                  - text: "#"
+              - list [ref=e1105]:
+                - listitem [ref=e1106]: I can name the five parallelism axes and say what each splits and what each sends.
+                - listitem [ref=e1107]: I can compute model-state memory per GPU for a layout and ZeRO stage, and say which part is the largest.
+                - listitem [ref=e1108]: I can use the activation formulas to explain why selective recomputation matters.
+                - listitem [ref=e1109]: I can explain why tensor parallelism belongs inside a server, using bytes sent per step.
+                - listitem [ref=e1110]: I can compute a pipeline's idle fraction and name two ways to reduce it.
+                - listitem [ref=e1111]: I can explain why causal context parallelism needs a zigzag split and show the work balance.
+                - listitem [ref=e1112]: I can check that a published layout multiplies out to its GPU count and batch size, and say where my memory estimate is only approximate.
+              - heading [level=2] [ref=e1113]:
+                - text: Where to go next
+                - link "Direct link to Where to go next" [ref=e1114] [cursor=pointer]:
+                  - /url: "#where-to-go-next"
+                  - text: "#"
+              - paragraph [ref=e1115]:
+                - text: "Next chapter:"
+                - link "DDP, FSDP and ZeRO" [ref=e1116] [cursor=pointer]:
+                  - /url: /docs/llm-engineering/ddp-fsdp-and-zero
+                - text: ", which shards the data-parallel axis step by step. A related chapter:"
+                - link "GPU sizing and capacity planning" [ref=e1117] [cursor=pointer]:
+                  - /url: /docs/llm-engineering/gpu-sizing-and-capacity-planning
+                - text: does the same memory arithmetic for serving instead of training.
+            - generic [ref=e1120]:
+              - text: "Tags:"
+              - list [ref=e1121]:
+                - listitem [ref=e1122]:
+                  - link "parallelism" [ref=e1123] [cursor=pointer]:
+                    - /url: /docs/tags/parallelism
+                - listitem [ref=e1124]:
+                  - link "tensor-parallel" [ref=e1125] [cursor=pointer]:
+                    - /url: /docs/tags/tensor-parallel
+                - listitem [ref=e1126]:
+                  - link "pipeline-parallel" [ref=e1127] [cursor=pointer]:
+                    - /url: /docs/tags/pipeline-parallel
+                - listitem [ref=e1128]:
+                  - link "context-parallel" [ref=e1129] [cursor=pointer]:
+                    - /url: /docs/tags/context-parallel
+                - listitem [ref=e1130]:
+                  - link "sequence-parallel" [ref=e1131] [cursor=pointer]:
+                    - /url: /docs/tags/sequence-parallel
+                - listitem [ref=e1132]:
+                  - link "3d-parallelism" [ref=e1133] [cursor=pointer]:
+                    - /url: /docs/tags/3-d-parallelism
+                - listitem [ref=e1134]:
+                  - link "llama-3" [ref=e1135] [cursor=pointer]:
+                    - /url: /docs/tags/llama-3
+                - listitem [ref=e1136]:
+                  - link "megatron-lm" [ref=e1137] [cursor=pointer]:
+                    - /url: /docs/tags/megatron-lm
+                - listitem [ref=e1138]:
+                  - link "memory" [ref=e1139] [cursor=pointer]:
+                    - /url: /docs/tags/memory
+          - navigation "Docs pages" [ref=e1140]:
+            - link "Previous « Training at scale" [ref=e1141] [cursor=pointer]:
+              - /url: /docs/category/training-at-scale
+              - generic [ref=e1142]: Previous
+              - generic [ref=e1143]: « Training at scale
+            - link "Next 2 · DDP, FSDP and ZeRO »" [ref=e1144] [cursor=pointer]:
+              - /url: /docs/llm-engineering/ddp-fsdp-and-zero
+              - generic [ref=e1145]: Next
+              - generic [ref=e1146]: 2 · DDP, FSDP and ZeRO »
+        - generic [ref=e1148]:
+          - generic [ref=e1149]:
+            - generic [ref=e1150]: On this page
+            - button "Hide right contents pane" [expanded] [ref=e1151] [cursor=pointer]:
+              - generic [ref=e1154]: Collapse
+          - list [ref=e1157]:
+            - listitem [ref=e1158]:
+              - link "In 30 seconds" [ref=e1159] [cursor=pointer]:
+                - /url: "#in-30-seconds"
+            - listitem [ref=e1160]:
+              - link "Words you will meet" [ref=e1161] [cursor=pointer]:
+                - /url: "#words-you-will-meet"
+            - listitem [ref=e1162]:
+              - link "The idea in plain words" [ref=e1163] [cursor=pointer]:
+                - /url: "#the-idea-in-plain-words"
+            - listitem [ref=e1164]:
+              - link "Worked example, step by step" [ref=e1165] [cursor=pointer]:
+                - /url: "#worked-example-step-by-step"
+            - listitem [ref=e1166]:
+              - link "How it works" [ref=e1167] [cursor=pointer]:
+                - /url: "#how-it-works"
+              - list [ref=e1168]:
+                - listitem [ref=e1169]:
+                  - link "What fills a GPU's memory?" [ref=e1170] [cursor=pointer]:
+                    - /url: "#what-fills-a-gpus-memory"
+                - listitem [ref=e1171]:
+                  - link "What does tensor parallelism cost?" [ref=e1172] [cursor=pointer]:
+                    - /url: "#what-does-tensor-parallelism-cost"
+                - listitem [ref=e1173]:
+                  - link "What does pipeline parallelism cost?" [ref=e1174] [cursor=pointer]:
+                    - /url: "#what-does-pipeline-parallelism-cost"
+                - listitem [ref=e1175]:
+                  - link "What does context parallelism do for long inputs?" [ref=e1176] [cursor=pointer]:
+                    - /url: "#what-does-context-parallelism-do-for-long-inputs"
+                - listitem [ref=e1177]:
+                  - link "How do the degrees fit together?" [ref=e1178] [cursor=pointer]:
+                    - /url: "#how-do-the-degrees-fit-together"
+            - listitem [ref=e1179]:
+              - link "A real system that works this way" [ref=e1180] [cursor=pointer]:
+                - /url: "#a-real-system-that-works-this-way"
+            - listitem [ref=e1181]:
+              - link "Code you can run" [ref=e1182] [cursor=pointer]:
+                - /url: "#code-you-can-run"
+              - list [ref=e1183]:
+                - listitem [ref=e1184]:
+                  - link "1. Count parameters from real configs" [ref=e1185] [cursor=pointer]:
+                    - /url: "#1-count-parameters-from-real-configs"
+                - listitem [ref=e1186]:
+                  - link "2. Check the layout and the model state per GPU" [ref=e1187] [cursor=pointer]:
+                    - /url: "#2-check-the-layout-and-the-model-state-per-gpu"
+                - listitem [ref=e1188]:
+                  - link "3. Activations for each saving, and does it fit?" [ref=e1189] [cursor=pointer]:
+                    - /url: "#3-activations-for-each-saving-and-does-it-fit"
+                - listitem [ref=e1190]:
+                  - link "4. Bubbles and bytes on the wire" [ref=e1191] [cursor=pointer]:
+                    - /url: "#4-bubbles-and-bytes-on-the-wire"
+                - listitem [ref=e1192]:
+                  - link [ref=e1193] [cursor=pointer]:
+                    - /url: "#5-tensor-parallelism-on-a-real-llamamlp-two-processes"
+                    - text: 5. Tensor parallelism on a real
+                    - code [ref=e1194]: LlamaMLP
+                    - text: ", two processes"
+                - listitem [ref=e1195]:
+                  - link "6. Context parallelism with zigzag chunks, two processes" [ref=e1196] [cursor=pointer]:
+                    - /url: "#6-context-parallelism-with-zigzag-chunks-two-processes"
+                - listitem [ref=e1197]:
+                  - link "Try it yourself" [ref=e1198] [cursor=pointer]:
+                    - /url: "#try-it-yourself"
+            - listitem [ref=e1199]:
+              - link "Production snippets (not run here)" [ref=e1200] [cursor=pointer]:
+                - /url: "#production-snippets-not-run-here"
+            - listitem [ref=e1201]:
+              - link "Designing with it" [ref=e1202] [cursor=pointer]:
+                - /url: "#designing-with-it"
+            - listitem [ref=e1203]:
+              - link "Where this stands in 2026" [ref=e1204] [cursor=pointer]:
+                - /url: "#where-this-stands-in-2026"
+            - listitem [ref=e1205]:
+              - link "Common mistakes" [ref=e1206] [cursor=pointer]:
+                - /url: "#common-mistakes"
+            - listitem [ref=e1207]:
+              - link "Practice questions" [ref=e1208] [cursor=pointer]:
+                - /url: "#practice-questions"
+            - listitem [ref=e1209]:
+              - link "Go deeper" [ref=e1210] [cursor=pointer]:
+                - /url: "#go-deeper"
+            - listitem [ref=e1211]:
+              - link "Check yourself" [ref=e1212] [cursor=pointer]:
+                - /url: "#check-yourself"
+            - listitem [ref=e1213]:
+              - link "Where to go next" [ref=e1214] [cursor=pointer]:
+                - /url: "#where-to-go-next"
+  - contentinfo [ref=e1215]:
+    - generic [ref=e1216]:
+      - generic [ref=e1217]:
+        - generic [ref=e1218]:
+          - generic [ref=e1219]: Learn
+          - list [ref=e1220]:
+            - listitem [ref=e1221]:
+              - link "Roadmap" [ref=e1222] [cursor=pointer]:
+                - /url: /docs/intro
+            - listitem [ref=e1223]:
+              - link "Daily notes" [ref=e1224] [cursor=pointer]:
+                - /url: /docs/category/daily
+            - listitem [ref=e1225]:
+              - link "Production LLM track" [ref=e1226] [cursor=pointer]:
+                - /url: /llm-roadmap
+            - listitem [ref=e1227]:
+              - link "Deep learning" [ref=e1228] [cursor=pointer]:
+                - /url: /docs/category/dnn
+            - listitem [ref=e1229]:
+              - link "Statistics" [ref=e1230] [cursor=pointer]:
+                - /url: /docs/category/statistics
+            - listitem [ref=e1231]:
+              - link "Code tracks" [ref=e1232] [cursor=pointer]:
+                - /url: /docs/category/coding
+        - generic [ref=e1233]:
+          - generic [ref=e1234]: Practice
+          - list [ref=e1235]:
+            - listitem [ref=e1236]:
+              - link "Cheatsheets" [ref=e1237] [cursor=pointer]:
+                - /url: /docs/category/cheetsheet
+            - listitem [ref=e1238]:
+              - link "Interview questions" [ref=e1239] [cursor=pointer]:
+                - /url: /docs/category/interview
+            - listitem [ref=e1240]:
+              - link "Engineering & systems" [ref=e1241] [cursor=pointer]:
+                - /url: /docs/category/scaler
+            - listitem [ref=e1242]:
+              - link "Miscellaneous" [ref=e1243] [cursor=pointer]:
+                - /url: /docs/category/miscellaneous-collection
+            - listitem [ref=e1244]:
+              - link "Explore all notes" [ref=e1245] [cursor=pointer]:
+                - /url: /explore
+            - listitem [ref=e1246]:
+              - link "AI Innovation Hub" [ref=e1247] [cursor=pointer]:
+                - /url: /ai-news
+        - generic [ref=e1248]:
+          - generic [ref=e1249]: More
+          - list [ref=e1250]:
+            - listitem [ref=e1251]:
+              - link [ref=e1252] [cursor=pointer]:
+                - /url: https://pytorch.org/docs/stable/index.html
+                - text: PyTorch docs
+                - img "(opens in new tab)" [ref=e1253]
+            - listitem [ref=e1255]:
+              - link [ref=e1256] [cursor=pointer]:
+                - /url: https://scikit-learn.org/stable/
+                - text: scikit-learn
+                - img "(opens in new tab)" [ref=e1257]
+      - generic [ref=e1259]: Copyright © 2026 Learn AI, ML. Built by Sumanth.

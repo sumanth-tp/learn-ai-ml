@@ -154,6 +154,17 @@
   pointer-events: none;
 }
 
+.darkCanvas {
+  color: #e6edf3;
+  background: #161b22;
+}
+
+.darkCanvas :global(svg) {
+  max-width: none !important;
+  width: 100%;
+  height: auto;
+}
+
 .hint {
   margin: 0 0 0.9rem;
   font-size: 0.72rem;

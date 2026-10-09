@@ -83,7 +83,7 @@ Working checks/scripts/logs remain under ignored `.lecture-import/ollama-video-r
 
 ## Outstanding
 
-No missing video sections identified in this review. Whole-site build remains blocked by the two unrelated GraphRAG links. No commit, push or deployment requested or performed.
+This was a topic-level review. Later user feedback identified missing transcript explanations and OneNote details; the completeness claim is superseded by `.codex/ollama-transcript-onenote-coverage.md`. Whole-site build remains blocked by the two unrelated GraphRAG links. No commit, push or deployment requested or performed.
 
 ## Teaching and timestamp-rule update, 2026-10-07
 

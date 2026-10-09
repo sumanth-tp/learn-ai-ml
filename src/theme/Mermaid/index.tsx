@@ -1,7 +1,8 @@
 import Mermaid from '@theme-original/Mermaid';
 import type MermaidType from '@theme/Mermaid';
 import type {WrapperProps} from '@docusaurus/types';
-import {JSX, useCallback, useEffect, useRef, useState} from 'react';
+import {useMermaidConfig, useMermaidRenderResult} from '@docusaurus/theme-mermaid/client';
+import {JSX, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import styles from './styles.module.css';
@@ -18,7 +19,21 @@ function clamp(value: number, min: number, max: number) {
 
 type Point = {x: number; y: number};
 
-export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
+function DarkMermaidDiagram({value}: {value: string}) {
+  const defaultConfig = useMermaidConfig();
+  const config = useMemo(() => ({...defaultConfig, theme: 'dark' as const}), [defaultConfig]);
+  const result = useMermaidRenderResult({text: value, config});
+
+  return result
+    ? <div dangerouslySetInnerHTML={{__html: result.svg}} />
+    : <p role="status">Loading diagram…</p>;
+}
+
+export function Lightbox({svg = '', mermaidSource, onClose}: {
+  svg?: string;
+  mermaidSource?: string;
+  onClose: () => void;
+}) {
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState<Point>({x: 0, y: 0});
   const dragOrigin = useRef<{pointer: Point; offset: Point} | null>(null);
@@ -26,11 +41,18 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Move focus into the dialog, and give it back to whatever opened it.
+  // Lock scrolling and move focus without changing the reader's position.
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    return () => opener?.focus?.();
+    const {scrollX, scrollY} = window;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeRef.current?.focus({preventScroll: true});
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      opener?.focus?.({preventScroll: true});
+      window.scrollTo({left: scrollX, top: scrollY, behavior: 'instant'});
+    };
   }, []);
 
   const reset = useCallback(() => {
@@ -52,10 +74,10 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
         const last = controls[controls.length - 1];
         if (event.shiftKey && document.activeElement === first) {
           event.preventDefault();
-          last.focus();
+          last.focus({preventScroll: true});
         } else if (!event.shiftKey && document.activeElement === last) {
           event.preventDefault();
-          first.focus();
+          first.focus({preventScroll: true});
         }
       } else if (event.key === 'Escape') {
         onClose();
@@ -70,15 +92,6 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose, reset, zoomBy]);
-
-  // Keep the page behind the overlay still while it is open.
-  useEffect(() => {
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, []);
 
   // Wheel zoom has to be bound manually: React marks wheel listeners passive,
   // so preventDefault there would be ignored and the page would scroll too.
@@ -125,6 +138,7 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
     <div
       ref={dialogRef}
       className={styles.overlay}
+      data-theme={mermaidSource !== undefined ? 'dark' : undefined}
       role="dialog"
       aria-modal="true"
       aria-label="Enlarged diagram"
@@ -164,21 +178,23 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
         ref={stageRef}
         className={styles.stage}
         onClick={(event) => event.stopPropagation()}
+        onDoubleClick={onClose}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}>
         <div
-          className={styles.canvas}
+          className={`${styles.canvas} ${mermaidSource !== undefined ? styles.darkCanvas : ''}`}
           style={{
             transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
-          }}
-          // The SVG is produced by Mermaid from the page's own source.
-          dangerouslySetInnerHTML={{__html: svg}}
-        />
+          }}>
+          {mermaidSource !== undefined
+            ? <DarkMermaidDiagram value={mermaidSource} />
+            : <div dangerouslySetInnerHTML={{__html: svg}} />}
+        </div>
       </div>
 
-      <p className={styles.hint}>Scroll to zoom · drag to pan · Esc to close</p>
+      <p className={styles.hint}>Scroll to zoom · drag to pan · double-click or Esc to close</p>
     </div>,
     document.body,
   );
@@ -186,28 +202,22 @@ export function Lightbox({svg, onClose}: {svg: string; onClose: () => void}) {
 
 export default function MermaidWrapper(props: Props): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [svg, setSvg] = useState<string | null>(null);
+  const expandRef = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
 
   function expand() {
-    const rendered = containerRef.current?.querySelector('svg');
-    if (!rendered) return;
-
-    const clone = rendered.cloneNode(true) as SVGElement;
-    // Mermaid constrains the inline diagram to the column width; the overlay
-    // should size to its own viewport instead.
-    clone.removeAttribute('width');
-    clone.removeAttribute('height');
-    clone.style.maxWidth = 'none';
-    clone.style.width = '100%';
-    clone.style.height = 'auto';
-
-    setSvg(clone.outerHTML);
+    if (!containerRef.current?.querySelector('svg')) return;
+    expandRef.current?.focus({preventScroll: true});
+    setOpen(true);
   }
 
   return (
     <div className={styles.wrapper} ref={containerRef}>
-      <Mermaid {...props} />
+      <div onDoubleClick={expand} title="Double-click to expand diagram">
+        <Mermaid {...props} />
+      </div>
       <button
+        ref={expandRef}
         type="button"
         className={styles.expandButton}
         onClick={expand}
@@ -225,7 +235,7 @@ export default function MermaidWrapper(props: Props): JSX.Element {
         <span>Expand</span>
       </button>
 
-      {svg !== null && <Lightbox svg={svg} onClose={() => setSvg(null)} />}
+      {open && <Lightbox mermaidSource={props.value} onClose={() => setOpen(false)} />}
     </div>
   );
 }

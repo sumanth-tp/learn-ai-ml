@@ -1,0 +1,1095 @@
+- generic [ref=f2e2]:
+  - progressbar "Reading progress"
+  - button "Ask AI tutor" [ref=f2e3] [cursor=pointer]:
+    - generic [aria-hidden] [ref=f2e4]: ✦
+    - generic [ref=f2e5]: Ask AI
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=f2e6] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - banner [ref=f2e7]:
+    - generic [ref=f2e8]:
+      - strong [ref=f2e9]: "New:"
+      - text: browse every note in one place —
+      - link "open Explore" [ref=f2e10] [cursor=pointer]:
+        - /url: /explore
+      - text: ", or press ? for shortcuts."
+    - button "Close" [ref=f2e11] [cursor=pointer]
+  - navigation "Main" [ref=f2e15]:
+    - generic [ref=f2e16]:
+      - generic [ref=f2e17]:
+        - button "Toggle navigation bar" [ref=f2e18] [cursor=pointer]
+        - link "Learn AI & ML AI & ML" [ref=f2e21] [cursor=pointer]:
+          - /url: /
+          - img "Learn AI & ML" [ref=f2e23]
+          - generic [ref=f2e24]: AI & ML
+      - textbox "Search" [ref=f2e27]
+  - main [ref=f2e31]:
+    - generic [ref=f2e35]:
+      - article [ref=f2e36]:
+        - navigation "Breadcrumbs" [ref=f2e37]:
+          - list [ref=f2e38]:
+            - listitem [ref=f2e39]:
+              - link "Home page" [ref=f2e40] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=f2e43]:
+              - generic [ref=f2e44]: 6 · LLM engineering
+            - listitem [ref=f2e45]:
+              - link "LLM Engineering" [ref=f2e46] [cursor=pointer]:
+                - /url: /docs/category/llm-engineering
+            - listitem [ref=f2e47]:
+              - link "Training at scale" [ref=f2e48] [cursor=pointer]:
+                - /url: /docs/category/training-at-scale
+            - listitem [ref=f2e49]:
+              - generic [ref=f2e50]: 3 · Mixed precision and numerics
+        - button "On this page" [ref=f2e52] [cursor=pointer]
+        - generic [ref=f2e53]:
+          - link "6 LLM engineering 0/34" [ref=f2e55] [cursor=pointer]:
+            - /url: /path#llm-engineering
+            - generic [ref=f2e56]: "6"
+            - generic [ref=f2e57]: LLM engineering
+            - generic [ref=f2e58]: 0/34
+          - generic [ref=f2e59]:
+            - group "Voice reader" [ref=f2e60]:
+              - button "Read aloud" [disabled] [ref=f2e61]
+              - combobox "Reader voice" [disabled] [ref=f2e62]:
+                - option "No local voice" [selected]
+              - combobox "Reader speed" [disabled] [ref=f2e63]:
+                - option "0.8×"
+                - option "1×" [selected]
+                - option "1.2×"
+                - option "1.5×"
+              - status
+            - button "Copy link to this page" [ref=f2e64] [cursor=pointer]
+            - button "Mark as read" [ref=f2e67] [cursor=pointer]
+        - generic [ref=f2e71]:
+          - heading "Mixed Precision and Numerics" [level=1] [ref=f2e73]
+          - paragraph [ref=f2e74]:
+            - strong [ref=f2e75]: In one line.
+            - text: Training stores most numbers in 16 or 8 bits to save memory and time, and stays correct only because a few things (a full-precision copy of the weights, a scaled loss, running sums in 32 bits) protect the numbers that small formats would destroy.
+          - generic [ref=f2e76]:
+            - generic [ref=f2e77]: Before you start
+            - list [ref=f2e82]:
+              - listitem [ref=f2e83]:
+                - strong [ref=f2e84]: You should already know
+                - text: that a model is a set of numbers called weights and that training nudges them with gradients (
+                - link "Adam optimiser" [ref=f2e85] [cursor=pointer]:
+                  - /url: /docs/theory/dnn/adam-optimizer
+                - text: ), and where the 2 + 2 + 12 bytes per parameter come from (
+                - link "DDP, FSDP and ZeRO" [ref=f2e86] [cursor=pointer]:
+                  - /url: /docs/llm-engineering/ddp-fsdp-and-zero
+                - text: ).
+              - listitem [ref=f2e87]:
+                - strong [ref=f2e88]: "Reading time:"
+                - text: about 40 minutes, plus about a minute to run the code.
+              - listitem [ref=f2e89]:
+                - strong [ref=f2e90]: After this chapter you can
+                - text: read a floating-point format's range and step size, explain why bf16 needs no loss scale and fp16 does, predict when an update or a sum is lost to rounding, and say when fp8 needs a scale per block.
+          - generic [ref=f2e91]:
+            - generic [ref=f2e92]: Not from a lecture
+            - paragraph [ref=f2e97]: "This chapter was written for this site from the sources under Go deeper. Every experiment runs in this chapter's environment: Python 3.14, PyTorch 2.14.1 on the CPU, Transformers 5.18.0. NVIDIA Transformer Engine (release 2.20.2 on PyPI on 5 October 2026) needs GPUs, so its snippet is not run. Sources were opened on 7 October 2026."
+          - heading [level=2] [ref=f2e98]:
+            - text: In 30 seconds
+            - link "Direct link to In 30 seconds" [ref=f2e99] [cursor=pointer]:
+              - /url: "#in-30-seconds"
+              - text: "#"
+          - paragraph [ref=f2e100]: "A computer stores a decimal number like 0.1 with a fixed number of binary digits, so it keeps only an approximation. More digits give a better approximation and cost more memory. Think of a ruler: a ruler marked in millimetres cannot show half a millimetre, and a pocket ruler marked in whole centimetres cannot show a millimetre at all."
+          - paragraph [ref=f2e101]: "Language-model training uses rulers of four sizes: 32 bits, 16 bits (in two layouts) and 8 bits. The smaller rulers are faster and use less memory, but they have two failure modes. A small number can fall between two marks and become zero, and a small number added to a big one can vanish. Mixed precision is the set of tricks that avoids both."
+          - heading [level=2] [ref=f2e102]:
+            - text: Words you will meet
+            - link "Direct link to Words you will meet" [ref=f2e103] [cursor=pointer]:
+              - /url: "#words-you-will-meet"
+              - text: "#"
+          - table [ref=f2e104]:
+            - rowgroup [ref=f2e105]:
+              - row [ref=f2e106]:
+                - columnheader "Term" [ref=f2e107]
+                - columnheader "Plain meaning" [ref=f2e108]
+                - columnheader "Tiny example" [ref=f2e109]
+            - rowgroup [ref=f2e110]:
+              - row [ref=f2e111]:
+                - cell "Bit" [ref=f2e112]
+                - cell "One binary digit, 0 or 1" [ref=f2e113]
+                - cell "A 16-bit number has 16 of them" [ref=f2e114]
+              - row [ref=f2e115]:
+                - cell "Exponent" [ref=f2e116]
+                - cell "The bits that say how big the number is, as a power of 2" [ref=f2e117]
+                - cell "Large exponent field = large number" [ref=f2e118]
+              - row [ref=f2e119]:
+                - cell "Mantissa" [ref=f2e120]
+                - cell "The bits that say which digits the number has" [ref=f2e121]
+                - cell "More mantissa bits = a finer ruler" [ref=f2e122]
+              - row [ref=f2e123]:
+                - cell "Subnormal" [ref=f2e124]
+                - cell "A very small number stored with reduced precision, below the smallest normal number" [ref=f2e125]
+                - cell "fp16 below 6.1e-5" [ref=f2e126]
+              - row [ref=f2e127]:
+                - cell "Overflow and underflow" [ref=f2e128]
+                - cell "A number too big for the format (becomes infinity), or too small (becomes zero)" [ref=f2e129]
+                - cell "70,000 in fp16 is inf" [ref=f2e130]
+              - row [ref=f2e131]:
+                - cell "Master weights" [ref=f2e132]
+                - cell "A 32-bit copy of the weights that the optimiser updates" [ref=f2e133]
+                - cell "Next to the 16-bit working copy" [ref=f2e134]
+              - row [ref=f2e135]:
+                - cell "Loss scaling" [ref=f2e136]
+                - cell "Multiplying the loss by a constant so small gradients stay representable" [ref=f2e137]
+                - cell "Scale 1,024" [ref=f2e138]
+              - row [ref=f2e139]:
+                - cell "Autocast" [ref=f2e140]
+                - cell "PyTorch's switch that runs chosen operations in lower precision" [ref=f2e141]
+                - cell [ref=f2e142]:
+                  - code [ref=f2e143]: torch.autocast
+              - row [ref=f2e144]:
+                - cell "Quantisation scale" [ref=f2e145]
+                - cell "A multiplier that moves a tensor into a small format's range" [ref=f2e146]
+                - cell "448 divided by the largest value" [ref=f2e147]
+          - heading [level=2] [ref=f2e148]:
+            - text: The idea in plain words
+            - link "Direct link to The idea in plain words" [ref=f2e149] [cursor=pointer]:
+              - /url: "#the-idea-in-plain-words"
+              - text: "#"
+          - paragraph [ref=f2e150]: "Start with one number, 0.1. In binary it is 1.6 times 2 to the power minus 4, and 1.6 in binary never ends: 1.1001100110011 and so on. A format with 7 digits after the point (bf16) must cut it: 1.1001101, which is 1.6015625. So bf16 stores 0.1 as 0.10009765625. A format with 10 digits (fp16) stores 0.0999755859375, and one with 23 (fp32) stores 0.10000000149. Each is a nearby number, not the number."
+          - paragraph [ref=f2e151]:
+            - text: Now take two ideas from that. First, the
+            - strong [ref=f2e152]: step size
+            - text: between neighbouring numbers depends on how many digits you keep and how big the number is. Near 1 the step in bf16 is 0.0078; near 32 it is 0.25. Second, the
+            - strong [ref=f2e153]: range
+            - text: "(the largest and smallest numbers) depends on the exponent bits. bf16 gives 8 exponent bits, like fp32, so it covers almost the same range. fp16 gives only 5, so its range is tiny: the largest number is 65,504."
+          - paragraph [ref=f2e154]: Those two facts explain every rule of mixed precision. A tiny gradient can sit below the smallest number a format can hold. A small update added to a big weight can be smaller than half a step, so it rounds to nothing. A running sum can grow until each new item is smaller than half a step, and then it stops growing.
+          - 'figure "Compare the orange exponent boxes first: fp32 and bf16 have the same, so they have the same range. Then compare the blue mantissa boxes: they set the step size. Figures are printed by block 1." [ref=f2e155]':
+            - generic [ref=f2e156]:
+              - 'button "Enlarge: Bit layouts of fp32, bf16, fp16, fp8 e4m3 and fp8 e5m2 as sign, exponent and mantissa boxes beside a table of the largest number, smallest normal number, smallest subnormal number and the gap above 1, with three notes on bf16, fp16 and fp8" [ref=f2e157]':
+                - img "Bit layouts of fp32, bf16, fp16, fp8 e4m3 and fp8 e5m2 as sign, exponent and mantissa boxes beside a table of the largest number, smallest normal number, smallest subnormal number and the gap above 1, with three notes on bf16, fp16 and fp8" [ref=f2e158]
+              - button "View infographic larger" [ref=f2e159] [cursor=pointer]:
+                - generic [ref=f2e162]: Expand
+          - heading [level=2] [ref=f2e164]:
+            - text: Worked example, step by step
+            - link "Direct link to Worked example, step by step" [ref=f2e165] [cursor=pointer]:
+              - /url: "#worked-example-step-by-step"
+              - text: "#"
+          - paragraph [ref=f2e166]: Three small calculations, each of which the code in block 2 prints.
+          - list [ref=f2e167]:
+            - listitem [ref=f2e168]:
+              - strong [ref=f2e169]: Store 0.1.
+              - text: "In fp16, 0.1 is 1.6 times 2 to the power minus 4, with 10 digits kept: 0.0999755859375. The error is 2.4e-5. In bf16 only 7 digits are kept, so the value is 0.10009765625 and the error is 9.8e-5, four times larger. fp32 is off by 1.5e-9."
+            - listitem [ref=f2e170]:
+              - strong [ref=f2e171]: Add 0.01 to 32.
+              - text: In fp16 the gap between neighbours near 32 is 0.03125. Half a gap is 0.0156, which is bigger than 0.01, so the sum rounds back to 32. Do it 10,000 times and fp16 stops at 32.0 (after 2,798 additions). bf16 has a coarser step and stops at 4.0 (after 350). The true answer is 100. An fp32 accumulator gets 100.0030.
+            - listitem [ref=f2e172]:
+              - strong [ref=f2e173]: A gradient of 2e-8 in fp16.
+              - text: "The smallest fp16 number is 5.96e-8. Half of that is 2.98e-8, and 2e-8 is below it, so the gradient is stored as zero. Now multiply the loss by 1,024 first. The scaled gradient is 2.05e-5, which fp16 stores as 2.0504e-5. After the backward pass, divide by 1,024: 2.0023e-8. That is within 0.12 per cent of 2e-8. This is"
+              - strong [ref=f2e174]: loss scaling
+              - text: .
+          - 'figure "Read each column top to bottom: the problem, the size of the damage, the cure. All numbers are printed by block 2." [ref=f2e175]':
+            - generic [ref=f2e176]:
+              - 'button "Enlarge: Three columns: storing 0.1 in fp32, fp16 and bf16 with their errors; adding 0.01 to 32 in fp16 and bf16 stopping at 32 and 4; and a 2e-8 gradient lost in fp16 until the loss is scaled by 1024" [ref=f2e177]':
+                - 'img "Three columns: storing 0.1 in fp32, fp16 and bf16 with their errors; adding 0.01 to 32 in fp16 and bf16 stopping at 32 and 4; and a 2e-8 gradient lost in fp16 until the loss is scaled by 1024" [ref=f2e178]'
+              - button "View infographic larger" [ref=f2e179] [cursor=pointer]:
+                - generic [ref=f2e182]: Expand
+          - heading [level=2] [ref=f2e184]:
+            - text: How it works
+            - link "Direct link to How it works" [ref=f2e185] [cursor=pointer]:
+              - /url: "#how-it-works"
+              - text: "#"
+          - heading [level=3] [ref=f2e186]:
+            - text: What is inside a floating-point number?
+            - link "Direct link to What is inside a floating-point number?" [ref=f2e187] [cursor=pointer]:
+              - /url: "#what-is-inside-a-floating-point-number"
+              - text: "#"
+          - paragraph [ref=f2e188]:
+            - text: A floating-point number has a sign bit, some exponent bits and some mantissa bits. For a normal number the value is the sign, times
+            - code [ref=f2e189]: 1.m
+            - text: ", times 2 to the power"
+            - code [ref=f2e190]: e - bias
+            - text: . Here
+            - code [ref=f2e191]: m
+            - text: is the mantissa digits and
+            - code [ref=f2e192]: e
+            - text: "the exponent field. In words: the exponent picks a power of two, and the mantissa picks one of"
+            - code [ref=f2e193]: 2^k
+            - text: evenly spaced values between that power and the next, where
+            - code [ref=f2e194]: k
+            - text: is the number of mantissa bits.
+          - paragraph [ref=f2e195]:
+            - text: That spacing is the step size. Below the smallest normal number, the format switches to
+            - strong [ref=f2e196]: subnormal
+            - text: numbers, which have a fixed step and gradually lose digits until they reach zero. Block 1 prints the numbers for five formats from PyTorch's own
+            - code [ref=f2e197]: torch.finfo
+            - text: ":"
+          - table [ref=f2e198]:
+            - rowgroup [ref=f2e199]:
+              - row [ref=f2e200]:
+                - columnheader "Format" [ref=f2e201]
+                - columnheader "Exponent / mantissa bits" [ref=f2e202]
+                - columnheader "Largest" [ref=f2e203]
+                - columnheader "Smallest normal" [ref=f2e204]
+                - columnheader "Gap just above 1" [ref=f2e205]
+            - rowgroup [ref=f2e206]:
+              - row [ref=f2e207]:
+                - cell "fp32" [ref=f2e208]
+                - cell "8 / 23" [ref=f2e209]
+                - cell "3.40e38" [ref=f2e210]
+                - cell "1.18e-38" [ref=f2e211]
+                - cell "1.19e-7" [ref=f2e212]
+              - row [ref=f2e213]:
+                - cell "bf16" [ref=f2e214]
+                - cell "8 / 7" [ref=f2e215]
+                - cell "3.39e38" [ref=f2e216]
+                - cell "1.18e-38" [ref=f2e217]
+                - cell "0.0078" [ref=f2e218]
+              - row [ref=f2e219]:
+                - cell "fp16" [ref=f2e220]
+                - cell "5 / 10" [ref=f2e221]
+                - cell "65,504" [ref=f2e222]
+                - cell "6.10e-5" [ref=f2e223]
+                - cell "0.00098" [ref=f2e224]
+              - row [ref=f2e225]:
+                - cell "fp8 e4m3" [ref=f2e226]
+                - cell "4 / 3" [ref=f2e227]
+                - cell "448" [ref=f2e228]
+                - cell "0.0156" [ref=f2e229]
+                - cell "0.125" [ref=f2e230]
+              - row [ref=f2e231]:
+                - cell "fp8 e5m2" [ref=f2e232]
+                - cell "5 / 2" [ref=f2e233]
+                - cell "57,344" [ref=f2e234]
+                - cell "6.10e-5" [ref=f2e235]
+                - cell "0.25" [ref=f2e236]
+          - paragraph [ref=f2e237]: "bf16 (brain floating point) keeps fp32's exponent and cuts the mantissa. fp8 comes in two layouts: e4m3 for more digits, e5m2 for more range. The FP8 paper defines both, and notes that e4m3 gives up infinities to extend its range to 448."
+          - heading [level=3] [ref=f2e238]:
+            - text: What does mixed precision mean?
+            - link "Direct link to What does mixed precision mean?" [ref=f2e239] [cursor=pointer]:
+              - /url: "#what-does-mixed-precision-mean"
+              - text: "#"
+          - paragraph [ref=f2e240]:
+            - text: The 2018 paper that introduced it names three techniques. Keep a
+            - strong [ref=f2e241]: master copy
+            - text: of the weights in fp32 and update that; use the 16-bit copy for the forward and backward passes.
+            - strong [ref=f2e242]: Scale the loss
+            - text: so that small gradients survive. Do arithmetic in 16 bits but
+            - strong [ref=f2e243]: accumulate in fp32
+            - text: . Block 3 and block 5 test the first two. Accumulation in fp32 is a hardware property of the matrix units, so it is shown here only with the running sum of block 2.
+          - paragraph [ref=f2e244]:
+            - text: In PyTorch the switch is
+            - code [ref=f2e245]: torch.autocast
+            - text: . Its documentation says matrix operations such as
+            - code [ref=f2e246]: linear
+            - text: ","
+            - code [ref=f2e247]: matmul
+            - text: and convolutions run in the lower precision, while reductions and sensitive operations such as
+            - code [ref=f2e248]: softmax
+            - text: ","
+            - code [ref=f2e249]: layer_norm
+            - text: ","
+            - code [ref=f2e250]: sum
+            - text: and
+            - code [ref=f2e251]: cross_entropy
+            - text: run in float32. On the CPU the default autocast dtype is bfloat16; on CUDA it is float16.
+          - heading [level=3] [ref=f2e252]:
+            - text: Why does fp16 need a loss scale and bf16 not?
+            - link "Direct link to Why does fp16 need a loss scale and bf16 not?" [ref=f2e253] [cursor=pointer]:
+              - /url: "#why-does-fp16-need-a-loss-scale-and-bf16-not"
+              - text: "#"
+          - paragraph [ref=f2e254]: The gradient of a loss can be tiny. fp16's smallest normal number is 6.1e-5 and its smallest subnormal 5.96e-8, so gradients below those lose digits or become zero. The 2018 paper found in one network that about 5 per cent of weight gradients had exponents below -24 and would be lost. bf16's smallest normal number is 1.18e-38, the same as fp32, so a gradient that fits in fp32 almost always fits in bf16. The PyTorch documentation notes that CPU mixed precision with bfloat16 only uses autocast, with no scaler.
+          - paragraph [ref=f2e255]:
+            - strong [ref=f2e256]: Loss scaling
+            - text: multiplies the loss by a constant before the backward pass. By the chain rule every gradient is multiplied by the same constant, so tiny gradients move up into the range fp16 can hold. Before the optimiser step the gradients are divided by the constant again. It must come before gradient clipping, so the clipping threshold means what you think it means.
+          - paragraph [ref=f2e257]:
+            - text: The constant cannot be too big. fp16 overflows above 65,504, and an overflow gives an infinity that poisons the update. So PyTorch's
+            - code [ref=f2e258]: GradScaler
+            - text: is dynamic. It starts at 65,536, doubles the scale after 2,000 clean steps, and halves it and skips the step when it finds an infinity or NaN. Block 4 runs it with an overflow injected on purpose.
+          - heading [level=3] [ref=f2e259]:
+            - text: What does a master copy buy?
+            - link "Direct link to What does a master copy buy?" [ref=f2e260] [cursor=pointer]:
+              - /url: "#what-does-a-master-copy-buy"
+              - text: "#"
+          - paragraph [ref=f2e261]: An update of 0.001 added to a weight of 1.0 is smaller than half a step in bf16 (the step near 1 is 0.0078). It is lost. In fp32 (step 1.2e-7) it is kept. Without a master copy, small updates to big weights disappear. With one, the update is added in fp32 and the bf16 copy is re-cast from it, so tiny updates pile up until they cross a step.
+          - paragraph [ref=f2e262]: "The master copy costs memory. The recipe is 2 bytes of working weight, 2 of gradient and 12 of optimiser state (the 4-byte master plus Adam's two 4-byte moments): 16 bytes per parameter. That is the same 16 bytes as plain fp32 (4 + 4 + 8). Mixed precision does not shrink model state. It shrinks activations, memory traffic and compute time, which is where most of the savings are. DeepSeek-V3 goes further: it keeps master weights and gradients in fp32 but stores Adam's moments in bf16, and reports no observable loss in quality."
+          - figure "Follow the loop from the blue master box to the purple update box and back. The table at the bottom left is the memory bill for each recipe." [ref=f2e263]:
+            - generic [ref=f2e264]:
+              - 'button "Enlarge: Five connected boxes for the fp32 master weights, bf16 working copy, forward pass, backward pass and the update that returns to the master, above a table of bytes per parameter for three recipes and a note that pure bf16 left more weights unchanged" [ref=f2e265]':
+                - img "Five connected boxes for the fp32 master weights, bf16 working copy, forward pass, backward pass and the update that returns to the master, above a table of bytes per parameter for three recipes and a note that pure bf16 left more weights unchanged" [ref=f2e266]
+              - button "View infographic larger" [ref=f2e267] [cursor=pointer]:
+                - generic [ref=f2e270]: Expand
+          - heading [level=3] [ref=f2e272]:
+            - text: What changes with fp8?
+            - link "Direct link to What changes with fp8?" [ref=f2e273] [cursor=pointer]:
+              - /url: "#what-changes-with-fp8"
+              - text: "#"
+          - paragraph [ref=f2e274]:
+            - text: With 3 or 2 mantissa bits, fp8 has a median rounding error of about 2 per cent (e4m3) or 4 per cent (e5m2) in block 2, and a very small range. So fp8 needs a
+            - strong [ref=f2e275]: scale
+            - text: for each tensor, chosen so the largest value lands near the format's largest (448 for e4m3). That works until one huge value sets the scale and everything else is pushed toward zero.
+          - paragraph [ref=f2e276]: "Large language models have such values. The paper \"Massive Activations in Large Language Models\" reports a few activations hundreds or thousands of times larger than typical ones, and block 6 finds one in a real small model. The fix, as in DeepSeek-V3, is a scale per small group: one per 1 x 128 tile of an activation and one per 128 x 128 block of a weight. DeepSeek-V3 then uses e4m3 for all tensors, promotes partial sums to higher precision every 128 elements, and keeps the embeddings, output head, mixture-of-experts gating, normalisation and attention operators in bf16 or fp32."
+          - paragraph [ref=f2e277]: "NVIDIA's Transformer Engine documentation describes three recipes: delayed scaling (scale from a history of maxima), current scaling (scale from the tensor in hand) and MXFP8 (a scale per 32 values, on Blackwell GPUs). In its hybrid mode, forward uses e4m3 and backward uses e5m2. NVFP4 goes to 4 bits with a scale per 16 values."
+          - heading [level=2] [ref=f2e278]:
+            - text: A real system that works this way
+            - link "Direct link to A real system that works this way" [ref=f2e279] [cursor=pointer]:
+              - /url: "#a-real-system-that-works-this-way"
+              - text: "#"
+          - paragraph [ref=f2e280]:
+            - strong [ref=f2e281]: Llama 3
+            - text: "trained in bf16: the \"BF16 MFU\" column in the last chapter's Table 4 says so. The paper's own inference experiments used the native FP8 support of H100 GPUs, not training."
+          - paragraph [ref=f2e282]:
+            - strong [ref=f2e283]: DeepSeek-V3
+            - text: is the public example of fp8 training at scale. Its report describes e4m3 for all three matrix multiplications of each linear layer (forward, activation gradient and weight gradient), the tile and block scales above, and a relative loss error against a bf16 baseline that stays below 0.25 per cent on the two smaller models they trained for about 1 trillion tokens. Those are the authors' measurements on their cluster.
+          - paragraph [ref=f2e284]:
+            - strong [ref=f2e285]: NVFP4 pretraining
+            - text: (arXiv 2509.25149, submitted 29 September 2025, revised March 2026) reports a 12-billion-parameter model trained on 10 trillion tokens in 4-bit precision, with loss and downstream accuracy comparable to an fp8 baseline. That is the authors' claim about their recipe; this chapter does not reproduce it.
+          - heading [level=2] [ref=f2e286]:
+            - text: Code you can run
+            - link "Direct link to Code you can run" [ref=f2e287] [cursor=pointer]:
+              - /url: "#code-you-can-run"
+              - text: "#"
+          - paragraph [ref=f2e288]:
+            - text: Six blocks. Everything runs on the CPU in about a minute. Block 6 uses
+            - code [ref=f2e289]: SmolLM2-135M-Instruct
+            - text: ", which downloads once."
+          - heading [level=3] [ref=f2e290]:
+            - text: 1. The five formats, from PyTorch's own numbers
+            - link "Direct link to 1. The five formats, from PyTorch's own numbers" [ref=f2e291] [cursor=pointer]:
+              - /url: "#1-the-five-formats-from-pytorchs-own-numbers"
+              - text: "#"
+          - paragraph [ref=f2e292]:
+            - text: We read
+            - code [ref=f2e293]: torch.finfo
+            - text: for each format, derive the bit counts, and show what each does to 0.1, one third and some out-of-range values.
+          - code [ref=f2e297]:
+            - generic [ref=f2e298]: import math
+            - generic [ref=f2e300]: import torch
+            - generic [ref=f2e302]: FORMATS = [
+            - generic [ref=f2e303]: ("fp32", torch.float32),
+            - generic [ref=f2e304]: ("bf16", torch.bfloat16),
+            - generic [ref=f2e305]: ("fp16", torch.float16),
+            - generic [ref=f2e306]: ("fp8 e4m3", torch.float8_e4m3fn),
+            - generic [ref=f2e307]: ("fp8 e5m2", torch.float8_e5m2),
+            - generic [ref=f2e308]: "]"
+            - generic [ref=f2e310]: print("format bits exp mant largest smallest normal smallest subnormal eps (1 to next)")
+            - generic [ref=f2e311]: "for name, dt in FORMATS:"
+            - generic [ref=f2e312]: f = torch.finfo(dt)
+            - generic [ref=f2e313]: mant = round(-math.log2(f.eps))
+            - generic [ref=f2e314]: exp = f.bits - 1 - mant
+            - generic [ref=f2e315]: subnormal = f.smallest_normal * f.eps
+            - generic [ref=f2e316]: "print(f\"{name:<9} {f.bits:>4} {exp:>4} {mant:>5} {f.max:<13.6g} {f.smallest_normal:<16.6g} {subnormal:<18.6g} {f.eps:.6g}\")"
+            - generic [ref=f2e318]: print()
+            - generic [ref=f2e319]: print("how each format stores 0.1 and 1/3")
+            - generic [ref=f2e320]: "for name, dt in FORMATS:"
+            - generic [ref=f2e321]: a = torch.tensor([0.1, 1 / 3], dtype=torch.float64).to(dt).to(torch.float64)
+            - generic [ref=f2e322]: "print(f\"{name:<9} 0.1 -> {a[0].item():.12g} 1/3 -> {a[1].item():.12g}\")"
+            - generic [ref=f2e324]: print()
+            - generic [ref=f2e325]: big = torch.tensor([100.0, 300.0, 500.0, 70000.0, 1e-5, 1e-8])
+            - generic [ref=f2e326]: print("what a cast does to values outside the range (torch", torch.__version__ + ")")
+            - generic [ref=f2e327]: "print(\"value \", *[f\"{v:>10g}\" for v in big.tolist()])"
+            - generic [ref=f2e328]: "for name, dt in FORMATS[1:]:"
+            - generic [ref=f2e329]: "print(f\"{name:<10} \", *[f\"{v:>10.4g}\" for v in big.to(dt).float().tolist()])"
+          - paragraph [ref=f2e330]:
+            - strong [ref=f2e331]: Reading the output.
+            - text: The table is the one above. 0.1 comes back as 0.10000000149 (fp32), 0.10009765625 (bf16), 0.0999755859375 (fp16), 0.1015625 (e4m3) and 0.09375 (e5m2). In the range test, 70,000 becomes
+            - code [ref=f2e332]: inf
+            - text: "in fp16 and e5m2 but 70,144 in bf16. In e4m3, 500 and 70,000 both become 448: on this CPU PyTorch saturates e4m3 instead of producing an infinity or a NaN. Another device or kernel may behave differently."
+          - paragraph [ref=f2e333]:
+            - strong [ref=f2e334]: Line by line.
+          - list [ref=f2e335]:
+            - listitem [ref=f2e336]:
+              - code [ref=f2e337]: mant = round(-math.log2(f.eps))
+              - text: recovers the mantissa bit count from the gap above 1, which is
+              - code [ref=f2e338]: 2 ** -mant
+              - text: .
+            - listitem [ref=f2e339]:
+              - code [ref=f2e340]: f.smallest_normal * f.eps
+              - text: is the smallest subnormal number.
+            - listitem [ref=f2e341]:
+              - text: Going through
+              - code [ref=f2e342]: torch.float64
+              - text: first means the printed digits are the stored value, not a rounded display.
+          - heading [level=3] [ref=f2e343]:
+            - text: 2. Rounding, lost sums and a lost gradient
+            - link "Direct link to 2. Rounding, lost sums and a lost gradient" [ref=f2e344] [cursor=pointer]:
+              - /url: "#2-rounding-lost-sums-and-a-lost-gradient"
+              - text: "#"
+          - paragraph [ref=f2e345]: The three worked-example calculations, in code, plus the typical rounding error of each format on random numbers.
+          - code [ref=f2e349]:
+            - generic [ref=f2e350]: import torch
+            - generic [ref=f2e352]: "print(\"step 1: how big is the gap between neighbouring numbers near 32?\")"
+            - generic [ref=f2e353]: "for name, dt in ((\"fp16\", torch.float16), (\"bf16\", torch.bfloat16), (\"fp32\", torch.float32)):"
+            - generic [ref=f2e354]: one = torch.tensor(32.0, dtype=dt)
+            - generic [ref=f2e355]: gap = (torch.nextafter(one, torch.tensor(1e9, dtype=dt)) - one).item()
+            - generic [ref=f2e356]: "print(f\" {name}: gap {gap:g}, half gap {gap / 2:g}, 32 + 0.01 = {(one + torch.tensor(0.01, dtype=dt)).item():g}\")"
+            - generic [ref=f2e358]: print()
+            - generic [ref=f2e359]: "print(\"step 2: add 0.01 ten thousand times (the exact answer is 100)\")"
+            - generic [ref=f2e360]: "for name, dt in ((\"fp16\", torch.float16), (\"bf16\", torch.bfloat16), (\"fp32\", torch.float32)):"
+            - generic [ref=f2e361]: total = torch.tensor(0.0, dtype=dt)
+            - generic [ref=f2e362]: step = torch.tensor(0.01, dtype=dt)
+            - generic [ref=f2e363]: stuck_at = None
+            - generic [ref=f2e364]: "for i in range(10000):"
+            - generic [ref=f2e365]: new = total + step
+            - generic [ref=f2e366]: "if stuck_at is None and new.item() == total.item():"
+            - generic [ref=f2e367]: stuck_at = (i, total.item())
+            - generic [ref=f2e368]: total = new
+            - generic [ref=f2e369]: "note = f\"stopped growing at {stuck_at[1]:g} after {stuck_at[0]} additions\" if stuck_at else \"never stuck\""
+            - generic [ref=f2e370]: "print(f\" {name} accumulator: {total.item():.4f} ({note})\")"
+            - generic [ref=f2e371]: acc = torch.tensor(0.0)
+            - generic [ref=f2e372]: small = torch.tensor(0.01).to(torch.bfloat16)
+            - generic [ref=f2e373]: "for _ in range(10000):"
+            - generic [ref=f2e374]: acc = acc + small.float()
+            - generic [ref=f2e375]: "print(f\" bf16 inputs, fp32 accumulator: {acc.item():.4f} (each input is really {small.item():.9f})\")"
+            - generic [ref=f2e377]: print()
+            - generic [ref=f2e378]: "print(\"step 3: a tiny gradient in fp16, with and without a loss scale\")"
+            - generic [ref=f2e379]: g = 2e-8
+            - generic [ref=f2e380]: "for scale in (1, 1024):"
+            - generic [ref=f2e381]: stored = torch.tensor(g * scale, dtype=torch.float16)
+            - generic [ref=f2e382]: "print(f\" scale {scale:>4}: stored {stored.item():.4e}, after dividing by the scale {stored.item() / scale:.4e}\")"
+            - generic [ref=f2e384]: print()
+            - generic [ref=f2e385]: "print(\"step 4: typical rounding error on 100,000 random normal numbers\")"
+            - generic [ref=f2e386]: x = torch.randn(100000, generator=torch.Generator().manual_seed(0))
+            - generic [ref=f2e387]: "for name, dt in ((\"fp16\", torch.float16), (\"bf16\", torch.bfloat16), (\"fp8 e4m3\", torch.float8_e4m3fn), (\"fp8 e5m2\", torch.float8_e5m2)):"
+            - generic [ref=f2e388]: err = ((x.to(dt).float() - x).abs() / x.abs()).median().item()
+            - generic [ref=f2e389]: "print(f\" {name:<9} median relative error {err:.5f}\")"
+          - paragraph [ref=f2e390]:
+            - strong [ref=f2e391]: Reading the output.
+            - text: Near 32 the fp16 gap is 0.03125, so
+            - code [ref=f2e392]: 32 + 0.01 = 32
+            - text: . After 10,000 additions of 0.01, fp16 sits at 32.0, bf16 at 4.0 and fp32 at 100.0030. With bf16 inputs and an fp32 accumulator the answer is 100.0977, which is off only because each bf16 input is really 0.010009766. The 2e-8 gradient is stored as zero at scale 1 and as 2.0504e-05 at scale 1,024, which divides back to 2.0023e-08. The median rounding errors are 0.00017 (fp16), 0.00135 (bf16), 0.02183 (e4m3) and 0.04338 (e5m2).
+          - paragraph [ref=f2e393]:
+            - strong [ref=f2e394]: Line by line.
+          - list [ref=f2e395]:
+            - listitem [ref=f2e396]:
+              - code [ref=f2e397]: torch.nextafter
+              - text: gives the next representable number, so the difference is the gap.
+            - listitem [ref=f2e398]:
+              - code [ref=f2e399]: stuck_at
+              - text: records the first addition that changed nothing.
+            - listitem [ref=f2e400]: "The last loop casts each input to bf16 but adds in fp32: this is the \"16-bit inputs, 32-bit accumulator\" idea."
+          - heading [level=3] [ref=f2e401]:
+            - text: 3. How big must the loss scale be?
+            - link "Direct link to 3. How big must the loss scale be?" [ref=f2e402] [cursor=pointer]:
+              - /url: "#3-how-big-must-the-loss-scale-be"
+              - text: "#"
+          - paragraph [ref=f2e403]: "First a synthetic test: 100,000 gradients spread evenly in log scale from 1e-10 to 1e-2, stored in fp16 at four scales. Then the real tiny Llama (158,016 parameters, the one from the last chapter) run in half precision."
+          - code [ref=f2e407]:
+            - generic [ref=f2e408]: import torch
+            - generic [ref=f2e409]: from transformers import LlamaConfig, LlamaForCausalLM
+            - generic [ref=f2e411]: CFG = LlamaConfig(vocab_size=512, hidden_size=64, intermediate_size=176, num_hidden_layers=2,
+            - generic [ref=f2e412]: num_attention_heads=4, num_key_value_heads=2, tie_word_embeddings=False)
+            - generic [ref=f2e413]: TOKENS = torch.randint(0, 512, (8, 32), generator=torch.Generator().manual_seed(1))
+            - generic [ref=f2e416]: "def make():"
+            - generic [ref=f2e417]: torch.manual_seed(0)
+            - generic [ref=f2e418]: return LlamaForCausalLM(CFG)
+            - generic [ref=f2e421]: "def grads(model):"
+            - generic [ref=f2e422]: return torch.cat([p.grad.reshape(-1).float() for p in model.parameters()])
+            - generic [ref=f2e425]: print("synthetic gradients, 100,000 values spread evenly in log scale from 1e-10 to 1e-2, stored in fp16")
+            - generic [ref=f2e426]: g = 10 ** (torch.rand(100000, generator=torch.Generator().manual_seed(0)) * 8 - 10)
+            - generic [ref=f2e427]: "for scale in (1, 2**8, 2**16, 2**24):"
+            - generic [ref=f2e428]: s = (g * scale).to(torch.float16)
+            - generic [ref=f2e429]: "print(f\" scale 2^{int(torch.log2(torch.tensor(float(scale)))):>2}: flushed to zero {(s == 0).float().mean().item():6.1%} overflowed {torch.isinf(s).float().mean().item():6.1%}\")"
+            - generic [ref=f2e431]: reference = make()
+            - generic [ref=f2e432]: reference(TOKENS, labels=TOKENS).loss.backward()
+            - generic [ref=f2e433]: ref = grads(reference)
+            - generic [ref=f2e434]: small = (ref != 0) & (ref.abs() < 2**-14)
+            - generic [ref=f2e435]: print()
+            - generic [ref=f2e436]: "print(f\"real tiny Llama, fp32 gradients: {int((ref != 0).sum()):,} nonzero, {int(small.sum()):,} below fp16's smallest normal number\")"
+            - generic [ref=f2e437]: "for scale in (1, 2**8, 2**16, 2**24):"
+            - generic [ref=f2e438]: model = make().half()
+            - generic [ref=f2e439]: (model(TOKENS, labels=TOKENS).loss * scale).backward()
+            - generic [ref=f2e440]: g16 = grads(model)
+            - generic [ref=f2e441]: bad = int((~torch.isfinite(g16)).sum())
+            - generic [ref=f2e442]: lost = int(((g16 == 0) & small).sum())
+            - generic [ref=f2e443]: ok = small & torch.isfinite(g16)
+            - generic [ref=f2e444]: err = ((g16[ok] / scale - ref[ok]).abs() / ref[ok].abs()).median().item()
+            - generic [ref=f2e445]: "print(f\" scale 2^{int(torch.log2(torch.tensor(float(scale)))):>2}: small gradients lost {lost:>2}, non-finite {bad:>7,}, median error on small ones {err:.4f}\")"
+          - paragraph [ref=f2e446]:
+            - strong [ref=f2e447]: Reading the output.
+            - text: Without a scale, 30.8 per cent of the synthetic gradients flush to zero. A scale of 2^8 cuts that to 0.9 per cent, and 2^16 removes it. At 2^24, 5.1 per cent overflow. The real model shows the same shape, more mildly. It has 17,527 gradients below fp16's smallest normal number. At scale 1 it loses 10 of them to zero and the median error on them is 0.0129. At 2^8 it loses 1 and the median error falls to 0.0049. At 2^24, 118,720 gradients are infinite or NaN.
+          - paragraph [ref=f2e448]:
+            - strong [ref=f2e449]: What did not work.
+            - text: "This tiny model barely needs loss scaling: only 10 of 138,240 non-zero gradients are lost at scale 1. The synthetic test is the harsh case. Real large models vary, and the 2018 paper found some networks needed no scaling and others needed one to match fp32."
+          - paragraph [ref=f2e450]:
+            - strong [ref=f2e451]: Line by line.
+          - list [ref=f2e452]:
+            - listitem [ref=f2e453]:
+              - code [ref=f2e454]: 10 ** (rand * 8 - 10)
+              - text: draws exponents uniformly between -10 and -2.
+            - listitem [ref=f2e455]:
+              - code [ref=f2e456]: small
+              - text: marks gradients below
+              - code [ref=f2e457]: 2 ** -14
+              - text: ", fp16's smallest normal number."
+            - listitem [ref=f2e458]:
+              - code [ref=f2e459]: g16 / scale
+              - text: undoes the scale before comparing with the fp32 reference.
+          - heading [level=3] [ref=f2e460]:
+            - text: "4."
+            - code [ref=f2e461]: GradScaler
+            - text: growing, and skipping on overflow
+            - link "Direct link to 4-gradscaler-growing-and-skipping-on-overflow" [ref=f2e462] [cursor=pointer]:
+              - /url: "#4-gradscaler-growing-and-skipping-on-overflow"
+              - text: "#"
+          - paragraph [ref=f2e463]:
+            - text: A real training loop on the CPU with
+            - code [ref=f2e464]: torch.autocast
+            - text: in float16 and
+            - code [ref=f2e465]: torch.amp.GradScaler
+            - text: . At step 5 the loss is multiplied by 1e30 to force an overflow.
+          - code [ref=f2e469]:
+            - generic [ref=f2e470]: import torch
+            - generic [ref=f2e471]: from transformers import LlamaConfig, LlamaForCausalLM
+            - generic [ref=f2e473]: CFG = LlamaConfig(vocab_size=512, hidden_size=64, intermediate_size=176, num_hidden_layers=2,
+            - generic [ref=f2e474]: num_attention_heads=4, num_key_value_heads=2, tie_word_embeddings=False)
+            - generic [ref=f2e475]: TOKENS = torch.randint(0, 512, (8, 32), generator=torch.Generator().manual_seed(1))
+            - generic [ref=f2e477]: torch.manual_seed(0)
+            - generic [ref=f2e478]: model = LlamaForCausalLM(CFG)
+            - generic [ref=f2e479]: optimiser = torch.optim.AdamW(model.parameters(), lr=1e-3)
+            - generic [ref=f2e480]: scaler = torch.amp.GradScaler("cpu", init_scale=2.0**14, growth_interval=3)
+            - generic [ref=f2e481]: first = next(model.parameters())
+            - generic [ref=f2e483]: print("step loss scale before -> after overflow injected weights changed")
+            - generic [ref=f2e484]: "for step in range(10):"
+            - generic [ref=f2e485]: "with torch.autocast(\"cpu\", dtype=torch.float16):"
+            - generic [ref=f2e486]: loss = model(TOKENS, labels=TOKENS).loss
+            - generic [ref=f2e487]: injected = step == 5
+            - generic [ref=f2e488]: before_scale = scaler.get_scale()
+            - generic [ref=f2e489]: snapshot = first.detach().clone()
+            - generic [ref=f2e490]: scaler.scale(loss * (1e30 if injected else 1.0)).backward()
+            - generic [ref=f2e491]: scaler.step(optimiser)
+            - generic [ref=f2e492]: scaler.update()
+            - generic [ref=f2e493]: optimiser.zero_grad()
+            - generic [ref=f2e494]: changed = not torch.equal(snapshot, first.detach())
+            - generic [ref=f2e495]: "print(f\"{step:>4} {loss.item():.4f} {before_scale:>8.0f} -> {scaler.get_scale():<8.0f} {str(injected):<17} {changed}\")"
+            - generic [ref=f2e497]: print()
+            - generic [ref=f2e498]: default = torch.amp.GradScaler("cpu")
+            - generic [ref=f2e499]: "print(f\"defaults of torch.amp.GradScaler: init_scale {default.get_scale():.0f}, growth_factor {default.get_growth_factor()}, \""
+            - generic [ref=f2e500]: "f\"backoff_factor {default.get_backoff_factor()}, growth_interval {default.get_growth_interval()}\")"
+            - generic [ref=f2e501]: print("this run used init_scale 16384 and growth_interval 3 so the doubling shows in ten steps")
+          - paragraph [ref=f2e502]:
+            - strong [ref=f2e503]: Reading the output.
+            - text: "The scale starts at 16,384 and doubles to 32,768 after three clean steps. At step 5 the injected overflow makes the scaler skip the optimiser step (weights changed: False) and halve the scale to 16,384. Step 6 repeats step 5's loss, 5.5883, because no update happened, and training goes on. The library defaults are an initial scale of 65,536, a growth factor of 2.0, a backoff factor of 0.5 and a growth interval of 2,000."
+          - paragraph [ref=f2e504]:
+            - strong [ref=f2e505]: Line by line.
+          - list [ref=f2e506]:
+            - listitem [ref=f2e507]:
+              - code [ref=f2e508]: scaler.scale(loss)
+              - text: multiplies the loss;
+              - code [ref=f2e509]: scaler.step(optimiser)
+              - text: unscales the gradients, checks them, and steps only if they are finite.
+            - listitem [ref=f2e510]:
+              - code [ref=f2e511]: scaler.update()
+              - text: is where the scale doubles or halves.
+            - listitem [ref=f2e512]:
+              - code [ref=f2e513]: torch.equal(snapshot, first.detach())
+              - text: proves whether the weights really moved.
+          - heading [level=3] [ref=f2e514]:
+            - text: 5. Five ways to train the same model
+            - link "Direct link to 5. Five ways to train the same model" [ref=f2e515] [cursor=pointer]:
+              - /url: "#5-five-ways-to-train-the-same-model"
+              - text: "#"
+          - paragraph [ref=f2e516]: "Sixty AdamW steps on one fixed batch, in five numeric modes: fp32, bf16 autocast, weights stored in bf16, weights stored in fp16, and fp16 autocast with a scaler. The last column is the share of weights that did not change at all in the final step. A second part looks at Adam's second moment."
+          - code [ref=f2e520]:
+            - generic [ref=f2e521]: import torch
+            - generic [ref=f2e522]: from transformers import LlamaConfig, LlamaForCausalLM
+            - generic [ref=f2e524]: CFG = LlamaConfig(vocab_size=512, hidden_size=64, intermediate_size=176, num_hidden_layers=2,
+            - generic [ref=f2e525]: num_attention_heads=4, num_key_value_heads=2, tie_word_embeddings=False)
+            - generic [ref=f2e526]: TOKENS = torch.randint(0, 512, (8, 32), generator=torch.Generator().manual_seed(1))
+            - generic [ref=f2e527]: STEPS = 60
+            - generic [ref=f2e530]: "def run(mode, eps=1e-8, lr=1e-3):"
+            - generic [ref=f2e531]: torch.manual_seed(0)
+            - generic [ref=f2e532]: model = LlamaForCausalLM(CFG)
+            - generic [ref=f2e533]: "if mode == \"pure bf16\":"
+            - generic [ref=f2e534]: model = model.to(torch.bfloat16)
+            - generic [ref=f2e535]: "if mode == \"pure fp16\":"
+            - generic [ref=f2e536]: model = model.to(torch.float16)
+            - generic [ref=f2e537]: opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.0, eps=eps)
+            - generic [ref=f2e538]: scaler = torch.amp.GradScaler("cpu") if mode == "fp16 autocast + scaler" else None
+            - generic [ref=f2e539]: losses, unchanged = [], 0.0
+            - generic [ref=f2e540]: "for step in range(STEPS):"
+            - generic [ref=f2e541]: before = [p.detach().clone() for p in model.parameters()] if step == STEPS - 1 else None
+            - generic [ref=f2e542]: "dtype = {\"bf16 autocast\": torch.bfloat16, \"fp16 autocast + scaler\": torch.float16}.get(mode)"
+            - generic [ref=f2e543]: "with torch.autocast(\"cpu\", dtype=dtype or torch.float32, enabled=dtype is not None):"
+            - generic [ref=f2e544]: loss = model(TOKENS, labels=TOKENS).loss
+            - generic [ref=f2e545]: "if scaler:"
+            - generic [ref=f2e546]: scaler.scale(loss).backward()
+            - generic [ref=f2e547]: scaler.step(opt)
+            - generic [ref=f2e548]: scaler.update()
+            - generic [ref=f2e549]: "else:"
+            - generic [ref=f2e550]: loss.backward()
+            - generic [ref=f2e551]: opt.step()
+            - generic [ref=f2e552]: opt.zero_grad()
+            - generic [ref=f2e553]: losses.append(loss.item())
+            - generic [ref=f2e554]: "if before:"
+            - generic [ref=f2e555]: total = sum(p.numel() for p in model.parameters())
+            - generic [ref=f2e556]: unchanged = sum((a == p.detach()).sum().item() for a, p in zip(before, model.parameters())) / total
+            - generic [ref=f2e557]: return losses, unchanged
+            - generic [ref=f2e560]: print("60 AdamW steps on one fixed batch of 8 x 32 tokens, learning rate 1e-3")
+            - generic [ref=f2e561]: print("mode loss@0 loss@19 loss@59 weights unchanged in the last step")
+            - generic [ref=f2e562]: "for mode in [\"fp32\", \"bf16 autocast\", \"pure bf16\", \"pure fp16\", \"fp16 autocast + scaler\"]:"
+            - generic [ref=f2e563]: losses, unchanged = run(mode)
+            - generic [ref=f2e564]: "print(f\"{mode:<24} {losses[0]:7.4f} {losses[19]:7.4f} {losses[59]:7.4f} {unchanged:7.1%}\")"
+            - generic [ref=f2e565]: "print(f\"1e-8 stored in fp16 is {torch.tensor(1e-8, dtype=torch.float16).item()}, in bf16 {torch.tensor(1e-8, dtype=torch.bfloat16).item():.4g}\")"
+            - generic [ref=f2e566]: print()
+            - generic [ref=f2e567]: "print(\"Adam's second moment after 5 steps, eps 1e-4 so the pure fp16 run survives: share of entries that are exactly zero\")"
+            - generic [ref=f2e568]: "for name, dtype in ((\"fp32\", torch.float32), (\"bf16\", torch.bfloat16), (\"fp16\", torch.float16)):"
+            - generic [ref=f2e569]: torch.manual_seed(0)
+            - generic [ref=f2e570]: model = LlamaForCausalLM(CFG).to(dtype)
+            - generic [ref=f2e571]: opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.0, eps=1e-4)
+            - generic [ref=f2e572]: "for _ in range(5):"
+            - generic [ref=f2e573]: model(TOKENS, labels=TOKENS).loss.backward()
+            - generic [ref=f2e574]: opt.step()
+            - generic [ref=f2e575]: opt.zero_grad()
+            - generic [ref=f2e576]: v = torch.cat([s["exp_avg_sq"].reshape(-1).float() for s in opt.state.values()])
+            - generic [ref=f2e577]: "print(f\" {name}: {(v == 0).float().mean().item():.1%}\")"
+          - paragraph [ref=f2e578]:
+            - strong [ref=f2e579]: Reading the output.
+            - text: "fp32, bf16 autocast and fp16 autocast with a scaler end at loss 1.7358, 1.7386 and 1.7363: indistinguishable. Pure bf16 (weights stored in bf16, no master copy) ends at 2.0277, and 34.7 per cent of its weights did not change in the last step, against 12.5 per cent in fp32. Pure fp16 gives NaN from the second step. The reason is Adam's"
+            - code [ref=f2e580]: eps
+            - text: of 1e-8, which is 0.0 in fp16, so a zero second moment gives a division by zero. With
+            - code [ref=f2e581]: eps
+            - text: of 1e-4 it survives but 79.2 per cent of the second moments are exactly zero, against 12.5 per cent in fp32 and bf16, because squaring a small gradient underflows.
+          - paragraph [ref=f2e582]:
+            - strong [ref=f2e583]: What this does and does not show.
+            - text: "The 12.5 per cent is not an error: it is the embedding rows for tokens that never appear in the batch, which have zero gradient. The comparison is one seed, one fixed batch and a model with 158,016 parameters, so it shows a mechanism, not a ranking of recipes at scale. bf16 autocast on the CPU shows the numerics, not the speed."
+          - paragraph [ref=f2e584]:
+            - strong [ref=f2e585]: Line by line.
+          - list [ref=f2e586]:
+            - listitem [ref=f2e587]:
+              - code [ref=f2e588]: model.to(torch.bfloat16)
+              - text: makes the weights themselves bf16 and removes the master copy, which is the point of the "pure" modes.
+            - listitem [ref=f2e589]:
+              - code [ref=f2e590]: torch.autocast(..., enabled=dtype is not None)
+              - text: is a no-op for the fp32 and pure modes.
+            - listitem [ref=f2e591]:
+              - code [ref=f2e592]: s["exp_avg_sq"]
+              - text: is Adam's running mean of squared gradients; its zeros show where squaring underflowed.
+          - heading [level=3] [ref=f2e593]:
+            - text: 6. fp8 with one scale, and with a scale per tile
+            - link "Direct link to 6. fp8 with one scale, and with a scale per tile" [ref=f2e594] [cursor=pointer]:
+              - /url: "#6-fp8-with-one-scale-and-with-a-scale-per-tile"
+              - text: "#"
+          - paragraph [ref=f2e595]: We run a real sentence through SmolLM2-135M, take the hidden states after blocks 1, 15 and 30, and quantise them to e4m3 and back, once with a single scale and once with a scale per group of 64 values. The same is done for one real weight matrix. (DeepSeek-V3 uses groups of 128; this model's width, 576, is not a multiple of 128.)
+          - code [ref=f2e599]:
+            - generic [ref=f2e600]: import os
+            - generic [ref=f2e602]: os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+            - generic [ref=f2e603]: import torch
+            - generic [ref=f2e604]: from transformers import AutoModelForCausalLM, AutoTokenizer
+            - generic [ref=f2e606]: NAME = "HuggingFaceTB/SmolLM2-135M-Instruct"
+            - generic [ref=f2e607]: E4M3_MAX = torch.finfo(torch.float8_e4m3fn).max
+            - generic [ref=f2e608]: tokenizer = AutoTokenizer.from_pretrained(NAME)
+            - generic [ref=f2e609]: model = AutoModelForCausalLM.from_pretrained(NAME, dtype=torch.float32).eval()
+            - generic [ref=f2e610]: text = "Mixed precision training keeps a master copy of the weights in float32 and does most arithmetic in fewer bits."
+            - generic [ref=f2e611]: "with torch.no_grad():"
+            - generic [ref=f2e612]: states = model(**tokenizer(text, return_tensors="pt"), output_hidden_states=True).hidden_states
+            - generic [ref=f2e615]: "def to_fp8(x, scale):"
+            - generic [ref=f2e616]: return (x * scale).to(torch.float8_e4m3fn).float() / scale
+            - generic [ref=f2e619]: "def per_tensor(x):"
+            - generic [ref=f2e620]: return to_fp8(x, E4M3_MAX / x.abs().max())
+            - generic [ref=f2e623]: "def per_tile(x, tile=64):"
+            - generic [ref=f2e624]: rows, cols = x.shape
+            - generic [ref=f2e625]: parts = x.reshape(rows, cols // tile, tile)
+            - generic [ref=f2e626]: scale = E4M3_MAX / parts.abs().amax(dim=-1, keepdim=True).clamp(min=1e-12)
+            - generic [ref=f2e627]: return to_fp8(parts, scale).reshape(rows, cols)
+            - generic [ref=f2e630]: "def report(label, x, y):"
+            - generic [ref=f2e631]: flushed = ((y == 0) & (x != 0)).float().mean().item()
+            - generic [ref=f2e632]: typical = ((y - x).abs() / x.abs().clamp(min=1e-12)).median().item()
+            - generic [ref=f2e633]: "print(f\" {label:<22} flushed to zero {flushed:7.2%} median relative error {typical:.4f}\")"
+            - generic [ref=f2e636]: print("SmolLM2-135M hidden states, one 23-token sentence, quantised to fp8 e4m3 and back")
+            - generic [ref=f2e637]: "for layer in (1, 15, 30):"
+            - generic [ref=f2e638]: h = states[layer][0]
+            - generic [ref=f2e639]: "print(f\"layer {layer}: largest value {h.abs().max().item():,.1f}, median {h.abs().median().item():.2f}, ratio {h.abs().max().item() / h.abs().median().item():,.0f}\")"
+            - generic [ref=f2e640]: report("one scale per tensor", h, per_tensor(h))
+            - generic [ref=f2e641]: report("one scale per 64 values", h, per_tile(h))
+            - generic [ref=f2e643]: w = model.model.layers[10].mlp.gate_proj.weight.detach()
+            - generic [ref=f2e644]: "print(f\"layer 10 gate_proj weight {tuple(w.shape)}: largest {w.abs().max().item():.2f}, median {w.abs().median().item():.3f}\")"
+            - generic [ref=f2e645]: report("one scale per tensor", w, per_tensor(w))
+            - generic [ref=f2e646]: report("one scale per 64 values", w, per_tile(w))
+          - paragraph [ref=f2e647]:
+            - strong [ref=f2e648]: Reading the output.
+            - text: "After block 15 the largest hidden-state value is 24,946.1 against a median of 2.09, a ratio of 11,946. With one scale per tensor, 1.46 per cent of the non-zero values are flushed to zero and the median relative error is 0.0257. With a scale per 64 values nothing is flushed and the error is 0.0214. Blocks 1 and 30 have ratios of 43 and 60, so the two methods barely differ (0.0215 against 0.0211 and 0.0220 against 0.0215). For the weight matrix, whose largest value is only 20 times its median, the two methods give 0.0213 and 0.0214: no gain."
+          - paragraph [ref=f2e649]:
+            - strong [ref=f2e650]: Check by hand.
+            - text: Scale 448 / 24,946 = 0.01796. A value smaller than half the smallest e4m3 subnormal (0.00098) after scaling becomes zero. That means any original value under 0.00098 / 0.01796 = 0.054 is lost, which is why 1.46 per cent of this tensor goes to zero.
+          - paragraph [ref=f2e651]:
+            - strong [ref=f2e652]: Line by line.
+          - list [ref=f2e653]:
+            - listitem [ref=f2e654]:
+              - code [ref=f2e655]: E4M3_MAX / x.abs().max()
+              - text: is the per-tensor scale; the
+              - code [ref=f2e656]: to(torch.float8_e4m3fn)
+              - text: cast does the rounding.
+            - listitem [ref=f2e657]:
+              - code [ref=f2e658]: per_tile
+              - text: reshapes each row into groups of 64 and finds one maximum per group.
+            - listitem [ref=f2e659]:
+              - code [ref=f2e660]: report
+              - text: counts values that were non-zero before and zero after, and the median of the relative error.
+          - heading [level=3] [ref=f2e661]:
+            - text: Try it yourself
+            - link "Direct link to Try it yourself" [ref=f2e662] [cursor=pointer]:
+              - /url: "#try-it-yourself"
+              - text: "#"
+          - paragraph [ref=f2e663]: "The lab uses the same rounding rules as PyTorch's casts. Its rounding function was checked against PyTorch 2.14.1 on 2,170 values across all five formats with no differences. The defaults, a value of 2e-8 and a scale of 2^0, reproduce block 2's lost gradient: fp16 stores zero. Click \"show data\" for the table of stored value, value after unscaling, error and status."
+          - figure "Interactive Range and rounding of number formats show data" [ref=f2e664]:
+            - generic [ref=f2e665]:
+              - generic [ref=f2e666]: Interactive
+              - generic [ref=f2e667]: Range and rounding of number formats
+              - button "show data" [ref=f2e668] [cursor=pointer]
+            - generic [ref=f2e669]:
+              - generic [ref=f2e670]:
+                - text: value
+                - textbox "value" [ref=f2e671] [cursor=pointer]: "2e-8"
+              - generic [ref=f2e672]:
+                - text: preset
+                - combobox "preset" [ref=f2e673] [cursor=pointer]:
+                  - option "choose a value" [selected]
+                  - option "a tiny gradient, 2e-8"
+                  - option "one tenth, 0.1"
+                  - option "one third, 0.3333333"
+                  - option "a large activation, 300"
+                  - option "a larger one, 500"
+                  - option "a very large one, 70000"
+                  - option "a small weight update, 1e-5"
+              - generic [ref=f2e674]:
+                - text: loss scale = 2 to the power
+                - slider "loss scale = 2 to the power 0" [ref=f2e675]: "0"
+                - generic [ref=f2e676]: "0"
+              - generic [ref=f2e677]: "value 2.0000e-8 times 2^0: fp32 exact-ish, bf16 exact-ish, fp16 underflow to zero, fp8 e4m3 underflow to zero, fp8 e5m2 underflow to zero"
+            - 'img "Ranges of five number formats on a log axis. value 2.0000e-8 times 2^0: fp32 exact-ish, bf16 exact-ish, fp16 underflow to zero, fp8 e4m3 underflow to zero, fp8 e5m2 underflow to zero" [ref=f2e679]':
+              - generic [ref=f2e680]: fp32
+              - generic [ref=f2e684]: bf16
+              - generic [ref=f2e688]: fp16
+              - generic [ref=f2e692]: fp8 e4m3
+              - generic [ref=f2e696]: fp8 e5m2
+              - generic [ref=f2e700]: "1e-40"
+              - generic [ref=f2e701]: "1e-30"
+              - generic [ref=f2e702]: "1e-20"
+              - generic [ref=f2e703]: "1e-10"
+              - generic [ref=f2e704]: "1e0"
+              - generic [ref=f2e705]: "1e10"
+              - generic [ref=f2e706]: "1e20"
+              - generic [ref=f2e707]: "1e30"
+              - generic [ref=f2e708]: "1e38"
+              - generic [ref=f2e709]: "solid line: the value. dashed red line: the value after the loss scale. Axis is log scale."
+            - list [ref=f2e710]:
+              - listitem [ref=f2e711]: subnormal range (less precise)
+              - listitem [ref=f2e713]: normal range
+            - paragraph [ref=f2e715]: "The defaults are block 2, step 3: a gradient of 2e-8 in fp16 becomes zero at scale 1. Raise the loss scale to 10 (a factor of 1024) and it is stored as 2.0504e-05."
+          - paragraph [ref=f2e716]:
+            - strong [ref=f2e717]: What each control does.
+          - list [ref=f2e718]:
+            - listitem [ref=f2e719]:
+              - strong [ref=f2e720]: value
+              - text: is the number to store; type your own, such as
+              - code [ref=f2e721]: "1e-5"
+              - text: .
+            - listitem [ref=f2e722]:
+              - strong [ref=f2e723]: preset
+              - text: fills the value box with a case from this chapter.
+            - listitem [ref=f2e724]:
+              - strong [ref=f2e725]: loss scale = 2 to the power
+              - text: multiplies the value before storing and divides after, as in loss scaling.
+            - listitem [ref=f2e726]: The five bars show each format's range. The solid line is the value; the dashed red line is the scaled value.
+          - paragraph [ref=f2e727]:
+            - strong [ref=f2e728]: Try it yourself.
+          - list [ref=f2e729]:
+            - listitem [ref=f2e730]: "Leave the value at 2e-8 and move the loss scale to 10. fp16 now stores 2.0504e-05 and returns 2.0023e-08, an error of 0.12 per cent. Why: 2e-8 times 1,024 is above fp16's smallest number. bf16 stored 2.0023e-08 all along, because its range already reached."
+            - listitem [ref=f2e731]: "Choose the preset 500. fp8 e4m3 reports overflow and stores 448, an error of 10 per cent, while e5m2 stores 512. Why: e4m3's largest value is 448, e5m2's is 57,344, but e5m2 has one fewer mantissa bit."
+            - listitem [ref=f2e732]:
+              - text: "Choose the preset 70000: fp16 overflows to infinity and bf16 stores 70,144. Then type 2 as the value and set the scale to 16: fp16 overflows again and bf16 does not. Why: 2 times 65,536 is 131,072, above fp16's 65,504. A loss scale that is too large overflows, which is why"
+              - code [ref=f2e733]: GradScaler
+              - text: halves it.
+          - heading [level=2] [ref=f2e734]:
+            - text: Production snippets (not run here)
+            - link "Direct link to Production snippets (not run here)" [ref=f2e735] [cursor=pointer]:
+              - /url: "#production-snippets-not-run-here"
+              - text: "#"
+          - generic [ref=f2e736]:
+            - generic [ref=f2e737]: Not run in this environment
+            - paragraph [ref=f2e742]:
+              - text: These need a CUDA GPU (fp16 on the GPU, and Transformer Engine needs an H100 or later). The
+              - code [ref=f2e743]: torch.amp
+              - text: calls were checked against the PyTorch 2.14 documentation. The Transformer Engine call is copied from its 2.20.2 documentation.
+          - paragraph [ref=f2e744]: "fp16 on a GPU needs the scaler. bf16 does not:"
+          - code [ref=f2e748]:
+            - generic [ref=f2e749]: import torch
+            - generic [ref=f2e751]: scaler = torch.amp.GradScaler("cuda")
+            - generic [ref=f2e752]: "for batch in loader:"
+            - generic [ref=f2e753]: "with torch.autocast(\"cuda\", dtype=torch.float16):"
+            - generic [ref=f2e754]: loss = model(**batch).loss
+            - generic [ref=f2e755]: scaler.scale(loss).backward()
+            - generic [ref=f2e756]: scaler.unscale_(optimiser)
+            - generic [ref=f2e757]: torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            - generic [ref=f2e758]: scaler.step(optimiser)
+            - generic [ref=f2e759]: scaler.update()
+            - generic [ref=f2e760]: optimiser.zero_grad()
+          - paragraph [ref=f2e761]: "fp8 with Transformer Engine, using its hybrid recipe (e4m3 forward, e5m2 backward):"
+          - code [ref=f2e765]:
+            - generic [ref=f2e766]: import transformer_engine.pytorch as te
+            - generic [ref=f2e767]: from transformer_engine.common.recipe import DelayedScaling, Format
+            - generic [ref=f2e769]: recipe = DelayedScaling(fp8_format=Format.HYBRID, amax_history_len=16)
+            - generic [ref=f2e770]: layer = te.Linear(768, 768)
+            - generic [ref=f2e771]: "with te.autocast(enabled=True, recipe=recipe):"
+            - generic [ref=f2e772]: output = layer(input_tensor)
+          - heading [level=2] [ref=f2e773]:
+            - text: Designing with it
+            - link "Direct link to Designing with it" [ref=f2e774] [cursor=pointer]:
+              - /url: "#designing-with-it"
+              - text: "#"
+          - list [ref=f2e775]:
+            - listitem [ref=f2e776]:
+              - strong [ref=f2e777]: Default to bf16 autocast with an fp32 master copy.
+              - text: It needs no scaler and matches fp32 in block 5.
+            - listitem [ref=f2e778]:
+              - strong [ref=f2e779]: Use fp16 only with a dynamic scaler,
+              - text: and unscale before clipping gradients.
+            - listitem [ref=f2e780]:
+              - strong [ref=f2e781]: "Keep sensitive operations in fp32:"
+              - text: softmax, normalisation, the loss, the optimiser state (or at most bf16 moments, as DeepSeek-V3 does).
+            - listitem [ref=f2e782]:
+              - strong [ref=f2e783]: Never keep the only copy of the weights in a 16-bit format.
+              - text: "Block 5: a third of the weights stopped moving."
+            - listitem [ref=f2e784]:
+              - strong [ref=f2e785]: Check Adam's epsilon if you ever store the optimiser in 16 bits.
+              - text: 1e-8 is zero in fp16.
+            - listitem [ref=f2e786]:
+              - strong [ref=f2e787]: For fp8, scale per block, not per tensor,
+              - text: and compare the loss curve with bf16 before trusting it. Measure the ratio of a tensor's maximum to its median first, as block 6 does.
+            - listitem [ref=f2e788]:
+              - strong [ref=f2e789]: Plan memory with the recipe in mind.
+              - text: Mixed precision does not change the 16 bytes per parameter of model state; it changes activations and speed.
+          - heading [level=2] [ref=f2e790]:
+            - text: Where this stands in 2026
+            - link "Direct link to Where this stands in 2026" [ref=f2e791] [cursor=pointer]:
+              - /url: "#where-this-stands-in-2026"
+              - text: "#"
+          - generic [ref=f2e792]:
+            - generic [ref=f2e793]: Industry view
+            - list [ref=f2e798]:
+              - listitem [ref=f2e799]:
+                - strong [ref=f2e800]: bf16 is the default for large-model training.
+                - text: Llama 3's reported MFU is for bf16 training.
+              - listitem [ref=f2e801]:
+                - strong [ref=f2e802]: fp8 training is documented and published.
+                - text: DeepSeek-V3 reports fp8 training with fine-grained scales, and NVIDIA's Transformer Engine ships delayed, current and MXFP8 recipes (release 2.20.2, 5 October 2026).
+              - listitem [ref=f2e803]:
+                - strong [ref=f2e804]: 4-bit training has a published recipe.
+                - text: The NVFP4 paper (March 2026 revision) reports parity with fp8 on a 12B model over 10T tokens, as the authors' own result.
+              - listitem [ref=f2e805]:
+                - strong [ref=f2e806]: "Not verified here:"
+                - text: GPU speed-ups, the accuracy of any fp8 or fp4 recipe on your model, and which labs currently train in fp8. This chapter measured numerics on a CPU.
+          - heading [level=2] [ref=f2e807]:
+            - text: Common mistakes
+            - link "Direct link to Common mistakes" [ref=f2e808] [cursor=pointer]:
+              - /url: "#common-mistakes"
+              - text: "#"
+          - list [ref=f2e809]:
+            - listitem [ref=f2e810]:
+              - strong [ref=f2e811]: Casting a model to fp16 and training it directly.
+              - text: It is the easy way to save memory. Block 5 shows NaN from step 2 (Adam's
+              - code [ref=f2e812]: eps
+              - text: ) and 79 per cent zero second moments. Use autocast with a master copy and a scaler.
+            - listitem [ref=f2e813]:
+              - strong [ref=f2e814]: Using fp16 without a scaler "because it worked on my small model".
+              - text: Block 3 shows the tiny model loses almost nothing. A deeper model with smaller gradients may. The safe choice costs little.
+            - listitem [ref=f2e815]:
+              - strong [ref=f2e816]: Summing in low precision.
+              - text: "Totals, means and losses should be accumulated in fp32. Block 2: fp16 stops at 32.0 on a sum whose answer is 100."
+            - listitem [ref=f2e817]:
+              - strong [ref=f2e818]: Using one fp8 scale for a whole tensor.
+              - text: One large activation then crushes the rest. Block 6 shows 1.46 per cent of a tensor flushed to zero.
+            - listitem [ref=f2e819]:
+              - strong [ref=f2e820]: Expecting mixed precision to halve the model-state memory.
+              - text: "The master copy and the optimiser state remain 32-bit: 16 bytes per parameter either way. The saving is in activations and compute."
+          - heading [level=2] [ref=f2e821]:
+            - text: Practice questions
+            - link "Direct link to Practice questions" [ref=f2e822] [cursor=pointer]:
+              - /url: "#practice-questions"
+              - text: "#"
+          - group [ref=f2e823]:
+            - generic [ref=f2e824] [cursor=pointer]:
+              - strong [ref=f2e825]: Q1 (Easy).
+              - text: What is the largest fp16 number, and what happens to 70,000 when you cast it?
+          - group [ref=f2e826]:
+            - generic [ref=f2e827] [cursor=pointer]:
+              - strong [ref=f2e828]: Q2 (Easy).
+              - text: Why does bf16 training not need a loss scale?
+          - group [ref=f2e829]:
+            - generic [ref=f2e830] [cursor=pointer]:
+              - strong [ref=f2e831]: Q3 (Medium).
+              - text: The scaler's scale is 65,536 and one gradient is 1.5. What happens, and what is the scale next?
+          - group [ref=f2e832]:
+            - generic [ref=f2e833] [cursor=pointer]:
+              - strong [ref=f2e834]: Q4 (Medium).
+              - text: A 7-billion-parameter model is trained with bf16 weights, bf16 gradients and bf16 Adam moments (no master copy). How many bytes of model state is that, and why would you not do it?
+          - group [ref=f2e835]:
+            - generic [ref=f2e836] [cursor=pointer]:
+              - strong [ref=f2e837]: Q5 (Stretch).
+              - text: After block 15 of SmolLM2-135M the largest hidden-state value is 24,946. With one e4m3 scale for the tensor, which values are flushed to zero? Check against the printed 1.46 per cent.
+          - group [ref=f2e838]:
+            - generic [ref=f2e839] [cursor=pointer]:
+              - strong [ref=f2e840]: Q6 (Stretch).
+              - text: Pure fp16 training gave NaN from step 2 with Adam's default settings. Explain the mechanism, and why changing
+              - code [ref=f2e841]: eps
+              - text: to 1e-4 is not a real fix.
+          - heading [level=2] [ref=f2e842]:
+            - text: Go deeper
+            - link "Direct link to Go deeper" [ref=f2e843] [cursor=pointer]:
+              - /url: "#go-deeper"
+              - text: "#"
+          - paragraph [ref=f2e844]: All sources were opened on 7 October 2026.
+          - list [ref=f2e845]:
+            - listitem [ref=f2e846]:
+              - link "Mixed Precision Training (arXiv 1710.03740)" [ref=f2e847] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/1710.03740
+              - text: ": the fp32 master copy, loss scaling and fp32 accumulation; the figures about gradients below 2^-24."
+            - listitem [ref=f2e848]:
+              - link "FP8 Formats for Deep Learning (arXiv 2209.05433)" [ref=f2e849] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2209.05433
+              - text: ": e4m3 and e5m2, their largest values (448 and 57,344) and the per-tensor scaling idea."
+            - listitem [ref=f2e850]:
+              - link "DeepSeek-V3 Technical Report (arXiv 2412.19437)" [ref=f2e851] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2412.19437
+              - text: ": fp8 training, tile and block scaling, bf16 optimiser moments, the 0.25 per cent loss error."
+            - listitem [ref=f2e852]:
+              - link "PyTorch 2.14 automatic mixed precision" [ref=f2e853] [cursor=pointer]:
+                - /url: https://docs.pytorch.org/docs/2.14/amp.html
+              - text: ": autocast op lists, defaults,"
+              - code [ref=f2e854]: GradScaler
+              - text: defaults.
+            - listitem [ref=f2e855]:
+              - 'link "NVIDIA Transformer Engine: using FP8 and FP4" [ref=f2e856] [cursor=pointer]':
+                - /url: https://docs.nvidia.com/deeplearning/transformer-engine/examples/fp8_primer.html
+              - text: ": the delayed, current and MXFP8 recipes, the hybrid format and the API."
+            - listitem [ref=f2e857]:
+              - link "Pretraining Large Language Models with NVFP4 (arXiv 2509.25149)" [ref=f2e858] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2509.25149
+              - text: ": abstract read only."
+            - listitem [ref=f2e859]:
+              - link "Massive Activations in Large Language Models (arXiv 2402.17762)" [ref=f2e860] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2402.17762
+              - text: ": abstract read only."
+            - listitem [ref=f2e861]:
+              - link "The Llama 3 Herd of Models (arXiv 2407.21783)" [ref=f2e862] [cursor=pointer]:
+                - /url: https://arxiv.org/abs/2407.21783
+              - text: ": BF16 MFU in Table 4 and the FP8 inference note."
+          - heading [level=2] [ref=f2e863]:
+            - text: Check yourself
+            - link "Direct link to Check yourself" [ref=f2e864] [cursor=pointer]:
+              - /url: "#check-yourself"
+              - text: "#"
+          - list [ref=f2e865]:
+            - listitem [ref=f2e866]: I can say what the exponent and mantissa bits of a format control, and read a format's range and step size.
+            - listitem [ref=f2e867]: I can explain why bf16 does not need a loss scale and fp16 does.
+            - listitem [ref=f2e868]: I can explain what a master copy protects against and what recipe costs 16 bytes per parameter.
+            - listitem [ref=f2e869]: I can predict when an addition is lost to rounding, and why sums are kept in fp32.
+            - listitem [ref=f2e870]: I can describe how a dynamic loss scaler grows, backs off and skips a step.
+            - listitem [ref=f2e871]: I can say why fp8 needs a scale per block, and measure an outlier ratio to decide.
+          - heading [level=2] [ref=f2e872]:
+            - text: Where to go next
+            - link "Direct link to Where to go next" [ref=f2e873] [cursor=pointer]:
+              - /url: "#where-to-go-next"
+              - text: "#"
+          - paragraph [ref=f2e874]:
+            - text: "Next chapter:"
+            - link "mixture of experts" [ref=f2e875] [cursor=pointer]:
+              - /url: /docs/llm-engineering/mixture-of-experts
+            - text: ", where only a few experts run for each token and precision choices such as router stability matter. A related chapter:"
+            - link "quantisation for inference" [ref=f2e876] [cursor=pointer]:
+              - /url: /docs/llm-engineering/quantisation-for-inference
+            - text: ", which applies the same ideas to serving a trained model."
+        - generic [ref=f2e879]:
+          - text: "Tags:"
+          - list [ref=f2e880]:
+            - listitem [ref=f2e881]:
+              - link "mixed-precision" [ref=f2e882] [cursor=pointer]:
+                - /url: /docs/tags/mixed-precision
+            - listitem [ref=f2e883]:
+              - link "bf16" [ref=f2e884] [cursor=pointer]:
+                - /url: /docs/tags/bf-16
+            - listitem [ref=f2e885]:
+              - link "fp16" [ref=f2e886] [cursor=pointer]:
+                - /url: /docs/tags/fp-16
+            - listitem [ref=f2e887]:
+              - link "fp8" [ref=f2e888] [cursor=pointer]:
+                - /url: /docs/tags/fp-8
+            - listitem [ref=f2e889]:
+              - link "loss-scaling" [ref=f2e890] [cursor=pointer]:
+                - /url: /docs/tags/loss-scaling
+            - listitem [ref=f2e891]:
+              - link "gradscaler" [ref=f2e892] [cursor=pointer]:
+                - /url: /docs/tags/gradscaler
+            - listitem [ref=f2e893]:
+              - link "autocast" [ref=f2e894] [cursor=pointer]:
+                - /url: /docs/tags/autocast
+            - listitem [ref=f2e895]:
+              - link "numerics" [ref=f2e896] [cursor=pointer]:
+                - /url: /docs/tags/numerics
+            - listitem [ref=f2e897]:
+              - link "quantisation" [ref=f2e898] [cursor=pointer]:
+                - /url: /docs/tags/quantisation
+            - listitem [ref=f2e899]:
+              - link "transformer-engine" [ref=f2e900] [cursor=pointer]:
+                - /url: /docs/tags/transformer-engine
+      - navigation "Docs pages" [ref=f2e901]:
+        - link "Previous « 2 · DDP, FSDP and ZeRO" [ref=f2e902] [cursor=pointer]:
+          - /url: /docs/llm-engineering/ddp-fsdp-and-zero
+          - generic [ref=f2e903]: Previous
+          - generic [ref=f2e904]: « 2 · DDP, FSDP and ZeRO
+        - link "Next 4 · Mixture of experts »" [ref=f2e905] [cursor=pointer]:
+          - /url: /docs/llm-engineering/mixture-of-experts
+          - generic [ref=f2e906]: Next
+          - generic [ref=f2e907]: 4 · Mixture of experts »
+  - contentinfo [ref=f2e908]:
+    - generic [ref=f2e909]:
+      - generic [ref=f2e910]:
+        - generic [ref=f2e911]:
+          - generic [ref=f2e912]: Learn
+          - list [ref=f2e913]:
+            - listitem [ref=f2e914]:
+              - link "Roadmap" [ref=f2e915] [cursor=pointer]:
+                - /url: /docs/intro
+            - listitem [ref=f2e916]:
+              - link "Daily notes" [ref=f2e917] [cursor=pointer]:
+                - /url: /docs/category/daily
+            - listitem [ref=f2e918]:
+              - link "Production LLM track" [ref=f2e919] [cursor=pointer]:
+                - /url: /llm-roadmap
+            - listitem [ref=f2e920]:
+              - link "Deep learning" [ref=f2e921] [cursor=pointer]:
+                - /url: /docs/category/dnn
+            - listitem [ref=f2e922]:
+              - link "Statistics" [ref=f2e923] [cursor=pointer]:
+                - /url: /docs/category/statistics
+            - listitem [ref=f2e924]:
+              - link "Code tracks" [ref=f2e925] [cursor=pointer]:
+                - /url: /docs/category/coding
+        - generic [ref=f2e926]:
+          - generic [ref=f2e927]: Practice
+          - list [ref=f2e928]:
+            - listitem [ref=f2e929]:
+              - link "Cheatsheets" [ref=f2e930] [cursor=pointer]:
+                - /url: /docs/category/cheetsheet
+            - listitem [ref=f2e931]:
+              - link "Interview questions" [ref=f2e932] [cursor=pointer]:
+                - /url: /docs/category/interview
+            - listitem [ref=f2e933]:
+              - link "Engineering & systems" [ref=f2e934] [cursor=pointer]:
+                - /url: /docs/category/scaler
+            - listitem [ref=f2e935]:
+              - link "Miscellaneous" [ref=f2e936] [cursor=pointer]:
+                - /url: /docs/category/miscellaneous-collection
+            - listitem [ref=f2e937]:
+              - link "Explore all notes" [ref=f2e938] [cursor=pointer]:
+                - /url: /explore
+            - listitem [ref=f2e939]:
+              - link "AI Innovation Hub" [ref=f2e940] [cursor=pointer]:
+                - /url: /ai-news
+        - generic [ref=f2e941]:
+          - generic [ref=f2e942]: More
+          - list [ref=f2e943]:
+            - listitem [ref=f2e944]:
+              - link [ref=f2e945] [cursor=pointer]:
+                - /url: https://pytorch.org/docs/stable/index.html
+                - text: PyTorch docs
+                - img "(opens in new tab)" [ref=f2e946]
+            - listitem [ref=f2e948]:
+              - link [ref=f2e949] [cursor=pointer]:
+                - /url: https://scikit-learn.org/stable/
+                - text: scikit-learn
+                - img "(opens in new tab)" [ref=f2e950]
+      - generic [ref=f2e952]: Copyright © 2026 Learn AI, ML. Built by Sumanth.

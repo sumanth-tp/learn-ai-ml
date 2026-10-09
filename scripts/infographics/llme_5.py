@@ -379,12 +379,13 @@ def moe_worked():
 
 @board("mixture-of-experts-models")
 def moe_models():
-    b = Board(1240, 620, "Stored against used: current and recent mixture-of-experts models", "Billions of parameters on a log axis. Model cards and papers named in the chapter, checked 7 October 2026; counting conventions differ a little")
+    b = Board(1240, 620, "Stored against used: current and recent mixture-of-experts models", "Billions of parameters on a log axis. Model cards and papers named in the chapter, checked 7 and 8 October 2026; counting conventions differ a little")
     data = [
         ("Mixtral 8x7B (2023)", 46.7, 12.9),
         ("gpt-oss-120b (2025)", 117.0, 5.1),
         ("Qwen3-30B-A3B", 30.5, 3.3),
         ("Qwen3.6-35B-A3B (2026)", 35.0, 3.0),
+        ("Qwen3.8-Flash-Next (2026)", 125.0, 6.0),
         ("Kolibri-1 (Oct 2026)", 78.1, 3.46),
         ("DeepSeek-V3 (2024)", 671.0, 37.0),
         ("DeepSeek-V4-Pro (2026)", 1600.0, 49.0),
@@ -399,10 +400,10 @@ def moe_models():
 
     b.group(20, 95, 1200, 500, "Blue: total parameters. Orange: parameters activated per token", "teal")
     for tick in (10, 100, 1000):
-        line(b, px(tick), 140, px(tick), 560, "#ced4da", 1.0, "4 4")
-        raw_text(b, px(tick), 580, f"{tick:,}B", 12, FAINT)
+        line(b, px(tick), 135, px(tick), 565, "#ced4da", 1.0, "4 4")
+        raw_text(b, px(tick), 583, f"{tick:,}B", 12, FAINT)
     for i, (name, total, active) in enumerate(data):
-        y = 150 + i * 52
+        y = 146 + i * 46
         raw_text(b, x0 - 12, y + 20, name, 13, INK, anchor="end", weight="700")
         rect(b, x0, y, px(total) - x0, 14, PALETTE["blue"]["fill"], PALETTE["blue"]["stroke"], 1.5, 1.0, 3)
         rect(b, x0, y + 18, px(active) - x0, 14, PALETTE["orange"]["fill"], PALETTE["orange"]["stroke"], 1.5, 1.0, 3)

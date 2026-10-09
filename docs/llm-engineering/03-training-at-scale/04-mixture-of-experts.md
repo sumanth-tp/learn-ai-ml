@@ -20,7 +20,7 @@ import MoeRoutingLab from '@site/src/components/viz/MoeRoutingLab';
 :::
 
 :::note Not from a lecture
-This chapter was written for this site from the papers and model cards under Go deeper. Model sizes are counted from real configs read from the Hugging Face Hub by the code below. Versions used: Python 3.14, PyTorch 2.14.1 (CPU), Transformers 5.18.0. Model cards and papers were opened on 7 October 2026; this field changes monthly, so check the card before you rely on a number.
+This chapter was written for this site from the papers and model cards under Go deeper. Model sizes are counted from real configs read from the Hugging Face Hub by the code below. Versions used: Python 3.14, PyTorch 2.14.1 (CPU), Transformers 5.18.0. Model cards and papers were opened on 7 and 8 October 2026; this field changes monthly, so check the card before you rely on a number.
 :::
 
 ## In 30 seconds
@@ -113,7 +113,7 @@ Compute follows the active parameters; memory follows the total. Every expert mu
 
 ### Which models are current?
 
-The table is built from the official model cards and configs, read on 7 October 2026. Dates are when each repository was created on the Hub, which is not always the announcement date.
+The table is built from the official model cards and configs, read on 7 and 8 October 2026. Dates are when each repository was created on the Hub, which is not always the announcement date.
 
 | Model | Created on the Hub | Total / active parameters (card) | Experts | Notes from the card or config |
 | --- | --- | --- | --- | --- |
@@ -124,12 +124,15 @@ The table is built from the official model cards and configs, read on 7 October 
 | DeepSeek-V3 | December 2024 | 671B / 37B | 256 + 1 shared, top 8 | Auxiliary-loss-free balancing |
 | Qwen3.6-35B-A3B | April 2026 | 35B / 3B | 256, top 8 + 1 shared | Gated DeltaNet and gated attention layers |
 | DeepSeek-V4-Pro and Flash | April 2026 | 1.6T / 49B and 284B / 13B | 384 and 256, top 6 | Card calls it a preview; experts in FP4 |
+| Qwen3.8-Flash-Next | August 2026 | 125B / 6B (plus 51B n-gram embedding) | 512, 10 routed + 1 shared | Card figures; read on 8 October 2026 |
 | Kimi K3 | June 2026 | 2.8T / 104B | 896 + 2 shared, top 16 | MXFP4 weights, quantisation-aware training |
 | Kolibri-1 | October 2026 | 78.1B / 3.46B | 384, 1 shared + 6 routed | Experts in fp8 blocks; router in bf16 |
 
-<Infographic src="/img/llme/mixture-of-experts-models.svg" alt="Horizontal bars on a log axis for eight mixture-of-experts models, each with total parameters in blue and activated parameters in orange, from Mixtral 8x7B at 46.7B total and 12.9B active to Kimi K3 at 2,800B total and 104B active" caption="Compare each blue bar with the orange bar beneath it: the active share is 27.6 per cent for Mixtral and 3 to 5 per cent for most 2026 models. Figures are from the cards and papers in the table." />
+<Infographic src="/img/llme/mixture-of-experts-models.svg" alt="Horizontal bars on a log axis for nine mixture-of-experts models, each with total parameters in blue and activated parameters in orange, from Mixtral 8x7B at 46.7B total and 12.9B active to Kimi K3 at 2,800B total and 104B active" caption="Compare each blue bar with the orange bar beneath it: the active share is 27.6 per cent for Mixtral and 3 to 5 per cent for most 2026 models. Figures are from the cards and papers in the table." />
 
-Two trends stand out. Experts keep getting more numerous and smaller, and the active fraction keeps falling: from 27.6 per cent in Mixtral to 3 to 5 per cent in most 2026 models. And expert weights are stored in 4 or 8 bits, which links back to the [previous chapter](/docs/llm-engineering/mixed-precision-and-numerics).
+Later revisions already exist for some rows: the Hub lists DeepSeek-V4-Pro-0813 (August 2026, same expert layout in its config) and DeepSeek-V4.1-Flash (September 2026, a multimodal model whose card gives 552B backbone parameters). The table keeps the first card of each family that this chapter read in full.
+
+Two trends stand out. Experts keep getting more numerous and smaller, and the active fraction keeps falling: from 27.6 per cent in Mixtral to 3 to 9 per cent in the 2026 models. And expert weights are stored in 4 or 8 bits, which links back to the [previous chapter](/docs/llm-engineering/mixed-precision-and-numerics).
 
 ## A real system that works this way
 
@@ -555,7 +558,7 @@ print(outputs[0]["generated_text"][-1])
 ## Where this stands in 2026
 
 :::info Industry view
-- **Mixture of experts is the common design in the large open models listed in the table above.** The cards for DeepSeek-V4, Kimi K3, Qwen3.6, gpt-oss and Kolibri-1 all describe mixture-of-experts models; read on 7 October 2026.
+- **Mixture of experts is the common design in the large open models listed in the table above.** The cards for DeepSeek-V4, Kimi K3, Qwen3.6, gpt-oss and Kolibri-1 all describe mixture-of-experts models; read on 7 and 8 October 2026.
 - **The recipe is moving.** More and smaller experts, shared experts, sigmoid or square-root-softplus scoring in several configs, and bias-based balancing. The Kolibri-1 card names its own balancing method (Exact Quantile Balancing); this chapter did not study it beyond what the card states.
 - **Low-bit experts are normal.** Cards report FP4, MXFP4 or fp8 experts for DeepSeek-V4, Kimi K3, gpt-oss and Kolibri-1.
 - **Not verified here:** benchmark claims in any card, GPU throughput, and the exact layer layouts of the 2026 models beyond what each config.json shows. The 2026 models were not downloaded or run.
@@ -615,7 +618,7 @@ The step takes as long as rank 0, which does 40 units of work. The mean is 32, s
 
 ## Go deeper
 
-All sources were opened on 7 October 2026.
+All sources were opened on 7 and 8 October 2026.
 
 - [Mixtral of Experts (arXiv 2401.04088)](https://arxiv.org/abs/2401.04088): top-2 routing over 8 SwiGLU experts, 47B total and 13B active, and the routing analysis that found no topic pattern.
 - [Switch Transformers (arXiv 2101.03961)](https://arxiv.org/abs/2101.03961): the balancing loss, the coefficient 0.01, capacity factor, dropped tokens and selective float32 precision.

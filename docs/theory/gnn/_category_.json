@@ -1,0 +1,10 @@
+{
+  "label": "Graph neural networks",
+  "position": 13,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Graphs and message passing, GCN, GraphSAGE and GAT from scratch, and graph tasks in production."
+  }
+}
